@@ -1,52 +1,67 @@
-import React from "react"
-import { Badge } from "../Badge"
+import DuckdbLogo from "./DuckdbLogo"
+import PostgresLogo from "./PostgresLogo"
 
-const stats = [
+const TantivyLogo = () => (
+  <img
+    src="https://tantivy-search.github.io/logo/tantivy-logo.png"
+    alt="Tantivy, the fastest full-text search engine library written in Rust"
+    height={26}
+    width={26}
+  />
+)
+
+const features = [
   {
-    name: "Bandwith increase",
-    value: "+162%",
+    name: "Postgres",
+    description:
+      "ParadeDB is not a fork of Postgres, but 100% vanilla Postgres with our custom extensions installed.",
+    icon: PostgresLogo,
   },
   {
-    name: "Better storage efficiency",
-    value: "2-3x",
+    name: "DuckDB",
+    description:
+      "DuckDB is a column-oriented, in-process analytical database built for speed.",
+    icon: DuckdbLogo,
   },
   {
-    name: "Rows ingested / second",
-    value: "Up to 9M",
+    name: "Tantivy",
+    description:
+      "Tantivy is a Rust-based alternative to the Lucene search engine library.",
+    icon: TantivyLogo,
   },
 ]
 
-export default function Features() {
+export default function CodeExample() {
   return (
     <section
-      aria-labelledby="features-title"
-      className="mx-auto mt-44 w-full max-w-6xl px-3"
+      aria-labelledby="code-example-title"
+      className="mx-auto mt-28 w-full max-w-6xl px-3 md:mt-40"
     >
-      <Badge>Security at Scale</Badge>
       <h2
-        id="features-title"
+        id="code-example-title"
         className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl dark:from-gray-50 dark:to-gray-300"
       >
-        Architected for speed and reliability
+        And built on{" "}
+        <span className="bg-rose-100 text-rose-600">battle-tested</span>
+        <br />
+        open source
       </h2>
-      <p className="mt-6 max-w-3xl text-lg leading-7 text-gray-600 dark:text-gray-400">
-        Database&rsquo; innovative architecture avoids the central bottlenecks
-        of traditional systems, enhancing system reliability. This design
-        ensures high productivity and security, minimizing the risk of service
-        disruptions and outages.
-      </p>
-      <dl className="mt-12 grid grid-cols-1 gap-y-8 md:grid-cols-3 md:border-y md:border-gray-200 md:py-14 dark:border-gray-800">
-        {stats.map((stat, index) => (
-          <React.Fragment key={index}>
-            <div className="border-l-2 border-indigo-100 pl-6 md:border-l md:text-center lg:border-gray-200 lg:first:border-none dark:border-indigo-900 lg:dark:border-gray-800">
-              <dd className="inline-block bg-gradient-to-t from-indigo-900 to-indigo-600 bg-clip-text text-5xl font-bold tracking-tight text-transparent lg:text-6xl dark:from-indigo-700 dark:to-indigo-400">
-                {stat.value}
-              </dd>
-              <dt className="mt-1 text-gray-600 dark:text-gray-400">
-                {stat.name}
-              </dt>
+      <dl className="mt-16 grid grid-cols-3 gap-12">
+        {features.map((item) => (
+          <div
+            key={item.name}
+            className="col-span-full sm:col-span-2 lg:col-span-1"
+          >
+            <div className="w-fit rounded-lg p-2.5 shadow-sm ring-1 ring-slate-200">
+              <item.icon aria-hidden="true" className="size-6 text-gray-900" />
             </div>
-          </React.Fragment>
+            <dt className="mt-6 text-lg font-medium text-gray-900">
+              {item.name}
+            </dt>
+            <dd className="mt-2 text-gray-600 dark:text-gray-400">
+              {item.description}
+            </dd>
+          </div>
         ))}
       </dl>
     </section>

@@ -17,22 +17,22 @@ export default function Hero() {
         className="inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text p-2 text-4xl font-bold leading-loose tracking-tighter text-indigo-900 text-transparent sm:text-6xl dark:from-gray-50 dark:to-gray-300"
         style={{ animationDuration: "700ms" }}
       >
-        Search and analytics <br /> for Postgres{" "}
-        <span className="text-indigo-600">without ETL</span>
+        Search and analytics <br /> for Postgres with{" "}
+        <span className="text-indigo-600">zero ETL</span>
       </h1>
       <p
         className="mt-6 max-w-xl animate-slide-up-fade text-lg text-indigo-900"
         style={{ animationDuration: "900ms" }}
       >
-        ParadeDB is a modern Elasticsearch alternative built on Postgres. Fully
-        open source and compatible with any Postgres.
+        ParadeDB is a modern Elasticsearch alternative built on Postgres. Built
+        for real-time, update-heavy workloads.
       </p>
       <div
         className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
         style={{ animationDuration: "1100ms" }}
       >
         <Button className="text-md rounded-full border-4 border-indigo-200 px-4">
-          <Link href="#">Contact Sales</Link>
+          <Link href="#">Book a Demo</Link>
         </Button>
         <Button
           asChild

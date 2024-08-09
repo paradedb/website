@@ -108,12 +108,12 @@ export function Navigation() {
               </Link>
             )}
             <Button className="hidden rounded-full border-4 border-indigo-200 px-4 md:flex">
-              <Link href="#">Contact Sales</Link>
+              <Link href="#">Book a Demo</Link>
             </Button>
           </div>
           <div className="flex gap-x-2 md:hidden">
             <Button className="rounded-full border-4 border-indigo-200 px-4">
-              Contact Sales
+              Book a Demo
             </Button>
             <Button
               onClick={() => setOpen(!open)}

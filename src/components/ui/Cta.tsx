@@ -2,6 +2,7 @@
 import Balancer from "react-wrap-balancer"
 import { Button } from "../Button"
 import { Input } from "../Input"
+import RadialBackground from "./RadialBackground"
 
 export default function Cta() {
   return (
@@ -10,24 +11,7 @@ export default function Cta() {
       className="mx-auto mb-20 mt-32 max-w-6xl p-1 px-2 sm:mt-56"
     >
       <div className="relative flex items-center justify-center">
-        <div
-          className="mask pointer-events-none absolute -z-10 select-none opacity-70"
-          aria-hidden="true"
-        >
-          <div className="flex size-full flex-col gap-2">
-            {Array.from({ length: 20 }, (_, idx) => (
-              <div key={`outer-${idx}`}>
-                <div className="flex size-full gap-2">
-                  {Array.from({ length: 41 }, (_, idx2) => (
-                    <div key={`inner-${idx}-${idx2}`}>
-                      <div className="size-5 rounded-md shadow shadow-indigo-500/20 ring-1 ring-black/5 dark:shadow-indigo-500/20 dark:ring-white/5"></div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
+        <RadialBackground className="h-72 w-full md:h-96" />
         <div className="max-w-4xl">
           <div className="flex flex-col items-center justify-center text-center">
             <div>
@@ -39,8 +23,8 @@ export default function Cta() {
               </h3>
               <p className="mx-auto mt-4 max-w-2xl text-gray-600 sm:text-lg dark:text-gray-400">
                 <Balancer>
-                  Launch a new cluster or migrate to Database with zero
-                  downtime.
+                  Start testing right away with our documentation or book a demo
+                  with our sales team.
                 </Balancer>
               </p>
             </div>
@@ -74,12 +58,12 @@ export default function Cta() {
               </div>
             </div>
             <p className="mt-4 text-xs text-gray-600 sm:text-sm dark:text-gray-400">
-              Not sure where to start?{" "}
+              Have a quick question?{" "}
               <a
                 href="#"
                 className="font-semibold text-indigo-600 hover:text-indigo-500 dark:text-indigo-500 dark:hover:text-indigo-400"
               >
-                Talk to sales
+                Email us
               </a>
             </p>
           </div>
