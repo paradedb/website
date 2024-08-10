@@ -36,12 +36,12 @@ export default function CodeExample() {
       <Badge>Open Source</Badge>
       <h2
         id="code-example-title"
-        className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl dark:from-gray-50 dark:to-gray-300"
+        className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl"
       >
         Trusted by the{" "}
         <span className="bg-indigo-100 text-indigo-600">community</span>
       </h2>
-      <p className="mt-6 max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+      <p className="mt-6 max-w-2xl text-lg text-gray-600">
         ParadeDB is loved by developers and has been deployed across thousands
         of production environments.
       </p>
@@ -58,9 +58,7 @@ export default function CodeExample() {
               {item.metric}
             </div>
             <dt className="mt-2 font-medium text-gray-900">{item.name}</dt>
-            <dd className="mt-2 text-gray-600 dark:text-gray-400">
-              {item.description}
-            </dd>
+            <dd className="mt-2 text-gray-600">{item.description}</dd>
           </div>
         ))}
       </dl>

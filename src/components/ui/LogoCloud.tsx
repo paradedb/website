@@ -8,7 +8,7 @@ export default function LogoCloud() {
       className="mt-24 flex animate-slide-up-fade flex-col items-center justify-center gap-y-6 text-center"
       style={{ animationDuration: "1500ms" }}
     >
-      <div className="grid grid-cols-2 gap-10 gap-y-4 text-gray-900 md:grid-cols-4 md:gap-x-20 dark:text-gray-200">
+      <div className="grid grid-cols-2 gap-10 gap-y-4 text-gray-900 md:grid-cols-4 md:gap-x-20">
         <Logos.Biosynthesis className="w-28" />
         <Logos.AltShift className="w-28" />
         <Logos.Capsule className="w-28" />

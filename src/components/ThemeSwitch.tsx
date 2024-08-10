@@ -40,11 +40,11 @@ const RadioGroupItem = React.forwardRef<
       <div
         className={cx(
           // base
-          "flex size-full shrink-0 items-center justify-center rounded-lg text-gray-700 dark:text-gray-400",
+          "flex size-full shrink-0 items-center justify-center rounded-lg text-gray-700",
           // background color
           "bg-transparent",
           // checked
-          "group-data-[state=checked]:bg-indigo-50 group-data-[state=checked]:text-indigo-600 dark:group-data-[state=checked]:bg-indigo-500/20 dark:group-data-[state=checked]:text-indigo-300",
+          "group-data-[state=checked]:bg-indigo-50 group-data-[state=checked]:text-indigo-600",
           // focus
           focusRing,
         )}

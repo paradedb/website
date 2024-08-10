@@ -39,7 +39,7 @@ export default function CodeExample() {
     >
       <h2
         id="code-example-title"
-        className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl dark:from-gray-50 dark:to-gray-300"
+        className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl"
       >
         And built on{" "}
         <span className="bg-rose-100 text-rose-600">battle-tested</span>
@@ -58,9 +58,7 @@ export default function CodeExample() {
             <dt className="mt-6 text-lg font-medium text-gray-900">
               {item.name}
             </dt>
-            <dd className="mt-2 text-gray-600 dark:text-gray-400">
-              {item.description}
-            </dd>
+            <dd className="mt-2 text-gray-600">{item.description}</dd>
           </div>
         ))}
       </dl>

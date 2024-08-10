@@ -14,7 +14,7 @@ export default function Hero() {
     >
       <h1
         id="hero-title"
-        className="inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text p-2 text-4xl font-bold leading-loose tracking-tighter text-indigo-900 text-transparent sm:text-6xl dark:from-gray-50 dark:to-gray-300"
+        className="inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text p-2 text-4xl font-bold leading-loose tracking-tighter text-indigo-900 text-transparent sm:text-6xl"
         style={{ animationDuration: "700ms" }}
       >
         Search and analytics <br /> for Postgres with{" "}
@@ -37,11 +37,11 @@ export default function Hero() {
         <Button
           asChild
           variant="light"
-          className="text-md group bg-transparent hover:bg-transparent dark:bg-transparent hover:dark:bg-transparent"
+          className="text-md hover: group bg-transparent hover:bg-transparent"
         >
           <Link
             href="https://www.youtube.com/watch?v=QRZ_l7cVzzU"
-            className="text-indigo-900 ring-1 ring-gray-200 sm:ring-0 dark:ring-gray-900"
+            className="text-indigo-900 ring-1 ring-gray-200 sm:ring-0"
             target="_blank"
           >
             Documentation

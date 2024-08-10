@@ -20,7 +20,7 @@ export default function SearchAnalytics() {
         <span className="bg-indigo-100 text-indigo-600">powerful</span> as
         Elastic
       </h2>
-      <p className="mt-6 max-w-2xl text-lg text-gray-600 dark:text-gray-400">
+      <p className="mt-6 max-w-2xl text-lg text-gray-600">
         By transforming Postgres into a performant search and analytics
         database, <br />
         ParadeDB frees your team from the pain of scaling and syncing

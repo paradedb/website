@@ -31,7 +31,7 @@ export const GlobalDatabase: FunctionComponent = () => {
           Say <span className="bg-indigo-100 text-indigo-600">goodbye</span> to
           ETL
         </h2>
-        <p className="mt-6 max-w-2xl text-center text-lg text-gray-900 dark:text-gray-400">
+        <p className="mt-6 max-w-2xl text-center text-lg text-gray-900">
           ParadeDB Managed runs in your AWS, Azure, or GCP account and
           integrates with any Postgres or object store — with zero ETL or change
           data capture.
