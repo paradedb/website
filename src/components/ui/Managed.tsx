@@ -20,7 +20,7 @@ export default function Managed() {
     <div className="px-3">
       <section
         aria-labelledby="global-database-title"
-        className="relative mx-auto mt-28 flex w-full max-w-6xl flex-col items-center justify-center overflow-hidden rounded-3xl bg-slate-100 px-8 py-12 md:mt-40 md:px-24 md:py-24"
+        className="relative mx-auto mt-28 flex w-full max-w-6xl flex-col items-center justify-center overflow-hidden rounded-3xl bg-slate-100 px-4 py-12 md:mt-40 md:px-24 md:py-24"
       >
         <Badge>ParadeDB Managed</Badge>
         <h2
