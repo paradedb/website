@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: siteConfig.name,
   },
   icons: {
-    icon: "/favicon.png",
+    icon: "/favicon.ico",
   },
 }
 
