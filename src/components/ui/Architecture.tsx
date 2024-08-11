@@ -41,12 +41,11 @@ export default function Architecture() {
     >
       <h2
         id="code-example-title"
-        className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl"
+        className="mt-2 inline-block max-w-2xl bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl"
       >
         And built on{" "}
-        <span className="bg-rose-100 text-rose-600">battle-tested</span>
-        <br />
-        open source
+        <span className="bg-rose-100 text-rose-600">battle-tested</span> open
+        source
       </h2>
       <dl className="mt-12 grid grid-cols-3 gap-12 md:mt-16">
         {features.map((item) => (
