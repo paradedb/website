@@ -1,17 +1,13 @@
 "use client"
 
 import { siteConfig } from "@/app/siteConfig"
+import { blog, documentation, github, social } from "@/lib/links"
 import { cx } from "@/lib/utils"
 import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react"
 import Link from "next/link"
 import React from "react"
 import { DatabaseLogo } from "../../../public/DatabaseLogo"
 import { Button } from "../Button"
-
-const OWNER = "paradedb"
-const REPO = "paradedb"
-const GITHUB_API = `https://api.github.com/repos/${OWNER}/${REPO}`
-const GITHUB_URL = `https://github.com/${OWNER}/${REPO}`
 
 const formatStarCount = (count: number) => {
   if (count < 1000) {
@@ -42,7 +38,7 @@ export function Navigation() {
   React.useEffect(() => {
     async function fetchStars() {
       try {
-        const response = await fetch(GITHUB_API)
+        const response = await fetch(github.API)
         if (response.ok) {
           const data = await response.json()
           setStars(data.stargazers_count)
@@ -72,60 +68,64 @@ export function Navigation() {
           <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
             <div className="flex items-center gap-6 text-sm font-medium">
               <Link
+                target="_blank"
                 className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
-                href={siteConfig.baseLinks.about}
+                href={documentation.BASE}
               >
                 Documentation
               </Link>
               <Link
+                target="_blank"
                 className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
-                href={siteConfig.baseLinks.pricing}
+                href={blog.BASE}
               >
                 Blog
               </Link>
               <Link
+                target="_blank"
                 className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
-                href={siteConfig.baseLinks.changelog}
+                href={social.SLACK}
               >
                 Community
               </Link>
             </div>
           </nav>
-          <div className="flex items-center justify-center space-x-6">
-            {stars && (
-              <Link
-                href={GITHUB_URL}
-                target="_blank"
-                className="flex items-center justify-center space-x-2"
-              >
-                <RiGithubFill
-                  aria-hidden="true"
-                  className="size-6 shrink-0 text-indigo-900"
-                />
-                <div className="text-sm font-medium text-indigo-900">
-                  {formatStarCount(stars)}
-                </div>
-              </Link>
-            )}
-            <Button className="hidden rounded-full border-4 border-indigo-200 px-4 md:flex">
-              <Link href="#">Book a Demo</Link>
-            </Button>
-          </div>
-          <div className="flex gap-x-2 md:hidden">
-            <Button className="rounded-full border-4 border-indigo-200 px-4">
-              Book a Demo
-            </Button>
-            <Button
-              onClick={() => setOpen(!open)}
-              variant="light"
-              className="aspect-square p-2"
-            >
-              {open ? (
-                <RiCloseLine aria-hidden="true" className="size-5" />
-              ) : (
-                <RiMenuLine aria-hidden="true" className="size-5" />
+          <div className="flex space-x-6">
+            <div className="flex items-center justify-center space-x-6">
+              {stars && (
+                <Link
+                  href={github.REPO}
+                  target="_blank"
+                  className="flex items-center justify-center space-x-2"
+                >
+                  <RiGithubFill
+                    aria-hidden="true"
+                    className="size-6 shrink-0 text-indigo-900"
+                  />
+                  <div className="text-sm font-medium text-indigo-900">
+                    {formatStarCount(stars)}
+                  </div>
+                </Link>
               )}
-            </Button>
+              <Button className="hidden rounded-full border-4 border-indigo-200 px-4 md:flex">
+                <Link target="_blank" href={social.CALENDLY}>
+                  Book a Demo
+                </Link>
+              </Button>
+            </div>
+            <div className="md:hidden">
+              <Button
+                onClick={() => setOpen(!open)}
+                variant="light"
+                className="aspect-square bg-opacity-0 p-2"
+              >
+                {open ? (
+                  <RiCloseLine aria-hidden="true" className="size-5" />
+                ) : (
+                  <RiMenuLine aria-hidden="true" className="size-5" />
+                )}
+              </Button>
+            </div>
           </div>
         </div>
         <nav
@@ -136,13 +136,19 @@ export function Navigation() {
         >
           <ul className="space-y-4 font-medium">
             <li onClick={() => setOpen(false)}>
-              <Link href={siteConfig.baseLinks.about}>About</Link>
+              <Link target="_blank" href={documentation.BASE}>
+                Documentation
+              </Link>
             </li>
             <li onClick={() => setOpen(false)}>
-              <Link href={siteConfig.baseLinks.pricing}>Pricing</Link>
+              <Link target="_blank" href={blog.BASE}>
+                Blog
+              </Link>
             </li>
             <li onClick={() => setOpen(false)}>
-              <Link href={siteConfig.baseLinks.changelog}>Changelog</Link>
+              <Link target="_blank" href={documentation.CHANGELOG}>
+                Changelog
+              </Link>
             </li>
           </ul>
         </nav>

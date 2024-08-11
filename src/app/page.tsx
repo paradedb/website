@@ -1,9 +1,10 @@
-import CodeExample from "@/components/ui/CodeExample"
+import Architecture from "@/components/ui/Architecture"
+import Benefits from "@/components/ui/Benefits"
 import Cta from "@/components/ui/Cta"
-import Features from "@/components/ui/Features"
-import { GlobalDatabase } from "@/components/ui/GlobalDatabase"
 import Hero from "@/components/ui/Hero"
 import LogoCloud from "@/components/ui/LogoCloud"
+import Managed from "@/components/ui/Managed"
+import OpenSource from "@/components/ui/OpenSource"
 import SearchAnalytics from "@/components/ui/SearchAnalytics"
 
 export default function Home() {
@@ -12,9 +13,10 @@ export default function Home() {
       <Hero />
       <LogoCloud />
       <SearchAnalytics />
-      <GlobalDatabase />
-      <CodeExample />
-      <Features />
+      <Benefits />
+      <Managed />
+      <OpenSource />
+      <Architecture />
       <Cta />
     </main>
   )

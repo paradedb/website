@@ -1,15 +1,10 @@
 export const siteConfig = {
-  name: "Database",
-  url: "https://database.tremor.so",
-  description: "The database for modern applications.",
+  name: "ParadeDB",
+  url: "https://paradedb.com",
+  description: "Zero-ETL search and analytics for Postgres",
   baseLinks: {
     home: "/",
-    about: "/about",
-    changelog: "/changelog",
     pricing: "/pricing",
-    imprint: "/imprint",
-    privacy: "/privacy",
-    terms: "/terms",
   },
 }
 

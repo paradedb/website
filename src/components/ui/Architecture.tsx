@@ -18,20 +18,20 @@ const features = [
     icon: PostgresLogo,
   },
   {
-    name: "DuckDB",
-    description:
-      "DuckDB is a column-oriented, in-process analytical database built for speed.",
-    icon: DuckdbLogo,
-  },
-  {
     name: "Tantivy",
     description:
-      "Tantivy is a Rust-based alternative to the Lucene search engine library.",
+      "ParadeDB Search is built on Tantivy, a Rust-based alternative to the Lucene search engine library.",
     icon: TantivyLogo,
+  },
+  {
+    name: "DuckDB",
+    description:
+      "ParadeDB Analytics is built on DuckDB, a column-oriented, in-process analytical database built for speed.",
+    icon: DuckdbLogo,
   },
 ]
 
-export default function CodeExample() {
+export default function Architecture() {
   return (
     <section
       aria-labelledby="code-example-title"
@@ -46,16 +46,16 @@ export default function CodeExample() {
         <br />
         open source
       </h2>
-      <dl className="mt-16 grid grid-cols-3 gap-12">
+      <dl className="mt-12 grid grid-cols-3 gap-12 md:mt-16">
         {features.map((item) => (
-          <div
-            key={item.name}
-            className="col-span-full sm:col-span-2 lg:col-span-1"
-          >
+          <div key={item.name} className="col-span-full sm:col-span-1">
             <div className="w-fit rounded-lg p-2.5 shadow-sm ring-1 ring-slate-200">
-              <item.icon aria-hidden="true" className="size-6 text-gray-900" />
+              <item.icon
+                aria-hidden="true"
+                className="size-4 text-gray-900 md:size-6"
+              />
             </div>
-            <dt className="mt-6 text-lg font-medium text-gray-900">
+            <dt className="mt-4 text-lg font-medium text-gray-900 md:mt-6">
               {item.name}
             </dt>
             <dd className="mt-2 text-gray-600">{item.description}</dd>

@@ -1,32 +1,35 @@
+import {
+  company,
+  documentation,
+  email,
+  github,
+  legal,
+  social,
+} from "@/lib/links"
 import { RiArrowRightUpLine } from "@remixicon/react"
 import Link from "next/link"
 import { DatabaseLogo } from "../../../public/DatabaseLogo"
-import ThemeSwitch from "../ThemeSwitch"
 
 const navigation = {
   product: [
-    { name: "Enterprise", href: "#", external: false },
-    { name: "Pricing", href: "/pricing", external: false },
-    { name: "Docs", href: "#", external: false },
-    { name: "Changelog", href: "/changelog", external: false },
+    { name: "Docs", href: documentation.BASE, external: true },
+    { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
   resources: [
-    { name: "FAQs", href: "/pricing#faq-title", external: false },
-    { name: "GitHub", href: "#", external: true },
-    { name: "Discord", href: "#", external: true },
-    { name: "YouTube", href: "#", external: true },
+    { name: "GitHub", href: github.REPO, external: true },
+    { name: "Community", href: social.SLACK, external: true },
+    { name: "Twitter", href: social.TWITTER, external: true },
+    { name: "Linkedin", href: social.LINKEDIN, external: true },
   ],
   company: [
-    { name: "About", href: "/about", external: false },
-    { name: "Careers", href: "#", external: true },
-    { name: "Contact", href: "#", external: false },
-    { name: "Status", href: "#", external: false },
+    { name: "Careers", href: company.CAREERS, external: true },
+    { name: "Contact", href: email.HELLO, external: false },
+    { name: "Sales", href: email.SALES, external: false },
+    { name: "Support", href: email.SUPPORT, external: false },
   ],
   legal: [
-    { name: "Imprint", href: "#", external: false },
-    { name: "Privacy", href: "#", external: false },
-    { name: "Terms", href: "#", external: false },
-    { name: "DPA", href: "#", external: false },
+    { name: "Privacy", href: legal.PRIVACY, external: true },
+    { name: "Terms", href: legal.TERMS, external: true },
   ],
 }
 
@@ -42,9 +45,6 @@ export default function Footer() {
               <br />
               Built in New York, made for the world.
             </p>
-            <div className="flex space-x-6">
-              <ThemeSwitch />
-            </div>
             <div></div>
           </div>
           <div className="mt-16 grid grid-cols-1 gap-14 sm:gap-8 md:grid-cols-2 xl:col-span-2 xl:mt-0">

@@ -27,7 +27,7 @@ const features = [
   },
 ]
 
-export default function CodeExample() {
+export default function OpenSource() {
   return (
     <section
       aria-labelledby="code-example-title"
@@ -41,23 +41,25 @@ export default function CodeExample() {
         Trusted by the{" "}
         <span className="bg-indigo-100 text-indigo-600">community</span>
       </h2>
-      <p className="mt-6 max-w-2xl text-lg text-gray-600">
+      <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
         ParadeDB is loved by developers and has been deployed across thousands
         of production environments.
       </p>
-      <dl className="mt-16 grid grid-cols-3 gap-12">
+      <dl className="mt-12 grid grid-cols-3 gap-12 md:mt-16">
         {features.map((item) => (
-          <div
-            key={item.name}
-            className="col-span-full sm:col-span-2 lg:col-span-1"
-          >
+          <div key={item.name} className="col-span-full sm:col-span-1">
             <div className="w-fit rounded-lg p-2.5 shadow-sm ring-1 ring-slate-200">
-              <item.icon aria-hidden="true" className="size-6 text-gray-900" />
+              <item.icon
+                aria-hidden="true"
+                className="size-4 text-gray-900 md:size-6"
+              />
             </div>
-            <div className="mt-6 w-fit rounded-lg text-3xl font-bold text-gray-900">
+            <div className="mt-4 w-fit rounded-lg text-2xl font-bold text-gray-900 md:mt-6 md:text-3xl">
               {item.metric}
             </div>
-            <dt className="mt-2 font-medium text-gray-900">{item.name}</dt>
+            <dt className="mt-1 font-medium text-gray-900 md:mt-2">
+              {item.name}
+            </dt>
             <dd className="mt-2 text-gray-600">{item.description}</dd>
           </div>
         ))}

@@ -1,7 +1,9 @@
-import { RiArrowRightSLine } from "@remixicon/react"
+import { documentation } from "@/lib/links"
+import Link from "next/link"
 import { Badge } from "../Badge"
 import { Button } from "../Button"
 import AnalyticsImage from "./AnalyticsImage"
+import { ArrowAnimated } from "./ArrowAnimated"
 import SearchImage from "./SearchImage"
 
 export default function SearchAnalytics() {
@@ -11,24 +13,20 @@ export default function SearchAnalytics() {
       className="mx-auto mt-28 w-full max-w-6xl px-3"
     >
       <Badge>Product</Badge>
-      <h2
-        id="code-example-title"
-        className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl"
-      >
+      <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
         Make Postgres as
         <br />
         <span className="bg-indigo-100 text-indigo-600">powerful</span> as
         Elastic
       </h2>
-      <p className="mt-6 max-w-2xl text-lg text-gray-600">
+      <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
         By transforming Postgres into a performant search and analytics
-        database, <br />
-        ParadeDB frees your team from the pain of scaling and syncing
+        database, ParadeDB frees your team from the pain of scaling and syncing
         Elasticsearch.
       </p>
-      <div className="flex h-fit space-x-6">
+      <div className="mt-12 grid grid-cols-2 gap-x-6 md:mt-16">
         <div
-          className="relative mx-auto ml-3 mt-16 h-max max-w-2xl animate-slide-up-fade rounded-xl sm:ml-auto sm:w-full"
+          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1"
           style={{ animationDuration: "1400ms" }}
         >
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
@@ -46,24 +44,24 @@ export default function SearchAnalytics() {
                   with support for BM25 scoring, multi-language stemmers,
                   faceting, hybrid search, real-time consistency, and more.{" "}
                 </p>
-                <Button
-                  className="mt-4 bg-transparent px-0 text-indigo-600 hover:bg-transparent"
-                  variant="light"
-                >
-                  Read Docs
-                  <span className="mr-1 flex size-6 items-center justify-center">
-                    <RiArrowRightSLine
+                <Link href={documentation.SEARCH} target="_blank">
+                  <Button
+                    className="group mt-4 bg-transparent px-0 text-indigo-600 hover:bg-transparent"
+                    variant="light"
+                  >
+                    Read Docs
+                    <ArrowAnimated
+                      className="stroke-indigo-600"
                       aria-hidden="true"
-                      className="size-4 shrink-0 text-indigo-600"
                     />
-                  </span>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>
         </div>
         <div
-          className="relative mx-auto ml-3 mt-16 h-max max-w-2xl animate-slide-up-fade rounded-xl sm:ml-auto sm:w-full"
+          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1"
           style={{ animationDuration: "1400ms" }}
         >
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
@@ -80,18 +78,18 @@ export default function SearchAnalytics() {
                   analytical (OLAP) queries over any file or table format with
                   zero data movement.
                 </p>
-                <Button
-                  className="mt-4 bg-transparent px-0 text-indigo-600 hover:bg-transparent"
-                  variant="light"
-                >
-                  Read Docs
-                  <span className="mr-1 flex size-6 items-center justify-center">
-                    <RiArrowRightSLine
+                <Link href={documentation.ANALYTICS} target="_blank">
+                  <Button
+                    className="group mt-4 bg-transparent px-0 text-indigo-600 hover:bg-transparent"
+                    variant="light"
+                  >
+                    Read Docs
+                    <ArrowAnimated
+                      className="stroke-indigo-600"
                       aria-hidden="true"
-                      className="size-4 shrink-0 text-indigo-600"
                     />
-                  </span>
-                </Button>
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

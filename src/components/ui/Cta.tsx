@@ -1,10 +1,25 @@
 "use client"
+import { documentation, email, social } from "@/lib/links"
+import Link from "next/link"
+import React from "react"
 import Balancer from "react-wrap-balancer"
 import { Button } from "../Button"
 import { Input } from "../Input"
 import RadialBackground from "./RadialBackground"
 
 export default function Cta() {
+  const [userInput, setUserInput] = React.useState("")
+
+  const handleInputChange = (e) => {
+    setUserInput(e.target.value)
+  }
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    let url = `${social.CALENDLY}?email=${userInput}`
+    window.open(url, "_blank")
+  }
+
   return (
     <section
       aria-labelledby="cta-title"
@@ -23,8 +38,15 @@ export default function Cta() {
               </h3>
               <p className="mx-auto mt-4 max-w-2xl text-gray-600 sm:text-lg">
                 <Balancer>
-                  Start testing right away with our documentation or book a demo
-                  with our sales team.
+                  Start testing right away with our{" "}
+                  <Link
+                    href={documentation.BASE}
+                    target="_blank"
+                    className="font-medium text-indigo-600 underline decoration-indigo-600"
+                  >
+                    documentation
+                  </Link>{" "}
+                  or book a demo with our sales team.
                 </Balancer>
               </p>
             </div>
@@ -32,7 +54,7 @@ export default function Cta() {
               <div className="rounded-xl bg-white p-4 shadow-lg shadow-indigo-500/10 ring-1 ring-black/5">
                 <form
                   className="flex flex-col items-center gap-3 sm:flex-row"
-                  onSubmit={(e) => e.preventDefault()}
+                  onSubmit={handleSubmit}
                 >
                   <label htmlFor="email" className="sr-only">
                     Email address
@@ -46,25 +68,27 @@ export default function Cta() {
                     className="h-10 w-full min-w-0 flex-auto"
                     inputClassName="h-full"
                     placeholder="Your Work Email "
+                    value={userInput}
+                    onChange={handleInputChange}
                   />
                   <Button
                     className="h-10 w-full sm:w-fit sm:flex-none"
                     type="submit"
                     variant="primary"
                   >
-                    Get started
+                    Book Demo
                   </Button>
                 </form>
               </div>
             </div>
             <p className="mt-4 text-xs text-gray-600 sm:text-sm">
-              Have a quick question?{" "}
-              <a
-                href="#"
+              Have a question?{" "}
+              <Link
+                href={email.HELLO}
                 className="font-semibold text-indigo-600 hover:text-indigo-500"
               >
                 Email us
-              </a>
+              </Link>
             </p>
           </div>
         </div>
