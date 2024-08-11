@@ -54,3 +54,14 @@ a {
 *:hover > .anchor-link {
   @apply visible;
 }
+
+.border-t-gradient {
+  border-top: 1px solid transparent;
+  border-image: linear-gradient(to right, #4F46E500 10%, #4F46E5 50%, #4F46E500 90%) 1;
+}
+
+@media (max-width: 639px) { /* Tailwind's `sm` breakpoint */
+  .border-t-gradient {
+    border-top: none;
+  }
+}

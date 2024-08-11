@@ -24,6 +24,7 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
+    images: ["/opengraph-image.png"],
   },
   icons: {
     icon: "/favicon.ico",
