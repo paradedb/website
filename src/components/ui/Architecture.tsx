@@ -9,6 +9,7 @@ const TantivyLogo = () => (
     alt="Tantivy, the fastest full-text search engine library written in Rust"
     height={26}
     width={26}
+    className="h-4 w-4 sm:h-6 sm:w-6"
   />
 )
 

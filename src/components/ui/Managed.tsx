@@ -27,8 +27,10 @@ export default function Managed() {
           id="global-database-title"
           className="z-10 mt-6 inline-block px-2 text-center text-4xl font-bold tracking-tighter text-gray-900 md:text-6xl"
         >
-          Say <span className="bg-indigo-100 text-indigo-600">goodbye</span> to
-          ETL
+          Integrates with your
+          <br />
+          data{" "}
+          <span className="bg-indigo-100 text-indigo-600">where it lives</span>
         </h2>
         <p className="mt-6 max-w-2xl text-center text-gray-600 md:text-lg">
           ParadeDB Managed runs in your AWS, Azure, or GCP account and
