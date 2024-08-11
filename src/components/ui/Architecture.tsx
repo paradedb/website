@@ -1,9 +1,11 @@
+import Image from "next/image"
+import Tantivy from "../../../public/tantivy-logo.png"
 import DuckdbLogo from "./DuckdbLogo"
 import PostgresLogo from "./PostgresLogo"
 
 const TantivyLogo = () => (
-  <img
-    src="https://tantivy-search.github.io/logo/tantivy-logo.png"
+  <Image
+    src={Tantivy}
     alt="Tantivy, the fastest full-text search engine library written in Rust"
     height={26}
     width={26}
