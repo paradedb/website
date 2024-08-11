@@ -24,7 +24,7 @@ export default function SearchAnalytics() {
         database, ParadeDB frees your team from the pain of scaling and syncing
         Elasticsearch.
       </p>
-      <div className="mt-12 grid grid-cols-2 gap-x-6 md:mt-16">
+      <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4 md:mt-16">
         <div
           className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1"
           style={{ animationDuration: "1400ms" }}
