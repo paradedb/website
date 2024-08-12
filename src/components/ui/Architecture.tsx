@@ -52,7 +52,7 @@ export default function Architecture() {
         </h2>
       </div>
       <PoweredByParade className="mx-auto mt-6 hidden w-full max-w-6xl sm:block" />
-      <dl className="mt-12 grid grid-cols-3 gap-12 sm:mt-0 sm:gap-6">
+      <dl className="relative mt-12 grid grid-cols-3 gap-12 sm:bottom-1 sm:mt-0 sm:gap-6">
         {features.map((item) => (
           <div
             key={item.name}

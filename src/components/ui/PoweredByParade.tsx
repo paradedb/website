@@ -11,6 +11,24 @@ export default function PoweredByParade(
       {...props}
     >
       <g clip-path="url(#clip0_1621_1113)">
+        <line
+          x1="354"
+          y1="118"
+          x2="354"
+          y2="188"
+          stroke="#E2E8F0"
+          stroke-width="2"
+        />
+        <path
+          d="M102.865 187.519C102.865 187.519 115 171.5 154 156.5C193 141.5 249 142 294.5 141.5C340 141 352.865 117.519 352.865 117.519"
+          stroke="#E2E8F0"
+          stroke-width="2"
+        />
+        <path
+          d="M605.018 187.083C605.018 187.083 592.883 171.065 553.883 156.065C514.883 141.065 458.883 141.565 413.383 141.065C367.883 140.565 355.018 117.083 355.018 117.083"
+          stroke="#E2E8F0"
+          stroke-width="2"
+        />
         <g clip-path="url(#clip1_1621_1113)">
           <g filter="url(#filter0_d_1621_1113)">
             <path
@@ -78,21 +96,6 @@ export default function PoweredByParade(
             />
           </g>
         </g>
-        <path
-          d="M376 188L376 163.88L437 163.88L437 98L402.522 98"
-          stroke="#E2E8F0"
-        />
-        <path d="M393 118V139H427" stroke="#E2E8F0" />
-        <path
-          d="M312.542 118.557L312.542 138L95.933 138L95.933 189.5"
-          stroke="#E2E8F0"
-        />
-        <line x1="323.5" y1="118" x2="323.5" y2="188" stroke="#E2E8F0" />
-        <line x1="333.5" y1="118" x2="333.5" y2="139" stroke="#E2E8F0" />
-        <line x1="373.5" y1="118" x2="373.5" y2="153" stroke="#E2E8F0" />
-        <path d="M303 78H254" stroke="#E2E8F0" />
-        <path d="M303 98L206.5 98V127.5" stroke="#E2E8F0" />
-        <path d="M403 89H583V188" stroke="#E2E8F0" />
       </g>
       <defs>
         <filter
