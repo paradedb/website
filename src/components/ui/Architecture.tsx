@@ -30,7 +30,7 @@ const features = [
   {
     name: "DuckDB",
     description:
-      "ParadeDB Analytics is built on DuckDB, a column-oriented, in-process analytical database built for speed.",
+      "ParadeDB Analytics is built on DuckDB, an analytical database built for speed.",
     icon: DuckdbLogo,
   },
 ]
@@ -51,7 +51,7 @@ export default function Architecture() {
           open source
         </h2>
       </div>
-      <PoweredByParade className="mx-auto mt-6 hidden w-full max-w-6xl sm:block" />
+      <PoweredByParade className="mx-auto mt-4 hidden w-full max-w-5xl sm:block" />
       <dl className="relative mt-12 grid grid-cols-3 gap-12 sm:bottom-1 sm:mt-0 sm:gap-6">
         {features.map((item) => (
           <div

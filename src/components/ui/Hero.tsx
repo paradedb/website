@@ -19,7 +19,7 @@ export default function Hero() {
         style={{ animationDuration: "700ms" }}
       >
         Search and analytics <br /> for Postgres with{" "}
-        <span className="text-indigo-600">zero ETL</span>
+        <span className="bg-indigo-100 text-indigo-600">zero ETL</span>
       </h1>
       <p
         className="text-md mt-2 max-w-xl animate-slide-up-fade text-indigo-900 md:mt-6 md:text-lg"

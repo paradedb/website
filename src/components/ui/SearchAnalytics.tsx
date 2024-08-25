@@ -24,7 +24,7 @@ export default function SearchAnalytics() {
         database, ParadeDB frees your team from the pain of scaling and syncing
         Elasticsearch.
       </p>
-      <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4 md:mt-16">
+      <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
         <div
           className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1"
           style={{ animationDuration: "1400ms" }}
@@ -33,16 +33,15 @@ export default function SearchAnalytics() {
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
               <div className="relative rounded-t-xl bg-slate-100">
                 {/* <div className="absolute inset-0"></div> */}
-                <SearchImage className="w-full" />
+                <SearchImage className="max-h-72 w-full px-8 pt-8" />
               </div>
               <div className="border-t border-indigo-900/5 px-8 py-6">
                 <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
                   Search
                 </p>
                 <p className="mt-2 text-gray-600">
-                  Build rich full text search experiences over Postgres data
-                  with support for BM25 scoring, multi-language stemmers,
-                  faceting, hybrid search, real-time consistency, and more.{" "}
+                  Supercharge Postgres' search capabilities with BM25 scoring,
+                  custom tokenizers, hybrid search, and more.{" "}
                 </p>
                 <Link href={documentation.SEARCH} target="_blank">
                   <Button
@@ -66,17 +65,16 @@ export default function SearchAnalytics() {
         >
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
-              <div className="relative rounded-t-xl bg-indigo-500">
-                <AnalyticsImage className="w-full" />
+              <div className="relative rounded-t-xl bg-indigo-400">
+                <AnalyticsImage className="max-h-72 w-full px-8 pt-8" />
               </div>
               <div className="border-t border-indigo-900/5 px-8 py-6">
                 <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
                   Analytics
                 </p>
                 <p className="mt-2 text-gray-600">
-                  Connect Postgres directly to cloud object stores for fast
-                  analytical (OLAP) queries over any file or table format with
-                  zero data movement.
+                  Enrich your search results with support for fast analytics and
+                  faceting.
                 </p>
                 <Link href={documentation.ANALYTICS} target="_blank">
                   <Button

@@ -1,5 +1,5 @@
 import {
-  RiFlashlightLine,
+  RiBracesLine,
   RiGitForkLine,
   RiMenuSearchLine,
   RiScissorsCutLine,
@@ -10,21 +10,21 @@ import { Badge } from "../Badge"
 
 const benefits = [
   {
-    title: "Simplify your data stack",
+    title: "Reduced overhead",
     description:
-      "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB, you can just write Postgres queries.",
+      "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB, you can just use Postgres.",
     icon: RiGitForkLine,
     color: "indigo",
   },
   {
     title: "Zero data loss",
     description:
-      "Never lose data again because of a broken sync with Elastic. ParadeDB uses native Postgres indexes that always stay sync.",
+      "Never lose data again because of a broken sync with Elastic. ParadeDB uses native Postgres indexes that always stay up to date.",
     icon: RiShieldCheckLine,
     color: "blue",
   },
   {
-    title: "Real time search",
+    title: "ACID guarantees",
     description:
       "Postgres ACID transactions guarantee that data is searchable immediately after a successful write.",
     icon: RiMenuSearchLine,
@@ -45,10 +45,10 @@ const benefits = [
     color: "orange",
   },
   {
-    title: "State-of-the-art performance",
+    title: "Postgres dialect",
     description:
-      "ParadeDB significantly outperforms Postgres native full text search and can query billions of rows in milliseconds.",
-    icon: RiFlashlightLine,
+      "Write queries using Postgres SQL. No need to wrangle with an unfamiliar query language.",
+    icon: RiBracesLine,
     color: "yellow",
   },
 ]
@@ -61,10 +61,9 @@ export default function Benefits() {
     >
       <Badge>Benefits</Badge>
       <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
-        Craft search experiences
-        <br />
-        <span className="bg-indigo-100 text-indigo-600">without</span> wrangling
-        infra
+        Simplify and{" "}
+        <span className="bg-indigo-100 text-indigo-600">strengthen</span> <br />{" "}
+        your data stack
       </h2>
       <dl className="mt-8 grid grid-cols-3 gap-x-10 gap-y-8 sm:mt-12 sm:gap-y-10">
         {benefits.map((item, index) => (

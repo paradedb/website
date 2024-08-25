@@ -1,58 +1,77 @@
-"use client"
+import Image from "next/image"
+import RdsImage from "../../../public/rds.png"
+import S3Image from "../../../public/s3.png"
 import { Badge } from "../Badge"
-import IntegrationsImage from "./IntegrationsImage"
 
-const features = [
-  {
-    name: "RDS Compatible",
-    description:
-      "ParadeDB uses Postgres logical replication to integrate with RDS, Azure and Google Cloud Postgres.",
-  },
-  {
-    name: "S3 Compatible",
-    description:
-      "Specialized Postgres foreign data wrappers can directly query and ingest data from S3, GCS, and Azure Blob Storage.",
-  },
-]
-
-export default function Managed() {
+export default function SearchAnalytics() {
   return (
-    <div className="px-3">
-      <section
-        aria-labelledby="global-database-title"
-        className="relative mx-auto mt-28 flex w-full max-w-6xl flex-col items-center justify-center overflow-hidden rounded-3xl bg-slate-100 px-4 py-12 md:mt-40 md:px-24 md:py-24"
-      >
-        <Badge>ParadeDB Managed</Badge>
-        <h2
-          id="global-database-title"
-          className="z-10 mt-6 inline-block px-2 text-center text-4xl font-bold tracking-tighter text-gray-900 md:text-6xl"
+    <section
+      aria-labelledby="code-example-title"
+      className="mx-auto mt-28 w-full max-w-6xl px-3"
+    >
+      <Badge>Zero ETL</Badge>
+      <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
+        <span className="bg-indigo-100 text-indigo-600">Integrates</span> with
+        your
+        <br />
+        existing infra
+      </h2>
+      <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
+        ParadeDB integrates with managed Postgres services and data lakes using
+        native Postgres replication and APIs. Zero ETL required.
+      </p>
+      <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
+        <div
+          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl sm:ml-auto sm:w-full md:col-span-1"
+          style={{ animationDuration: "1400ms" }}
         >
-          Integrates with your
-          <br />
-          data{" "}
-          <span className="bg-indigo-100 text-indigo-600">where it lives</span>
-        </h2>
-        <p className="mt-6 max-w-2xl text-center text-gray-600 md:text-lg">
-          ParadeDB Managed runs in your AWS, Azure, or GCP account and
-          integrates with any Postgres or object store — with zero ETL or change
-          data capture.
-        </p>
-        <div className="mt-8 w-full">
-          <IntegrationsImage className="mx-auto w-full max-w-4xl" />
-        </div>
-        <div className="grid grid-cols-1 gap-x-10 gap-y-6 rounded-lg border border-white/[3%] bg-white/[1%] py-6 md:grid-cols-2 md:p-8 md:px-6">
-          {features.map((item) => (
-            <div key={item.name} className="flex flex-col gap-2">
-              <h3 className="text-lg font-semibold text-indigo-600 md:text-lg">
-                {item.name}
-              </h3>
-              <p className="text-md leading-6 text-gray-600">
-                {item.description}
-              </p>
+          <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
+            <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
+              <div className="rounded-xl bg-slate-50 p-2 ring-1 ring-slate-300/50">
+                <div className="px-8 py-6">
+                  <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
+                    RDS Compatible
+                  </p>
+                  <p className="mt-2 text-gray-600">
+                    ParadeDB uses logical replication to consume data from
+                    Amazon RDS, Azure and Google Cloud Postgres.
+                  </p>
+                </div>
+                <div className="relative rounded-t-xl">
+                  <Image src={RdsImage} className="max-h-60 w-full" alt="rds" />
+                </div>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
-      </section>
-    </div>
+        <div
+          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl sm:ml-auto sm:w-full md:col-span-1"
+          style={{ animationDuration: "1400ms" }}
+        >
+          <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
+            <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
+              <div className="rounded-xl bg-slate-50 p-2 ring-1 ring-slate-300/50">
+                <div className="px-8 py-6">
+                  <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
+                    S3 Compatible
+                  </p>
+                  <p className="mt-2 text-gray-600">
+                    ParadeDB can directly query and ingest data from S3, GCS,
+                    and Azure Blob Storage.
+                  </p>
+                </div>
+                <div className="relative rounded-t-xl">
+                  <Image
+                    src={S3Image}
+                    className="max-h-60 w-full"
+                    alt="datalake"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   )
 }
