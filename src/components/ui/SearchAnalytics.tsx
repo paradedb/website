@@ -40,8 +40,8 @@ export default function SearchAnalytics() {
                   Search
                 </p>
                 <p className="mt-2 text-gray-600">
-                  Supercharge Postgres' search capabilities with BM25 scoring,
-                  custom tokenizers, hybrid search, and more.{" "}
+                  Supercharge Postgres&apos; search capabilities with BM25
+                  scoring, custom tokenizers, hybrid search, and more.{" "}
                 </p>
                 <Link href={documentation.SEARCH} target="_blank">
                   <Button
