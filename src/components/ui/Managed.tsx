@@ -28,7 +28,7 @@ export default function SearchAnalytics() {
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
               <div className="rounded-xl bg-slate-50 p-2 ring-1 ring-slate-300/50">
-                <div className="px-8 py-6">
+                <div className="px-6 py-6 md:px-8">
                   <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
                     RDS Compatible
                   </p>
@@ -51,7 +51,7 @@ export default function SearchAnalytics() {
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
               <div className="rounded-xl bg-slate-50 p-2 ring-1 ring-slate-300/50">
-                <div className="px-8 py-6">
+                <div className="px-6 py-6 md:px-8">
                   <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
                     S3 Compatible
                   </p>

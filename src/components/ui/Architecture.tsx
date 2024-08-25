@@ -24,13 +24,13 @@ const features = [
   {
     name: "Tantivy",
     description:
-      "ParadeDB Search is built on Tantivy, a Rust-based alternative to the Lucene search engine library.",
+      "ParadeDB's search is built on Tantivy, a Rust-based alternative to the Lucene search engine library.",
     icon: TantivyLogo,
   },
   {
     name: "DuckDB",
     description:
-      "ParadeDB Analytics is built on DuckDB, an analytical database built for speed.",
+      "DuckDB, an analytical database built for speed, powers ParadeDB's data lake integrations.",
     icon: DuckdbLogo,
   },
 ]
