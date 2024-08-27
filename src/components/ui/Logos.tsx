@@ -31,12 +31,11 @@ export const Logos = {
   ),
   Alibaba: (props: IconProps) => (
     <svg
-      width="156"
-      height="30"
       viewBox="0 0 156 30"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
+      {...props}
     >
       <mask
         id="mask0_142_308"
