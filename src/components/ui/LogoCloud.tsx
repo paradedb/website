@@ -11,9 +11,6 @@ export default function LogoCloud() {
         Trusted by enterprises, loved by developers
       </div>
       <div className="-mt-2 mr-8 flex space-x-6 sm:space-x-10 md:mr-0 md:mt-0">
-        <div className="hidden md:block">
-          <Logos.Blackhawks />
-        </div>
         <Logos.Alibaba className="w-20 sm:w-28" />
         <Logos.Insa className="w-20 sm:w-28" />
         <Logos.Sweetspot className="w-28 sm:w-36" />
