@@ -1,7 +1,7 @@
 "use client"
 
 import { siteConfig } from "@/app/siteConfig"
-import { documentation, github, router, social } from "@/lib/links"
+import { documentation, github, social } from "@/lib/links"
 import { cx } from "@/lib/utils"
 import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react"
 import classNames from "classnames"
@@ -75,11 +75,11 @@ export function Navigation() {
               <Link
                 className={classNames(
                   "px-2 py-1 hover:text-indigo-600",
-                  pathname.startsWith(router.BLOG)
+                  pathname.startsWith(siteConfig.baseLinks.blog)
                     ? "text-indigo-600"
                     : "text-indigo-900",
                 )}
-                href={router.BLOG}
+                href={siteConfig.baseLinks.blog}
               >
                 Blog
               </Link>
@@ -150,7 +150,7 @@ export function Navigation() {
               </Link>
             </li>
             <li onClick={() => setOpen(false)}>
-              <Link href={router.BLOG}>Blog</Link>
+              <Link href={siteConfig.baseLinks.blog}>Blog</Link>
             </li>
             <li onClick={() => setOpen(false)}>
               <Link target="_blank" href={documentation.CHANGELOG}>

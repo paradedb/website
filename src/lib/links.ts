@@ -1,7 +1,3 @@
-export const router = {
-  BLOG: "/blog",
-}
-
 export const company = {
   CAREERS:
     "https://www.notion.so/paradedb/ParadeDB-Job-Board-50b45af7a2834e22958b171ffa008e00",

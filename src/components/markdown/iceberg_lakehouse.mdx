@@ -1,10 +1,11 @@
 import { CodeGroup, Note } from "@mintlify/components"
 import Image from "next/image"
 import SplashImage from "../../../public/blog/iceberg_lakehouse_splash.png"
+import ArchitectureImage from "../../../public/blog/duckdb_lakehouse_architecture.png"
 
-## Putting DuckDB in Postgres to Query Iceberg
+# Querying Apache Iceberg from Postgres
 
-<p className="relative bottom-4">Written by Ming Ying on June 26, 2024</p>
+<p className="relative bottom-2">Written by Ming Ying on June 26, 2024</p>
 
 <Image src={SplashImage} />
 
@@ -33,11 +34,7 @@ SQL tables with features like ACID transactions, schema evolution, time travel, 
 
 ## Supporting Iceberg in Postgres
 
-<img
-  src="/images/duckdb_lakehouse_architecture.png"
-  style={{ borderRadius: 10 }}
-  noZoom
-/>
+<Image src={ArchitectureImage} />
 
 Today, interoperability with Iceberg is missing from the Postgres ecosystem. Instead, Postgres users who adopt Iceberg may operate a system like Trino, Spark, or Flink to query Iceberg tables.
 

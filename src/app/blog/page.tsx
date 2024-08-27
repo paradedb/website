@@ -1,11 +1,6 @@
-"use client"
+import { redirect } from "next/navigation"
+import { siteConfig } from "../siteConfig"
 
-import IcebergLakehouse from "../../components/markdown/iceberg_lakehouse.mdx"
-
-export default function BlogPage() {
-  return (
-    <main className="prose mx-auto flex flex-col overflow-hidden py-12">
-      <IcebergLakehouse />
-    </main>
-  )
+export default function Blog() {
+  redirect(`${siteConfig.baseLinks.blog}/agpl`)
 }

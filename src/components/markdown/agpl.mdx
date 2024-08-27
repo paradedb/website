@@ -1,15 +1,11 @@
-import { MDXServerComponent } from "@mintlify/mdx"
-import AgplImage from "../../../public/blog/agpl.png"
+import SplashImage from "../../../public/blog/agpl.png"
+import Image from "next/image"
 
-const Title = () => (
-  <h2 className="text-3xl font-extrabold">Why We Picked AGPL</h2>
-)
-const SplashImage = () => (
-  <img src={AgplImage.src} alt="AGPL" className="rounded-xl" />
-)
+# Why We Picked AGPL
 
-const localMdx = `
-<SplashImage />
+<p className="relative bottom-2">Written by Philippe Noel on August 3, 2024</p>
+
+<Image src={SplashImage} className="rounded-xl" />
 
 [ParadeDB](https://github.com/paradedb/paradedb) has been licensed under the [GNU Affero General Public License 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html) — also known as AGPL — from day one. We reached this decision after evaluating four licenses and interviewing dozens of other open source companies. Since then, we’ve received many questions about our license. We’ve decided to detail our thought process and offer up a case study on why we picked AGPL.
 
@@ -19,11 +15,11 @@ The AGPL license permits free use, modification, and distribution of software, p
 
 ## What is ParadeDB?
 
-ParadeDB is an open source Elasticsearch alternative built on Postgres. The advice we’re about to share is most applicable to companies like us: startups aiming to build a sustainable business on top of open source.
+ParadeDB is an open-source Elasticsearch alternative built on Postgres. The advice we’re about to share is most applicable to companies like us: startups aiming to build a sustainable business on top of open source.
 
 ## Why the Right License Matters
 
-We see open source licenses as a contract among authors, community contributors, and users. By defining what each party can expect when they use, modify, or distribute a project, the license facilitates successful cooperation among strangers.
+We see open-source licenses as a contract among authors, community contributors, and users. By defining what each party can expect when they use, modify, or distribute a project, the license facilitates successful cooperation among strangers.
 
 The license is also one of the first things that companies read when deciding whether to adopt a project. Companies are much more likely to use projects with licenses that are already approved by their legal team.
 
@@ -35,7 +31,7 @@ There were three goals we wanted to accomplish with our license:
 
 1. **Be familiar**. We’re developers, not lawyers. Neither are our users and contributors. Our license should be easy to understand and common enough that most developers are already familiar with it. Users should not need to read a custom license to decide whether they can adopt a project.
 2. **Be future-proof**. We wanted to protect our IP from cloud vendors early on so that we would never need to relicense. Our users should trust that our project will stand the test of time, so they can feel comfortable adopting it for the long term.
-3. **Be community-driven**. We wanted our project to be true open source with a license approved by the Open Source Initiative (OSI). We believe that approved licenses incentivize developers to contribute to a project. On the flip side, we've seen many projects that start with an unrestrictive license but switch to a more restrictive license get forked, which fragments the project’s community.
+3. **Be community-driven**. We wanted our project to be true open-source with a license approved by the Open Source Initiative (OSI). We believe that approved licenses incentivize developers to contribute to a project. On the flip side, we've seen many projects that start with an unrestrictive license but switch to a more restrictive license get forked, which fragments the project’s community.
 
 ## Licenses We Evaluated
 
@@ -56,194 +52,194 @@ Here is how they stacked up:
   }}
 >
   <tbody>
-  <tr
-    style={{
-      display: "flex",
-      borderBottom: "solid 1px #ddd",
-    }}
-  >
-    <th align="center" style={{ width: "28%", textAlign: "left" }}></th>
-    <th
-      align="center"
-      style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
-    >
-      Apache 2.0
-    </th>
-    <th
-      align="center"
-      style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
-    >
-      BSL
-    </th>
-    <th
-      align="center"
-      style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
-    >
-      AGPLv3
-    </th>
-    <th
-      align="center"
-      style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
-    >
-      ELv2
-    </th>
-  </tr>
-  <tr style={{ display: "flex" }}>
-    <td
-      align="center"
+    <tr
       style={{
-        width: "28%",
-        textAlign: "left",
-        fontWeight: "bold",
+        display: "flex",
+        borderBottom: "solid 1px #ddd",
       }}
     >
-      Familiar
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ❌
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ❌
-    </td>
-  </tr>
-  <tr style={{ display: "flex" }}>
-    <td
-      align="center"
-      style={{
-        width: "28%",
-        textAlign: "left",
-        fontWeight: "bold",
-      }}
-    >
-      Future-Proof
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ❌
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-  </tr>
-  <tr style={{ display: "flex" }}>
-    <td
-      align="center"
-      style={{
-        width: "28%",
-        textAlign: "left",
-        fontWeight: "bold",
-      }}
-    >
-      Community-Driven
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ❌
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ✅
-    </td>
-    <td
-      align="center"
-      style={{
-        width: "18%",
-        textAlign: "left",
-        paddingLeft: 32,
-      }}
-    >
-      ❌
-    </td>
-  </tr>
+      <th align="center" style={{ width: "28%", textAlign: "left" }}></th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        Apache 2.0
+      </th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        BSL
+      </th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        AGPLv3
+      </th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        ELv2
+      </th>
+    </tr>
+    <tr style={{ display: "flex" }}>
+      <td
+        align="center"
+        style={{
+          width: "28%",
+          textAlign: "left",
+          fontWeight: "bold",
+        }}
+      >
+        Familiar
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+    </tr>
+    <tr style={{ display: "flex" }}>
+      <td
+        align="center"
+        style={{
+          width: "28%",
+          textAlign: "left",
+          fontWeight: "bold",
+        }}
+      >
+        Future-Proof
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+    </tr>
+    <tr style={{ display: "flex" }}>
+      <td
+        align="center"
+        style={{
+          width: "28%",
+          textAlign: "left",
+          fontWeight: "bold",
+        }}
+      >
+        Community-Driven
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+    </tr>
   </tbody>
 </table>
 
@@ -255,11 +251,11 @@ AGPL was the only license that met all our criteria.
 
 1. **Familiar.** When it comes to businesses the AGPL license has been hugely helpful. It's been tested and used for years by companies like [MinIO](https://github.com/minio/minio), [Grafana](https://github.com/grafana/grafana), [Citus](https://github.com/citusdata/citus), and [Quickwit](https://github.com/quickwit-oss/quickwit). As a result, most companies with legal teams will already have a policy in place for whether or not they can use AGPL licensed code.
 2. **Future-Proof**: Thanks to the copyleft provision, cloud vendors cannot easily resell our project without our consent. This gives us confidence in our ability to monetize without fear of predatory competition. ParadeDB just turned one year old, and we’ve already been contacted by four cloud providers who, had we not chosen the AGPL license, may have privately forked and distributed ParadeDB.
-3. **Community-Driven**: AGPL is officially approved by the Open Source Initiative. When we started ParadeDB, we wanted to be honest with our community. We did not feel comfortable calling ourselves open source under an unapproved license but wanted to acknowledge our ambition to build a sustainable open source business. AGPL struck the perfect balance.
+3. **Community-Driven**: AGPL is officially approved by the Open Source Initiative. When we started ParadeDB, we wanted to be honest with our community. We did not feel comfortable calling ourselves open source under an unapproved license but wanted to acknowledge our ambition to build a sustainable open-source business. AGPL struck the perfect balance.
 
 ### BSL
 
-BSL restricts the use of software in production for a specified period, usually up to four years. After this period, the software is released under an open source license, allowing for unrestricted use and distribution.
+BSL restricts the use of software in production for a specified period, usually up to four years. After this period, the software is released under an open-source license, allowing for unrestricted use and distribution.
 
 While BSL can successfully deter managed providers from reselling the software, we believe that BSL’s temporary restrictions on production use contradict the principles of open source. Developers who feel similarly may choose to not contribute to the project. Enterprises concerned about BSL’s licensing costs and compliance issues may choose not to use the software.
 
@@ -286,14 +282,4 @@ One year after picking AGPL, we are incredibly happy with the results. While man
 3. **Defensibility**. We have been contacted by and are working with several large cloud providers to integrate ParadeDB with their managed Postgres service.
 4. **Monetization**. We have monetized through support contracts and issuing commercial, non-AGPL licenses, which also contain a few closed-source enterprise features.
 
-We invite you to check out our [GitHub repo](https://github.com/paradedb/paradedb) to learn more or to join our [**Slack community**](https://join.slack.com/t/paradedbcommunity/shared_invite/zt-2lkzdsetw-OiIgbyFeiibd1DG~6wFgTQ) if you have any questions. And please don’t hesitate to show your support by [**giving us a star**](https://github.com/paradedb/paradedb)!
-`
-
-export default async function Agpl() {
-  return (
-    <article className="prose mx-auto max-w-2xl">
-      <Title />
-      <MDXServerComponent source={localMdx} components={{ SplashImage }} />
-    </article>
-  )
-}
+We invite you to check out our [GitHub repo](https://github.com/paradedb/paradedb) to learn more or to join our [**Slack community**](https://join.slack.com/t/paradedbcommunity/shared_invite/zt-2lkzdsetw-OiIgbyFeiibd1DG~6wFgTQ) if you have any questions. And please don’t hesitate to show your support by [**giving us a star**](https://github.com/paradedb/paradedb)!
