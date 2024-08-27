@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 import createMDX from "@next/mdx"
+import rehypeHighlight from "rehype-highlight"
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -9,7 +10,13 @@ const nextConfig = {
 }
 
 const withMDX = createMDX({
-  // Add markdown plugins here, as desired
+  // Add any MDX-specific options or plugins here, if needed
+  extension: /\.mdx?$/,
+  options: {
+    // You can add rehype/remark plugins here if desired
+    providerImportSource: "@mdx-js/react",
+    rehypePlugins: [rehypeHighlight],
+  },
 })
 
 // Merge MDX config with Next.js config

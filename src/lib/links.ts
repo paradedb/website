@@ -1,5 +1,5 @@
-export const blog = {
-  BASE: "https://blog.paradedb.com",
+export const router = {
+  BLOG: "/blog",
 }
 
 export const company = {

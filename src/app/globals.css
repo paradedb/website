@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import '@mintlify/components';
+
 @font-face {
   font-family: "NanumPenScript";
   font-weight: 400;

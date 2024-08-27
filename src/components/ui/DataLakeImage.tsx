@@ -728,7 +728,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           y2="71"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" stop-opacity="0" />
+          <stop stop-color="white" stopOpacity="0" />
           <stop offset="1" stop-color="white" />
         </linearGradient>
         <linearGradient
@@ -750,7 +750,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           y2="320.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" stop-opacity="0" />
+          <stop stop-color="white" stopOpacity="0" />
           <stop offset="1" stop-color="white" />
         </linearGradient>
         <linearGradient

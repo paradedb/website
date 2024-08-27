@@ -126,7 +126,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             gradientUnits="userSpaceOnUse"
           >
             <stop stop-color="#EB4898" />
-            <stop offset="1" stop-color="#EB4898" stop-opacity="0" />
+            <stop offset="1" stop-color="#EB4898" stopOpacity="0" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_100_343"
@@ -137,7 +137,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             gradientUnits="userSpaceOnUse"
           >
             <stop stop-color="#6366F0" />
-            <stop offset="1" stop-color="#6366F0" stop-opacity="0" />
+            <stop offset="1" stop-color="#6366F0" stopOpacity="0" />
           </linearGradient>
           <clipPath id="clip0_100_343">
             <rect width="696" height="325" fill="white" />

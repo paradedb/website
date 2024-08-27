@@ -1,10 +1,12 @@
 "use client"
 
 import { siteConfig } from "@/app/siteConfig"
-import { blog, documentation, github, social } from "@/lib/links"
+import { documentation, github, router, social } from "@/lib/links"
 import { cx } from "@/lib/utils"
 import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react"
+import classNames from "classnames"
 import Link from "next/link"
+import { usePathname } from "next/navigation"
 import React from "react"
 import { DatabaseLogo } from "../../../public/DatabaseLogo"
 import { Button } from "../Button"
@@ -20,6 +22,9 @@ const formatStarCount = (count: number) => {
 export function Navigation() {
   const [stars, setStars] = React.useState()
   const [open, setOpen] = React.useState(false)
+  const pathname = usePathname()
+
+  console.log(pathname)
 
   React.useEffect(() => {
     const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)")
@@ -68,18 +73,22 @@ export function Navigation() {
           <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
             <div className="flex items-center gap-6 text-sm font-medium">
               <Link
+                className={classNames(
+                  "px-2 py-1 hover:text-indigo-600",
+                  pathname.startsWith(router.BLOG)
+                    ? "text-indigo-600"
+                    : "text-indigo-900",
+                )}
+                href={router.BLOG}
+              >
+                Blog
+              </Link>
+              <Link
                 target="_blank"
                 className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
                 href={documentation.BASE}
               >
                 Documentation
-              </Link>
-              <Link
-                target="_blank"
-                className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
-                href={blog.BASE}
-              >
-                Blog
               </Link>
               <Link
                 target="_blank"
@@ -141,9 +150,7 @@ export function Navigation() {
               </Link>
             </li>
             <li onClick={() => setOpen(false)}>
-              <Link target="_blank" href={blog.BASE}>
-                Blog
-              </Link>
+              <Link href={router.BLOG}>Blog</Link>
             </li>
             <li onClick={() => setOpen(false)}>
               <Link target="_blank" href={documentation.CHANGELOG}>

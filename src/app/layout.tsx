@@ -3,8 +3,11 @@ import { Navigation } from "@/components/ui/Navbar"
 import type { Metadata } from "next"
 import { ThemeProvider } from "next-themes"
 import { Inter } from "next/font/google"
-import "./globals.css"
 import { siteConfig } from "./siteConfig"
+
+import "@mintlify/mdx/dist/styles.css"
+import "highlight.js/styles/github-dark.css"
+import "./globals.css"
 
 const inter = Inter({
   subsets: ["latin"],

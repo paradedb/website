@@ -459,8 +459,8 @@ export default function IntegrationsImage(
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(537 356) rotate(90) scale(88 87)"
         >
-          <stop stop-color="white" stop-opacity="0.2" />
-          <stop offset="1" stop-color="white" stop-opacity="0" />
+          <stop stop-color="white" stopOpacity="0.2" />
+          <stop offset="1" stop-color="white" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint1_linear_42_255"

@@ -23,26 +23,26 @@ export const DatabaseLogo = (props: SVGProps<SVGSVGElement>) => (
         fill="#1E1B4B"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M69.209 4H49.4775V78.3125H69.209V4Z"
         fill="#4F46E5"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M46.4707 4H26.7393V78.3125H46.4707V4Z"
         fill="#4F46E5"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M23.7315 4H4V78.3125H23.7315V4Z"
         fill="#4F46E5"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M72.2168 4.0061V52.1171C72.2168 59.0833 74.9821 65.7023 79.9045 70.626C84.8269 75.5484 91.4472 78.3137 98.4134 78.3137H109.947V58.5822H98.4134C96.6958 58.5822 95.0669 57.8866 93.8554 56.6751C92.6439 55.4635 91.9483 53.8346 91.9483 52.1171V24.203C91.9483 13.2501 83.1118 4.2585 72.2168 4.00733V4.0061Z"
         fill="#4F46E5"
       />
