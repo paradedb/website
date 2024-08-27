@@ -13,6 +13,8 @@ export const documentation = {
   ANALYTICS: "https://docs.paradedb.com/api-reference/aggregations",
   REPLICATION: "https://docs.paradedb.com/deploy/replication",
   INGEST: "https://docs.paradedb.com/ingest/quickstart",
+  DOCKER: "https://docs.paradedb.com/welcome/introduction#get-started",
+  DEPLOY_EXTENSION: "https://docs.paradedb.com/deploy/pg_search",
   CHANGELOG: "https://docs.paradedb.com/changelog",
 }
 
