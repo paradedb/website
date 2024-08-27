@@ -1,4 +1,3 @@
-import Architecture from "@/components/ui/Architecture"
 import Benefits from "@/components/ui/Benefits"
 import Cta from "@/components/ui/Cta"
 import Hero from "@/components/ui/Hero"
@@ -16,7 +15,7 @@ export default function Home() {
       <Benefits />
       <Managed />
       <OpenSource />
-      <Architecture />
+      {/* <Architecture /> */}
       <Cta />
     </main>
   )
