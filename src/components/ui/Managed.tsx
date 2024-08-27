@@ -25,9 +25,12 @@ export default function SearchAnalytics() {
           className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl sm:ml-auto sm:w-full md:col-span-1"
           style={{ animationDuration: "1400ms" }}
         >
-          <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
+          <div className="rounded-2xl bg-slate-50 p-2">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
               <div className="rounded-xl bg-slate-50 p-2 ring-1 ring-slate-300/50">
+                <div className="relative rounded-t-xl">
+                  <Image src={RdsImage} className="max-h-60 w-full" alt="rds" />
+                </div>
                 <div className="px-6 py-6 md:px-8">
                   <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
                     RDS Compatible
@@ -37,9 +40,6 @@ export default function SearchAnalytics() {
                     Amazon RDS, Azure and Google Cloud Postgres.
                   </p>
                 </div>
-                <div className="relative rounded-t-xl">
-                  <Image src={RdsImage} className="max-h-60 w-full" alt="rds" />
-                </div>
               </div>
             </div>
           </div>
@@ -48,9 +48,16 @@ export default function SearchAnalytics() {
           className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl sm:ml-auto sm:w-full md:col-span-1"
           style={{ animationDuration: "1400ms" }}
         >
-          <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
+          <div className="rounded-2xl bg-slate-50 p-2">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
               <div className="rounded-xl bg-slate-50 p-2 ring-1 ring-slate-300/50">
+                <div className="relative rounded-t-xl">
+                  <Image
+                    src={S3Image}
+                    className="max-h-60 w-full"
+                    alt="datalake"
+                  />
+                </div>
                 <div className="px-6 py-6 md:px-8">
                   <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
                     S3 Compatible
@@ -59,13 +66,6 @@ export default function SearchAnalytics() {
                     ParadeDB can directly query and ingest data from S3, GCS,
                     and Azure Blob Storage.
                   </p>
-                </div>
-                <div className="relative rounded-t-xl">
-                  <Image
-                    src={S3Image}
-                    className="max-h-60 w-full"
-                    alt="datalake"
-                  />
                 </div>
               </div>
             </div>

@@ -38,12 +38,11 @@ export default function OpenSource() {
         id="code-example-title"
         className="mt-2 inline-block bg-gradient-to-br from-gray-900 to-gray-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-transparent sm:text-6xl md:text-6xl"
       >
-        Trusted by the{" "}
-        <span className="bg-indigo-100 text-indigo-600">community</span>
+        Trusted by the community
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
-        ParadeDB is loved by developers and has been deployed across thousands
-        of production environments.
+        ParadeDB has been deployed across thousands of production environments
+        and is loved by developers.
       </p>
       <dl className="mt-12 grid grid-cols-3 gap-12 md:mt-16">
         {features.map((item) => (
