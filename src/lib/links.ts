@@ -9,8 +9,10 @@ export const company = {
 
 export const documentation = {
   BASE: "https://docs.paradedb.com",
-  SEARCH: "https://docs.paradedb.com/search/quickstart",
-  ANALYTICS: "https://docs.paradedb.com/analytics/quickstart",
+  SEARCH: "https://docs.paradedb.com/api-reference/quickstart",
+  ANALYTICS: "https://docs.paradedb.com/api-reference/aggregations",
+  REPLICATION: "https://docs.paradedb.com/deploy/replication",
+  INGEST: "https://docs.paradedb.com/ingest/quickstart",
   CHANGELOG: "https://docs.paradedb.com/changelog",
 }
 

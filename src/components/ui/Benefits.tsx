@@ -1,9 +1,9 @@
 import {
   RiBracesLine,
-  RiGitForkLine,
-  RiMenuSearchLine,
   RiScissorsCutLine,
+  RiShakeHandsLine,
   RiShieldCheckLine,
+  RiStackLine,
   RiSwap2Line,
 } from "@remixicon/react"
 import { Badge } from "../Badge"
@@ -13,43 +13,37 @@ const benefits = [
     title: "Reduced overhead",
     description:
       "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB, you can just use Postgres.",
-    icon: RiGitForkLine,
-    color: "indigo",
+    icon: RiStackLine,
   },
   {
     title: "Zero data loss",
     description:
       "Never lose data again because of a broken sync with Elastic. ParadeDB uses native Postgres indexes that always stay up to date.",
     icon: RiShieldCheckLine,
-    color: "blue",
   },
   {
     title: "ACID guarantees",
     description:
       "Postgres ACID transactions guarantee that data is searchable immediately after a successful write.",
-    icon: RiMenuSearchLine,
-    color: "green",
+    icon: RiShakeHandsLine,
   },
   {
     title: "Automatic cleanup",
     description:
       "Never worry about cleaning up stale Elastic indexes. ParadeDB search indexes integrate with Postgres' vacuum process.",
     icon: RiScissorsCutLine,
-    color: "rose",
   },
   {
     title: "Reliable data store",
     description:
       "Backups, high availability, and disaster recovery are all built into Postgres.",
     icon: RiSwap2Line,
-    color: "orange",
   },
   {
     title: "Postgres dialect",
     description:
       "Write queries using Postgres SQL. No need to wrangle with an unfamiliar query language.",
     icon: RiBracesLine,
-    color: "yellow",
   },
 ]
 
