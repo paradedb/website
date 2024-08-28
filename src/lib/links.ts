@@ -42,6 +42,14 @@ export const email = {
 
 export const blog = [
   {
+    name: "We've Rebranded",
+    href: "rebrand",
+    date: "2024-08-28T12:00:00.000Z",
+    author: "Ming Ying",
+    description: "Announcing ParadeDB's marketing rebrand.",
+    categories: ["announcement"],
+  },
+  {
     name: "Why We Picked AGPL",
     href: "agpl",
     date: "2024-08-03T12:00:00.000Z",
@@ -107,6 +115,6 @@ export const blog = [
     date: "2023-10-01T12:00:00.000Z",
     author: "Ming Ying",
     description: "Announcing the launch of ParadeDB",
-    categories: [],
+    categories: ["announcement"],
   },
 ]
