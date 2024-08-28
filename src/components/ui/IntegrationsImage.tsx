@@ -13,32 +13,32 @@ export default function IntegrationsImage(
       <path
         d="M446 193.696C446 193.696 477.694 198.591 503.694 216.591C529.694 234.591 539 265.696 539 265.696"
         stroke="#7FBA00"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <path
         d="M631.603 193.696C631.603 193.696 599.91 198.591 573.91 216.591C547.909 234.591 538.603 265.696 538.603 265.696"
         stroke="#005BA1"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <path
         d="M263 188.866C263 188.866 458.191 212.276 498.096 229.81C538 247.344 538 265.866 538 265.866"
         stroke="#E25444"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <path
         d="M813.682 188.866C813.682 188.866 618.491 212.276 578.587 229.81C538.682 247.344 538.682 265.866 538.682 265.866"
         stroke="#4285F4"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <path
         d="M538 270C538 270 543 252.5 501.5 240.5C460 228.5 370 227.5 237 227.5C104 227.5 79.9198 186.997 79.9198 186.997"
         stroke="#F7A80D"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <path
         d="M538.162 269.915C538.162 269.915 533.162 252.415 574.662 240.415C616.162 228.415 706.162 227.415 839.162 227.415C972.162 227.415 996.243 186.911 996.243 186.911"
         stroke="#4285F4"
-        stroke-width="3"
+        strokeWidth="3"
       />
       <g filter="url(#filter0_d_42_255)">
         <rect x="438" y="256" width="200" height="200" rx="20" fill="#E0E7FF" />
@@ -53,7 +53,7 @@ export default function IntegrationsImage(
         height="176"
         fill="url(#paint0_radial_42_255)"
       />
-      <g clip-path="url(#clip0_42_255)">
+      <g clipPath="url(#clip0_42_255)">
         <path d="M527 331H537V356H527V331Z" fill="#EEF2FF" />
         <path d="M514 331H524V381H514V331Z" fill="#EEF2FF" />
         <path d="M540 331H550V381H540V331Z" fill="#EEF2FF" />
@@ -72,7 +72,7 @@ export default function IntegrationsImage(
         height="124"
         rx="19.5"
         fill="#F7A80D"
-        fill-opacity="0.2"
+        fillOpacity="0.2"
         stroke="#F7A80D"
       />
       <rect
@@ -94,7 +94,7 @@ export default function IntegrationsImage(
         height="124"
         rx="19.5"
         fill="#E25444"
-        fill-opacity="0.2"
+        fillOpacity="0.2"
         stroke="#E25444"
       />
       <rect
@@ -106,80 +106,80 @@ export default function IntegrationsImage(
         stroke="#E25444"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M278.327 92.2523L270.57 107.019L278.327 121.785L281.505 120.009V94.028L278.327 92.2523Z"
         fill="#E25444"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M278.327 92.2523L262.813 94.028L254.916 107.019L262.813 120.009L278.327 121.785V92.2523Z"
         fill="#7B1D13"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M247.019 92.2523L244.495 93.3738V120.664L247.019 121.785L262.813 107.019L247.019 92.2523Z"
         fill="#58150D"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M246.985 92.2212L262.834 96.6241V117.808L246.985 121.795V92.2212Z"
         fill="#E25444"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.842 98.9502L256.113 97.8702L262.842 90.2274L269.555 97.8702L262.842 98.9502Z"
         fill="#58150D"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M269.555 97.8702L262.834 98.9667L256.113 97.8702V90.2274"
         fill="#58150D"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.842 114.983L256.113 116.23L262.842 122.792L269.555 116.23L262.842 114.983Z"
         fill="#58150D"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.813 84.4953L256.084 88.0467V97.8598L262.834 95.9595L262.813 84.4953Z"
         fill="#7B1D13"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.834 101.359L256.113 102.09V111.888L262.834 112.657V101.359Z"
         fill="#7B1D13"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.834 117.891L256.113 116.206V125.838L262.834 129.355V117.891Z"
         fill="#7B1D13"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M269.555 116.206L262.834 117.891V129.355L269.555 125.838V116.206Z"
         fill="#E25444"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.834 101.359L269.555 102.09V111.888L262.834 112.657V101.359Z"
         fill="#E25444"
       />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M262.813 84.4953L269.542 88.0467V97.8598L262.813 95.9906V84.4953Z"
         fill="#E25444"
       />
@@ -190,7 +190,7 @@ export default function IntegrationsImage(
         height="124"
         rx="19.5"
         fill="#7FBA00"
-        fill-opacity="0.2"
+        fillOpacity="0.2"
         stroke="#7FBA00"
       />
       <rect
@@ -240,7 +240,7 @@ export default function IntegrationsImage(
         height="124"
         rx="19.5"
         fill="#005BA1"
-        fill-opacity="0.2"
+        fillOpacity="0.2"
         stroke="#005BA1"
       />
       <rect
@@ -278,7 +278,7 @@ export default function IntegrationsImage(
         height="124"
         rx="19.5"
         fill="#4285F4"
-        fill-opacity="0.2"
+        fillOpacity="0.2"
         stroke="#4285F4"
       />
       <rect
@@ -289,7 +289,7 @@ export default function IntegrationsImage(
         rx="15.5"
         stroke="#4285F4"
       />
-      <g clip-path="url(#clip1_42_255)">
+      <g clipPath="url(#clip1_42_255)">
         <path
           d="M837.403 106.703L827.129 88.8359C826.743 88.1508 826.184 87.5785 825.509 87.1756C824.833 86.7727 824.064 86.5533 823.278 86.5391H802.727C801.94 86.5529 801.171 86.7722 800.496 87.1751C799.82 87.578 799.261 88.1505 798.875 88.8359L788.598 106.656C788.207 107.336 788.002 108.107 788.002 108.891C788.002 109.675 788.207 110.445 788.598 111.125L798.871 129.094C799.254 129.789 799.809 130.373 800.484 130.79C801.159 131.207 801.93 131.442 802.723 131.473H823.274C824.066 131.445 824.838 131.213 825.514 130.798C826.19 130.383 826.746 129.8 827.129 129.105L837.403 111.238C837.796 110.547 838.003 109.766 838.003 108.971C838.003 108.176 837.796 107.394 837.403 106.703V106.703Z"
           fill="#4285F4"
@@ -315,14 +315,14 @@ export default function IntegrationsImage(
         height="124"
         rx="19.5"
         fill="#4285F4"
-        fill-opacity="0.2"
+        fillOpacity="0.2"
         stroke="#4285F4"
       />
       <path
         d="M954 50.5H1037C1045.56 50.5 1052.5 57.4396 1052.5 66V149C1052.5 157.56 1045.56 164.5 1037 164.5H954C945.44 164.5 938.5 157.56 938.5 149V66C938.5 57.4396 945.44 50.5 954 50.5Z"
         stroke="#4285F4"
       />
-      <g clip-path="url(#clip2_42_255)">
+      <g clipPath="url(#clip2_42_255)">
         <path
           d="M1020.4 107.703L1010.13 89.8359C1009.74 89.1508 1009.18 88.5785 1008.51 88.1756C1007.83 87.7727 1007.06 87.5533 1006.28 87.5391H985.727C984.94 87.5529 984.171 87.7722 983.496 88.1751C982.82 88.578 982.261 89.1505 981.875 89.8359L971.598 107.656C971.207 108.336 971.002 109.107 971.002 109.891C971.002 110.675 971.207 111.445 971.598 112.125L981.871 130.094C982.254 130.789 982.809 131.373 983.484 131.79C984.159 132.207 984.93 132.442 985.723 132.473H1006.27C1007.07 132.445 1007.84 132.213 1008.51 131.798C1009.19 131.383 1009.75 130.8 1010.13 130.105L1020.4 112.238C1020.8 111.547 1021 110.766 1021 109.971C1021 109.176 1020.8 108.394 1020.4 107.703V107.703Z"
           fill="#4285F4"
@@ -353,9 +353,9 @@ export default function IntegrationsImage(
           width="280"
           height="280"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -388,9 +388,9 @@ export default function IntegrationsImage(
           width="188"
           height="188"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -423,9 +423,9 @@ export default function IntegrationsImage(
           width="30"
           height="45"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -459,8 +459,8 @@ export default function IntegrationsImage(
           gradientUnits="userSpaceOnUse"
           gradientTransform="translate(537 356) rotate(90) scale(88 87)"
         >
-          <stop stop-color="white" stopOpacity="0.2" />
-          <stop offset="1" stop-color="white" stopOpacity="0" />
+          <stop stopColor="white" stopOpacity="0.2" />
+          <stop offset="1" stopColor="white" stopOpacity="0" />
         </radialGradient>
         <linearGradient
           id="paint1_linear_42_255"
@@ -470,13 +470,13 @@ export default function IntegrationsImage(
           y2="109.418"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#005BA1" />
-          <stop offset="0.07" stop-color="#0060A9" />
-          <stop offset="0.36" stop-color="#0071C8" />
-          <stop offset="0.52" stop-color="#0078D4" />
-          <stop offset="0.64" stop-color="#0074CD" />
-          <stop offset="0.82" stop-color="#006ABB" />
-          <stop offset="1" stop-color="#005BA1" />
+          <stop stopColor="#005BA1" />
+          <stop offset="0.07" stopColor="#0060A9" />
+          <stop offset="0.36" stopColor="#0071C8" />
+          <stop offset="0.52" stopColor="#0078D4" />
+          <stop offset="0.64" stopColor="#0074CD" />
+          <stop offset="0.82" stopColor="#006ABB" />
+          <stop offset="1" stopColor="#005BA1" />
         </linearGradient>
         <clipPath id="clip0_42_255">
           <rect

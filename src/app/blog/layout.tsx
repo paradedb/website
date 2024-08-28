@@ -77,7 +77,7 @@ export default function BlogLayout({
           </div>
 
           <main>
-            <div className="px-4 sm:px-6 lg:px-8">{children}</div>
+            <div className="px-4 py-12 sm:px-6 sm:py-0 lg:px-8">{children}</div>
           </main>
         </div>
       </div>

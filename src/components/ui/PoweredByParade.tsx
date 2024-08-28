@@ -10,26 +10,26 @@ export default function PoweredByParade(
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_1621_1113)">
+      <g clipPath="url(#clip0_1621_1113)">
         <line
           x1="354"
           y1="118"
           x2="354"
           y2="188"
           stroke="#E2E8F0"
-          stroke-width="2"
+          strokeWidth="2"
         />
         <path
           d="M102.865 187.519C102.865 187.519 115 171.5 154 156.5C193 141.5 249 142 294.5 141.5C340 141 352.865 117.519 352.865 117.519"
           stroke="#E2E8F0"
-          stroke-width="2"
+          strokeWidth="2"
         />
         <path
           d="M605.018 187.083C605.018 187.083 592.883 171.065 553.883 156.065C514.883 141.065 458.883 141.565 413.383 141.065C367.883 140.565 355.018 117.083 355.018 117.083"
           stroke="#E2E8F0"
-          stroke-width="2"
+          strokeWidth="2"
         />
-        <g clip-path="url(#clip1_1621_1113)">
+        <g clipPath="url(#clip1_1621_1113)">
           <g filter="url(#filter0_d_1621_1113)">
             <path
               d="M393 18H313C307.477 18 303 22.4772 303 28V108C303 113.523 307.477 118 313 118H393C398.523 118 403 113.523 403 108V28C403 22.4772 398.523 18 393 18Z"
@@ -54,14 +54,14 @@ export default function PoweredByParade(
             <path
               d="M381.5 32H324.5C320.082 32 316.5 35.5817 316.5 40V96C316.5 100.418 320.082 104 324.5 104H381.5C385.918 104 389.5 100.418 389.5 96V40C389.5 35.5817 385.918 32 381.5 32Z"
               fill="white"
-              fill-opacity="0.2"
+              fillOpacity="0.2"
             />
           </g>
           <g filter="url(#filter3_d_1621_1113)">
             <path
               d="M383.5 32H322.5C319.186 32 316.5 34.6863 316.5 38V98C316.5 101.314 319.186 104 322.5 104H383.5C386.814 104 389.5 101.314 389.5 98V38C389.5 34.6863 386.814 32 383.5 32Z"
               fill="white"
-              fill-opacity="0.02"
+              fillOpacity="0.02"
             />
           </g>
           <path
@@ -105,9 +105,9 @@ export default function PoweredByParade(
           width="140.5"
           height="140.5"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -140,9 +140,9 @@ export default function PoweredByParade(
           width="98"
           height="98"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -175,9 +175,9 @@ export default function PoweredByParade(
           width="105"
           height="104"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feBlend
             mode="normal"
             in="SourceGraphic"
@@ -196,9 +196,9 @@ export default function PoweredByParade(
           width="81"
           height="80"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"

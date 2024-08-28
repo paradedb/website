@@ -8,7 +8,7 @@ export default function DuckdbLogo(props: React.SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_72_461)">
+      <g clipPath="url(#clip0_72_461)">
         <mask
           id="mask0_72_461"
           style={{ maskType: "luminance" }}

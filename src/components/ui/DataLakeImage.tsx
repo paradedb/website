@@ -8,7 +8,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
       xmlns="http://www.w3.org/2000/svg"
       {...props}
     >
-      <g clip-path="url(#clip0_1630_1105)">
+      <g clipPath="url(#clip0_1630_1105)">
         <rect
           x="238"
           y="75"
@@ -16,7 +16,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           height="100"
           rx="20"
           fill="#E25444"
-          fill-opacity="0.35"
+          fillOpacity="0.35"
         />
         <rect
           x="238.5"
@@ -35,7 +35,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             height="81"
             rx="16"
             fill="white"
-            fill-opacity="0.25"
+            fillOpacity="0.25"
             shape-rendering="crispEdges"
           />
           <rect
@@ -46,85 +46,85 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             rx="15.95"
             stroke="#E25444"
             stroke-opacity="0.1"
-            stroke-width="0.1"
+            strokeWidth="0.1"
             shape-rendering="crispEdges"
           />
         </g>
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M299.862 112.802L293.656 124.615L299.862 136.428L302.404 135.007V114.222L299.862 112.802Z"
           fill="#E25444"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M299.862 112.802L287.45 114.222L281.133 124.615L287.45 135.007L299.862 136.428V112.802Z"
           fill="#7B1D13"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M274.815 112.802L272.796 113.699V135.531L274.815 136.428L287.45 124.615L274.815 112.802Z"
           fill="#58150D"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M274.788 112.777L287.467 116.299V133.246L274.788 136.436V112.777Z"
           fill="#E25444"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.474 118.16L282.09 117.296L287.474 111.182L292.844 117.296L287.474 118.16Z"
           fill="#58150D"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M292.844 117.296L287.467 118.173L282.09 117.296V111.182"
           fill="#58150D"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.474 130.987L282.09 131.984L287.474 137.234L292.844 131.984L287.474 130.987Z"
           fill="#58150D"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.45 106.596L282.067 109.437V117.288L287.467 115.768L287.45 106.596Z"
           fill="#7B1D13"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.467 120.087L282.09 120.672V128.511L287.467 129.126V120.087Z"
           fill="#7B1D13"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.467 133.313L282.09 131.964V139.67L287.467 142.484V133.313Z"
           fill="#7B1D13"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M292.844 131.964L287.467 133.313V142.484L292.844 139.67V131.964Z"
           fill="#E25444"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.467 120.087L292.844 120.672V128.511L287.467 129.126V120.087Z"
           fill="#E25444"
         />
         <path
-          fill-rule="evenodd"
-          clip-rule="evenodd"
+          fillRule="evenodd"
+          clipRule="evenodd"
           d="M287.45 106.596L292.834 109.437V117.288L287.45 115.793V106.596Z"
           fill="#E25444"
         />
@@ -135,7 +135,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           height="100"
           rx="20"
           fill="#4285F4"
-          fill-opacity="0.2"
+          fillOpacity="0.2"
         />
         <rect
           x="350.5"
@@ -155,7 +155,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             rx="15.95"
             stroke="#4285F4"
             stroke-opacity="0.1"
-            stroke-width="0.1"
+            strokeWidth="0.1"
             shape-rendering="crispEdges"
           />
         </g>
@@ -166,7 +166,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           height="100"
           rx="20"
           fill="#4285F4"
-          fill-opacity="0.2"
+          fillOpacity="0.2"
         />
         <rect
           x="126.5"
@@ -186,7 +186,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             rx="15.95"
             stroke="#4285F4"
             stroke-opacity="0.1"
-            stroke-width="0.1"
+            strokeWidth="0.1"
             shape-rendering="crispEdges"
           />
         </g>
@@ -231,7 +231,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           stroke="#E2E8F0"
           stroke-opacity="0.75"
         />
-        <g clip-path="url(#clip1_1630_1105)">
+        <g clipPath="url(#clip1_1630_1105)">
           <path
             d="M416.582 122.892L409.391 110.385C409.12 109.906 408.729 109.505 408.256 109.223C407.783 108.941 407.245 108.787 406.694 108.777H392.309C391.758 108.787 391.22 108.941 390.747 109.223C390.274 109.505 389.883 109.905 389.613 110.385L382.419 122.859C382.145 123.335 382.001 123.875 382.001 124.423C382.001 124.972 382.145 125.512 382.419 125.988L389.61 138.566C389.878 139.052 390.266 139.461 390.739 139.753C391.211 140.045 391.751 140.209 392.306 140.231H406.692C407.246 140.212 407.787 140.049 408.26 139.759C408.733 139.468 409.123 139.06 409.391 138.574L416.582 126.067C416.857 125.583 417.002 125.036 417.002 124.479C417.002 123.923 416.857 123.376 416.582 122.892Z"
             fill="#4285F4"
@@ -301,7 +301,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             cy="75.5"
             r="3.5"
             fill="#E25444"
-            fill-opacity="0.75"
+            fillOpacity="0.75"
             shape-rendering="crispEdges"
           />
         </g>
@@ -311,7 +311,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             cy="75.5"
             r="5"
             fill="#E25444"
-            fill-opacity="0.3"
+            fillOpacity="0.3"
             shape-rendering="crispEdges"
           />
         </g>
@@ -333,11 +333,11 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
         </mask>
         <g mask="url(#mask0_1630_1105)">
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M271 70.6V47H269V70.6C269.323 70.5344 269.658 70.5 270 70.5C270.342 70.5 270.677 70.5344 271 70.6Z"
             fill="#E25444"
-            fill-opacity="0.5"
+            fillOpacity="0.5"
           />
           <mask
             id="mask1_1630_1105"
@@ -367,7 +367,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
               rx="9"
               stroke="#E25444"
               stroke-opacity="0.5"
-              stroke-width="2"
+              strokeWidth="2"
             />
           </g>
           <mask
@@ -407,7 +407,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
               transform="rotate(-180 332.308 35)"
               stroke="#E25444"
               stroke-opacity="0.5"
-              stroke-width="2"
+              strokeWidth="2"
             />
           </g>
         </g>
@@ -417,7 +417,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           r="3.5"
           transform="rotate(-180 404 174)"
           fill="#4285F4"
-          fill-opacity="0.75"
+          fillOpacity="0.75"
         />
         <circle
           cx="404"
@@ -425,7 +425,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           r="5"
           transform="rotate(-180 404 174)"
           fill="#4285F4"
-          fill-opacity="0.3"
+          fillOpacity="0.3"
         />
         <mask
           id="mask3_1630_1105"
@@ -447,11 +447,11 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
         </mask>
         <g mask="url(#mask3_1630_1105)">
           <path
-            fill-rule="evenodd"
-            clip-rule="evenodd"
+            fillRule="evenodd"
+            clipRule="evenodd"
             d="M403 178.9V202.5H405V178.9C404.677 178.966 404.342 179 404 179C403.658 179 403.323 178.966 403 178.9Z"
             fill="#4285F4"
-            fill-opacity="0.5"
+            fillOpacity="0.5"
           />
           <mask
             id="mask4_1630_1105"
@@ -490,7 +490,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
               transform="rotate(-180 496.615 214.5)"
               stroke="#4285F4"
               stroke-opacity="0.5"
-              stroke-width="2"
+              strokeWidth="2"
             />
           </g>
           <mask
@@ -521,7 +521,7 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
               rx="9"
               stroke="#4285F4"
               stroke-opacity="0.5"
-              stroke-width="2"
+              strokeWidth="2"
             />
           </g>
         </g>
@@ -534,9 +534,9 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           width="108"
           height="109"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -575,9 +575,9 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           width="108"
           height="109"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -616,9 +616,9 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           width="108"
           height="109"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -657,9 +657,9 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           width="15"
           height="15"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -692,9 +692,9 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           width="18"
           height="18"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -728,8 +728,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           y2="71"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" stopOpacity="0" />
-          <stop offset="1" stop-color="white" />
+          <stop stopColor="white" stopOpacity="0" />
+          <stop offset="1" stopColor="white" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_1630_1105"
@@ -739,8 +739,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           y2="72"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#E25444" />
-          <stop offset="1" stop-color="#E25444" />
+          <stop stopColor="#E25444" />
+          <stop offset="1" stopColor="#E25444" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_1630_1105"
@@ -750,8 +750,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           y2="320.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="white" stopOpacity="0" />
-          <stop offset="1" stop-color="white" />
+          <stop stopColor="white" stopOpacity="0" />
+          <stop offset="1" stopColor="white" />
         </linearGradient>
         <linearGradient
           id="paint3_linear_1630_1105"
@@ -761,8 +761,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
           y2="249.5"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#E25444" />
-          <stop offset="1" stop-color="#E25444" />
+          <stop stopColor="#E25444" />
+          <stop offset="1" stopColor="#E25444" />
         </linearGradient>
         <clipPath id="clip0_1630_1105">
           <rect width="575" height="250" fill="white" />

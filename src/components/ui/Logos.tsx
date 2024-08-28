@@ -70,7 +70,7 @@ export const Logos = {
             <rect x="42" width="112" height="30" fill="#D9D9D9" />
           </mask>
           <g mask="url(#mask2_142_308)"></g>
-          <g clip-path="url(#clip0_142_308)">
+          <g clipPath="url(#clip0_142_308)">
             <rect
               x="42"
               y="6"

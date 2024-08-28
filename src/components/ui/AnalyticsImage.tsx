@@ -9,8 +9,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
         xmlns="http://www.w3.org/2000/svg"
         {...props}
       >
-        <g clip-path="url(#clip0_100_343)">
-          <g clip-path="url(#clip1_100_343)">
+        <g clipPath="url(#clip0_100_343)">
+          <g clipPath="url(#clip1_100_343)">
             <rect
               x="10"
               y="11"
@@ -19,12 +19,12 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
               rx="14"
               fill="white"
             />
-            <g clip-path="url(#clip2_100_343)">
+            <g clipPath="url(#clip2_100_343)">
               <path
                 d="M18 32C18 27.5817 21.5817 24 26 24H670C674.418 24 678 27.5817 678 32V439H18V32Z"
                 fill="white"
               />
-              <g clip-path="url(#clip3_100_343)">
+              <g clipPath="url(#clip3_100_343)">
                 <path
                   d="M34.7241 34.5604H671.276C674.681 34.5604 677.44 37.32 677.44 40.7242V453.138C677.44 456.543 674.681 459.302 671.276 459.302H34.7241C31.3199 459.302 28.5603 456.543 28.5603 453.138V40.7241C28.5603 37.32 31.3199 34.5604 34.7241 34.5604Z"
                   fill="white"
@@ -67,29 +67,29 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
                 <path
                   d="M164.558 208.882L115.768 198.649V402.642H648.891V173.406L602.084 194.556L552.897 202.742L503.314 215.705L455.713 198.649L406.526 158.397L357.736 181.593L309.342 158.397H260.949L212.952 168.631L164.558 208.882Z"
                   fill="url(#paint0_linear_100_343)"
-                  fill-opacity="0.3"
+                  fillOpacity="0.3"
                 />
                 <path
                   d="M115.768 198.605L164.558 208.826L212.952 168.618L260.949 158.397H309.342L357.736 181.567L406.526 158.397L455.713 198.605L503.314 215.641L552.897 202.693L602.084 194.515L648.891 173.389"
                   stroke="#EC4899"
-                  stroke-width="2"
+                  strokeWidth="2"
                 />
                 <path
                   d="M165.822 269.551L115.768 254.219V402.642H648.891V158.54L601.027 152.468L551.959 245.632L503.891 253.605L456.22 274.459L406.562 276.912L358.494 294.084L309.234 287.337L260.371 269.551L211.507 263.419L165.822 269.551Z"
                   fill="url(#paint1_linear_100_343)"
-                  fill-opacity="0.3"
+                  fillOpacity="0.3"
                 />
                 <path
                   d="M115.768 254.219L165.822 269.551L211.507 263.419L260.371 269.551L309.234 287.337L358.494 294.084L406.562 276.912L456.22 274.459L503.891 253.605L551.959 245.632L601.027 152.468L648.891 158.54"
                   stroke="#4F46E5"
-                  stroke-width="2"
+                  strokeWidth="2"
                 />
               </g>
               <g filter="url(#filter0_f_100_343)">
                 <path
                   d="M17 32C17 27.5817 20.5817 24 25 24H669C673.418 24 677 27.5817 677 32V431C677 435.418 673.418 439 669 439H25C20.5817 439 17 435.418 17 431V32Z"
                   fill="white"
-                  fill-opacity="0.5"
+                  fillOpacity="0.5"
                 />
               </g>
             </g>
@@ -103,9 +103,9 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             width="668"
             height="423"
             filterUnits="userSpaceOnUse"
-            color-interpolation-filters="sRGB"
+            colorInterpolationFilters="sRGB"
           >
-            <feFlood flood-opacity="0" result="BackgroundImageFix" />
+            <feFlood floodOpacity="0" result="BackgroundImageFix" />
             <feBlend
               mode="normal"
               in="SourceGraphic"
@@ -125,8 +125,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             y2="402.642"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#EB4898" />
-            <stop offset="1" stop-color="#EB4898" stopOpacity="0" />
+            <stop stopColor="#EB4898" />
+            <stop offset="1" stopColor="#EB4898" stopOpacity="0" />
           </linearGradient>
           <linearGradient
             id="paint1_linear_100_343"
@@ -136,8 +136,8 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
             y2="402.642"
             gradientUnits="userSpaceOnUse"
           >
-            <stop stop-color="#6366F0" />
-            <stop offset="1" stop-color="#6366F0" stopOpacity="0" />
+            <stop stopColor="#6366F0" />
+            <stop offset="1" stopColor="#6366F0" stopOpacity="0" />
           </linearGradient>
           <clipPath id="clip0_100_343">
             <rect width="696" height="325" fill="white" />
