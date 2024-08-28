@@ -88,7 +88,7 @@ export default function BlogLayout({
     <>
       <div>
         <div className="mx-auto flex max-w-6xl md:mt-12">
-          <div className="hidden lg:flex lg:w-72 lg:flex-col">
+          <div className="hidden lg:flex lg:w-96 lg:flex-col">
             {/* Sidebar component, swap this element with another sidebar if you like */}
             <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
               <nav className="flex flex-1 flex-col">
@@ -117,12 +117,12 @@ export default function BlogLayout({
             </div>
           </div>
 
-          <main className="w-full max-w-3xl px-4 py-4 md:py-0 lg:px-8">
+          <main className="w-full px-4 py-4 md:py-0 lg:px-8">
             <div className="mx-auto flex justify-between">
               {canGoBackward && <BackButton href={previousHref} />}
               {canGoForward && <NextButton href={nextHref} />}
             </div>
-            <div className="py-4">{children}</div>
+            <div className="w-full py-4">{children}</div>
             <div className="mx-auto flex justify-between">
               {canGoBackward && <BackButton href={previousHref} />}
               {canGoForward && <NextButton href={nextHref} />}

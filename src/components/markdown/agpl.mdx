@@ -1,9 +1,13 @@
 import SplashImage from "../../../public/blog/agpl.png"
+import Headshot from "../../../public/blog/phil_headshot.png"
 import Image from "next/image"
 
 ## Why We Picked AGPL
 
-<p className="relative bottom-2">Written by Philippe Noel on August 3, 2024</p>
+<div className="relative bottom-10 flex h-6 space-x-3">
+  <Image src={Headshot} className="h-7 w-7 rounded-full" />
+  <p className="relative top-3">By Philippe Noel on August 3, 2024</p>
+</div>
 
 <Image src={SplashImage} className="rounded-xl" />
 
