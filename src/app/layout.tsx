@@ -40,7 +40,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "ParadeDB",
     description: "ParadeDB: Zero ETL search and analytics for Postgres",
-    images: ["/images/opengraph-image.png"],
+    images: ["/opengraph-image.png"],
   },
   icons: {
     icon: "/favicon.ico",
