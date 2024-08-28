@@ -39,3 +39,74 @@ export const email = {
   SUPPORT: "mailto:support@paradedb.com",
   SALES: "mailto:sales@paradedb.com",
 }
+
+export const blog = [
+  {
+    name: "Why We Picked AGPL",
+    href: "agpl",
+    date: "2024-08-03T12:00:00.000Z",
+    author: "Philippe Noel",
+    description: "A case study on why ParadeDB chose to license under AGPL.",
+    categories: ["open source", "licensing"],
+  },
+  {
+    name: "Full Text Search over Postgres: Elasticsearch vs. Alternatives",
+    href: "elasticsearch_vs_postgres",
+    date: "2024-07-31T12:00:00.000Z",
+    author: "Ming Ying",
+    description: "Evaluating Elasticsearch against native Postgres FTS",
+    categories: ["elasticsearch", "postgres", "full text search", "data infra"],
+  },
+  {
+    name: "Querying Apache Iceberg from Postgres",
+    href: "iceberg_lakehouse",
+    date: "2024-06-24T12:00:00.000Z",
+    author: "Ming Ying",
+    description: "ParadeDB now has the ability to query Apache Iceberg tables",
+    categories: ["iceberg", "analytics", "postgres", "olap", "duckdb"],
+  },
+  {
+    name: "Case Study: Sweetspot Unifies Hybrid Search on Postgres with ParadeDB",
+    href: "case_study_sweetspot",
+    date: "2024-06-09T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "A case study on how Sweetspot simplified its data stack with ParadeDB",
+    categories: ["case study"],
+  },
+  {
+    name: "Building a DuckDB Alternative in Postgres",
+    href: "introducing_lakehouse",
+    date: "2024-05-24T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "Introducing a new extension for fast analytical queries over data lakes inside Postgres",
+    categories: ["analytics", "postgres", "olap", "duckdb"],
+  },
+  {
+    name: "Similarity Search with SPLADE Inside Postgres",
+    href: "introducing_sparse",
+    date: "2023-11-12T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "Introducing pg_sparse, a Postgres extension for sparse vector search",
+    categories: ["vector search", "sparse vectors"],
+  },
+  {
+    name: "pg_search: Elastic-Quality Full Text Search Inside Postgres",
+    href: "introducing_search",
+    date: "2023-10-01T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "Introducing pg_search, a Postgres extension for full text search",
+    categories: ["full text search", "postgres", "bm25"],
+  },
+  {
+    name: "Introducing ParadeDB",
+    href: "introducing_paradedb",
+    date: "2023-10-01T12:00:00.000Z",
+    author: "Ming Ying",
+    description: "Announcing the launch of ParadeDB",
+    categories: [],
+  },
+]

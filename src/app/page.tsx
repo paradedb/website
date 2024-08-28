@@ -8,7 +8,7 @@ import SearchAnalytics from "@/components/ui/SearchAnalytics"
 
 export default function Home() {
   return (
-    <main className="flex flex-col overflow-hidden">
+    <main className="flex flex-col overflow-hidden px-4 md:px-0">
       <Hero />
       <LogoCloud />
       <SearchAnalytics />

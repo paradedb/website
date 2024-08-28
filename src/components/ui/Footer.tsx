@@ -12,18 +12,19 @@ import Link from "next/link"
 import { DatabaseLogo } from "../../../public/DatabaseLogo"
 
 const navigation = {
-  product: [
-    { name: "Docs", href: documentation.BASE, external: true },
+  company: [
+    { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
+    { name: "Documentation", href: documentation.BASE, external: true },
     { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
-  resources: [
-    { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
+  connect: [
+    { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
     { name: "GitHub", href: github.REPO, external: true },
     { name: "Community", href: social.SLACK, external: true },
     { name: "Twitter", href: social.TWITTER, external: true },
     { name: "Linkedin", href: social.LINKEDIN, external: true },
   ],
-  company: [
+  resources: [
     { name: "Careers", href: company.CAREERS, external: true },
     { name: "Contact", href: email.HELLO, external: false },
     { name: "Sales", href: email.SALES, external: false },
@@ -38,7 +39,7 @@ const navigation = {
 export default function Footer() {
   return (
     <footer id="footer">
-      <div className="mx-auto max-w-6xl px-3 pb-8 pt-16 sm:pt-24 lg:pt-32">
+      <div className="mx-auto max-w-6xl px-8 pb-8 pt-16 sm:pt-24 md:px-3 lg:pt-32">
         <div className="xl:grid xl:grid-cols-3 xl:gap-20">
           <div className="space-y-8">
             <Link href={siteConfig.baseLinks.home}>
@@ -55,14 +56,14 @@ export default function Footer() {
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Product
+                  Company
                 </h3>
                 <ul
                   role="list"
                   className="mt-6 space-y-4"
                   aria-label="Quick links Product"
                 >
-                  {navigation.product.map((item) => (
+                  {navigation.company.map((item) => (
                     <li key={item.name} className="w-fit">
                       <Link
                         className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
@@ -86,14 +87,14 @@ export default function Footer() {
               </div>
               <div>
                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Resources
+                  Connect
                 </h3>
                 <ul
                   role="list"
                   className="mt-6 space-y-4"
                   aria-label="Quick links Resources"
                 >
-                  {navigation.resources.map((item) => (
+                  {navigation.connect.map((item) => (
                     <li key={item.name} className="w-fit">
                       <Link
                         className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
@@ -119,14 +120,14 @@ export default function Footer() {
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Company
+                  Resources
                 </h3>
                 <ul
                   role="list"
                   className="mt-6 space-y-4"
                   aria-label="Quick links Company"
                 >
-                  {navigation.company.map((item) => (
+                  {navigation.resources.map((item) => (
                     <li key={item.name} className="w-fit">
                       <Link
                         className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"

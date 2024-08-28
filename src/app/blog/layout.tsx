@@ -2,42 +2,11 @@
 
 import { Button } from "@/components/Button"
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated"
+import { blog } from "@/lib/links"
 import classNames from "classnames"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { siteConfig } from "../siteConfig"
-
-const navigation = [
-  { name: "Why We Picked AGPL", href: "agpl", current: true },
-  {
-    name: "Full Text Search over Postgres: Elasticsearch vs. Alternatives",
-    href: "elasticsearch_vs_postgres",
-  },
-  {
-    name: "Querying Apache Iceberg from Postgres",
-    href: "iceberg_lakehouse",
-  },
-  {
-    name: "Case Study: Sweetspot Unifies Hybrid Search on Postgres with ParadeDB",
-    href: "case_study_sweetspot",
-  },
-  {
-    name: "Building a DuckDB Alternative in Postgres",
-    href: "introducing_lakehouse",
-  },
-  {
-    name: "Similarity Search with SPLADE Inside Postgres",
-    href: "introducing_sparse",
-  },
-  {
-    name: "pg_search: Elastic-Quality Full Text Search Inside Postgres",
-    href: "introducing_search",
-  },
-  {
-    name: "Introducing ParadeDB",
-    href: "introducing_paradedb",
-  },
-]
 
 const BackButton = ({ href }: { href: string }) => (
   <Link href={href}>
@@ -72,16 +41,14 @@ export default function BlogLayout({
   children: React.ReactNode
 }) {
   const pathname = usePathname()
-  const currentPageIdx = navigation.findIndex((item) =>
-    pathname.endsWith(item.href),
-  )
+  const currentPageIdx = blog.findIndex((item) => pathname.endsWith(item.href))
   const canGoBackward = currentPageIdx > 0
-  const canGoForward = currentPageIdx < navigation.length - 1
+  const canGoForward = currentPageIdx < blog.length - 1
   const nextHref = canGoForward
-    ? `${siteConfig.baseLinks.blog}/${navigation[currentPageIdx + 1].href}`
+    ? `${siteConfig.baseLinks.blog}/${blog[currentPageIdx + 1].href}`
     : ""
   const previousHref = canGoBackward
-    ? `${siteConfig.baseLinks.blog}/${navigation[currentPageIdx - 1].href}`
+    ? `${siteConfig.baseLinks.blog}/${blog[currentPageIdx - 1].href}`
     : ""
 
   return (
@@ -95,7 +62,7 @@ export default function BlogLayout({
                 <ul role="list" className="flex flex-1 flex-col gap-y-7">
                   <li>
                     <ul role="list" className="-mx-2 space-y-1">
-                      {navigation.map((item) => (
+                      {blog.map((item) => (
                         <li key={item.name}>
                           <a
                             href={`${siteConfig.baseLinks.blog}/${item.href}`}

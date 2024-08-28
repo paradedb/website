@@ -24,8 +24,6 @@ export function Navigation() {
   const [open, setOpen] = React.useState(false)
   const pathname = usePathname()
 
-  console.log(pathname)
-
   React.useEffect(() => {
     const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)")
     const handleMediaQueryChange = () => {
@@ -57,7 +55,7 @@ export function Navigation() {
   return (
     <header
       className={cx(
-        "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-3 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4",
+        "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-8 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-3",
         open === true ? "h-52" : "h-16",
         open === true
           ? "backdrop-blur-nav max-w-3xl border-gray-100 bg-white/80 shadow-xl shadow-black/5"
@@ -101,21 +99,22 @@ export function Navigation() {
           </nav>
           <div className="flex space-x-6">
             <div className="flex items-center justify-center space-x-6">
-              {stars && (
-                <Link
-                  href={github.REPO}
-                  target="_blank"
-                  className="flex items-center justify-center space-x-2"
-                >
-                  <RiGithubFill
-                    aria-hidden="true"
-                    className="size-6 shrink-0 text-indigo-900"
-                  />
-                  <div className="text-sm font-medium text-indigo-900">
-                    {formatStarCount(stars)}
-                  </div>
-                </Link>
-              )}
+              <Link
+                href={github.REPO}
+                target="_blank"
+                className={classNames(
+                  "flex items-center justify-center space-x-2",
+                  stars ? "opacity-100" : "opacity-0",
+                )}
+              >
+                <RiGithubFill
+                  aria-hidden="true"
+                  className="size-6 shrink-0 text-indigo-900"
+                />
+                <div className="text-sm font-medium text-indigo-900">
+                  {formatStarCount(stars ?? 0)}
+                </div>
+              </Link>
               <Button className="hidden rounded-full border-4 border-indigo-200 px-4 md:flex">
                 <Link target="_blank" href={social.CALENDLY}>
                   Book a Demo
