@@ -1,3 +1,4 @@
+import { siteConfig } from "@/app/siteConfig"
 import {
   company,
   documentation,
@@ -16,6 +17,7 @@ const navigation = {
     { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
   resources: [
+    { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
     { name: "GitHub", href: github.REPO, external: true },
     { name: "Community", href: social.SLACK, external: true },
     { name: "Twitter", href: social.TWITTER, external: true },
