@@ -117,7 +117,7 @@ export default function BlogLayout({
             </div>
           </div>
 
-          <main className="w-full max-w-2xl px-4 py-4 md:py-0 lg:px-8">
+          <main className="w-full max-w-3xl px-4 py-4 md:py-0 lg:px-8">
             <div className="mx-auto flex justify-between">
               {canGoBackward && <BackButton href={previousHref} />}
               {canGoForward && <NextButton href={nextHref} />}

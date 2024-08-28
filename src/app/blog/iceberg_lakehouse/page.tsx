@@ -4,7 +4,7 @@ import Content from "../../../components/markdown/iceberg_lakehouse.mdx"
 
 export default function Blog() {
   return (
-    <div className="prose max-w-2xl overflow-hidden">
+    <div className="prose w-full overflow-hidden">
       <Content />
     </div>
   )
