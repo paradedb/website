@@ -10,10 +10,11 @@ export default function LogoCloud() {
       <div className="text-md mx-auto font-medium text-gray-900">
         Trusted by enterprises, loved by developers
       </div>
-      <div className="-mt-2 flex space-x-6 sm:space-x-10 md:mt-0">
-        <Logos.Alibaba className="w-24 sm:w-32" />
-        <Logos.Insa className="w-16 sm:w-28" />
-        <Logos.Sweetspot className="w-28 sm:w-36" />
+      <div className="-mt-2 flex space-x-4 sm:space-x-10 sm:space-x-6 md:mt-0">
+        <Logos.Blackhawks className="w-36 sm:w-48" />
+        <Logos.Alibaba className="w-20 sm:w-28" />
+        <Logos.Insa className="w-12 sm:w-16" />
+        <Logos.Sweetspot className="w-24 sm:w-28" />
       </div>
     </section>
   )
