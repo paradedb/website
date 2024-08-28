@@ -4,7 +4,7 @@ import { documentation, social } from "@/lib/links"
 import Link from "next/link"
 import { Button } from "../Button"
 
-const code = `docker run --name paradedb -e POSTGRES_PASSWORD=password paradedb/paradedb
+const code = `docker run -d --name paradedb -e POSTGRES_PASSWORD=password paradedb/paradedb
 docker exec -it paradedb psql -U postgres`
 
 export default function Hero() {

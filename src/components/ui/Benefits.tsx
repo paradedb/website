@@ -36,7 +36,7 @@ const benefits = [
   {
     title: "Reliable data store",
     description:
-      "Backups, high availability, and disaster recovery are all built into Postgres.",
+      "First class support for backups, high availability and disaster recovery through Postgres.",
     icon: RiSwap2Line,
   },
   {

@@ -40,7 +40,7 @@ export default function SearchAnalytics() {
                   </p>
                   <p className="mt-2 text-gray-600">
                     ParadeDB uses logical replication to consume data from
-                    Amazon RDS, Azure and Google Cloud Postgres.
+                    Amazon RDS, Azure Postgres and Google Cloud SQL.
                   </p>
                   <Link href={documentation.REPLICATION} target="_blank">
                     <Button

@@ -85,7 +85,7 @@ export default function OpenSource() {
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
         ParadeDB has been deployed across thousands of production environments
-        and is loved by developers.
+        on multi-TB clusters.
       </p>
       <dl className="mt-12 grid grid-cols-3 gap-12 md:mt-16">
         {features.map((item) => (
