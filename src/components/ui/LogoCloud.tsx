@@ -14,7 +14,7 @@ export default function LogoCloud() {
         <Logos.Blackhawks className="w-36 sm:w-48" />
         <Logos.Alibaba className="w-20 sm:w-28" />
         <Logos.Insa className="w-12 sm:w-16" />
-        <Logos.Sweetspot className="w-24 sm:w-28" />
+        <Logos.Sweetspot className="hidden w-24 sm:block sm:w-28" />
       </div>
     </section>
   )
