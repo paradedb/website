@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "ParadeDB",
-  url: "https://paradedb.com",
+  url: "https://website-puce-one-61.vercel.app/",
   description: "Zero-ETL search and analytics for Postgres",
   baseLinks: {
     home: "/",
