@@ -1,4 +1,11 @@
+import Image from "next/image"
+import SplashImage from "../../../public/blog/introducing_paradedb.png"
+
 ## Introducing ParadeDB
+
+<p className="relative bottom-2">Written by Ming Ying on August 31, 2023</p>
+
+<Image src={SplashImage} className="rounded-xl" />
 
 We’re excited to announce ParadeDB: a PostgreSQL database optimized for search.
 ParadeDB is the first Postgres database built to be an Elasticsearch alternative, engineered for lightning-fast full
@@ -33,21 +40,12 @@ for you if:
 
 ## The Product
 
-ParadeDB is a fully managed Postgres database with capabilities to index and search Postgres tables not found in any
-other Postgres provider:
+ParadeDB is gives Postgres the capabilities of a dedicated search engine.
 
-| Feature               | Description                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| BM25 full text search | Full text search with support for boolean, fuzzy, boosted, and keyword queries. Results are scored using the BM25 algorithm.   |
-| Faceted search        | Postgres columns can be defined as facets for easy bucketing and collection of metrics.                                        |
-| Hybrid search         | Results can be given a score that combines semantic relevance (using vector search) and full text relevance (using BM25).      |
-| Distributed search    | Tables can be sharded for fast, parallelized queries.                                                                          |
-| Generative search     | Postgres columns can be fed into large language models (LLMs) for automatic summarization, classification, or text generation. |
-| Real-time search      | Text indexes and vector columns are automatically kept in sync with the underlying data.                                       |
-
-Unliked managed services like AWS RDS, ParadeDB requires zero setup and supports the entire Postgres extension ecosystem,
-making it a fully customizable database. For developers that require a self-managed database, ParadeDB is open source and
-provides a straightforward Docker Compose stack.
+1. **BM25 scoring**: Full text search with support for boolean, fuzzy, boosted, and keyword queries. Results are scored using the BM25 algorithm.
+2. **Faceted search**: Easy bucketing and collection of metrics over full text search results.
+3. **Hybrid search**: Results are scored with a combination of semantic relevance (i.e. vector search) and full text relevance (i.e. BM25).
+4. **Real time search**: Text indexes and vector columns are automatically kept in sync with the underlying data.
 
 ## How ParadeDB Is Built
 
