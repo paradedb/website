@@ -27,20 +27,13 @@ export const metadata: Metadata = {
     title: siteConfig.name,
     description: siteConfig.description,
     siteName: siteConfig.name,
-    images: [
-      {
-        url: "/opengraph-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Thumbnail",
-      },
-    ],
+    images: "/opengraph-image.png",
   },
   twitter: {
     card: "summary_large_image",
     title: "ParadeDB",
     description: "ParadeDB: Zero ETL search and analytics for Postgres",
-    images: ["/opengraph-image.png"],
+    images: "/twitter-image.png",
   },
   icons: {
     icon: "/favicon.ico",
