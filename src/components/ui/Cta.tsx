@@ -36,7 +36,7 @@ export default function Cta() {
               >
                 Ready to get started?
               </h3>
-              <p className="mx-auto mt-4 max-w-2xl text-gray-600 sm:text-lg">
+              <p className="mx-auto mt-4 w-full max-w-2xl text-gray-600 sm:text-lg">
                 <Balancer>
                   Start testing right away with our{" "}
                   <Link
@@ -44,13 +44,13 @@ export default function Cta() {
                     target="_blank"
                     className="font-medium text-indigo-600 underline decoration-indigo-600"
                   >
-                    documentation
+                    docs
                   </Link>{" "}
                   or book a demo with our sales team.
                 </Balancer>
               </p>
             </div>
-            <div className="mt-14 w-full rounded-[16px] bg-gray-300/5 p-1.5 ring-1 ring-black/[3%] backdrop-blur">
+            <div className="mt-8 w-full rounded-[16px] bg-gray-300/5 p-1.5 ring-1 ring-black/[3%] backdrop-blur md:mt-14">
               <div className="rounded-xl bg-white p-4 shadow-lg shadow-indigo-500/10 ring-1 ring-black/5">
                 <form
                   className="flex flex-col items-center gap-3 sm:flex-row"

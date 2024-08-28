@@ -45,7 +45,7 @@ export const blog = [
     name: "Why We Picked AGPL",
     href: "agpl",
     date: "2024-08-03T12:00:00.000Z",
-    author: "Philippe Noel",
+    author: "Philippe Noël",
     description: "A case study on why ParadeDB chose to license under AGPL.",
     categories: ["open source", "licensing"],
   },

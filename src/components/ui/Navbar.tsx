@@ -55,7 +55,7 @@ export function Navigation() {
   return (
     <header
       className={cx(
-        "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-8 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-3",
+        "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-3",
         open === true ? "h-52" : "h-16",
         open === true
           ? "backdrop-blur-nav max-w-3xl border-gray-100 bg-white/80 shadow-xl shadow-black/5"

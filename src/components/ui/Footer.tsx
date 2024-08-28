@@ -39,7 +39,7 @@ const navigation = {
 export default function Footer() {
   return (
     <footer id="footer">
-      <div className="mx-auto max-w-6xl px-8 pb-8 pt-16 sm:pt-24 md:px-3 lg:pt-32">
+      <div className="mx-auto max-w-6xl px-6 pb-8 pt-16 sm:pt-24 md:px-3 lg:pt-32">
         <div className="xl:grid xl:grid-cols-3 xl:gap-20">
           <div className="space-y-8">
             <Link href={siteConfig.baseLinks.home}>

@@ -4,19 +4,19 @@ import Headshot from "../../../public/blog/ming_headshot.png"
 
 ## pg_search: Elastic-Quality Full Text Search Inside Postgres
 
-<div className="relative bottom-10 flex h-6 space-x-3">
+<div className="relative bottom-10 mb-6 flex h-6 space-x-3">
   <Image src={Headshot} className="h-7 w-7 rounded-full" />
   <p className="relative top-3">By Ming Ying on October 1, 2023</p>
 </div>
-
-We're unveiling `pg_search`: a Rust-based Postgres extension that significantly improves Postgres' full text
-search capabilities. `pg_search` is named after BM25, the algorithm used by modern search engines to calculate the
-relevance scores of search results.
 
 <Note>
   With the release of `v0.6.0`, which marks the first stable release of the
   ParadeDB full-text search extension, we have renamed `pg_bm25` to `pg_search`.
 </Note>
+
+We're unveiling `pg_search`: a Rust-based Postgres extension that significantly improves Postgres' full text
+search capabilities. `pg_search` is named after BM25, the algorithm used by modern search engines to calculate the
+relevance scores of search results.
 
 Today, Postgres' native full text search, which uses the `tsvector` type, has two main problems:
 
