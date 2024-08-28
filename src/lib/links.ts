@@ -46,7 +46,7 @@ export const blog = [
     href: "rebrand",
     date: "2024-08-28T12:00:00.000Z",
     author: "Ming Ying",
-    description: "Announcing ParadeDB's marketing rebrand.",
+    description: "Announcing ParadeDB's new logo and design refresh.",
     categories: ["announcement"],
   },
   {

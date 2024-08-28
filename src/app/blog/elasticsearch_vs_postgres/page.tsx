@@ -1,6 +1,14 @@
 "use client"
 
+import { blog } from "@/lib/links"
+import type { Metadata } from "next"
 import Content from "../../../components/markdown/elasticsearch_vs_postgres.mdx"
+
+const meta = blog.find((post) => post.href == "elasticsearch_vs_postgres")
+export const metadata: Metadata = {
+  title: meta?.name,
+  description: meta?.description,
+}
 
 export default function Blog() {
   return (
