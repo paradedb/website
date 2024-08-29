@@ -1,8 +1,6 @@
-# Tremor – Database
+# ParadeDB Website
 
-`Database` is a website template from [Tremor](https://tremor.so). It's built
-using [`Tremor Raw`](https://raw.tremor.so/docs/getting-started/installation)
-and [Next.js](https://nextjs.org).
+Official repo for the [ParadeDB marketing website](https://paradedb.com).
 
 ## Getting started
 
