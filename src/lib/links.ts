@@ -42,6 +42,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Case Study: INSA Strasbourg Powers New Research Database with ParadeDB",
+    href: "case_study_insa",
+    date: "2024-08-29T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "A case study on how INSA Strasbourg used ParadeDB to build its new document retrieval system.",
+    categories: ["case study"],
+  },
+  {
     name: "We've Rebranded",
     href: "rebrand",
     date: "2024-08-28T12:00:00.000Z",
