@@ -1,5 +1,6 @@
 import Footer from "@/components/ui/Footer"
 import { Navigation } from "@/components/ui/Navbar"
+import { GoogleTagManager } from "@next/third-parties/google"
 import type { Metadata } from "next"
 import { ThemeProvider } from "next-themes"
 import { Inter } from "next/font/google"
@@ -47,6 +48,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <GoogleTagManager gtmId="GTM-KMGRG564" />
       <body
         className={`${inter.className} min-h-screen scroll-auto antialiased selection:bg-indigo-100 selection:text-indigo-700`}
       >
