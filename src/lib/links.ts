@@ -31,7 +31,7 @@ export const social = {
   LINKEDIN: "https://www.linkedin.com/company/paradedb",
   SLACK:
     "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-2lkzdsetw-OiIgbyFeiibd1DG~6wFgTQ",
-  CALENDLY: "https://calendly.com/philippemnoel/paradedb",
+  CALENDLY: "https://calendly.com/paradedb",
 }
 
 export const email = {
