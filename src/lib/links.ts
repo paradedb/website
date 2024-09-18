@@ -42,7 +42,7 @@ export const email = {
 
 export const blog = [
   {
-    name: "A Data-Driven Approach to Writing Better Developer Docs",
+    name: "A Data-Driven Approach to Writing Better Developer Documentation",
     href: "improving_documentation",
     date: "2024-09-18T12:00:00.000Z",
     author: "Ming Ying",
