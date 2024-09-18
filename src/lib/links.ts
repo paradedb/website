@@ -31,7 +31,7 @@ export const social = {
   LINKEDIN: "https://www.linkedin.com/company/paradedb",
   SLACK:
     "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-2lkzdsetw-OiIgbyFeiibd1DG~6wFgTQ",
-  CALENDLY: "https://calendly.com/philippemnoel/paradedb",
+  CALENDLY: "https://calendly.com/paradedb",
 }
 
 export const email = {
@@ -41,6 +41,15 @@ export const email = {
 }
 
 export const blog = [
+  {
+    name: "A Data-Driven Approach to Writing Better Developer Documentation",
+    href: "improving_documentation",
+    date: "2024-09-18T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "The most impactful changes ParadeDB has made over the last year to its developer documentation.",
+    categories: ["documentation", "developer experience"],
+  },
   {
     name: "Case Study: INSA Strasbourg Powers New Research Database with ParadeDB",
     href: "case_study_insa",
