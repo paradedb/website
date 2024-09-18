@@ -42,6 +42,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "A Data-Driven Approach to Improving Developer Documentation",
+    href: "improving_documentation",
+    date: "2024-09-18T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "The most impactful changes ParadeDB has made over the last year to its developer documentation.",
+    categories: ["documentation", "developer experience"],
+  },
+  {
     name: "Case Study: INSA Strasbourg Powers New Research Database with ParadeDB",
     href: "case_study_insa",
     date: "2024-08-29T12:00:00.000Z",
