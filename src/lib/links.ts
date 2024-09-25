@@ -42,6 +42,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Case Study: Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse",
+    href: "case_study_alibaba",
+    date: "2024-09-24T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "A case study on why Alibaba picked ParadeDB to bring full text search to its data warehouse",
+    categories: ["case study"],
+  },
+  {
     name: "A Data-Driven Approach to Writing Better Developer Documentation",
     href: "improving_documentation",
     date: "2024-09-18T12:00:00.000Z",

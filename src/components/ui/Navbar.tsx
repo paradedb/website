@@ -2,7 +2,6 @@
 
 import { siteConfig } from "@/app/siteConfig"
 import { documentation, github, social } from "@/lib/links"
-import { cx } from "@/lib/utils"
 import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react"
 import classNames from "classnames"
 import Link from "next/link"
@@ -59,9 +58,9 @@ export function Navigation() {
           Case Study
         </div>
         <div className="relative top-0.5 text-left text-sm">
-          INSA Strasbourg powers new research database with ParadeDB.{" "}
+          Alibaba brings full text search to its data warehouse with ParadeDB.{" "}
           <Link
-            href={siteConfig.baseLinks.blog}
+            href={`${siteConfig.baseLinks.blog}/case_study_alibaba`}
             className="font-semibold underline"
           >
             Read their story.
@@ -69,7 +68,7 @@ export function Navigation() {
         </div>
       </div>
       <header
-        className={cx(
+        className={classNames(
           "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-3",
           open === true ? "h-52" : "h-16",
           open === true
@@ -152,7 +151,7 @@ export function Navigation() {
             </div>
           </div>
           <nav
-            className={cx(
+            className={classNames(
               "my-6 flex text-lg ease-in-out will-change-transform md:hidden",
               open ? "" : "hidden",
             )}
