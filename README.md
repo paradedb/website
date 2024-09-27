@@ -1,6 +1,6 @@
 # ParadeDB Website
 
-Official repo for the [ParadeDB marketing website](https://paradedb.com).
+Official repository for the [ParadeDB website](https://paradedb.com).
 
 ## Getting started
 
