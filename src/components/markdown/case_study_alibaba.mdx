@@ -132,7 +132,7 @@ With 40 concurrent readers, ParadeDB was able to process 5X queries per second c
 
 <Card className="relative text-center">
   <Subtitle>
-    <Bold>Queres per Second (QPS) vs. Concurrency</Bold>
+    <Bold>Queries per Second (QPS) vs. Concurrency</Bold>
   </Subtitle>
   <LineChart
     data={[
@@ -190,37 +190,37 @@ With 40 concurrent readers, ParadeDB’s round trip query times were 5X faster t
     data={[
       {
         concurrency: 1,
-        "Lucene (QPS)": 15.59,
-        "ParadeDB (QPS)": 5.2,
+        "Lucene (RTT)": 15.59,
+        "ParadeDB (RTT)": 5.2,
       },
       {
         concurrency: 5,
-        "Lucene (QPS)": 34.56,
-        "ParadeDB (QPS)": 9.63,
+        "Lucene (RTT)": 34.56,
+        "ParadeDB (RTT)": 9.63,
       },
       {
         concurrency: 10,
-        "Lucene (QPS)": 59.24,
-        "ParadeDB (QPS)": 16.45,
+        "Lucene (RTT)": 59.24,
+        "ParadeDB (RTT)": 16.45,
       },
       {
         concurrency: 20,
-        "Lucene (QPS)": 130.74,
-        "ParadeDB (QPS)": 28.84,
+        "Lucene (RTT)": 130.74,
+        "ParadeDB (RTT)": 28.84,
       },
       {
         concurrency: 30,
-        "Lucene (QPS)": 221.71,
-        "ParadeDB (QPS)": 39.12,
+        "Lucene (RTT)": 221.71,
+        "ParadeDB (RTT)": 39.12,
       },
       {
         concurrency: 40,
-        "Lucene (QPS)": 249.67,
-        "ParadeDB (QPS)": 47.96,
+        "Lucene (RTT)": 249.67,
+        "ParadeDB (RTT)": 47.96,
       },
     ]}
     index="concurrency"
-    categories={["Lucene (QPS)", "ParadeDB (QPS)"]}
+    categories={["Lucene (RTT)", "ParadeDB (RTT)"]}
     showLegend={true}
     colors={["amber", "blue"]}
     yAxisWidth={60}
