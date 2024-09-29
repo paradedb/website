@@ -50,10 +50,10 @@ export default function TeamGallery() {
           <InstaxImage
             className="-mt-10 w-[15rem] -rotate-3"
             src="/images/cool.webp"
-            alt="Personw with headphones"
+            alt="Person with headphones"
             width={640}
             height={965}
-            caption="Robin handels the playlist"
+            caption="Robin handles the playlist"
           />
           <InstaxImage
             className="-mr-20 -mt-2 w-[30rem] rotate-[8deg]"
