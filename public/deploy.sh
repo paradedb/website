@@ -277,12 +277,12 @@ do
   case $opt in
     "🐳Latest Docker Image")
       installDocker
-      echo -e "Installation Successfull!\n"
+      echo -e "Installation Successful!\n"
       break ;;
     "⬇️ Stable Binary")
       echo "Stable"
       installBinary
-      echo -e "Installation Successfull!\n"
+      echo -e "Installation Successful!\n"
       break ;;
     *)
       echo -e "No option selected, exiting setup.\n"
