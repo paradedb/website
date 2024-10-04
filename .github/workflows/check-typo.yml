@@ -29,4 +29,4 @@ jobs:
         with:
           check_filenames: true
           ignore_words_file: .codespellignore
-          skip: "package-lock.json"
+          skip: package-lock.json,pnpm-lock.yaml
