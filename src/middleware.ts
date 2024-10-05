@@ -4,10 +4,9 @@ import { NextRequest, NextResponse } from 'next/server';
 export async function middleware(request: NextRequest) {
   const userAgent = request.headers.get('user-agent') || '';
 
-  const response = await fetch("https://raw.githubusercontent.com/destrex271/paradedb/refs/heads/feature/setup_script/deploy.sh")
-  const scriptContent = await response.text()
-
   if (userAgent.startsWith("curl/")) {
+    const response = await fetch("https://raw.githubusercontent.com/destrex271/paradedb/refs/heads/feature/setup_script/deploy.sh")
+    const scriptContent = await response.text()
     return new NextResponse(scriptContent, {
       status: 200,
       headers: {
