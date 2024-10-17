@@ -5,12 +5,12 @@ export const company = {
 
 export const documentation = {
   BASE: "https://docs.paradedb.com",
-  SEARCH: "https://docs.paradedb.com/api-reference/quickstart",
-  ANALYTICS: "https://docs.paradedb.com/api-reference/aggregations",
+  SEARCH: "https://docs.paradedb.com/documentation/full-text/overview",
+  ANALYTICS: "https://docs.paradedb.com/documentation/faceting/overview",
   REPLICATION: "https://docs.paradedb.com/deploy/replication",
-  INGEST: "https://docs.paradedb.com/ingest/quickstart",
-  DOCKER: "https://docs.paradedb.com/welcome/introduction#get-started",
-  DEPLOY_EXTENSION: "https://docs.paradedb.com/deploy/pg_search",
+  INGEST: "https://docs.paradedb.com/integrations/overview",
+  DOCKER: "https://docs.paradedb.com/deploy/self-hosted/docker",
+  DEPLOY_EXTENSION: "https://docs.paradedb.com/deploy/self-hosted/extensions",
   CHANGELOG: "https://docs.paradedb.com/changelog",
 }
 
