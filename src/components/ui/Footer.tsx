@@ -18,11 +18,11 @@ const navigation = {
     { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
   connect: [
-    { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
+    { name: "Slack Community", href: social.SLACK, external: true },
     { name: "GitHub", href: github.REPO, external: true },
-    { name: "Community", href: social.SLACK, external: true },
     { name: "Twitter", href: social.TWITTER, external: true },
-    { name: "Linkedin", href: social.LINKEDIN, external: true },
+    { name: "LinkedIn", href: social.LINKEDIN, external: true },
+    { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
   ],
   resources: [
     { name: "Careers", href: company.CAREERS, external: true },
