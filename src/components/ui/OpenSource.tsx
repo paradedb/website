@@ -45,7 +45,7 @@ const GithubAction = () => (
 
 const features = [
   {
-    metric: "45K+",
+    metric: "50K+",
     name: "Docker deployments",
     description:
       "Our Docker image is the easiest way to test or self-manage ParadeDB.",
@@ -53,7 +53,7 @@ const features = [
     action: DockerAction,
   },
   {
-    metric: "10K+",
+    metric: "15K+",
     name: "Postgres extension installs",
     description:
       "All our features are shipped as Postgres extensions, which means that ParadeDB can drop into any self-managed Postgres.",
