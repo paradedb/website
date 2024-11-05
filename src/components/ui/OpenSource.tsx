@@ -53,7 +53,7 @@ const features = [
     action: DockerAction,
   },
   {
-    metric: "10K+",
+    metric: "15K+",
     name: "Postgres extension installs",
     description:
       "All our features are shipped as Postgres extensions, which means that ParadeDB can drop into any self-managed Postgres.",
