@@ -61,7 +61,7 @@ const features = [
     action: ExtensionAction,
   },
   {
-    metric: "5K+",
+    metric: "6K+",
     name: "Stargazers on Github",
     description:
       "ParadeDB is one of the fastest-growing open source database projects.",
