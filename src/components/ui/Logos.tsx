@@ -208,7 +208,7 @@ export const Logos = {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <g clip-path="url(#clip0_218_255)">
+      <g clipPath="url(#clip0_218_255)">
         <path d="M15 9.60938L30 4.6875V0H0V4.6875L15 9.60938Z" fill="#00835A" />
         <path d="M0 9.14062V30H7.03125V11.4844L0 9.14062Z" fill="#00835A" />
         <path d="M30 9.14062V30H22.9688V11.4844L30 9.14062Z" fill="#00835A" />

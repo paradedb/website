@@ -42,6 +42,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "A New Postgres Block Storage Layout for Full Text Search",
+    href: "block_storage_part_one",
+    date: "2025-01-06T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "The architecture and data access patterns of ParadeDB's new block storage layout",
+    categories: ["postgres", "block storage"],
+  },
+  {
     name: "Case Study: Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse",
     href: "case_study_alibaba",
     date: "2024-09-24T12:00:00.000Z",
