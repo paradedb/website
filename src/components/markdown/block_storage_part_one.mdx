@@ -128,7 +128,7 @@ Tantivy’s data access patterns for fast fields assume that the underlying file
 To address this problem, we [modified Tantivy](https://github.com/paradedb/tantivy/commit/b42a45dd4aa29ce880864c95f2b6e69ad26cdc06) to defer dereferencing large slices of bytes up front. Instead, bytes are dereferenced lazily and 
 cached in memory to avoid re-reading blocks that have been previously accessed.
 
-## Challenge 3: The Segment Count Explodes in Update-Heavy Scenarios
+### Challenge 3: The Segment Count Explodes in Update-Heavy Scenarios
 
 Because segments are immutable, every DML statement in Tantivy creates at least one new segment. Having too many segments can degrade performance because there is a cost to opening a segment reader, searching over the segment, and merging the results with other segments. While the ideal number of segments depends on the dataset and the underlying hardware, having more than a hundred segments is generally not optimal.
 
@@ -136,7 +136,7 @@ If a table experiences a high volume of updates, the number of segments quickly 
 
 It is critical that only one merge process runs concurrently. If two merge processes run at the same time, they could both see the same segments, merge them together, and create duplicate segments. To guard against this, every merge process atomically writes its transaction ID to a metadata block. Subsequent merge attempts first read this transaction ID, and are only allowed to proceed if the effects of that transaction ID are MVCC-visible.
 
-## Wrapping Up
+### Wrapping Up
 
 The following parts of this blog post series will dive into some more exciting challenges we faced with block storage, with a focus on concurrency and analytical performance. 
 
