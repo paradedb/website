@@ -29,7 +29,7 @@ While it’s not uncommon<sup>1</sup> for Postgres extensions to do this, block 
 3. Full support for Postgres MVCC (multi-version concurrency control)
 4. Integration with Postgres’ buffer cache, which has led to massive improvements in index creation times and write throughput
 
-<Image src={BlockStorageCreateIndex} className="max-w-xl"/>
+<Image src={BlockStorageCreateIndex} className="max-w-xs sm:max-w-md md:max-w-xl"/>
 <Image src={BlockStorageTps} />
 
 Moving to block storage has been one our biggest engineering bets. At first, we weren’t sure if reconciling the data access patterns and concurrency model of Postgres and [Tantivy](https://github.com/quickwit-oss/tantivy) — `pg_search`'s underlying search library — was possible without drastic changes to Tantivy<sup>2</sup>.
