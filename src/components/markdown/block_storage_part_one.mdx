@@ -19,10 +19,12 @@ import SplashImage from "@/app/blog/block_storage_part_one/opengraph-image.png"
 
 <Image src={SplashImage} className="rounded-xl" />
 
-[`pg_search`](https://github.com/paradedb/paradedb/tree/dev/pg_search) is now fully on Postgres block storage.
+We recently completed one of our biggest engineering bets to date: migrating [`pg_search`](https://github.com/paradedb/paradedb/tree/dev/pg_search), a
+Postgres extension for full text search and analytics, to Postgres' block storage system. In doing so, `pg_search` is the first-ever extension<sup>1</sup> to port an
+external file format to Postgres block storage.
 
-Prior to `v0.14.0`, `pg_search` operated outside of Postgres’ block storage and buffer cache. This means that the extension created files which were not managed by Postgres and could read the contents of those files directly from disk. 
-While it’s not uncommon<sup>1</sup> for Postgres extensions to do this, block storage has enabled `pg_search` to simultaneously achieve:
+For context - block storage is Postgres’ storage API that backs all of Postgres’ tables and built-in index types. Prior to this migration, `pg_search` operated outside of block storage. This means that the extension created files which were not managed by Postgres and could read the contents of those files directly from disk. 
+While it’s not uncommon<sup>2</sup> for Postgres extensions to do this, block storage has enabled `pg_search` to simultaneously achieve:
 
 1. Postgres write-ahead log (WAL) integration, which is necessary for physical replication of the index
 2. Crash and point-in-time recovery
@@ -32,13 +34,14 @@ While it’s not uncommon<sup>1</sup> for Postgres extensions to do this, block 
 <Image src={BlockStorageCreateIndex} className="max-w-xs sm:max-w-md md:max-w-xl"/>
 <Image src={BlockStorageTps} />
 
-Moving to block storage has been one our biggest engineering bets. At first, we weren’t sure if reconciling the data access patterns and concurrency model of Postgres and [Tantivy](https://github.com/quickwit-oss/tantivy) — `pg_search`'s underlying search library — was possible without drastic changes to Tantivy<sup>2</sup>.
+At first, we weren’t sure if reconciling the data access patterns and concurrency model of Postgres and [Tantivy](https://github.com/quickwit-oss/tantivy) — `pg_search`'s underlying search library — was possible without drastic changes to Tantivy<sup>3</sup>.
+In this blog post, we’ll dive into how we architected `pg_search`'s new block storage layout and data access patterns. 
 
-This is part one of a three-part series. In this part, we’ll dive into how we architected `pg_search`'s new block storage layout and data access patterns. Part two will discuss how we designed and tested `pg_search` to be MVCC-safe in update-heavy scenarios. Part three will dive into how we customized the block storage layout for analytical workloads (e.g. faceted search, aggregates).
+In the near future, we'll release two more posts: one to discuss how we designed and tested `pg_search` to be MVCC-safe in update-heavy scenarios, and another to dive into how we customized the block storage layout for analytical workloads (e.g. faceted search, aggregates).
 
 ### What Is Block Storage?
 
-Block storage is Postgres’ storage API that backs all of Postgres’ tables and built-in index types. The fundamental unit of block storage is a block: a chunk of 8192 bytes. When executing a query, Postgres reads blocks into buffers, which are stored in Postgres’ buffer cache. 
+The fundamental unit of block storage is a block: a chunk of 8192 bytes. When executing a query, Postgres reads blocks into buffers, which are stored in Postgres’ buffer cache. 
 
 DML (`INSERT`, `UPDATE`, `DELETE`, `COPY`) statements do not modify the physical block. Instead, their changes are written to the underlying buffers, which are later flushed to disk when evicted from the buffer cache or during a checkpoint. 
 
@@ -55,7 +58,7 @@ A custom Postgres index has two choices for persistence: use Postgres block stor
 1. Some data structures may not fit within a single 8KB block. Splitting data across multiple blocks can create lock contention, garbage collection, and concurrency challenges.
 2. Once a block has been allocated to a Postgres index, it cannot be physically deleted — only recycled. This means that the size of an index strictly increases until a `VACUUM FULL` or `REINDEX` is run. The index must be careful to return blocks that have been tombstoned by deletes or vacuums to Postgres’ free space map for reuse.
 3. In update-heavy scenarios, the index can become dominated by space that once belonged to dead (i.e. deleted) rows. This may increase the number of I/O operations required for searches and updates, which degrades performance. The index must find ways to reorganize and compact the index during vacuums.
-4. Because Postgres is single-threaded, multiple threads cannot concurrently read from block storage<sup>3</sup>. The index may need to leverage Postgres’ parallel workers.
+4. Because Postgres is single-threaded, multiple threads cannot concurrently read from block storage<sup>4</sup>. The index may need to leverage Postgres’ parallel workers.
 
 Once the index overcomes these hurdles, however, Postgres block storage does an incredible amount of heavy lifting. After a year of working with the filesystem, it became clear that block storage was the way forward.
 
@@ -105,7 +108,7 @@ Rather than being written to a file, segments are serialized and written to bloc
 
 Separate blocks are used to store the index schema, settings, and list of segment UUIDs.
 
-Postgres MVCC visibility information is stored alongside each segment UUID. At query time, the extension uses MVCC visibility rules to construct a snapshot of the list of all visible segments, which eliminates the need for a second list of visible segments<sup>3</sup>.
+Postgres MVCC visibility information is stored alongside each segment UUID. At query time, the extension uses MVCC visibility rules to construct a snapshot of the list of all visible segments, which eliminates the need for a second list of visible segments<sup>4</sup>.
 
 #### **Locks**
 
@@ -146,6 +149,7 @@ And please don’t hesitate to [give us a star](https://github.com/paradedb/para
 <hr/>
 
 <ol>
+<li className="text-sm">That we know of.</li>
 <li className="text-sm">[ZomboDB](https://github.com/zombodb/zombodb) and [pg_parquet](https://github.com/CrunchyData/pg_parquet) are examples of Postgres extensions that directly interact with the filesystem.</li>
 <li className="text-sm">Fortunately this ended up not being the case.</li>
 <li className="text-sm">This will be covered in detail in Parts 2 and 3.</li>
