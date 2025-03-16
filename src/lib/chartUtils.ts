@@ -67,12 +67,12 @@ export type AvailableChartColorsKeys = keyof typeof chartColors
 
 export const AvailableChartColors: AvailableChartColorsKeys[] = Object.keys(
   chartColors,
-) as Array
+) as Array<AvailableChartColorsKeys>
 
 export const constructCategoryColors = (
   categories: string[],
   colors: AvailableChartColorsKeys[],
-): Map => {
+): Map<string, AvailableChartColorsKeys> => {
   const categoryColors = new Map<string, AvailableChartColorsKeys>()
   categories.forEach((category, index) => {
     categoryColors.set(category, colors[index % colors.length])
@@ -100,7 +100,7 @@ export const getYAxisDomain = (
   minValue: number | undefined,
   maxValue: number | undefined,
 ) => {
-  const minDomain = autoMinValue ? "auto" : minValue ?? 0
+  const minDomain = autoMinValue ? "auto" : (minValue ?? 0)
   const maxDomain = maxValue ?? "auto"
   return [minDomain, maxDomain]
 }

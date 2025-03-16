@@ -1,6 +1,6 @@
 import type { SVGProps } from "react"
 
-export default function Arrow(props: SVGProps) {
+export default function Arrow(props: SVGProps<SVGSVGElement>) {
   return (
     <svg
       width={props.width}

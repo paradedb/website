@@ -1,4 +1,4 @@
-type IconProps = React.HTMLAttributes
+type IconProps = React.HTMLAttributes<SVGElement>
 
 export const Logos = {
   Zulip: (props: IconProps) => (

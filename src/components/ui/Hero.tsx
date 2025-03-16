@@ -15,7 +15,7 @@ export default function Hero() {
     >
       <h1
         id="hero-title"
-        className="mt-4 inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-indigo-900 text-transparent sm:text-6xl"
+        className="inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-indigo-900 text-transparent sm:text-6xl mt-4"
         style={{ animationDuration: "700ms" }}
       >
         Search and analytics <br /> for Postgres with{" "}

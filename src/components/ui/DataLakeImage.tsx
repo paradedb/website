@@ -1,6 +1,6 @@
 "use client"
 
-export default function SearchImage(props: React.SVGProps) {
+export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
       viewBox="0 0 575 250"

@@ -1,6 +1,6 @@
 "use client"
 
-export default function SearchImage(props: React.SVGProps) {
+export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
   return (
     <section aria-label="Hero Image of the website" className="flow-root">
       <svg

@@ -47,7 +47,9 @@ const inputStyles = tv({
   },
 })
 
-interface InputProps extends React.InputHTMLAttributes, VariantProps {
+interface InputProps
+  extends React.InputHTMLAttributes<HTMLInputElement>,
+    VariantProps<typeof inputStyles> {
   inputClassName?: string
 }
 

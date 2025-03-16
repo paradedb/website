@@ -1,6 +1,9 @@
 import { cx } from "@/lib/utils"
 
-export function ArrowAnimated({ className, ...props }: React.HTMLAttributes) {
+export function ArrowAnimated({
+  className,
+  ...props
+}: React.HTMLAttributes<SVGElement>) {
   return (
     <svg
       className={cx("-mr-1 ml-1.5 stroke-[1.5px]", className)}

@@ -1,6 +1,8 @@
 import React from "react"
 
-export default function IntegrationsImage(props: React.SVGProps) {
+export default function IntegrationsImage(
+  props: React.SVGProps<SVGSVGElement>,
+) {
   return (
     <svg
       viewBox="0 0 1075 500"
