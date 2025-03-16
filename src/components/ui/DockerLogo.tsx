@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 export default function DockerLogo(props: React.SVGProps<SVGSVGElement>) {
   return (
     <svg
@@ -19,5 +19,5 @@ export default function DockerLogo(props: React.SVGProps<SVGSVGElement>) {
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }

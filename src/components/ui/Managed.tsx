@@ -1,11 +1,11 @@
-import { documentation } from "@/lib/links"
-import Image from "next/image"
-import Link from "next/link"
-import RdsImage from "../../../public/rds.png"
-import S3Image from "../../../public/s3.png"
-import { Badge } from "../Badge"
-import { Button } from "../Button"
-import { ArrowAnimated } from "./ArrowAnimated"
+import { documentation } from "@/lib/links";
+import Image from "next/image";
+import Link from "next/link";
+import RdsImage from "../../../public/rds.png";
+import S3Image from "../../../public/s3.png";
+import { Badge } from "../Badge";
+import { Button } from "../Button";
+import { ArrowAnimated } from "./ArrowAnimated";
 
 export default function SearchAnalytics() {
   return (
@@ -100,5 +100,5 @@ export default function SearchAnalytics() {
         </div>
       </div>
     </section>
-  )
+  );
 }

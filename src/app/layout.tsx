@@ -1,20 +1,20 @@
-import Footer from "@/components/ui/Footer"
-import { Navigation } from "@/components/ui/Navbar"
-import { GoogleTagManager } from "@next/third-parties/google"
-import type { Metadata } from "next"
-import { ThemeProvider } from "next-themes"
-import { Inter } from "next/font/google"
-import { siteConfig } from "./siteConfig"
+import Footer from "@/components/ui/Footer";
+import { Navigation } from "@/components/ui/Navbar";
+import { GoogleTagManager } from "@next/third-parties/google";
+import type { Metadata } from "next";
+import { ThemeProvider } from "next-themes";
+import { Inter } from "next/font/google";
+import { siteConfig } from "./siteConfig";
 
-import "@mintlify/mdx/dist/styles.css"
-import "highlight.js/styles/github-dark.css"
-import "./globals.css"
+import "@mintlify/mdx/dist/styles.css";
+import "highlight.js/styles/github-dark.css";
+import "./globals.css";
 
 const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
-})
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
@@ -39,12 +39,12 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
-}
+};
 
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode
+  children: React.ReactNode;
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
@@ -59,5 +59,5 @@ export default function RootLayout({
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }

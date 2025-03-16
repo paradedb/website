@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -377,5 +377,5 @@ export default function SearchImage(props: React.SVGProps<SVGSVGElement>) {
         </defs>
       </svg>
     </section>
-  )
+  );
 }

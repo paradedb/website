@@ -5,8 +5,8 @@ import {
   RiShieldCheckLine,
   RiStackLine,
   RiSwap2Line,
-} from "@remixicon/react"
-import { Badge } from "../Badge"
+} from "@remixicon/react";
+import { Badge } from "../Badge";
 
 const benefits = [
   {
@@ -45,7 +45,7 @@ const benefits = [
       "Write queries using Postgres SQL. No need to wrangle with an unfamiliar query language.",
     icon: RiBracesLine,
   },
-]
+];
 
 export default function Benefits() {
   return (
@@ -76,5 +76,5 @@ export default function Benefits() {
         ))}
       </dl>
     </section>
-  )
+  );
 }

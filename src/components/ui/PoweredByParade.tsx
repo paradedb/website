@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 export default function PoweredByParade(
   props: React.SVGAttributes<SVGElement>,
@@ -237,5 +237,5 @@ export default function PoweredByParade(
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }

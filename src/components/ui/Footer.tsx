@@ -1,4 +1,4 @@
-import { siteConfig } from "@/app/siteConfig"
+import { siteConfig } from "@/app/siteConfig";
 import {
   company,
   documentation,
@@ -6,10 +6,10 @@ import {
   github,
   legal,
   social,
-} from "@/lib/links"
-import { RiArrowRightUpLine } from "@remixicon/react"
-import Link from "next/link"
-import { DatabaseLogo } from "../../../public/DatabaseLogo"
+} from "@/lib/links";
+import { RiArrowRightUpLine } from "@remixicon/react";
+import Link from "next/link";
+import { DatabaseLogo } from "../../../public/DatabaseLogo";
 
 const navigation = {
   company: [
@@ -34,7 +34,7 @@ const navigation = {
     { name: "Privacy", href: legal.PRIVACY, external: true },
     { name: "Terms", href: legal.TERMS, external: true },
   ],
-}
+};
 
 export default function Footer() {
   return (
@@ -201,5 +201,5 @@ export default function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

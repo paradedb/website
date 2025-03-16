@@ -1,9 +1,9 @@
-import { Logos } from "./Logos"
-import classNames from "classnames"
+import { Logos } from "./Logos";
+import classNames from "classnames";
 
-const logoCellStyle = "px-4 sm:px-12 flex justify-center h-16 sm:h-20"
-const bottomDotted = "border-dotted border-b border-slate-200"
-const rightDotted = "border-dotted border-r border-slate-200"
+const logoCellStyle = "px-4 sm:px-12 flex justify-center h-16 sm:h-20";
+const bottomDotted = "border-dotted border-b border-slate-200";
+const rightDotted = "border-dotted border-r border-slate-200";
 
 export default function LogoCloud() {
   return (
@@ -36,5 +36,5 @@ export default function LogoCloud() {
         </div>
       </div>
     </section>
-  )
+  );
 }

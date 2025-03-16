@@ -1,4 +1,4 @@
-import { InstaxImage } from "./InstaxImage"
+import { InstaxImage } from "./InstaxImage";
 
 export default function TeamGallery() {
   return (
@@ -78,5 +78,5 @@ export default function TeamGallery() {
         </div>
       </div>
     </section>
-  )
+  );
 }

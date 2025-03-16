@@ -1,55 +1,55 @@
-"use client"
+"use client";
 
-import { siteConfig } from "@/app/siteConfig"
-import { documentation, github, social } from "@/lib/links"
-import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react"
-import classNames from "classnames"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import React from "react"
-import { DatabaseLogo } from "../../../public/DatabaseLogo"
-import { Button } from "../Button"
+import { siteConfig } from "@/app/siteConfig";
+import { documentation, github, social } from "@/lib/links";
+import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react";
+import classNames from "classnames";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import React from "react";
+import { DatabaseLogo } from "../../../public/DatabaseLogo";
+import { Button } from "../Button";
 
 const formatStarCount = (count: number) => {
   if (count < 1000) {
-    return count
+    return count;
   } else {
-    return `${(count / 1000).toFixed(1)}K`
+    return `${(count / 1000).toFixed(1)}K`;
   }
-}
+};
 
 export function Navigation() {
-  const [stars, setStars] = React.useState()
-  const [open, setOpen] = React.useState(false)
-  const pathname = usePathname()
+  const [stars, setStars] = React.useState();
+  const [open, setOpen] = React.useState(false);
+  const pathname = usePathname();
 
   React.useEffect(() => {
-    const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)")
+    const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)");
     const handleMediaQueryChange = () => {
-      setOpen(false)
-    }
+      setOpen(false);
+    };
 
-    mediaQuery.addEventListener("change", handleMediaQueryChange)
-    handleMediaQueryChange()
+    mediaQuery.addEventListener("change", handleMediaQueryChange);
+    handleMediaQueryChange();
 
     return () => {
-      mediaQuery.removeEventListener("change", handleMediaQueryChange)
-    }
-  }, [])
+      mediaQuery.removeEventListener("change", handleMediaQueryChange);
+    };
+  }, []);
 
   React.useEffect(() => {
     async function fetchStars() {
       try {
-        const response = await fetch(github.API)
+        const response = await fetch(github.API);
         if (response.ok) {
-          const data = await response.json()
-          setStars(data.stargazers_count)
+          const data = await response.json();
+          setStars(data.stargazers_count);
         }
       } catch (error) {}
     }
 
-    fetchStars()
-  }, [])
+    fetchStars();
+  }, []);
 
   return (
     <div>
@@ -175,5 +175,5 @@ export function Navigation() {
         </div>
       </header>
     </div>
-  )
+  );
 }

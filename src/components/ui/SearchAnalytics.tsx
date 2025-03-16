@@ -1,10 +1,10 @@
-import { documentation } from "@/lib/links"
-import Link from "next/link"
-import { Badge } from "../Badge"
-import { Button } from "../Button"
-import AnalyticsImage from "./AnalyticsImage"
-import { ArrowAnimated } from "./ArrowAnimated"
-import SearchImage from "./SearchImage"
+import { documentation } from "@/lib/links";
+import Link from "next/link";
+import { Badge } from "../Badge";
+import { Button } from "../Button";
+import AnalyticsImage from "./AnalyticsImage";
+import { ArrowAnimated } from "./ArrowAnimated";
+import SearchImage from "./SearchImage";
 
 export default function SearchAnalytics() {
   return (
@@ -94,5 +94,5 @@ export default function SearchAnalytics() {
         </div>
       </div>
     </section>
-  )
+  );
 }

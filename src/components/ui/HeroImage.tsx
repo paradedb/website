@@ -1,6 +1,6 @@
-"use client"
+"use client";
 
-import ThemedImage from "./ThemedImage"
+import ThemedImage from "./ThemedImage";
 
 export default function HeroImage() {
   return (
@@ -18,5 +18,5 @@ export default function HeroImage() {
         </div>
       </div>
     </section>
-  )
+  );
 }

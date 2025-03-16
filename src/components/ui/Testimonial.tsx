@@ -1,5 +1,5 @@
-import Image from "next/image"
-import Balancer from "react-wrap-balancer"
+import Image from "next/image";
+import Balancer from "react-wrap-balancer";
 
 export default function Testimonial() {
   return (
@@ -29,5 +29,5 @@ export default function Testimonial() {
         </figcaption>
       </figure>
     </section>
-  )
+  );
 }

@@ -1,14 +1,14 @@
-"use client"
-import * as Tabs from "@radix-ui/react-tabs"
-import { RiCodeSSlashLine, RiShapesLine } from "@remixicon/react"
-import Arrow from "../Arrow"
+"use client";
+import * as Tabs from "@radix-ui/react-tabs";
+import { RiCodeSSlashLine, RiShapesLine } from "@remixicon/react";
+import Arrow from "../Arrow";
 
 export default function CodeExampleTabs({
   tab1,
   tab2,
 }: {
-  tab1?: any
-  tab2?: any
+  tab1?: any;
+  tab2?: any;
 }) {
   return (
     <Tabs.Root
@@ -66,5 +66,5 @@ export default function CodeExampleTabs({
         <Tabs.Content value="tab2">{tab2}</Tabs.Content>
       </div>
     </Tabs.Root>
-  )
+  );
 }

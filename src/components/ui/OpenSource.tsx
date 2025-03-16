@@ -1,11 +1,11 @@
-import { documentation, github } from "@/lib/links"
-import { RiGithubFill } from "@remixicon/react"
-import Link from "next/link"
-import { Badge } from "../Badge"
-import { Button } from "../Button"
-import { ArrowAnimated } from "./ArrowAnimated"
-import DockerLogo from "./DockerLogo"
-import PostgresLogo from "./PostgresLogo"
+import { documentation, github } from "@/lib/links";
+import { RiGithubFill } from "@remixicon/react";
+import Link from "next/link";
+import { Badge } from "../Badge";
+import { Button } from "../Button";
+import { ArrowAnimated } from "./ArrowAnimated";
+import DockerLogo from "./DockerLogo";
+import PostgresLogo from "./PostgresLogo";
 
 const DockerAction = () => (
   <Link href={documentation.DOCKER} target="_blank">
@@ -17,7 +17,7 @@ const DockerAction = () => (
       <ArrowAnimated className="stroke-indigo-600" aria-hidden="true" />
     </Button>
   </Link>
-)
+);
 
 const ExtensionAction = () => (
   <Link href={documentation.DEPLOY_EXTENSION} target="_blank">
@@ -29,7 +29,7 @@ const ExtensionAction = () => (
       <ArrowAnimated className="stroke-indigo-600" aria-hidden="true" />
     </Button>
   </Link>
-)
+);
 
 const GithubAction = () => (
   <Link href={github.REPO} target="_blank">
@@ -41,7 +41,7 @@ const GithubAction = () => (
       <ArrowAnimated className="stroke-indigo-600" aria-hidden="true" />
     </Button>
   </Link>
-)
+);
 
 const features = [
   {
@@ -68,7 +68,7 @@ const features = [
     icon: RiGithubFill,
     action: GithubAction,
   },
-]
+];
 
 export default function OpenSource() {
   return (
@@ -111,5 +111,5 @@ export default function OpenSource() {
         ))}
       </dl>
     </section>
-  )
+  );
 }

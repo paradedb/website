@@ -1,11 +1,11 @@
-import Code from "@/components/Code"
-import { ArrowAnimated } from "@/components/ui/ArrowAnimated"
-import { documentation, social } from "@/lib/links"
-import Link from "next/link"
-import { Button } from "../Button"
+import Code from "@/components/Code";
+import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
+import { documentation, social } from "@/lib/links";
+import Link from "next/link";
+import { Button } from "../Button";
 
 const code = `docker run --name paradedb -e POSTGRES_PASSWORD=password paradedb/paradedb
-docker exec -it paradedb psql -U postgres`
+docker exec -it paradedb psql -U postgres`;
 
 export default function Hero() {
   return (
@@ -69,5 +69,5 @@ export default function Hero() {
         </div>
       </div>
     </section>
-  )
+  );
 }

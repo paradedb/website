@@ -1,16 +1,16 @@
-import { cx } from "@/lib/utils"
-import type { BundledLanguage, BundledTheme } from "shiki"
-import { codeToHtml } from "shiki"
-import CopyToClipboard from "./CopyToClipboard"
+import { cx } from "@/lib/utils";
+import type { BundledLanguage, BundledTheme } from "shiki";
+import { codeToHtml } from "shiki";
+import CopyToClipboard from "./CopyToClipboard";
 
 type Props = {
-  code: string
-  lang?: BundledLanguage
-  theme?: BundledTheme
-  filename?: string
-  copy?: boolean
-  className?: string
-}
+  code: string;
+  lang?: BundledLanguage;
+  theme?: BundledTheme;
+  filename?: string;
+  copy?: boolean;
+  className?: string;
+};
 
 export default async function Code({
   code,
@@ -26,7 +26,7 @@ export default async function Code({
   const html = await codeToHtml(code, {
     lang,
     theme,
-  })
+  });
 
   return (
     <div className={cx("relative w-full overflow-auto", className)}>
@@ -43,5 +43,5 @@ export default async function Code({
         dangerouslySetInnerHTML={{ __html: html }}
       ></div>
     </div>
-  )
+  );
 }

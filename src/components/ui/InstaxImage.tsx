@@ -1,6 +1,6 @@
-"use client"
-import { cx } from "@/lib/utils"
-import Image from "next/image"
+"use client";
+import { cx } from "@/lib/utils";
+import Image from "next/image";
 
 export function InstaxImage({
   className,
@@ -10,12 +10,12 @@ export function InstaxImage({
   alt,
   caption,
 }: {
-  className?: string
-  src: string
-  width: number
-  height: number
-  alt: string
-  caption: string
+  className?: string;
+  src: string;
+  width: number;
+  height: number;
+  alt: string;
+  caption: string;
 }) {
   return (
     <figure
@@ -36,5 +36,5 @@ export function InstaxImage({
         <figcaption className="text-center">{caption}</figcaption>
       </div>
     </figure>
-  )
+  );
 }

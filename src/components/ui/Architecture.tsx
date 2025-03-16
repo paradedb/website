@@ -1,8 +1,8 @@
-import Image from "next/image"
-import Tantivy from "../../../public/tantivy-logo.png"
-import { Badge } from "../Badge"
-import DuckdbLogo from "./DuckdbLogo"
-import PostgresLogo from "./PostgresLogo"
+import Image from "next/image";
+import Tantivy from "../../../public/tantivy-logo.png";
+import { Badge } from "../Badge";
+import DuckdbLogo from "./DuckdbLogo";
+import PostgresLogo from "./PostgresLogo";
 
 const TantivyLogo = () => (
   <Image
@@ -12,7 +12,7 @@ const TantivyLogo = () => (
     width={26}
     className="h-4 w-4 sm:h-6 sm:w-6"
   />
-)
+);
 
 const features = [
   {
@@ -33,7 +33,7 @@ const features = [
       "DuckDB, an analytical database built for speed, powers ParadeDB's data lake integrations.",
     icon: DuckdbLogo,
   },
-]
+];
 
 export default function Architecture() {
   return (
@@ -70,5 +70,5 @@ export default function Architecture() {
         ))}
       </dl>
     </section>
-  )
+  );
 }

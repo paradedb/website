@@ -1,9 +1,9 @@
-import classNameFunc from "classnames"
+import classNameFunc from "classnames";
 
 export default function RadialBackground({
   className,
 }: {
-  className?: string
+  className?: string;
 }) {
   return (
     <div
@@ -13,5 +13,5 @@ export default function RadialBackground({
       )}
       aria-hidden="true"
     ></div>
-  )
+  );
 }

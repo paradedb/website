@@ -1,7 +1,7 @@
 export const company = {
   CAREERS:
     "https://www.notion.so/paradedb/ParadeDB-Job-Board-50b45af7a2834e22958b171ffa008e00",
-}
+};
 
 export const documentation = {
   BASE: "https://docs.paradedb.com",
@@ -12,19 +12,19 @@ export const documentation = {
   DOCKER: "https://docs.paradedb.com/deploy/self-hosted/docker",
   DEPLOY_EXTENSION: "https://docs.paradedb.com/deploy/self-hosted/extensions",
   CHANGELOG: "https://docs.paradedb.com/changelog",
-}
+};
 
 export const legal = {
   TERMS:
     "https://paradedb.notion.site/Terms-of-Use-d17c9916a5b746fab86c274feb35da75",
   PRIVACY:
     "https://paradedb.notion.site/Privacy-Policy-a7ce333c45c8478fb03250dff7e573b7?pvs=4",
-}
+};
 
 export const github = {
   REPO: "https://github.com/paradedb/paradedb",
   API: "https://api.github.com/repos/paradedb/paradedb",
-}
+};
 
 export const social = {
   TWITTER: "https://x.com/paradedb",
@@ -32,13 +32,13 @@ export const social = {
   SLACK:
     "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-2lkzdsetw-OiIgbyFeiibd1DG~6wFgTQ",
   CALENDLY: "https://calendly.com/paradedb",
-}
+};
 
 export const email = {
   HELLO: "mailto:hello@paradedb.com",
   SUPPORT: "mailto:support@paradedb.com",
   SALES: "mailto:sales@paradedb.com",
-}
+};
 
 export const blog = [
   {
@@ -153,4 +153,4 @@ export const blog = [
     description: "Announcing the launch of ParadeDB",
     categories: ["announcement"],
   },
-]
+];

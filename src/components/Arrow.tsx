@@ -1,4 +1,4 @@
-import type { SVGProps } from "react"
+import type { SVGProps } from "react";
 
 export default function Arrow(props: SVGProps<SVGSVGElement>) {
   return (
@@ -12,5 +12,5 @@ export default function Arrow(props: SVGProps<SVGSVGElement>) {
     >
       <polygon points="0,0 30,0 15,10" />
     </svg>
-  )
+  );
 }

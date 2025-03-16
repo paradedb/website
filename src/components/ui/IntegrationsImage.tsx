@@ -1,4 +1,4 @@
-import React from "react"
+import React from "react";
 
 export default function IntegrationsImage(
   props: React.SVGProps<SVGSVGElement>,
@@ -504,5 +504,5 @@ export default function IntegrationsImage(
         </clipPath>
       </defs>
     </svg>
-  )
+  );
 }

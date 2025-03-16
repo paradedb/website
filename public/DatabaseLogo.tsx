@@ -1,4 +1,4 @@
-import type { SVGProps } from "react"
+import type { SVGProps } from "react";
 export const DatabaseLogo = (props: SVGProps<SVGSVGElement>) => (
   <svg
     viewBox="0 0 639 82"
@@ -48,4 +48,4 @@ export const DatabaseLogo = (props: SVGProps<SVGSVGElement>) => (
       />
     </g>
   </svg>
-)
+);

@@ -1,12 +1,12 @@
-"use client"
+"use client";
 
-import { Button } from "@/components/Button"
-import { ArrowAnimated } from "@/components/ui/ArrowAnimated"
-import { blog } from "@/lib/links"
-import classNames from "classnames"
-import Link from "next/link"
-import { usePathname } from "next/navigation"
-import { siteConfig } from "../siteConfig"
+import { Button } from "@/components/Button";
+import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
+import { blog } from "@/lib/links";
+import classNames from "classnames";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { siteConfig } from "../siteConfig";
 
 const BackButton = ({ href }: { href: string }) => (
   <Link href={href}>
@@ -21,7 +21,7 @@ const BackButton = ({ href }: { href: string }) => (
       <div>Previous Post</div>
     </Button>
   </Link>
-)
+);
 
 const NextButton = ({ href }: { href: string }) => (
   <Link href={href}>
@@ -33,23 +33,23 @@ const NextButton = ({ href }: { href: string }) => (
       <ArrowAnimated className="stroke-gray-600" aria-hidden="true" />
     </Button>
   </Link>
-)
+);
 
 export default function BlogLayout({
   children, // will be a page or nested layout
 }: {
-  children: React.ReactNode
+  children: React.ReactNode;
 }) {
-  const pathname = usePathname()
-  const currentPageIdx = blog.findIndex((item) => pathname.endsWith(item.href))
-  const canGoBackward = currentPageIdx > 0
-  const canGoForward = currentPageIdx < blog.length - 1
+  const pathname = usePathname();
+  const currentPageIdx = blog.findIndex((item) => pathname.endsWith(item.href));
+  const canGoBackward = currentPageIdx > 0;
+  const canGoForward = currentPageIdx < blog.length - 1;
   const nextHref = canGoForward
     ? `${siteConfig.baseLinks.blog}/${blog[currentPageIdx + 1].href}`
-    : ""
+    : "";
   const previousHref = canGoBackward
     ? `${siteConfig.baseLinks.blog}/${blog[currentPageIdx - 1].href}`
-    : ""
+    : "";
 
   return (
     <div className="mx-auto flex max-w-6xl md:mt-12">
@@ -95,5 +95,5 @@ export default function BlogLayout({
         </div>
       </main>
     </div>
-  )
+  );
 }

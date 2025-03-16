@@ -1,24 +1,24 @@
-"use client"
-import { documentation, email, social } from "@/lib/links"
-import Link from "next/link"
-import React from "react"
-import Balancer from "react-wrap-balancer"
-import { Button } from "../Button"
-import { Input } from "../Input"
-import RadialBackground from "./RadialBackground"
+"use client";
+import { documentation, email, social } from "@/lib/links";
+import Link from "next/link";
+import React from "react";
+import Balancer from "react-wrap-balancer";
+import { Button } from "../Button";
+import { Input } from "../Input";
+import RadialBackground from "./RadialBackground";
 
 export default function Cta() {
-  const [userInput, setUserInput] = React.useState("")
+  const [userInput, setUserInput] = React.useState("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInput(e.target.value)
-  }
+    setUserInput(e.target.value);
+  };
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    let url = `${social.CALENDLY}?email=${userInput}`
-    window.open(url, "_blank")
-  }
+    e.preventDefault();
+    let url = `${social.CALENDLY}?email=${userInput}`;
+    window.open(url, "_blank");
+  };
 
   return (
     <section
@@ -94,5 +94,5 @@ export default function Cta() {
         </div>
       </div>
     </section>
-  )
+  );
 }
