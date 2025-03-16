@@ -61,28 +61,22 @@ const switchVariants = tv({
   },
 })
 
-interface SwitchProps
-  extends Omit<
-      React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
-      "asChild"
-    >,
-    VariantProps<typeof switchVariants> {}
+interface SwitchProps extends Omit, VariantProps {}
 
-const Switch = React.forwardRef<
-  React.ElementRef<typeof SwitchPrimitives.Root>,
-  SwitchProps
->(({ className, size, ...props }: SwitchProps, forwardedRef) => {
-  const { root, thumb } = switchVariants({ size })
-  return (
-    <SwitchPrimitives.Root
-      ref={forwardedRef}
-      className={cx(root(), className)}
-      {...props}
-    >
-      <SwitchPrimitives.Thumb className={cx(thumb())} />
-    </SwitchPrimitives.Root>
-  )
-})
+const Switch = React.forwardRef<React.ElementRef, SwitchProps>(
+  ({ className, size, ...props }: SwitchProps, forwardedRef) => {
+    const { root, thumb } = switchVariants({ size })
+    return (
+      <SwitchPrimitives.Root
+        ref={forwardedRef}
+        className={cx(root(), className)}
+        {...props}
+      >
+        <SwitchPrimitives.Thumb className={cx(thumb())} />
+      </SwitchPrimitives.Root>
+    )
+  },
+)
 
 Switch.displayName = "Switch"
 

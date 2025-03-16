@@ -141,7 +141,7 @@ const ScrollButton = ({ icon, onClick, disabled }: ScrollButtonProps) => {
   )
 }
 
-interface LegendProps extends React.OlHTMLAttributes<HTMLOListElement> {
+interface LegendProps extends React.OlHTMLAttributes {
   categories: string[]
   colors?: AvailableChartColorsKeys[]
   onClickLegendItem?: (category: string, color: string) => void
@@ -314,8 +314,8 @@ Legend.displayName = "Legend"
 
 const ChartLegend = (
   { payload }: any,
-  categoryColors: Map<string, AvailableChartColorsKeys>,
-  setLegendHeight: React.Dispatch<React.SetStateAction<number>>,
+  categoryColors: Map,
+  setLegendHeight: React.Dispatch,
   activeLegend: string | undefined,
   onClick?: (category: string, color: string) => void,
   enableLegendSlider?: boolean,
@@ -361,7 +361,7 @@ const ChartLegend = (
 
 //#region Tooltip
 
-type TooltipProps = Pick<ChartTooltipProps, "active" | "payload" | "label">
+type TooltipProps = Pick
 
 type PayloadItem = {
   category: string
@@ -471,8 +471,8 @@ type BaseEventProps = {
 
 type LineChartEventProps = BaseEventProps | null | undefined
 
-interface LineChartProps extends React.HTMLAttributes<HTMLDivElement> {
-  data: Record<string, any>[]
+interface LineChartProps extends React.HTMLAttributes {
+  data: Record[]
   index: string
   categories: string[]
   colors?: AvailableChartColorsKeys[]
@@ -497,7 +497,7 @@ interface LineChartProps extends React.HTMLAttributes<HTMLDivElement> {
   yAxisLabel?: string
   legendPosition?: "left" | "center" | "right"
   tooltipCallback?: (tooltipCallbackContent: TooltipProps) => void
-  customTooltip?: React.ComponentType<TooltipProps>
+  customTooltip?: React.ComponentType
 }
 
 const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(

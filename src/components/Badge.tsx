@@ -1,6 +1,6 @@
 import React from "react"
 
-interface BadgeProps extends React.ComponentPropsWithoutRef<"span"> {}
+interface BadgeProps extends React.ComponentPropsWithoutRef {}
 
 const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ children, className, ...props }: BadgeProps, forwardedRef) => {

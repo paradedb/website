@@ -7,23 +7,15 @@ import React from "react"
 
 import { cx } from "@/lib/utils"
 
-interface TooltipProps
-  extends Omit<TooltipPrimitives.TooltipContentProps, "content" | "onClick">,
-    Pick<
-      TooltipPrimitives.TooltipProps,
-      "open" | "defaultOpen" | "onOpenChange" | "delayDuration"
-    > {
+interface TooltipProps extends Omit, Pick {
   content: React.ReactNode
-  onClick?: React.MouseEventHandler<HTMLButtonElement>
+  onClick?: React.MouseEventHandler
   side?: "bottom" | "left" | "top" | "right"
   showArrow?: boolean
   triggerAsChild?: boolean
 }
 
-const Tooltip = React.forwardRef<
-  React.ElementRef<typeof TooltipPrimitives.Content>,
-  TooltipProps
->(
+const Tooltip = React.forwardRef<React.ElementRef, TooltipProps>(
   (
     {
       children,

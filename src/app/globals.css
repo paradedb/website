@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-@import '@mintlify/components';
+@import "@mintlify/components";
 
 @font-face {
   font-family: "NanumPenScript";
@@ -59,12 +59,18 @@ a {
 
 .border-t-gradient {
   border-top: 1px solid transparent;
-  border-image: linear-gradient(to right, #4F46E500 10%, #4F46E5 50%, #4F46E500 90%) 1;
+  border-image: linear-gradient(
+      to right,
+      #4f46e500 10%,
+      #4f46e5 50%,
+      #4f46e500 90%
+    )
+    1;
 }
 
-@media (max-width: 639px) { /* Tailwind's `sm` breakpoint */
+@media (max-width: 639px) {
+  /* Tailwind's `sm` breakpoint */
   .border-t-gradient {
     border-top: none;
   }
 }
-

@@ -1,8 +1,6 @@
 import React from "react"
 
-export default function PoweredByParade(
-  props: React.SVGAttributes<SVGElement>,
-) {
+export default function PoweredByParade(props: React.SVGAttributes) {
   return (
     <svg
       viewBox="0 0 700 188"

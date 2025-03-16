@@ -88,9 +88,7 @@ const buttonVariants = tv({
   },
 })
 
-interface ButtonProps
-  extends React.ComponentPropsWithoutRef<"button">,
-    VariantProps<typeof buttonVariants> {
+interface ButtonProps extends React.ComponentPropsWithoutRef, VariantProps {
   asChild?: boolean
   isLoading?: boolean
   loadingText?: string

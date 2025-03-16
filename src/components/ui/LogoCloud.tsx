@@ -32,7 +32,7 @@ export default function LogoCloud() {
           <Logos.Zulip className="mx-auto w-12 sm:w-16" />
         </div>
         <div className={logoCellStyle}>
-          <Logos.Insa className="mx-auto w-12 sm:w-16 my-auto" />
+          <Logos.Insa className="mx-auto my-auto w-12 sm:w-16" />
         </div>
       </div>
     </section>

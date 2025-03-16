@@ -10,11 +10,11 @@ import RadialBackground from "./RadialBackground"
 export default function Cta() {
   const [userInput, setUserInput] = React.useState("")
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent) => {
     setUserInput(e.target.value)
   }
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     let url = `${social.CALENDLY}?email=${userInput}`
     window.open(url, "_blank")

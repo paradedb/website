@@ -1,6 +1,6 @@
 import React from "react"
 
-export default function DuckdbLogo(props: React.SVGProps<SVGSVGElement>) {
+export default function DuckdbLogo(props: React.SVGProps) {
   return (
     <svg
       viewBox="0 0 300 300"

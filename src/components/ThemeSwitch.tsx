@@ -8,8 +8,8 @@ import React, { useEffect, useState } from "react"
 // Based on Tremor Raw RadioGroup [v0.0.0]
 
 const RadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitives.Root>
+  React.ElementRef,
+  React.ComponentPropsWithoutRef
 >(({ className, ...props }, forwardedRef) => {
   return (
     <RadioGroupPrimitives.Root
@@ -22,8 +22,8 @@ const RadioGroup = React.forwardRef<
 RadioGroup.displayName = "RadioGroup"
 
 const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitives.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitives.Item> & {
+  React.ElementRef,
+  React.ComponentPropsWithoutRef & {
     icon: React.ElementType
   }
 >(({ className, icon, ...props }, forwardedRef) => {

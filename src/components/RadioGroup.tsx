@@ -6,8 +6,8 @@ import React from "react"
 import { cx, focusRing } from "@/lib/utils"
 
 const RadioGroup = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitives.Root>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitives.Root>
+  React.ElementRef,
+  React.ComponentPropsWithoutRef
 >(({ className, ...props }, forwardedRef) => {
   return (
     <RadioGroupPrimitives.Root
@@ -21,8 +21,8 @@ const RadioGroup = React.forwardRef<
 RadioGroup.displayName = "RadioGroup"
 
 const RadioGroupIndicator = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitives.Indicator>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitives.Indicator>
+  React.ElementRef,
+  React.ComponentPropsWithoutRef
 >(({ className, ...props }, forwardedRef) => {
   return (
     <RadioGroupPrimitives.Indicator
@@ -47,8 +47,8 @@ const RadioGroupIndicator = React.forwardRef<
 RadioGroupIndicator.displayName = "RadioGroupIndicator"
 
 const RadioGroupItem = React.forwardRef<
-  React.ElementRef<typeof RadioGroupPrimitives.Item>,
-  React.ComponentPropsWithoutRef<typeof RadioGroupPrimitives.Item>
+  React.ElementRef,
+  React.ComponentPropsWithoutRef
 >(({ className, ...props }, forwardedRef) => {
   return (
     <RadioGroupPrimitives.Item

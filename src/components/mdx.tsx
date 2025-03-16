@@ -36,7 +36,7 @@ function CustomHeading(props: any) {
   )
 }
 
-export const H1 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
+export const H1 = ({ children }: React.HTMLProps) => (
   <CustomHeading
     className="text-3xl font-bold normal-case tracking-tight text-gray-900 sm:text-4xl"
     level={1}
@@ -45,7 +45,7 @@ export const H1 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
   </CustomHeading>
 )
 
-export const H2 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
+export const H2 = ({ children }: React.HTMLProps) => (
   <CustomHeading
     className="mb-4 text-lg font-semibold normal-case tracking-tight text-gray-900"
     level={2}
@@ -54,7 +54,7 @@ export const H2 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
   </CustomHeading>
 )
 
-export const H3 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
+export const H3 = ({ children }: React.HTMLProps) => (
   <CustomHeading
     className="mb-2 font-semibold normal-case tracking-tight text-gray-900"
     level={3}
@@ -63,18 +63,18 @@ export const H3 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
   </CustomHeading>
 )
 
-export const P = (props: React.HTMLProps<HTMLParagraphElement>) => (
+export const P = (props: React.HTMLProps) => (
   <p {...props} className="mb-8 leading-7 text-gray-600" />
 )
 
-export const Ul = (props: React.HTMLAttributes<HTMLUListElement>) => (
+export const Ul = (props: React.HTMLAttributes) => (
   <ul
     className="mb-10 ml-[30px] list-['–__'] space-y-1 leading-8 text-gray-600"
     {...props}
   />
 )
 
-export const Bold = (props: React.HTMLAttributes<HTMLSpanElement>) => (
+export const Bold = (props: React.HTMLAttributes) => (
   <span className="font-semibold text-gray-900" {...props} />
 )
 
