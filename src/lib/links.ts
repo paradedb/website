@@ -30,7 +30,7 @@ export const social = {
   TWITTER: "https://x.com/paradedb",
   LINKEDIN: "https://www.linkedin.com/company/paradedb",
   SLACK:
-    "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-2lkzdsetw-OiIgbyFeiibd1DG~6wFgTQ",
+    "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw",
   CALENDLY: "https://calendly.com/paradedb",
 };
 
