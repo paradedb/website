@@ -13,22 +13,19 @@ export default function Hero() {
       aria-labelledby="hero-title"
       className="sm:pt-23 flex flex-col items-center justify-center bg-white px-4 pt-20 text-center"
     >
-      <Link
-         target="_blank"
-         href="https://neon.tech/blog/pgsearch-on-neon"
-       >
-         <div className="group mx-auto flex cursor-pointer space-x-2 rounded-full bg-slate-50 px-4 py-2 text-xs text-indigo-950 ring ring-1 ring-slate-200">
-           <div className="relative size-4">
-             <div className="absolute inset-[1px] rounded-full bg-emerald-500/20" />
-             <div className="absolute inset-1 rounded-full bg-emerald-600" />
-           </div>
-           <div>ParadeDB is publicly available on Neon</div>
-           <ArrowAnimated
-             className="relative top-1 h-2 w-2 stroke-indigo-900"
-             aria-hidden="true"
-           />
-         </div>
-       </Link>
+      <Link target="_blank" href="https://neon.tech/blog/pgsearch-on-neon">
+        <div className="group mx-auto flex cursor-pointer space-x-2 rounded-full bg-slate-50 px-4 py-2 text-xs text-indigo-950 ring ring-1 ring-slate-200">
+          <div className="relative size-4">
+            <div className="absolute inset-[1px] rounded-full bg-emerald-500/20" />
+            <div className="absolute inset-1 rounded-full bg-emerald-600" />
+          </div>
+          <div>ParadeDB is publicly available on Neon</div>
+          <ArrowAnimated
+            className="relative top-1 h-2 w-2 stroke-indigo-900"
+            aria-hidden="true"
+          />
+        </div>
+      </Link>
       <h1
         id="hero-title"
         className="inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-indigo-900 text-transparent sm:text-6xl mt-4"

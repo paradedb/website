@@ -1,0 +1,39 @@
+# workflows/lint-typescript.yml
+#
+# Lint TypeScript
+# Lint TypeScript files using Prettier.
+
+name: Lint TypeScript
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "src/**/*.ts"
+      - "src/**/*.tsx"
+      - ".github/workflows/lint-typescript.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: lint-typescript-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-typescript:
+    name: Lint TypeScript Files
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v4
+
+      - name: Set up NodeJS Environment
+        uses: actions/setup-node@v4
+
+      - name: Install Prettier
+        run: npm install -g prettier
+
+      - name: Check Formatting on TypeScript Files
+        run: |
+          prettier --check "src/**/*.{ts,tsx}" --ignore-path .prettierignore
