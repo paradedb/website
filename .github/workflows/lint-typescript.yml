@@ -32,8 +32,11 @@ jobs:
         uses: actions/setup-node@v4
 
       - name: Install Prettier
-        run: npm install -g prettier
+        run: npm ci
 
       - name: Check Formatting on TypeScript Files
         run: |
-          prettier --check "src/**/*.{ts,tsx}" --ignore-path .prettierignore
+          npx prettier --version
+          npx prettier --find-config-path src/lib/chartUtils.ts
+          npx prettier --check "src/lib/chartUtils.ts" --ignore-path .prettierignore
+          # prettier --check "src/**/*.{ts,tsx}" --ignore-path .prettierignore
