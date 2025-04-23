@@ -34,6 +34,6 @@ jobs:
       - name: Install Prettier
         run: npm install -g prettier
 
-      - name: Check formatting on TS/TSX
+      - name: Check Formatting on TypeScript Files
         run: |
           prettier --check "src/**/*.{ts,tsx}" --ignore-path .prettierignore
