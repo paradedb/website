@@ -26,7 +26,7 @@ export default function LogoCloud() {
           <Logos.Alibaba className="mx-auto w-20 sm:w-24" />
         </div>
         <div className={classNames(logoCellStyle, bottomDotted, rightDotted)}>
-          <Logos.Tcdi className="mx-auto w-8 sm:w-10 sm:pb-1" />
+          <Logos.Tcdi className="mx-auto w-8 sm:w-10" />
         </div>
         <div className={classNames(logoCellStyle, rightDotted)}>
           <Logos.DemandScience className="mx-auto w-32 sm:w-36" />
