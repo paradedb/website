@@ -372,7 +372,6 @@ export const Logos = {
       viewBox="0 0 680.8 241.5"
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
-      style={{ enableBackground: "new 0 0 680.8 241.5" }}
     >
       <style type="text/css">{`
         .st0{fill:#003867;}
