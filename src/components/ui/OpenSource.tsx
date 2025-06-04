@@ -25,7 +25,7 @@ const ExtensionAction = () => (
       className="group bg-transparent px-0 text-indigo-600 hover:bg-transparent"
       variant="light"
     >
-      Install extensions
+      Install extension
       <ArrowAnimated className="stroke-indigo-600" aria-hidden="true" />
     </Button>
   </Link>
@@ -45,7 +45,7 @@ const GithubAction = () => (
 
 const features = [
   {
-    metric: "100K+",
+    metric: "110K+",
     name: "Docker deployments",
     description:
       "Our Docker image is the easiest way to test or self-manage ParadeDB.",
@@ -53,10 +53,10 @@ const features = [
     action: DockerAction,
   },
   {
-    metric: "20K+",
+    metric: "50K+",
     name: "Postgres extension installs",
     description:
-      "All our features are shipped as Postgres extensions, which means that ParadeDB can drop into any self-managed Postgres.",
+      "All our features are shipped as a Postgres extension, which means that ParadeDB can drop into any self-managed Postgres.",
     icon: PostgresLogo,
     action: ExtensionAction,
   },
