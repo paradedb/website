@@ -18,7 +18,7 @@ const features = [
   {
     name: "Postgres",
     description:
-      "ParadeDB is not a fork of Postgres, but 100% vanilla Postgres with our custom extensions installed.",
+      "ParadeDB is not a fork of Postgres, but 100% vanilla Postgres with our extension installed.",
     icon: PostgresLogo,
   },
   {
