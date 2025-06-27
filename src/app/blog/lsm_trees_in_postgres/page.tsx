@@ -1,6 +1,13 @@
-"use client";
+import { blog } from "@/lib/links";
+import { Metadata } from "next";
+import Content from "./content";
 
-import Content from "../../../components/markdown/lsm_trees_in_postgres.mdx";
+const post = blog.find((post) => post.href === "lsm_trees_in_postgres");
+
+export const metadata: Metadata = {
+  title: post?.name,
+  description: post?.description,
+};
 
 export default function Blog() {
   return (
