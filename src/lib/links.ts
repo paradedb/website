@@ -43,6 +43,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Building Replication-Safe LSM Trees in Postgres",
+    href: "lsm_trees_in_postgres",
+    date: "2025-06-30T12:00:00.000Z",
+    author: "Stu Hood, Mathew Pregasen, and Olive Ratliff",
+    description:
+      "How we made ParadeDB's LSM tree safe for physical replication",
+    categories: ["postgres", "replication", "lsm tree", "algorithms", "data structures"],
+  },
+  {
     name: "A New Postgres Block Storage Layout for Full Text Search",
     href: "block_storage_part_one",
     date: "2025-01-06T12:00:00.000Z",
