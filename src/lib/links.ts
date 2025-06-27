@@ -48,7 +48,7 @@ export const blog = [
     date: "2025-06-30T12:00:00.000Z",
     author: "Stu Hood, Mathew Pregasen, and Olive Ratliff",
     description:
-      "How we made ParadeDB's LSM tree safe for physical replication",
+      "How we made an LSM tree data structure safe for Postgres physical replication",
     categories: [
       "postgres",
       "replication",
