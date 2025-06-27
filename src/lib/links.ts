@@ -49,7 +49,13 @@ export const blog = [
     author: "Stu Hood, Mathew Pregasen, and Olive Ratliff",
     description:
       "How we made ParadeDB's LSM tree safe for physical replication",
-    categories: ["postgres", "replication", "lsm tree", "algorithms", "data structures"],
+    categories: [
+      "postgres",
+      "replication",
+      "lsm tree",
+      "algorithms",
+      "data structures",
+    ],
   },
   {
     name: "A New Postgres Block Storage Layout for Full Text Search",

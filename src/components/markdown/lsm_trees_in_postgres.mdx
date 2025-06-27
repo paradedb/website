@@ -9,9 +9,13 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 ## Building Replication-Safe LSM Trees in Postgres
 
 <div className="relative bottom-10 flex h-6">
-  <Image src={Headshot} alt="Stu Hood's headshot" className="h-7 w-7 rounded-full z-10" />
-  <p className="relative top-3 h-7 w-7 rounded-full top-[17px] bg-indigo-600 border-2 border-indigo-300 text-white text-xs text-center pt-1 right-2 font-semibold z-1">+2</p>
-  <p className="relative top-3">By Stu Hood, Mathew Pregasen, and Olive Ratliff on June 30, 2025</p>
+  <Image src={Headshot} className="h-7 w-7 rounded-full z-10" />
+  <p className="relative top-3 h-7 w-7 rounded-full top-[17px] bg-indigo-600 border-2 border-indigo-300 text-white text-xs text-center pt-1 right-2 font-semibold z-1">
+    +2
+  </p>
+  <p className="relative top-3">
+    By Stu Hood, Mathew Pregasen, and Olive Ratliff on June 30, 2025
+  </p>
 </div>
 
 <Image src={LsmTreeBannerImage} className="rounded-xl" />
@@ -21,7 +25,7 @@ In a vanilla Postgres implementation, full-text search is backed by a [B-tree](h
 When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support very efficient scans in real time. We opted for an advanced data structure better suited to dense posting list bitmaps and high-ingest workloads: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
 
 However, when we tested our LSM tree under physical replication — the mechanism that allows Postgres to replicate data from a primary node across one or more read replicas — we encountered several twists and turns.
-Most surprisingly, we learned that Postgres' out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't *quite* enough for an advanced data structure like an LSM tree to be replication-safe.
+Most surprisingly, we learned that Postgres' out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't _quite_ enough for an advanced data structure like an LSM tree to be replication-safe.
 In this post, we’ll do a deep dive into:
 
 1. What it means for an LSM tree to be replication-safe
@@ -47,7 +51,7 @@ A reliable distributed datastore (one which guarantees “replication safety”)
 1. **Physical consistency** ensures that at any point in time, a replica holds valid data structures which existed at some point in the past on the primary, while ignoring whether the contents of those data structures are sufficient to answer queries on the replica.
 2. **Logical consistency** brings the correctness of queries running on the replica into the picture: to be logically consistent, the data structure must represent a stable snapshot of the world, even as its physical layout is constantly changing.
 
-A physically consistent state is *not* always a logically consistent state. Specifically, if you take a snapshot of a physically consistent replica while replicating an in-flight transaction, it may not be logically consistent. A good analogy is replicating a document—you can achieve physical consistency by photocopying the pages, mirroring every typo, but you’d only achieve logical consistency by retyping the content, correcting the typos along the way.
+A physically consistent state is _not_ always a logically consistent state. Specifically, if you take a snapshot of a physically consistent replica while replicating an in-flight transaction, it may not be logically consistent. A good analogy is replicating a document—you can achieve physical consistency by photocopying the pages, mirroring every typo, but you’d only achieve logical consistency by retyping the content, correcting the typos along the way.
 
 ### WAL Shipping: How Postgres Guarantees Physical Consistency
 
@@ -63,7 +67,7 @@ The problem arises when modifying data structures that span many Postgres buffer
 
 For example: `pg_search` uses [an unrolled linked list](https://github.com/paradedb/paradedb/blob/fa86f5635ea30b4c94608624591a624cefee83bd/pg_search/src/postgres/storage/linked_items.rs) of Postgres buffers where each node holds the read validity of a batch of segments in our LSM tree. To ensure that the primary can never observe a broken linked list, we use hand-over-hand locking (also known as lock coupling) to guarantee that the list remains physically consistent on the primary. After each buffer in the list is modified, its WAL entry becomes visible atomically on the replica.
 
-But what happens when we want to edit multiple entries in the list “at once” (atomically), such as when a newly compacted segment replaces multiple old segments? If only the primary server mattered, then we could protect the logical integrity of multiple list nodes by applying a *global lock on the list itself*, ensuring that the contents of the list were only visible in valid state. But replicas don’t have access to global locks, so there’s no way to coordinate edits across multiple nodes (and multiple buffers) at once.
+But what happens when we want to edit multiple entries in the list “at once” (atomically), such as when a newly compacted segment replaces multiple old segments? If only the primary server mattered, then we could protect the logical integrity of multiple list nodes by applying a _global lock on the list itself_, ensuring that the contents of the list were only visible in valid state. But replicas don’t have access to global locks, so there’s no way to coordinate edits across multiple nodes (and multiple buffers) at once.
 
 Instead, for multi-node operations `pg_search` uses a Copy-on-Write (CoW) clone of the list, and atomically swaps in the head. More generally, atomic operations insulate you from danger by eliminating reliance on coarse-grained locks.
 
@@ -75,7 +79,7 @@ Adapting algorithms to work atomically at the block level is table stakes for ph
 
 But even when individual WAL operations and data structures are atomically compatible, [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html) can interfere with the execution of concurrent transactions spread across multiple WAL entries and compromise logical consistency.
 
-To illustrate this problem, let's imagine the primary has a table with some number of rows. To ensure that concurrent writes can safely write without blocking each other, Postgres uses a mechanism called Multi-Version Concurrency Control ([MVCC](https://www.postgresql.org/docs/7.1/mvcc.html)), which creates multiple versions of modified row (called *tuples*) instead of overwriting data in place. When a row is updated or deleted, the previous tuple is not immediately removed but instead flagged as “dead”.
+To illustrate this problem, let's imagine the primary has a table with some number of rows. To ensure that concurrent writes can safely write without blocking each other, Postgres uses a mechanism called Multi-Version Concurrency Control ([MVCC](https://www.postgresql.org/docs/7.1/mvcc.html)), which creates multiple versions of modified row (called _tuples_) instead of overwriting data in place. When a row is updated or deleted, the previous tuple is not immediately removed but instead flagged as “dead”.
 
 Those “dead” tuples remain on disk until a period maintenance operation called VACUUM is run. Like any other operation, VACUUMs are recorded in the Postgres write-ahead log (WAL), shipped to the standby, and replayed there.
 
@@ -114,5 +118,8 @@ And to see it in action, [see ParadeDB](https://docs.paradedb.com/)!
 <hr />
 
 <ol>
-  <li className="text-sm">Physical and logical consistency are also referred to as structural integrity and transactional consistency.</li>
+  <li className="text-sm">
+    Physical and logical consistency are also referred to as structural
+    integrity and transactional consistency.
+  </li>
 </ol>
