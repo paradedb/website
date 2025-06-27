@@ -1,5 +1,6 @@
 import Image from "next/image";
-import Headshot from "../../../public/blog/stu_headshot.png";
+import StuHeadshot from "../../../public/blog/stu_headshot.png";
+import MingHeadshot from "../../../public/blog/ming_headshot.png";
 import CopyOnWriteImage from "../../../public/blog/copy_on_write.svg";
 import LsmTreeArchitectureImage from "../../../public/blog/lsm_tree_architecture.svg";
 import LsmTreeBannerImage from "../../../public/blog/lsm_tree_banner.svg";
@@ -9,12 +10,16 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 ## Building Replication-Safe LSM Trees in Postgres
 
 <div className="relative bottom-10 flex h-6">
-  <Image src={Headshot} className="h-7 w-7 rounded-full z-10" />
-  <div className="relative top-8 h-7 w-7 rounded-full bg-indigo-600 border-2 border-indigo-300 text-white text-xs text-center p-0 right-2 font-semibold">
+  <Image src={StuHeadshot} className="h-7 w-7 rounded-full z-50" />
+  <Image
+    src={MingHeadshot}
+    className="h-7 w-7 rounded-full z-10 relative right-2"
+  />
+  <div className="relative top-8 h-7 w-7 rounded-full bg-indigo-600 border-2 border-indigo-300 text-white text-xs text-center p-0 right-4 font-semibold">
     <div className="relative top-1">+2</div>
   </div>
   <p className="relative bottom-2">
-    By Stu Hood, Mathew Pregasen, and Olive Ratliff on June 30, 2025
+    By Stu Hood, Ming Ying, Mathew Pregasen, and Olive Ratliff on June 30, 2025
   </p>
 </div>
 
@@ -73,7 +78,7 @@ Instead, for multi-node operations `pg_search` uses a Copy-on-Write (CoW) clone 
 
 <Image src={CopyOnWriteImage} className="rounded-xl" />
 
-### The Problem: Vacuums Undermine Logical Consistency
+### A Problem: Vacuums Undermine Logical Consistency
 
 Adapting algorithms to work atomically at the block level is table stakes for physical replication: if you don’t do it, your data structures are broken, and you won’t be able to use them consistently.
 
@@ -87,7 +92,7 @@ Since the “deadness” of a tuple is local to the server but the VACUUM operat
 
 ### Why LSM Trees are Particularly Vulnerable to this Problem
 
-If your Postgres is configured with read replicas and experiences a high volume of writes, you may have already seen this problem. If a VACUUM is running on the primary at the same time that a query
+If your Postgres is configured with read replicas and experiences a high volume of writes, you may have already seen this problem, even when using B-tree indexes. If a VACUUM is running on the primary at the same time that a query
 hits a read replica, it's possible for Postgres to forcibly cancel the read. However, these errors are likely infrequent and tolerable in a typical Postgres setup where VACUUMs run once every few hours.
 
 The same cannot be said for an LSM tree, where compaction is a core, ongoing part of the system. In a high-write throughput system, compaction can happen many times per minute, even per second.
