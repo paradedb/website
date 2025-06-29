@@ -10,12 +10,15 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 ## Building Replication-Safe LSM Trees in Postgres
 
 <div className="relative bottom-10 flex h-6">
-  <Image src={StuHeadshot} className="h-7 w-7 rounded-full z-50" />
+  <Image
+    src={StuHeadshot}
+    className="h-7 w-7 rounded-full z-50 hidden sm:block"
+  />
   <Image
     src={MingHeadshot}
-    className="h-7 w-7 rounded-full z-10 relative right-2"
+    className="h-7 w-7 rounded-full z-10 relative right-2 hidden sm:block"
   />
-  <div className="relative top-8 h-7 w-7 rounded-full bg-indigo-600 border-2 border-indigo-300 text-white text-xs text-center p-0 right-4 font-semibold">
+  <div className="hidden sm:block relative top-8 h-7 w-7 rounded-full bg-indigo-600 border-2 border-indigo-300 text-white text-xs text-center p-0 right-4 font-semibold">
     <div className="relative top-1">+2</div>
   </div>
   <div className="relative top-3">
@@ -23,7 +26,7 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
   </div>
 </div>
 
-<Image src={LsmTreeBannerImage} className="rounded-xl" />
+<Image src={LsmTreeBannerImage} className="rounded-xl mt-12 sm:mt-0" />
 
 In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are optimized for relatively fast lookups with minimal churn.
 
