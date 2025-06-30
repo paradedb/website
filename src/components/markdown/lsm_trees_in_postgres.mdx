@@ -28,11 +28,11 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 
 <Image src={LsmTreeBannerImage} className="rounded-xl mt-12 sm:mt-0" />
 
-In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are optimized for relatively fast lookups with minimal churn.
+In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are optimized for relatively fast lookups, but are limited by a B-tree's write throughput.
 
 When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support very efficient scans in real time. We opted for a data structure better suited to dense posting list bitmaps and high-ingest workloads: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
 
-However, when we tested our LSM tree under physical replication — the mechanism that allows Postgres to replicate data from a primary node across one or more read replicas — we encountered several twists and turns.
+However, when we tested our LSM tree under physical replication — one of the two mechanisms that allow Postgres to replicate data from a primary node across one or more read replicas — we encountered several twists and turns.
 Most surprisingly, we learned that Postgres' out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't _quite_ enough for an advanced data structure like an LSM tree to be replication-safe.
 In this post, we’ll do a deep dive into:
 
@@ -54,7 +54,7 @@ merged, deduplicated, and rewritten into larger segments.
 
 ### What Do We Mean by Replication Safety?
 
-A reliable distributed datastore (one which guarantees “replication safety”) must demonstrate both **physical** and **logical** consistency<sup>1</sup> across database replicas.
+A reliable distributed datastore (one which guarantees “replication safety”) must demonstrate both **physical** and **logical** consistency<sup>1</sup><sup>2</sup> across database replicas.
 
 1. **Physical consistency** means the replica contains structurally valid data — each page or block on disk is well-formed and corresponds to a state that did exist on the primary at some point.
 2. **Logical consistency** ensures that the data on the replica reflects a coherent and stable view of the database, something that could have been seen by a transaction on the primary.
@@ -67,11 +67,11 @@ Logical consistency is like waiting until the chapter is finished before copying
 
 <Image src={PhysicalConsistencyImage} className="rounded-xl" />
 
-In a primary-standby replication setup, a primary server is paired with a standby server that acts as a read-only copy of its leader. The servers remain in sync by using a Write-Ahead Log (WAL) to record all binary-level changes to storage blocks on the primary server before they occur. Changes to this append-only WAL file are then streamed to the standby (a process called “log shipping”) and applied in the order received. This process enables near-realtime data synchronization between the two servers, hence the phrase “hot standby”.
+In a primary-standby physical replication setup, a primary server is paired with a standby server that acts as a read-only copy of its leader. The servers remain in sync by using a Write-Ahead Log (WAL) to record all binary-level changes to storage blocks on the primary server before they occur. Changes to this append-only WAL file are then streamed to the standby (a process called “log shipping”) and applied in the order received. This process enables near-realtime data synchronization between the two servers, hence the phrase “hot standby”.
 
 ### Why Atomicity is a Requirement for Physical Consistency
 
-Atomicity is a requirement for physical consistency because Postgres locks are not replayed on replica servers. This is because replaying every lock taken on the primary would require strict timing synchronization, significantly impacting performance and hindering the ability of the standby to serve reads. Instead, the WAL uses per-buffer locks to incrementally replay edits in some particular order: it acquires an exclusive lock on the buffer, makes its change, and then releases it.
+Atomicity is a requirement for physical consistency because Postgres locks are not replayed on replica servers. This is because replaying every lock taken on the primary would require strict timing synchronization, significantly impacting performance and hindering the ability of the standby to serve reads. Instead, the WAL uses per-buffer locks to incrementally replay edits in some particular order: it acquires an exclusive lock on the buffer (the in-memory representation of a block), makes its change, and then releases it.
 
 The problem arises when modifying data structures that span many Postgres buffers. Without the guarantee that operations are atomic over the entire structure, these modifications can lead to structural corruption.
 
@@ -103,9 +103,11 @@ hits a read replica, it's possible for Postgres to abort the read. However, thes
 The same cannot be said for an LSM tree, where compaction is a core, ongoing part of the system. In a high-write throughput system, compaction can happen many times per minute, even per second.
 This increases the number of opportunities for conflicts to occur.
 
+Similar to a VACUUM, a compaction rewrites data on the primary server, and needs to know when ongoing queries will no longer need that data in order to be able to safely delete old segments.
+
 ### The Logical Solution: Hot Standby Feedback
 
-This is where an optional Postgres setting called `hot_standby_feedback` comes in. When enabled, `hot_standby_feedback` allows the standby to tell the primary what data is safe to clean up from the replica’s point of view. This information significantly reduces the likelihood of a tuple being prematurely VACUUMed.
+This is where an optional Postgres setting called `hot_standby_feedback` comes in. When enabled, `hot_standby_feedback` allows the standby to tell the primary what data is safe to clean up from the replica’s point of view. This information significantly reduces the likelihood of a tuple being prematurely VACUUMed, and allows `pg_search` to determine when it is safe to delete segments.
 
 To understand what information `hot_standby_feedback` actually relays, we must first understand how tuple versioning works in Postgres. Every tuple in Postgres has two key metadata attributes: `xmin` and `xmax`. `xmin` stores the Transaction ID (XID) of the transaction that *created* or *inserted* that specific tuple version, while `xmax` stores the XID of the transaction that either *updated* or *deleted* the tuple version, effectively marking it as obsolete. When a tuple is deleted, the `xmax` value is updated with the XID of the deleting transaction. Since XID are assigned sequentially, later transactions are assigned a larger number for their XID, so another way to think about `xmin` is as a proxy for the tuple’s “creation time” and `xmax` for its “last updated or deleted time”.
 
@@ -127,6 +129,10 @@ To see it in action, check out [our documentation](https://docs.paradedb.com/) o
 <hr />
 
 <ol>
+  <li className="text-sm">
+    Postgres supports both "physical replication" and "logical replication", and
+    ParadeDB does too! This post only discusses physical replication.
+  </li>
   <li className="text-sm">
     Physical and logical consistency are also referred to as structural
     integrity and transactional consistency.
