@@ -30,7 +30,7 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 
 In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are optimized for relatively fast lookups with minimal churn.
 
-When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support very efficient scans in real time. We opted for an advanced data structure better suited to dense posting list bitmaps and high-ingest workloads: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
+When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support very efficient scans in real time. We opted for a data structure better suited to dense posting list bitmaps and high-ingest workloads: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
 
 However, when we tested our LSM tree under physical replication — the mechanism that allows Postgres to replicate data from a primary node across one or more read replicas — we encountered several twists and turns.
 Most surprisingly, we learned that Postgres' out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't _quite_ enough for an advanced data structure like an LSM tree to be replication-safe.
@@ -45,21 +45,23 @@ In this post, we’ll do a deep dive into:
 
 <Image src={LsmTreeArchitectureImage} className="rounded-xl" />
 
-A Log-Structured Merge Tree (LSM tree) is a write-optimized data structure commonly used in systems like RocksDB, Cassandra, and Elasticsearch.
+A Log-Structured Merge Tree (LSM tree) is a write-optimized data structure commonly used in systems like RocksDB and Cassandra.
 
 The core idea behind an LSM tree is to turn random writes into sequential ones. Incoming writes are first stored in an in-memory buffer called a memtable, which is fast to update. Once the memtable fills up, it is flushed to disk as a sorted, immutable segment file (often called an SSTable).
 
-These segment files are organized by size into layers. Newer data is written to the topmost layer. Over time, data is gradually pushed down into lower levels through a process called compaction, where data from smaller segments is
+These segment files are organized by size into layers or levels. Newer data is written to the topmost layer. Over time, data is gradually pushed down into lower levels through a process called compaction, where data from smaller segments is
 merged, deduplicated, and rewritten into larger segments.
 
 ### What Do We Mean by Replication Safety?
 
 A reliable distributed datastore (one which guarantees “replication safety”) must demonstrate both **physical** and **logical** consistency<sup>1</sup> across database replicas.
 
-1. **Physical consistency** ensures that at any point in time, a replica holds valid data structures which existed at some point in the past on the primary, while ignoring whether the contents of those data structures are sufficient to answer queries on the replica.
-2. **Logical consistency** brings the correctness of queries running on the replica into the picture: to be logically consistent, the data structure must represent a stable snapshot of the world, even as its physical layout is constantly changing.
+1. **Physical consistency** means the replica contains structurally valid data — each page or block on disk is well-formed and corresponds to a state that did exist on the primary at some point.
+2. **Logical consistency** ensures that the data on the replica reflects a coherent and stable view of the database, something that could have been seen by a transaction on the primary.
 
-A physically consistent state is _not_ always a logically consistent state. Specifically, if you take a snapshot of a physically consistent replica while replicating an in-flight transaction, it may not be logically consistent. A good analogy is replicating a document—you can achieve physical consistency by photocopying the pages, mirroring every typo, but you’d only achieve logical consistency by retyping the content, correcting the typos along the way.
+A physically consistent state is _not_ always a logically consistent state. Specifically, if you take a snapshot of a physically consistent replica while replicating an in-flight transaction, it may not be logically consistent.
+A good analogy is to imagine replicating a book. Physical consistency is like copying every page exactly, even if you're in the middle of a chapter — you're guaranteed to have real pages, but you might end up with half a sentence or a missing footnote.
+Logical consistency is like waiting until the chapter is finished before copying it, ensuring the result makes sense to a reader.
 
 ### WAL Shipping: How Postgres Guarantees Physical Consistency
 
@@ -87,19 +89,19 @@ Adapting algorithms to work atomically at the block level is table stakes for ph
 
 But even when individual WAL operations and data structures are atomically compatible, [VACUUM](https://www.postgresql.org/docs/current/sql-vacuum.html) can interfere with the execution of concurrent transactions spread across multiple WAL entries and compromise logical consistency.
 
-To illustrate this problem, let's imagine the primary has a table with some number of rows. To ensure that concurrent writes can safely write without blocking each other, Postgres uses a mechanism called Multi-Version Concurrency Control ([MVCC](https://www.postgresql.org/docs/7.1/mvcc.html)), which creates multiple versions of modified row (called _tuples_) instead of overwriting data in place. When a row is updated or deleted, the previous tuple is not immediately removed but instead flagged as “dead”.
+To illustrate this problem, let's imagine the primary has a table with some number of rows. To ensure that concurrent writes can safely write without blocking each other, Postgres uses a mechanism called Multi-Version Concurrency Control ([MVCC](https://www.postgresql.org/docs/7.1/mvcc.html)), which creates multiple versions of a modified row (or _tuple_) instead of updating the tuple in place. When a row is updated or deleted, the previous tuple is not immediately removed but instead flagged as “dead”.
 
-Those “dead” tuples remain on disk until a period maintenance operation called VACUUM is run. Like any other operation, VACUUMs are recorded in the Postgres write-ahead log (WAL), shipped to the standby, and replayed there.
+Those “dead” tuples remain on disk until a periodic maintenance operation called VACUUM is run. Like any other operation, VACUUMs are recorded in the WAL, shipped to the standby, and replayed there.
 
-Since the “deadness” of a tuple is local to the server but the VACUUM operation is replayed globally, faults can occur when a tuple is VACUUMed from the standby prematurely. The standby might be mid-read, iterating (across multiple WAL entries) over a tuple that it considers valid, while the primary might concurrently decide to VACUUM that tuple out of existence. The standby, lacking any locking coordination or awareness of concurrent operations, replays the VACUUM while the prior transaction is still in progress. This can lead to query failure if a long-running query attempts to access memory that’s already been deallocated.
+Since the “deadness” of a tuple is local to the server but the VACUUM operation is replayed globally, faults can occur when a tuple is VACUUMed from the standby prematurely. The standby might be mid-read, iterating (across multiple WAL entries) over a tuple that it considers valid, while the primary might concurrently decide to VACUUM that tuple out of existence. The standby, lacking any locking coordination or awareness of concurrent operations, replays the VACUUM while the prior transaction is still in progress. This can lead to query failure if a long-running query attempts to access a VACUUMed tuple.
 
 ### Why LSM Trees are Particularly Vulnerable to this Problem
 
 If your Postgres is configured with read replicas and experiences a high volume of writes, you may have already seen this problem, even when using B-tree indexes. If a VACUUM is running on the primary at the same time that a query
-hits a read replica, it's possible for Postgres to forcibly cancel the read. However, these errors are likely infrequent and tolerable in a typical Postgres setup where VACUUMs run once every few hours.
+hits a read replica, it's possible for Postgres to abort the read. However, these errors are likely infrequent and tolerable in a typical Postgres setup where VACUUMs run once every few hours.
 
 The same cannot be said for an LSM tree, where compaction is a core, ongoing part of the system. In a high-write throughput system, compaction can happen many times per minute, even per second.
-This shrinks the window for logical consistency conflicts to occur from hours to seconds.
+This increases the number of opportunities for conflicts to occur.
 
 ### The Logical Solution: Hot Standby Feedback
 
