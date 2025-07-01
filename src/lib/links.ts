@@ -46,7 +46,7 @@ export const blog = [
     name: "Building Replication-Safe LSM Trees in Postgres",
     href: "lsm_trees_in_postgres",
     date: "2025-06-30T12:00:00.000Z",
-    author: "Stu Hood, Mathew Pregasen, and Olive Ratliff",
+    author: "Stu Hood",
     description:
       "How we made an LSM tree data structure safe for Postgres physical replication",
     categories: [
