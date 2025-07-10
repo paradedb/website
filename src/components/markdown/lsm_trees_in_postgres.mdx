@@ -30,16 +30,17 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 
 In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are optimized for relatively fast lookups, but are limited by a B-tree's write throughput.
 
-When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support very efficient scans in real time. We opted for a data structure better suited to dense posting list bitmaps and high-ingest workloads: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
+When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support high ingest workloads in real time. We opted for a data structure optimized for writes: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
 
 However, when we tested our LSM tree under physical replication — one of the two mechanisms that allow Postgres to replicate data from a primary node across one or more read replicas — we encountered several twists and turns.
 Most surprisingly, we learned that Postgres' out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't _quite_ enough for an advanced data structure like an LSM tree to be replication-safe.
 In this post, we’ll do a deep dive into:
 
-1. What it means for an LSM tree to be replication-safe
-2. How Postgres' WAL shipping guarantees physical consistency
-3. Why atomic logging was necessary for logical consistency
-4. How we leveraged a little-known but powerful Postgres setting called `hot_standby_feedback`
+1. What is an LSM tree?
+2. What it means for an LSM tree to be replication-safe
+3. How Postgres' WAL shipping guarantees physical consistency
+4. Why atomic logging was necessary for logical consistency
+5. How we leveraged a little-known but powerful Postgres setting called `hot_standby_feedback`
 
 ### What is an LSM Tree?
 
