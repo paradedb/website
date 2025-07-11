@@ -25,6 +25,9 @@ export default function LogoCloud() {
         <div className={classNames(logoCellStyle, bottomDotted)}>
           <Logos.Alibaba className="mx-auto w-20 sm:w-24" />
         </div>
+        <div className={classNames(logoCellStyle, rightDotted)}>
+          <Logos.Unify className="mx-auto w-12 sm:w-16" />
+        </div>
         <div className={classNames(logoCellStyle, bottomDotted, rightDotted)}>
           <Logos.Tcdi className="mx-auto w-8 sm:w-10" />
         </div>
@@ -36,12 +39,6 @@ export default function LogoCloud() {
         </div>
         <div className={logoCellStyle}>
           <Logos.Cofactr className="mx-auto w-20 sm:w-20 my-auto" />
-        </div>
-        <div className={classNames(logoCellStyle, rightDotted)}>
-          <Logos.Zulip className="mx-auto w-16 sm:w-16" />
-        </div>
-        <div className={classNames(logoCellStyle, rightDotted, "sm:hidden")}>
-          <Logos.Insa className="mx-auto w-16 sm:w-16" />
         </div>
       </div>
     </section>
