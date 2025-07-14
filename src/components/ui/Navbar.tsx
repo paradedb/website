@@ -55,16 +55,17 @@ export function Navigation() {
     <div>
       <div className="flex w-screen justify-center space-x-4 bg-indigo-600 px-2 py-4 text-center text-white">
         <div className="hidden rounded bg-white bg-opacity-20 px-2 py-1 text-xs font-medium md:block">
-          Case Study
+          News
         </div>
         <div className="relative top-0.5 text-left text-sm">
-          Alibaba brings full text search to its data warehouse with ParadeDB.{" "}
+          Announcing our{" "}
           <Link
-            href={`${siteConfig.baseLinks.blog}/case_study_alibaba`}
+            href={`${siteConfig.baseLinks.blog}/series_a_announcement`}
             className="font-semibold underline"
           >
-            Read their story.
-          </Link>
+            $12M Series A
+          </Link>{" "}
+          led by Craft Ventures 🎉
         </div>
       </div>
       <header
