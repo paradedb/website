@@ -43,6 +43,19 @@ export const email = {
 
 export const blog = [
   {
+    name: "Announcing Our $12M Series A",
+    href: "series_a_announcement",
+    date: "2025-07-14T12:00:00.000Z",
+    author: "Philippe Noël",
+    description: "Announcing our Series A, led by Craft Ventures",
+    categories: [
+      "announcement",
+      "fundraising",
+      "series a",
+      "company milestone",
+    ],
+  },
+  {
     name: "Building Replication-Safe LSM Trees in Postgres",
     href: "lsm_trees_in_postgres",
     date: "2025-06-30T12:00:00.000Z",
