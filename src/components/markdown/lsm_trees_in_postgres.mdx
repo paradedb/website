@@ -7,7 +7,7 @@ import LsmTreeBannerImage from "../../../public/blog/lsm_tree_banner.svg";
 import PhysicalConsistencyImage from "../../../public/blog/physical_consistency.svg";
 import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.svg";
 
-## Building Replication-Safe LSM Trees in Postgres
+## Making Writes in Postgres Faster with LSM Trees
 
 <div className="relative bottom-10 flex h-6">
   <Image
@@ -28,13 +28,16 @@ import HotStandbyFeedbackImage from "../../../public/blog/hot_standby_feedback.s
 
 <Image src={LsmTreeBannerImage} className="rounded-xl mt-12 sm:mt-0" />
 
-In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are optimized for relatively fast lookups, but are limited by a B-tree's write throughput.
+When we built `pg_search`, the Postgres extension for search and analytics, write throughput was a priority. To be an effective alternative to Elasticsearch we needed to support high ingest workloads in real time.
+This is because many Elasticsearch use cases — like real-time dashboards, e-commerce search, and recommendation systems — involve continuous writes that must be indexed and made searchable immediately.
 
-When we built `pg_search`, the Postgres extension for search and analytics, our priorities were different. To be an effective alternative to Elasticsearch we needed to support high ingest workloads in real time. We opted for a data structure optimized for writes: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**.
+In a vanilla Postgres implementation, full-text search is backed by a [B-tree](https://www.postgresql.org/docs/current/btree.html) or [GIN](https://www.postgresql.org/docs/current/gin.html) (Generalized Inverted Index) structure. These indexes are good for relatively fast lookups, but they aren’t so fast for writes.
 
-However, when we tested our LSM tree under physical replication — one of the two mechanisms that allow Postgres to replicate data from a primary node across one or more read replicas — we encountered several twists and turns.
-Most surprisingly, we learned that Postgres' out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't _quite_ enough for an advanced data structure like an LSM tree to be replication-safe.
-In this post, we’ll do a deep dive into:
+We opted for a data structure optimized for writes: a **Log-Structured Merge ([LSM](https://en.wikipedia.org/wiki/Log-structured_merge-tree)) tree**. That was great for write throughput, but it broke Postgres replication! Specifically, it broke physical replication, one of the two mechanisms that allow Postgres to replicate data from a primary node across one or more read replicas.
+The other mode is logical replication, which sends individual row changes to replicas instead of copying the database byte-for-byte.
+
+It turned out that Postgres's out-of-the-box support for physical replication, built on Write-Ahead Log (WAL) shipping, isn't quite enough for an advanced data structure like an LSM tree to be replication-safe. We were surprised to learn this, so we decided to write up our experience and describe how we fixed the problem.
+In this post, we'll do a deep dive into:
 
 1. What is an LSM tree?
 2. What it means for an LSM tree to be replication-safe
