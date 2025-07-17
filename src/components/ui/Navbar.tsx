@@ -65,7 +65,16 @@ export function Navigation() {
           >
             $12M Series A
           </Link>{" "}
-          led by Craft Ventures 🎉
+          led by Craft Ventures 🎉. Read it on {" "}
+          <Link
+            href="https://techcrunch.com/2025/07/15/paradedb-takes-on-elasticsearch-as-interest-in-postgres-explodes-amid-ai-boom/"
+            className="font-semibold underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            TechCrunch
+          </Link>{""}
+          .
         </div>
       </div>
       <header
