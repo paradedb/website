@@ -8,7 +8,6 @@ import { ArrowAnimated } from "./ArrowAnimated";
 import Bilt from "./logos/Bilt";
 import Alibaba from "./logos/Alibaba";
 import classNames from "classnames";
-import { useState } from "react";
 
 const caseStudies = [
   {
@@ -37,24 +36,6 @@ const caseStudies = [
 ];
 
 export default function SearchAnalytics() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState<number | null>(null);
-
-  const handleMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>,
-    index: number,
-  ) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setMousePosition({ x, y });
-    setIsHovering(index);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(null);
-  };
-
   return (
     <section
       aria-labelledby="code-example-title"
@@ -88,8 +69,6 @@ export default function SearchAnalytics() {
                         study.bgStyle,
                         "hover:cursor-pointer duration-300",
                       )}
-                      onMouseMove={(e) => handleMouseMove(e, index)}
-                      onMouseLeave={handleMouseLeave}
                     >
                       <div className="relative z-10 h-full flex flex-col">
                         <div className="border-b border-slate-200 py-4 md:py-6 px-8 flex justify-between">
