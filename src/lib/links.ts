@@ -47,7 +47,8 @@ export const blog = [
     href: "case_study_bilt",
     date: "2025-07-28T12:00:00.000Z",
     author: "Ming Ying",
-    description: "A case study on how Bilt reduced Postgres query timeouts by 95% with ParadeDB",
+    description:
+      "A case study on how Bilt reduced Postgres query timeouts by 95% with ParadeDB",
   },
   {
     name: "Announcing Our $12M Series A",
