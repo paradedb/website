@@ -8,50 +8,34 @@ import { ArrowAnimated } from "./ArrowAnimated";
 import Bilt from "./logos/Bilt";
 import Alibaba from "./logos/Alibaba";
 import classNames from "classnames";
-import { useState } from "react";
 
 const caseStudies = [
   {
     metric: 95,
     unit: "%",
     description: "Fewer Query Timeouts",
-    logo: () => <Bilt fill="white" className="h-6 md:h-8" />,
+    logo: () => <Bilt fill="white" className="h-5 md:h-6" />,
     link: blog.find((b) => b.href === "case_study_bilt")?.href,
-    bgStyle: "bg-gray-900",
-    textStyle: "text-slate-100",
+    bgStyle: "bg-slate-50",
+    textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
+    title: "Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB",
     hoverColor: "rgba(255,255,255,0.2)",
   },
   {
-    metric: 500,
-    unit: "%",
-    description: "Higher Search Throughput",
-    logo: () => <Alibaba fill="black" className="h-6 md:h-8" />,
+    metric: 5,
+    unit: "x",
+    description: "Read Throughput",
+    logo: () => <Alibaba fill="black" className="h-5 md:h-6" />,
     link: blog.find((b) => b.href === "case_study_alibaba")?.href,
-    bgStyle: "bg-orange-50",
-    textStyle: "text-gray-900",
+    bgStyle: "bg-slate-50",
+    textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
+    title:
+      "Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse",
     hoverColor: "rgba(255,102,0,0.5)",
   },
 ];
 
 export default function SearchAnalytics() {
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState<number | null>(null);
-
-  const handleMouseMove = (
-    e: React.MouseEvent<HTMLDivElement>,
-    index: number,
-  ) => {
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    setMousePosition({ x, y });
-    setIsHovering(index);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovering(null);
-  };
-
   return (
     <section
       aria-labelledby="code-example-title"
@@ -65,83 +49,66 @@ export default function SearchAnalytics() {
         ParadeDB powers search and analytics for some of the most demanding
         enterprise applications.
       </p>
-      <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-4">
+      <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-4 items-stretch">
         {caseStudies.map((study, index) => (
           <div
             key={index}
-            className="relative col-span-2 h-max max-w-2xl animate-slide-up-fade sm:ml-auto sm:w-full md:col-span-1 group"
-            style={{ animationDuration: "1400ms" }}
+            className="relative col-span-2 mx-auto h-full max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           >
-            <Link href={`/blog/${study.link}`} target="_blank">
-              <div
-                className={classNames(
-                  "rounded-lg relative overflow-hidden",
-                  study.bgStyle,
-                  "p-6 md:p-8 hover:cursor-pointer duration-300",
-                )}
-                onMouseMove={(e) => handleMouseMove(e, index)}
-                onMouseLeave={handleMouseLeave}
-              >
-                {/* Base gradient overlay - always visible */}
-                <div
-                  className="absolute inset-0 transition-opacity duration-300"
-                  style={{
-                    background:
-                      index === 1
-                        ? `radial-gradient(1000px circle at calc(0% - 16px) calc(100% + 16px), ${study.hoverColor}, transparent 60%)`
-                        : isHovering === index
-                          ? `radial-gradient(1000px circle at ${mousePosition.x}px ${mousePosition.y}px, ${study.hoverColor}, transparent 60%)`
-                          : `radial-gradient(1000px circle at calc(100% + 16px) calc(100% + 16px), ${study.hoverColor}, transparent 60%)`,
-                    pointerEvents: "none",
-                    zIndex: 1,
-                  }}
-                />
-
-                {/* Hover gradient overlay - only on hover */}
-                {isHovering === index && (
-                  <div
-                    className="absolute inset-0 transition-opacity duration-300"
-                    style={{
-                      background: `radial-gradient(1000px circle at ${mousePosition.x}px ${mousePosition.y}px, ${study.hoverColor}, transparent 50%)`,
-                      pointerEvents: "none",
-                      zIndex: 2,
-                    }}
-                  />
-                )}
-
-                <div className="relative z-10">
-                  <study.logo />
-                  <div
-                    className={classNames(
-                      "text-5xl md:text-8xl font-medium",
-                      study.textStyle,
-                      "mt-12 md:mt-20",
-                    )}
+            <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50 h-full">
+              <div className="rounded-xl bg-white ring-1 ring-indigo-900/5 h-full">
+                <div className="relative rounded-t-xl bg-slate-100 h-full">
+                  <Link
+                    href={`/blog/${study.link}`}
+                    target="_blank"
+                    className="h-full block"
                   >
-                    {study.metric}
-                    <span className="text-4xl md:text-7xl font-normal">
-                      {study.unit}
-                    </span>
-                  </div>
-                  <p className={classNames("mt-2", study.textStyle)}>
-                    {study.description}
-                  </p>
-                  <Button
-                    className={classNames(
-                      "group mt-12 md:mt-16 bg-transparent hover:bg-transparent px-0",
-                      study.textStyle,
-                    )}
-                    variant="light"
-                  >
-                    Read Story
-                    <ArrowAnimated
-                      className={classNames(study.textStyle)}
-                      aria-hidden="true"
-                    />
-                  </Button>
+                    <div
+                      className={classNames(
+                        "rounded-lg relative overflow-hidden h-full",
+                        study.bgStyle,
+                        "hover:cursor-pointer duration-300",
+                      )}
+                    >
+                      <div className="relative z-10 h-full flex flex-col">
+                        <div className="border-b border-slate-200 py-4 md:py-6 px-8 flex justify-between">
+                          <div>
+                            <study.logo />
+                          </div>
+                          <div
+                            className={classNames(
+                              study.textStyle,
+                              "text-sm flex space-x-2 hidden md:flex",
+                            )}
+                          >
+                            <div className="bg-emerald-500 rounded-full w-2 h-2 relative top-1.5"></div>
+                            <div>
+                              {study.metric}
+                              {study.unit} {study.description}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="text-lg md:text-2xl px-8 mt-8 md:mt-12 font-semibold flex-1">
+                          {study.title}
+                        </div>
+                        <Button
+                          className={classNames(
+                            "group mt-6 md:mt-12 bg-transparent hover:bg-transparent px-0 text-indigo-600 px-8 pb-8 justify-start",
+                          )}
+                          variant="light"
+                        >
+                          Read Story
+                          <ArrowAnimated
+                            className="stroke-indigo-600"
+                            aria-hidden="true"
+                          />
+                        </Button>
+                      </div>
+                    </div>
+                  </Link>
                 </div>
               </div>
-            </Link>
+            </div>
           </div>
         ))}
       </div>
