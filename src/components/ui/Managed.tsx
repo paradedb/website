@@ -70,7 +70,10 @@ export default function SearchAnalytics() {
       </p>
       <div className="mt-12 grid grid-cols-2 gap-x-8 gap-y-4 items-stretch">
         {caseStudies.map((study, index) => (
-          <div className="relative col-span-2 mx-auto h-full max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300">
+          <div
+            key={index}
+            className="relative col-span-2 mx-auto h-full max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
+          >
             <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50 h-full">
               <div className="rounded-xl bg-white ring-1 ring-indigo-900/5 h-full">
                 <div className="relative rounded-t-xl bg-slate-100 h-full">
