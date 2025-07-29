@@ -60,7 +60,7 @@ import SplashImage from "../../../public/blog/case_study_bilt.png";
 
 ### Overview
 
-Bilt is the housing and neighborhood commerce network that turns everyday housing and neighborhood spend into valuable rewards and benefits. It’s the first program that lets members earn rewards on rent and HOA payments—while helping them build a path to homeownership. As of December 2024, Bilt was processing over $36 billion in annual rent and HOA payments.
+Bilt is the housing and neighborhood commerce network that turns everyday housing and neighborhood spend into valuable rewards and benefits. It’s the first program that lets members earn rewards on rent and HOA payments while helping them build a path to homeownership. As of December 2024, Bilt was processing over $36 billion in annual rent and HOA payments.
 
 The Bilt Alliance — developed in partnership with some of the nation’s largest residential owners and operators — is a network of more than 4.5 million homes across the country.
 This all-in-one platform enables property managers to monitor resident and payment information across all lease units,
@@ -70,7 +70,7 @@ manage loyalty incentive programs, and streamline rent payments.
 
 The platform’s original search functionality — built on Postgres — was lackluster and prevented Bilt from delivering a premium user experience.
 
-The first problem was accuracy of search results. Postgres' limited tokenizers and query types meant that users often couldn’t find what they were looking for. Bilt's system relied on exact token matching that compared the hashed values of the query with the hashed, underlying text data. Bilt also tried a built-in trigram index, which improved results but remained unsatisfactory.
+The first problem was accuracy of search results. Postgres' limited tokenizers and query types meant that users often couldn’t find what they were looking for. Bilt's system relied on exact token matching that compared the hashed values of the query with the hashed, underlying text data. Bilt also tried Postgres' built-in trigram index, which improved results but remained unsatisfactory.
 
 The second issue was speed. Queries frequently encountered high latency and timeouts, particularly for users who needed to search millions of data records. Operations like filters, `ORDER BY` clauses, and cross-schema `JOIN`s were especially time-intensive. As a stopgap solution, Bilt prohibited engineers from joining across schemas in a single query. Instead, the system orchestrated multiple separate API calls and combined their results on the client side — a workaround which created a tangled mess of spaghetti code.
 
