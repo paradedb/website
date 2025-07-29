@@ -77,7 +77,7 @@ export default function SearchAnalytics() {
                 className={classNames(
                   "rounded-lg relative overflow-hidden",
                   study.bgStyle,
-                  "py-8 px-8 hover:cursor-pointer duration-300",
+                  "p-6 md:p-8 hover:cursor-pointer duration-300",
                 )}
                 onMouseMove={(e) => handleMouseMove(e, index)}
                 onMouseLeave={handleMouseLeave}
@@ -113,13 +113,13 @@ export default function SearchAnalytics() {
                   <study.logo />
                   <div
                     className={classNames(
-                      "text-6xl md:text-8xl font-medium",
+                      "text-5xl md:text-8xl font-medium",
                       study.textStyle,
                       "mt-12 md:mt-20",
                     )}
                   >
                     {study.metric}
-                    <span className="text-5xl md:text-7xl font-normal">
+                    <span className="text-4xl md:text-7xl font-normal">
                       {study.unit}
                     </span>
                   </div>

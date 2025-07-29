@@ -18,7 +18,8 @@ import SplashImage from "../../../public/blog/case_study_bilt.png";
   queries, improving accuracy and reducing query timeouts by 95%.
 </b>
 <div className="border-t border-0.5 border-slate-300">
-  <table className="table-auto w-full mt-6">
+  {/* Desktop Table */}
+  <table className="table-auto w-full mt-6 hidden md:table">
     <thead className="border-0">
       <tr className="text-2xl font-medium border-0">
         <th className="py-0 px-0">5ms</th>
@@ -36,6 +37,25 @@ import SplashImage from "../../../public/blog/case_study_bilt.png";
       </tr>
     </tbody>
   </table>
+  {/* Mobile Vertical List */}
+  <div className="block md:hidden mt-6">
+    <div className="flex justify-between py-2">
+      <span>P95 Query Latency</span>
+      <span className="font-medium">5ms</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span className="font-light">Data Stored</span>
+      <span className="font-medium">300GB</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Write Volume</span>
+      <span className="font-medium">7K rows/s</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Read Volume</span>
+      <span className="font-medium">40 QPS</span>
+    </div>
+  </div>
 </div>
 
 ### Overview
