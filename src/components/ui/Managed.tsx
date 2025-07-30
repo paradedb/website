@@ -14,8 +14,9 @@ const caseStudies = [
     metric: 95,
     unit: "%",
     description: "Fewer Query Timeouts",
-    logo: () => <Bilt fill="white" className="h-5 md:h-6" />,
+    logo: () => <Bilt fill="black" className="h-6 md:h-8" />,
     link: blog.find((b) => b.href === "case_study_bilt")?.href,
+    imageBgStyle: "bg-slate-50",
     bgStyle: "bg-slate-50",
     textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
     title: "Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB",
@@ -25,8 +26,9 @@ const caseStudies = [
     metric: 5,
     unit: "x",
     description: "Read Throughput",
-    logo: () => <Alibaba fill="black" className="h-5 md:h-6" />,
+    logo: () => <Alibaba fill="#ff6600" className="h-6 md:h-8" />,
     link: blog.find((b) => b.href === "case_study_alibaba")?.href,
+    imageBgStyle: "bg-slate-50",
     bgStyle: "bg-slate-50",
     textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
     title:
@@ -53,7 +55,7 @@ export default function SearchAnalytics() {
         {caseStudies.map((study, index) => (
           <div
             key={index}
-            className="relative col-span-2 mx-auto h-full max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
+            className="relative col-span-2 mx-auto h-full max-w-2xl animate-slide-up-fade rounded-2xl md:hover:shadow-xl md:hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           >
             <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50 h-full">
               <div className="rounded-xl bg-white ring-1 ring-indigo-900/5 h-full">
@@ -70,39 +72,36 @@ export default function SearchAnalytics() {
                         "hover:cursor-pointer duration-300",
                       )}
                     >
-                      <div className="relative z-10 h-full flex flex-col">
-                        <div className="border-b border-slate-200 py-4 md:py-6 px-8 flex justify-between">
-                          <div>
+                      <div className="relative z-10 h-full flex flex-col bg-white">
+                        <div
+                          className={classNames(
+                            "border-b border-slate-200 py-12 md:py-20 px-8 flex justify-between",
+                            study.imageBgStyle,
+                          )}
+                        >
+                          <div className="mx-auto">
                             <study.logo />
                           </div>
-                          <div
+                        </div>
+                        <div className="px-8 py-6">
+                          <p className="text-lg font-semibold tracking-tight text-gray-900 transition-all md:text-xl">
+                            {study.metric}
+                            {study.unit} {study.description}
+                          </p>
+                          <p className="mt-2 text-gray-600">{study.title}</p>
+                          <Button
                             className={classNames(
-                              study.textStyle,
-                              "text-sm flex space-x-2 hidden md:flex",
+                              "group mt-4 bg-transparent hover:bg-transparent px-0 text-indigo-600 justify-start",
                             )}
+                            variant="light"
                           >
-                            <div className="bg-emerald-500 rounded-full w-2 h-2 relative top-1.5"></div>
-                            <div>
-                              {study.metric}
-                              {study.unit} {study.description}
-                            </div>
-                          </div>
+                            Read Story
+                            <ArrowAnimated
+                              className="stroke-indigo-600"
+                              aria-hidden="true"
+                            />
+                          </Button>
                         </div>
-                        <div className="text-lg md:text-2xl px-8 mt-8 md:mt-12 font-semibold flex-1">
-                          {study.title}
-                        </div>
-                        <Button
-                          className={classNames(
-                            "group mt-6 md:mt-12 bg-transparent hover:bg-transparent px-0 text-indigo-600 px-8 pb-8 justify-start",
-                          )}
-                          variant="light"
-                        >
-                          Read Story
-                          <ArrowAnimated
-                            className="stroke-indigo-600"
-                            aria-hidden="true"
-                          />
-                        </Button>
                       </div>
                     </div>
                   </Link>
