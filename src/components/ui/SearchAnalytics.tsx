@@ -26,7 +26,7 @@ export default function SearchAnalytics() {
       </p>
       <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
         <div
-          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1"
+          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl md:hover:shadow-xl md:hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           style={{ animationDuration: "1400ms" }}
         >
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
@@ -60,7 +60,7 @@ export default function SearchAnalytics() {
           </div>
         </div>
         <div
-          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl hover:shadow-xl hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1"
+          className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl md:hover:shadow-xl md:hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           style={{ animationDuration: "1400ms" }}
         >
           <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
