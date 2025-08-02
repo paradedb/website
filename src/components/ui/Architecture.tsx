@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Tantivy from "../../../public/tantivy-logo.png";
 import { Badge } from "../Badge";
-import DuckdbLogo from "./DuckdbLogo";
 import PostgresLogo from "./PostgresLogo";
 
 const TantivyLogo = () => (
@@ -26,12 +25,6 @@ const features = [
     description:
       "ParadeDB's search is built on Tantivy, a Rust-based alternative to the Lucene search engine library.",
     icon: TantivyLogo,
-  },
-  {
-    name: "DuckDB",
-    description:
-      "DuckDB, an analytical database built for speed, powers ParadeDB's data lake integrations.",
-    icon: DuckdbLogo,
   },
 ];
 
