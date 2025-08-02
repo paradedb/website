@@ -25,6 +25,7 @@ const nextConfig = {
         source: '/blog/introducing_lakehouse',
         destination: 'https://www.paradedb.com/blog/introducing_search',
         permanent: true,
+      },
       {
         source: '/blog/introducing_analytics',
         destination: 'https://www.paradedb.com/blog/introducing_search',
