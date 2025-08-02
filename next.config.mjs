@@ -10,7 +10,6 @@ const nextConfig = {
 
   async redirects() {
     return [
-      // Subdomain redirect (from previous step)
       {
         source: '/:path*',
         has: [
@@ -22,17 +21,14 @@ const nextConfig = {
         destination: 'https://paradedb.com/blog/:path*',
         permanent: true,
       },
-      // Redirect for old blog post: introducing_lakehouse
       {
         source: '/blog/introducing_lakehouse',
         destination: 'https://www.paradedb.com/blog/introducing_search',
-        permanent: true, // Use 308 for permanent redirect, good for SEO
-      },
-      // Redirect for old blog post: introducing_analytics
+        permanent: true,
       {
         source: '/blog/introducing_analytics',
         destination: 'https://www.paradedb.com/blog/introducing_search',
-        permanent: true, // Use 308 for permanent redirect, good for SEO
+        permanent: true,
       },
     ];
   },
