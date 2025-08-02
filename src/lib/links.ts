@@ -139,14 +139,6 @@ export const blog = [
     categories: ["elasticsearch", "postgres", "full text search", "data infra"],
   },
   {
-    name: "Querying Apache Iceberg from Postgres",
-    href: "iceberg_lakehouse",
-    date: "2024-06-24T12:00:00.000Z",
-    author: "Ming Ying",
-    description: "ParadeDB now has the ability to query Apache Iceberg tables",
-    categories: ["iceberg", "analytics", "postgres", "olap", "duckdb"],
-  },
-  {
     name: "Case Study: Sweetspot Unifies Hybrid Search on Postgres with ParadeDB",
     href: "case_study_sweetspot",
     date: "2024-06-09T12:00:00.000Z",
@@ -154,15 +146,6 @@ export const blog = [
     description:
       "A case study on how Sweetspot simplified its data stack with ParadeDB",
     categories: ["case study"],
-  },
-  {
-    name: "Building a DuckDB Alternative in Postgres",
-    href: "introducing_lakehouse",
-    date: "2024-05-24T12:00:00.000Z",
-    author: "Ming Ying",
-    description:
-      "Introducing a new extension for fast analytical queries over data lakes inside Postgres",
-    categories: ["analytics", "postgres", "olap", "duckdb"],
   },
   {
     name: "Similarity Search with SPLADE Inside Postgres",

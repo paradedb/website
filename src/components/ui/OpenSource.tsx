@@ -45,7 +45,7 @@ const GithubAction = () => (
 
 const features = [
   {
-    metric: "110K+",
+    metric: "150K+",
     name: "Docker deployments",
     description:
       "Our Docker image is the easiest way to test or self-manage ParadeDB.",
