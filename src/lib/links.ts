@@ -43,6 +43,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Syncing with Postgres: Logical Replication vs. ETL",
+    href: "etl_vs_logical_replication",
+    date: "2025-08-08T12:00:00.000Z",
+    author: "Philippe Noël",
+    description:
+      "A comparison of logical replication and ETL for syncing data with Postgres",
+    categories: ["replication", "etl", "postgres"],
+  },
+  {
     name: "Case Study: Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB",
     href: "case_study_bilt",
     date: "2025-07-28T12:00:00.000Z",
