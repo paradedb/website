@@ -10,17 +10,20 @@ const nextConfig = {
 
   async redirects() {
     return [
+      // --- host-based redirects (put first) ---
+      {
+        source: '/',
+        has: [{ type: 'host', value: 'blog.paradedb.com' }],
+        destination: 'https://paradedb.com/blog',
+        permanent: true,
+      },
       {
         source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'blog.paradedb.com',
-          },
-        ],
+        has: [{ type: 'host', value: 'blog.paradedb.com' }],
         destination: 'https://paradedb.com/blog/:path*',
         permanent: true,
       },
+      // --- specific post renames ---
       {
         source: '/blog/introducing_lakehouse',
         destination: 'https://www.paradedb.com/blog/introducing_search',
