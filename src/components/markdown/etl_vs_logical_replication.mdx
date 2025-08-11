@@ -34,17 +34,17 @@ ETL stands for Extract, Transform, and Load. When used as the interface between 
 
 ## Where Does ETL Shine?
 
+<Info>
+  **TLDR**: Use when the sink isn't Postgres or you need heavy
+  reshaping/multi-destination delivery.
+</Info>
+
 ETL is the right tool when flexibility and interoperability between Postgres and non-Postgres systems are priorities. It offers several compelling advantages:
 
 1. **Opportunity to enrich source data:** ETL presents a natural entry point for you to tailor incoming data exactly as needed downstream by applying custom transformations. This is valuable in use cases that involve remodeling or augmenting data. Tools like [dbt](https://www.getdbt.com/) are often used to manage these transformations.
 2. **Flexibility to optimize data model**: ETL lets you reshape relational data into a structure optimized for the target system. Consider the advantages of denormalizing for document search or pre-aggregating for analytics: in these cases, ETL may be the most practical way to hit performance targets without contorting the source schema.
 3. **Batch and stream support**: ETL pipelines are most commonly run in batch mode, which can be the simplest and most cost-effective approach when real-time data isn’t required. That said, many tools also support real-time streaming when freshness is a priority.
 4. **Ability to manage schema drift explicitly**: With a dedicated transform layer, teams can design logic to handle schema changes (e.g., ignore, rename, or reshape fields) before they hit the sink.
-
-<Info>
-  **TLDR**: Use when the sink isn't Postgres or you need heavy
-  reshaping/multi-destination delivery.
-</Info>
 
 ## Where Does ETL Falter?
 
@@ -60,6 +60,11 @@ Logical replication is a built-in Postgres feature that streams row-level transa
 
 ## Where Does Logical Replication Shine?
 
+<Info>
+  **TLDR**: Use when you want a faithful replica and minimal pipeline
+  complexity.
+</Info>
+
 If your sink is Postgres-based and you can leave the source data model untouched, logical replication promises a far simpler stack. Under logical replication, the sink is a literal replica of the source, which means:
 
 1. **No third-party service required:** Logical replication is built into Postgres, so you don’t need to manage external connectors like Kafka, Debezium, or an ETL tool. This reduces your dependency footprint and simplifies your system architecture.
@@ -67,11 +72,6 @@ If your sink is Postgres-based and you can leave the source data model untouched
 3. **Near real-time data sync by default:** Changes are streamed from the source Postgres instance to the replica as they happen. This allows downstream systems to access fresh data almost immediately, without waiting for a batch job or a transformation window. If real-time is an absolute requirement, logical replication can also be configured to be fully synchronous.
 4. **Transactional and ordered**: Logical replication will automatically pause if it encounters an unexpected change — like an insert that would create a primary key conflict — making it easier to detect and debug divergence. Additionally, changes are applied in commit order and within the boundaries of each transaction, which eliminates many classes of bugs that arise in event-based pipelines.
 5. **Minimal backfill complexity**: Backfilling tables in a Postgres replica can be configured to happen automatically when a subscription is created. Postgres bulk-copies each table from a consistent snapshot, then streams any changes that occurred during the copy until the replica is fully caught up.
-
-<Info>
-  **TLDR**: Use when you want a faithful replica and minimal pipeline
-  complexity.
-</Info>
 
 ## Where Does Logical Replication Falter?
 
@@ -98,10 +98,6 @@ hand the changes off to another system. In another camp are databases built on a
       </tr>
     </thead>
     <tbody>
-      <tr className="border-none">
-        <td>RDS Alternative</td>
-        <td>Neon</td>
-      </tr>
       <tr className="border-none">
         <td>Data Warehouse</td>
         <td>Redshift, Greenplum</td>
