@@ -3,6 +3,7 @@ import Headshot from "../../../public/blog/phil_headshot.png";
 import SplashImage from "../../../public/blog/etl_banner.svg";
 import EtlExample from "../../../public/blog/etl_pipeline_example.svg";
 import LrExample from "../../../public/blog/logical_replication_example.svg";
+import { Info } from "@mintlify/components";
 
 ## Syncing with Postgres: Logical Replication vs. ETL
 
@@ -40,6 +41,11 @@ ETL is the right tool when flexibility and interoperability between Postgres and
 3. **Batch and stream support**: ETL pipelines are most commonly run in batch mode, which can be the simplest and most cost-effective approach when real-time data isn’t required. That said, many tools also support real-time streaming when freshness is a priority.
 4. **Ability to manage schema drift explicitly**: With a dedicated transform layer, teams can design logic to handle schema changes (e.g., ignore, rename, or reshape fields) before they hit the sink.
 
+<Info>
+  **TLDR**: Use when the sink isn't Postgres or you need heavy
+  reshaping/multi-destination delivery.
+</Info>
+
 ## Where Does ETL Falter?
 
 1. **Maintenance can be daunting:** There’s a common misconception that ETL is “set it and forget it.” In reality, ETL pipelines are fragile. Small schema changes or version mismatches between Postgres and downstream systems like Elasticsearch can silently break data flows. As a result, ETL pipelines require ongoing vigilance, so much so that the prospect of expanding the ETL surface area can have a [chilling effect](https://news.ycombinator.com/item?id=44633933#:~:text=Since%20we%20both,plane%20database%20stuff%3F).
@@ -60,29 +66,28 @@ If your sink is Postgres-based and you can leave the source data model untouched
 2. **Lower operational costs:** With fewer moving parts to deploy and monitor, teams spend less time firefighting and more time building. There's also no need to provision separate infrastructure for ETL pipelines or intermediate messaging layers.
 3. **Near real-time data sync by default:** Changes are streamed from the source Postgres instance to the replica as they happen. This allows downstream systems to access fresh data almost immediately, without waiting for a batch job or a transformation window. If real-time is an absolute requirement, logical replication can also be configured to be fully synchronous.
 4. **Transactional and ordered**: Logical replication will automatically pause if it encounters an unexpected change — like an insert that would create a primary key conflict — making it easier to detect and debug divergence. Additionally, changes are applied in commit order and within the boundaries of each transaction, which eliminates many classes of bugs that arise in event-based pipelines.
+5. **Minimal backfill complexity**: Backfilling tables in a Postgres replica can be configured to happen automatically when a subscription is created. Postgres bulk-copies each table from a consistent snapshot, then streams any changes that occurred during the copy until the replica is fully caught up.
+
+<Info>
+  **TLDR**: Use when you want a faithful replica and minimal pipeline
+  complexity.
+</Info>
 
 ## Where Does Logical Replication Falter?
 
 Logical replication isn’t for every use case, and has some limitations of its own.
 
-1. **Incompatible with non-Postgres sinks**: Logical replication only works between Postgres instances. There’s no built-in way to stream changes to non-Postgres systems, which is where CDC-based (change data capture) ETL tools shine.
-2. **Schema coupling limits flexibility**: Aside from the ability to specify [row filters](https://www.postgresql.org/docs/current/logical-replication-row-filter.html) and [column lists](https://www.postgresql.org/docs/current/logical-replication-col-lists.html), the replica must mirror the source schema exactly. There’s no sophisticated transformation layer to reshape data for any downstream need.
-3. **Single-thread apply process limits throughput**<sup>1</sup>: Each subscription applies changes in a single thread, regardless of how many tables are replicated inside a subscription. A common pitfall is placing too many tables into one subscription instead of splitting across multiple subscriptions.
-4. **It doesn’t replicate DDL**<sup>2</sup>: Only row-level changes (INSERT, UPDATE, DELETE) are replicated—schema changes like `CREATE INDEX` or `ALTER TABLE` are not. The workaround is to run the same migration scripts on both your primary Postgres and the ParadeDB replica.
+1. **Schema coupling limits flexibility**: Aside from the ability to specify [row filters](https://www.postgresql.org/docs/current/logical-replication-row-filter.html) and [column lists](https://www.postgresql.org/docs/current/logical-replication-col-lists.html), the replica must mirror the source schema exactly. There’s no sophisticated transformation layer to reshape data for any downstream need.
+2. **Single-thread apply process limits throughput**<sup>1</sup>: Each subscription applies changes in a single thread, regardless of how many tables are replicated inside a subscription. A common pitfall is placing too many tables into one subscription instead of splitting across multiple subscriptions.
+3. **It doesn’t replicate DDL**<sup>2</sup>: Only row-level changes (INSERT, UPDATE, DELETE) are replicated—schema changes like `CREATE INDEX` or `ALTER TABLE` are not. The workaround is to run the same migration scripts on both your primary Postgres and the ParadeDB replica.
 
-## What About Postgres Wire-Compatible Databases?
+## What Databases Support Postgres Logical Replication?
 
-Many modern databases — like ClickHouse and others — claim compatibility with the Postgres wire protocol. At first glance, this seems like a way to bypass ETL entirely. If these systems can speak Postgres, why isn’t that enough?
+Some databases advertise “Postgres wire compatibility,” meaning they can accept SQL over the Postgres frontend/backend protocol.
+However, these systems typically still require ETL pipelines for ingestion. Logical replication relies on the replication sub-protocol and Postgres’s write-ahead log (WAL) format, which most wire-compatible systems do not implement.
 
-The catch is that these databases have a different internal data model than Postgres, so they still need to use ETL to reshape the incoming data to fit. You’re still dealing with type mismatches, edge cases, and implicit transformation logic. And since these systems don’t use MVCC (Multi Version Concurrency Control) like Postgres, you lose the built-in conflict handling Postgres provides.
-
-So yes, Postgres wire protocol compatibility is certainly nice. But the pitfalls of ETL persist.
-
-## Which Databases are Compatible with Logical Replication?
-
-Traditionally, organizations have spun up Postgres logical replicas tuned for specific workloads by customizing Postgres indexes, memory settings, or using different instance types. This improves performance and reduces contention on the primary, but only up to a certain point.
-
-Today, many teams go a step further by replicating into specialized Postgres variants built for particular workloads.
+A much smaller set of systems actually speak the replication protocol and can consume Postgres logical decoding output. In one camp are ETL/CDC tools themselves, whose job is to tap the logical replication stream and
+hand the changes off to another system. In another camp are databases built on actual Postgres internals that inherit full logical replication support:
 
 <div className="border border-2 border-slate-100 bg-slate-50 py-0.5 px-6">
   <table>
@@ -93,6 +98,10 @@ Today, many teams go a step further by replicating into specialized Postgres var
       </tr>
     </thead>
     <tbody>
+      <tr className="border-none">
+        <td>RDS Alternative</td>
+        <td>Neon</td>
+      </tr>
       <tr className="border-none">
         <td>Data Warehouse</td>
         <td>Redshift, Greenplum</td>
@@ -108,10 +117,6 @@ Today, many teams go a step further by replicating into specialized Postgres var
       <tr className="border-none">
         <td>Time Series</td>
         <td>Timescale</td>
-      </tr>
-      <tr className="border-none">
-        <td>MongoDB-Compatible</td>
-        <td>FerretDB</td>
       </tr>
     </tbody>
   </table>
