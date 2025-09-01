@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ParadeDB",
-    description: "ParadeDB: Zero ETL search and analytics for Postgres",
+    description: "ParadeDB: The Postgres Native Elasticsearch Alternative",
     images: "/twitter-image.png",
   },
   icons: {
