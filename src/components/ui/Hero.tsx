@@ -25,8 +25,9 @@ export default function Hero() {
         className="text-md mt-2 max-w-xl animate-slide-up-fade text-indigo-900 md:mt-6 md:text-lg"
         style={{ animationDuration: "900ms" }}
       >
-        ParadeDB brings first-class full-text search and analytics to PostgreSQL.
-        Built for supporting real-time, update-heavy workloads with zero ETL.
+        ParadeDB brings first-class full-text search and analytics to
+        PostgreSQL. Built for supporting real-time, update-heavy workloads with
+        zero ETL.
       </p>
       <div
         className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
