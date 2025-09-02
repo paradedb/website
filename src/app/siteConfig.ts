@@ -1,7 +1,7 @@
 export const siteConfig = {
   name: "ParadeDB",
   url: "https://paradedb.com",
-  description: "Zero-ETL search and analytics for Postgres",
+  description: "The Postgres Native Elasticsearch Alternative",
   baseLinks: {
     home: "/",
     pricing: "/pricing",
