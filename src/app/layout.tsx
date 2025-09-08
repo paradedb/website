@@ -20,7 +20,16 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.name,
   description: siteConfig.description,
-  keywords: ["Postgres", "search", "analytics", "ETL", "Elasticsearch", "OLAP", "transactional", "ACID"],
+  keywords: [
+    "Postgres",
+    "search",
+    "analytics",
+    "ETL",
+    "Elasticsearch",
+    "OLAP",
+    "transactional",
+    "ACID",
+  ],
   openGraph: {
     type: "website",
     locale: "en_US",

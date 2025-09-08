@@ -16,12 +16,16 @@ export default function SearchAnalytics() {
       <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
         You need a
         <br />
-        <span className="bg-indigo-100 text-indigo-600">search database</span> not a<br />
+        <span className="bg-indigo-100 text-indigo-600">
+          search database
+        </span>{" "}
+        not a<br />
         search engine
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
-        By running fully transactional search and analytics in the same database as your source of truth, you eliminate 
-        lag, reduce complexity, and guarantee results always reflect reality.
+        By running fully transactional search and analytics in the same database
+        as your source of truth, you eliminate lag, reduce complexity, and
+        guarantee results always reflect reality.
       </p>
       <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
         <div
