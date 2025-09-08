@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: siteConfig.name,
   description: siteConfig.description,
-  keywords: ["Postgres", "search", "analytics", "ETL", "Elasticsearch", "OLAP"],
+  keywords: ["Postgres", "search", "analytics", "ETL", "Elasticsearch", "OLAP", "transactional", "ACID"],
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "ParadeDB",
-    description: "ParadeDB: The Postgres Native Elasticsearch Alternative",
+    description: "ParadeDB: The Transactional Elasticsearch Alternative",
     images: "/twitter-image.png",
   },
   icons: {

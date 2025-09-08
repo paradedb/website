@@ -12,31 +12,31 @@ const benefits = [
   {
     title: "Reduced overhead",
     description:
-      "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB, you can just use Postgres.",
+      "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB your source of truth is also where you search.",
     icon: RiStackLine,
   },
   {
     title: "Zero data loss",
     description:
-      "Never lose data again because of a broken sync with Elastic. ParadeDB uses native Postgres indexes that always stay up to date.",
+      "Never lose data again because of a broken sync with Elastic. ParadeDB indexes are updated in the same transaction your data is.",
     icon: RiShieldCheckLine,
   },
   {
     title: "ACID guarantees",
     description:
-      "Postgres ACID transactions guarantee that data is searchable immediately after a successful write.",
+      "ACID transactions guarantee that data is searchable immediately after a successful write.",
     icon: RiShakeHandsLine,
   },
   {
     title: "Automatic cleanup",
     description:
-      "Never worry about cleaning up stale Elastic indexes. ParadeDB search indexes integrate with Postgres' vacuum process.",
+      "Never worry about cleaning up stale Elastic indexes. ParadeDB search indexes are always perfectly in sync with the source data.",
     icon: RiScissorsCutLine,
   },
   {
     title: "Reliable data store",
     description:
-      "First class support for backups, high availability and disaster recovery through Postgres.",
+      "First class support for backups, high availability and disaster recovery through PostgreSQL's incredible ecosystem.",
     icon: RiSwap2Line,
   },
   {
