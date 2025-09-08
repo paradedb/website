@@ -27,7 +27,7 @@ export default function Hero() {
         style={{ animationDuration: "900ms" }}
       >
         Zero ETL full-text search and analytics from your source of truth.
-        Backed by ACID guarantees and PostgreSQL&apos;s legendary reliability.
+	Designed for update-heavy, real-time, workloads where consistency and reliability matter.
       </p>
       <div
         className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
