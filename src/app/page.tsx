@@ -11,8 +11,8 @@ export default function Home() {
     <main className="flex flex-col overflow-hidden px-2 md:px-0">
       <Hero />
       <LogoCloud />
-      <SearchAnalytics />
       <Benefits />
+      <SearchAnalytics />
       <Managed />
       <OpenSource />
       {/* <Architecture /> */}

@@ -55,10 +55,19 @@ export default function Benefits() {
     >
       <Badge>Benefits</Badge>
       <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
-        Simplify and{" "}
-        <span className="bg-indigo-100 text-indigo-600">strengthen</span> <br />{" "}
-        your data stack
+        You need a
+        <br />
+        <span className="bg-indigo-100 text-indigo-600">
+          search database
+        </span>{" "}
+        not a<br />
+        search engine
       </h2>
+      <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
+        By running fully transactional search and analytics in the same database
+        as your source of truth, you eliminate lag, reduce complexity, and
+        guarantee results always reflect reality.
+      </p>
       <dl className="mt-8 grid grid-cols-3 gap-x-10 gap-y-8 sm:mt-12 sm:gap-y-10">
         {benefits.map((item, index) => (
           <div key={index} className="col-span-3 sm:col-span-1">

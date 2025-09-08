@@ -18,7 +18,7 @@ export default function Hero() {
         className="inline-block animate-slide-up-fade bg-gradient-to-br from-indigo-900 to-indigo-800 bg-clip-text py-2 text-4xl font-bold tracking-tighter text-indigo-900 text-transparent sm:text-6xl mt-4"
         style={{ animationDuration: "700ms" }}
       >
-        The <span className="bg-indigo-100 text-indigo-600">Transactional</span>
+        The <span className="text-indigo-600">Transactional</span>
         <br />
         Elasticsearch Alternative
       </h1>
@@ -26,8 +26,8 @@ export default function Hero() {
         className="text-md mt-2 max-w-xl animate-slide-up-fade text-indigo-900 md:mt-6 md:text-lg"
         style={{ animationDuration: "900ms" }}
       >
-        Zero ETL full-text search and analytics from your source of truth.
-	Designed for update-heavy, real-time, workloads where consistency and reliability matter.
+        ParadeDB is a full-text search and analytics database built on Postgres.
+        Designed for update-heavy, real-time workloads where consistency and reliability matter.
       </p>
       <div
         className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
