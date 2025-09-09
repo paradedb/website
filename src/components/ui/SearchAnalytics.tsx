@@ -14,13 +14,14 @@ export default function SearchAnalytics() {
     >
       <Badge>Product</Badge>
       <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
-        The whole stack for
+        Legacy search is
         <br />
-        search and analytics
+        holding you back
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
-        Run full-text search and analytics directly in your system of record.
-        Query, rank, and analyze your data in one place.
+        Search engines were built for static datasets and eventual consistency.
+        ParadeDB is engineered for dynamic, update-heavy workloads where
+        reliability and speed matter.
       </p>
       <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
         <div

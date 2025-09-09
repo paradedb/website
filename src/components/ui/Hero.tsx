@@ -26,9 +26,9 @@ export default function Hero() {
         className="text-md mt-2 max-w-xl animate-slide-up-fade text-indigo-900 md:mt-6 md:text-lg"
         style={{ animationDuration: "900ms" }}
       >
-        ParadeDB is a full-text search and analytics database built on Postgres.
-        Designed for update-heavy, real-time workloads where consistency and
-        reliability matter.
+        ParadeDB is an open-source, ACID-compliant full-text search and
+        analytics engine, built for speed and reliability under update-heavy
+        workloads.
       </p>
       <div
         className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
