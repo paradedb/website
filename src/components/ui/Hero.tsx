@@ -27,7 +27,7 @@ export default function Hero() {
         style={{ animationDuration: "900ms" }}
       >
         ParadeDB is an open-source, ACID-compliant full-text search and
-        analytics engine, built for speed and reliability under update-heavy
+        analytics database, built for speed and reliability under update-heavy
         workloads.
       </p>
       <div
