@@ -27,7 +27,7 @@ export default function Hero() {
         style={{ animationDuration: "900ms" }}
       >
         ParadeDB is an open source, ACID-compliant search and analytics
-        database. Built on Postgres for your update-heavy workloads.
+        database. Built on Postgres for update-heavy workloads.
       </p>
       <div
         className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
