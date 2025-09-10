@@ -1,6 +1,6 @@
 import {
   RiBracesLine,
-  RiScissorsCutLine,
+  RiMoneyDollarCircleLine,
   RiShakeHandsLine,
   RiShieldCheckLine,
   RiStackLine,
@@ -10,33 +10,33 @@ import { Badge } from "../Badge";
 
 const benefits = [
   {
-    title: "Reduced overhead",
+    title: "ACID guarantees",
     description:
-      "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB, you can just use Postgres.",
-    icon: RiStackLine,
+      "ACID transactions guarantee that data is searchable immediately after a successful write.",
+    icon: RiShakeHandsLine,
   },
   {
     title: "Zero data loss",
     description:
-      "Never lose data again because of a broken sync with Elastic. ParadeDB uses native Postgres indexes that always stay up to date.",
+      "Never lose data again because of a broken sync with Elastic. ParadeDB indexes always match your data.",
     icon: RiShieldCheckLine,
   },
   {
-    title: "ACID guarantees",
+    title: "Reduced overhead",
     description:
-      "Postgres ACID transactions guarantee that data is searchable immediately after a successful write.",
-    icon: RiShakeHandsLine,
+      "Eliminate complex sync tools like ETL, Kafka, and Debezium. With ParadeDB your source of truth is also where you search.",
+    icon: RiStackLine,
   },
   {
-    title: "Automatic cleanup",
+    title: "Optimized price-performance",
     description:
-      "Never worry about cleaning up stale Elastic indexes. ParadeDB search indexes integrate with Postgres' vacuum process.",
-    icon: RiScissorsCutLine,
+      "Elastic burns hardware. ParadeDB runs lean, written in Rust for efficiency without the cluster sprawl.",
+    icon: RiMoneyDollarCircleLine,
   },
   {
-    title: "Reliable data store",
+    title: "Battle-tested",
     description:
-      "First class support for backups, high availability and disaster recovery through Postgres.",
+      "First class support for backups, high availability, and disaster recovery through PostgreSQL's incredible ecosystem.",
     icon: RiSwap2Line,
   },
   {
@@ -55,10 +55,18 @@ export default function Benefits() {
     >
       <Badge>Benefits</Badge>
       <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
-        Simplify and{" "}
-        <span className="bg-indigo-100 text-indigo-600">strengthen</span> <br />{" "}
-        your data stack
+        You need a<br />
+        <span className="bg-indigo-100 text-indigo-600">
+          search database
+        </span>{" "}
+        not a <br />
+        search engine
       </h2>
+      <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
+        Elastic means fragile ETL pipelines and out-of-date results. ParadeDB
+        runs search directly in your database, so your results always reflect
+        reality.
+      </p>
       <dl className="mt-8 grid grid-cols-3 gap-x-10 gap-y-8 sm:mt-12 sm:gap-y-10">
         {benefits.map((item, index) => (
           <div key={index} className="col-span-3 sm:col-span-1">

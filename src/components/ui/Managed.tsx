@@ -45,7 +45,7 @@ export default function SearchAnalytics() {
     >
       <Badge>Case Studies</Badge>
       <h2 className="mt-2 inline-block bg-clip-text py-2 text-4xl font-bold tracking-tighter text-gray-900 sm:text-6xl md:text-6xl">
-        Battled-Tested in Production
+        Battled-tested in production
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
         ParadeDB powers search and analytics for some of the most demanding

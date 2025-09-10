@@ -46,7 +46,7 @@ export default function Footer() {
               <DatabaseLogo className="w-28" />
             </Link>
             <p className="text-sm leading-6 text-gray-600">
-              The Postgres Native Elasticsearch Alternative.
+              The Transactional Elasticsearch Alternative.
               <br />
               Built in New York, made for the world.
             </p>
