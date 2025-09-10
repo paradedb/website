@@ -63,10 +63,9 @@ export default function Benefits() {
         search engine
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
-        ParadeDB is built on top of Postgres. It provides battle-tested
-        reliability and consistency for the most demanding workloads, now with
-        state-of-the-art full-text search. Goodbye sprawling out-of-sync Elastic
-        clusters and missing shards.
+        Elastic means fragile ETL pipelines and out-of-date results. ParadeDB
+        runs search directly in your database, so your results always reflect
+        reality.
       </p>
       <dl className="mt-8 grid grid-cols-3 gap-x-10 gap-y-8 sm:mt-12 sm:gap-y-10">
         {benefits.map((item, index) => (

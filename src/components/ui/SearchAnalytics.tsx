@@ -19,9 +19,8 @@ export default function SearchAnalytics() {
         holding you back
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
-        Search engines were built for static datasets and eventual consistency.
-        ParadeDB is engineered for dynamic, update-heavy workloads where
-        reliability and speed matter.
+        ParadeDB brings Elastic-quality full text search capabilities and
+        analytical performance to Postgres.
       </p>
       <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
         <div

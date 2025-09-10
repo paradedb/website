@@ -34,7 +34,7 @@ export default function Cta() {
                 id="cta-title"
                 className="inline-block bg-gradient-to-t from-gray-900 to-gray-800 bg-clip-text p-2 text-4xl font-bold tracking-tighter text-transparent md:text-6xl"
               >
-                Ready to get started?
+                Ready to find your truth?
               </h3>
               <p className="mx-auto mt-4 w-full max-w-2xl text-gray-600 sm:text-lg">
                 <Balancer>
