@@ -19,7 +19,7 @@ export default function SearchAnalytics() {
         holding you back
       </h2>
       <p className="mt-2 max-w-2xl text-gray-600 md:mt-6 md:text-lg">
-        ParadeDB brings Elastic-quality full text search capabilities and
+        ParadeDB brings Elastic-quality search capabilities and
         analytical performance to Postgres.
       </p>
       <div className="mt-12 grid grid-cols-2 gap-x-6 gap-y-4">
