@@ -43,6 +43,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Elasticsearch Was Never a Database",
+    href: "elastic_was_never_a_database",
+    date: "2025-08-18:00:00.000Z",
+    author: "James Blackwood-Sewell",
+    description:
+      "Elasticsearch is a search engine, not a database. Here’s why it falls short as a system of record.",
+    categories: ["elasticsearch", "oltp"],
+  },
+  {
     name: "Syncing with Postgres: Logical Replication vs. ETL",
     href: "etl_vs_logical_replication",
     date: "2025-08-08T12:00:00.000Z",
