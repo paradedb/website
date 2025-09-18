@@ -45,7 +45,7 @@ export const blog = [
   {
     name: "Elasticsearch Was Never a Database",
     href: "elasticsearch-was-never-a-database",
-    date: "2025-09-18:00:00.000Z",
+    date: "2025-09-18T00:00:00.000Z",
     author: "James Blackwood-Sewell",
     description:
       "Elasticsearch is a search engine, not a database. Here’s why it falls short as a system of record.",
