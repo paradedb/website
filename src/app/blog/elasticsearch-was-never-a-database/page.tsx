@@ -2,7 +2,9 @@ import { blog } from "@/lib/links";
 import { Metadata } from "next";
 import Content from "./content";
 
-const post = blog.find((post) => post.href === "elasticsearch-was-never-a-database");
+const post = blog.find(
+  (post) => post.href === "elasticsearch-was-never-a-database",
+);
 
 export const metadata: Metadata = {
   title: post?.name,
