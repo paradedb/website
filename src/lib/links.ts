@@ -44,7 +44,7 @@ export const email = {
 export const blog = [
   {
     name: "Elasticsearch Was Never a Database",
-    href: "elastic_was_never_a_database",
+    href: "elasticsearch-was-never-a-database",
     date: "2025-08-18:00:00.000Z",
     author: "James Blackwood-Sewell",
     description:
