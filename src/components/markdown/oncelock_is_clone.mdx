@@ -35,5 +35,3 @@ impl<T: Clone> Clone for OnceLock<T> {
 In our case, we ended up with multiple `OnceLock`s each happily computing their own expensive resource, sometimes with different results. That led to mismatched state across what we thought was a single shared resource, and the profiler was full of repeated `get_or_init` calls that shouldn’t have existed.
 
 The fix was simple: wrap `OnceLock` in an `Arc` instead of the other way around. But the lesson stuck: just because something implements `Clone` doesn’t mean it behaves like the other synchronization primitives you’re used to.
-
-It’s a sharp edge worth knowing about -- if you’re using `OnceLock` inside a type that’s `Clone`, double-check whether you really want multiple independent initialization cells floating around.
