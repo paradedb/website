@@ -43,6 +43,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Rust's OnceLock is Clone, and That's Not What You Think",
+    href: "once_lock_is_clone",
+    date: "2025-09-19T12:00:00.000Z",
+    author: "Ming Ying",
+    description:
+      "A deep dive into the surprising behavior of OnceLock when cloned.",
+    categories: ["rust", "concurrency", "programming"],
+  },
+  {
     name: "Elasticsearch Was Never a Database",
     href: "elasticsearch-was-never-a-database",
     date: "2025-09-18T00:00:00.000Z",

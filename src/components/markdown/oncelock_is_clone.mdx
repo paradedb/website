@@ -1,0 +1,39 @@
+import SplashImage from "../../../public/blog/agpl.png";
+import Headshot from "../../../public/blog/ming_headshot.png";
+import Image from "next/image";
+
+## Rust's `OnceLock` is `Clone` (and that's not what you think)
+
+<div className="relative bottom-10 flex h-6 space-x-3">
+  <Image src={Headshot} className="h-7 w-7 rounded-full" />
+  <p className="relative top-3">By Ming Ying on September 19, 2025</p>
+</div>
+
+We recently tripped over a surprising Rust footgun: `OnceLock` is `Clone`. At first glance, that seems harmless — after all, `Arc<Mutex<T>>` isn’t cloneable in a way that creates a second lock, so why should `OnceLock` behave differently?
+
+It turns out cloning a `OnceLock` doesn’t preserve the “only initialize once” guarantee. Instead, each clone is a disconnected cell: if the original wasn’t initialized yet, each clone can run its initializer separately; if it was initialized, the value just gets cloned.
+
+The behavior is right there in the source, albeit undocumented:
+
+```rust
+#[stable(feature = "once_cell", since = "1.70.0")]
+impl<T: Clone> Clone for OnceLock<T> {
+    #[inline]
+    fn clone(&self) -> OnceLock<T> {
+        let cell = Self::new();
+        if let Some(value) = self.get() {
+            match cell.set(value.clone()) {
+                Ok(()) => (),
+                Err(_) => unreachable!(),
+            }
+        }
+        cell
+    }
+}
+```
+
+In our case, we ended up with multiple `OnceLock`s each happily computing their own expensive resource, sometimes with different results. That led to mismatched state across what we thought was a single shared resource, and the profiler was full of repeated `get_or_init` calls that shouldn’t have existed.
+
+The fix was simple: wrap `OnceLock` in an `Arc` instead of the other way around. But the lesson stuck: just because something implements `Clone` doesn’t mean it behaves like the other synchronization primitives you’re used to.
+
+It’s a sharp edge worth knowing about -- if you’re using `OnceLock` inside a type that’s `Clone`, double-check whether you really want multiple independent initialization cells floating around.
