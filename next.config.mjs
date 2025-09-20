@@ -12,26 +12,26 @@ const nextConfig = {
     return [
       // --- host-based redirects (put first) ---
       {
-        source: '/',
-        has: [{ type: 'host', value: 'blog.paradedb.com' }],
-        destination: 'https://paradedb.com/blog',
+        source: "/",
+        has: [{ type: "host", value: "blog.paradedb.com" }],
+        destination: "https://paradedb.com/blog",
         permanent: true,
       },
       {
-        source: '/:path*',
-        has: [{ type: 'host', value: 'blog.paradedb.com' }],
-        destination: 'https://paradedb.com/blog/:path*',
+        source: "/:path*",
+        has: [{ type: "host", value: "blog.paradedb.com" }],
+        destination: "https://paradedb.com/blog/:path*",
         permanent: true,
       },
       // --- specific post renames ---
       {
-        source: '/blog/introducing_lakehouse',
-        destination: 'https://www.paradedb.com/blog/introducing_search',
+        source: "/blog/introducing_lakehouse",
+        destination: "https://www.paradedb.com/blog/introducing_search",
         permanent: true,
       },
       {
-        source: '/blog/introducing_analytics',
-        destination: 'https://www.paradedb.com/blog/introducing_search',
+        source: "/blog/introducing_analytics",
+        destination: "https://www.paradedb.com/blog/introducing_search",
         permanent: true,
       },
     ];
