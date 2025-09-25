@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import Content from "./content";
 
 const post = blog.find(
-  (post) => post.href === "elasticsearch-was-never-a-database",
+  (post) => post.href === "once_lock_is_clone",
 );
 
 export const metadata: Metadata = {
