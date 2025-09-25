@@ -2,9 +2,7 @@ import { blog } from "@/lib/links";
 import { Metadata } from "next";
 import Content from "./content";
 
-const post = blog.find(
-  (post) => post.href === "once_lock_is_clone",
-);
+const post = blog.find((post) => post.href === "once_lock_is_clone");
 
 export const metadata: Metadata = {
   title: post?.name,
