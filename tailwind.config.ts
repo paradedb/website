@@ -10,6 +10,19 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      typography: {
+        DEFAULT: {
+          css: {
+            ".prose ul": {
+              listStyleType: "disc",
+              paddingLeft: "1.25rem",
+            },
+            ".prose ul > li::before": {
+              content: "none",
+            },
+          },
+        },
+      },
       fontFamily: {
         handwriting: ["NanumPenScript"],
       },
