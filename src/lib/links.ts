@@ -43,6 +43,15 @@ export const email = {
 
 export const blog = [
   {
+    name: "Elasticsearch, Postgres, and the ACID Test",
+    href: "elasticsearch-acid-test",
+    date: "2025-09-26:00:00.000Z",
+    author: "James Blackwood-Sewell",
+    description:
+      "A developer’s look at how Elasticsearch and Postgres stack up against the ACID test",
+    categories: ["elasticsearch", "oltp", "postgres"],
+  },
+  {
     name: "Elasticsearch Was Never a Database",
     href: "elasticsearch-was-never-a-database",
     date: "2025-09-18T00:00:00.000Z",
