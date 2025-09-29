@@ -30,3 +30,4 @@ jobs:
           check_filenames: true
           ignore_words_file: .codespellignore
           skip: "package-lock.json,pnpm-lock.yaml,*.svg"
+          uri_ignore_words_list: *
