@@ -13,6 +13,11 @@ const config: Config = {
       typography: {
         DEFAULT: {
           css: {
+	    ".prose h1": {
+              fontSize: "1.5rem",   // ~24px
+              lineHeight: "2rem",   // ~32px
+              fontWeight: "700",
+            },
             ".prose ul": {
               listStyleType: "disc",
               paddingLeft: "1.25rem",
