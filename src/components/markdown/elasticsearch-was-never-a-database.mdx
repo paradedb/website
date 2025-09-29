@@ -2,16 +2,26 @@ import Image from "next/image";
 import Headshot from "../../../public/blog/james_headshot.jpeg";
 import ElasticWasNever from "../../../public/blog/elasticsearch-was-never-a-database.svg";
 
-## Elasticsearch Was Never a Database
 
-<div className="relative bottom-10 flex h-6 space-x-3">
-  <Image src={Headshot} className="h-7 w-7 rounded-full z-50 hidden sm:block" />
-  <div className="relative top-3">
+# Elasticsearch Was Never a Database
+
+<div className="not-prose flex items-center gap-3 mt-1">
+  <Image
+    src={Headshot}
+    alt="Author headshot"
+    className="h-7 w-7 rounded-full flex-shrink-0"
+  />
+  <span className="text-base leading-6">
     By James Blackwood-Sewell on September 18, 2025
-  </div>
+  </span>
 </div>
 
-<Image src={ElasticWasNever} className="rounded-xl md:mt-6" />
+<Image
+  src={ElasticWasNever}
+  alt="Elastic Was Never a Database"
+  className="rounded-xl mt-3"
+ />
+
 
 [Elasticsearch](https://www.elastic.co/elasticsearch) was never a database. It was built as a search engine API over [Apache Lucene](https://lucene.apache.org/) (an incredibly powerful full-text search library), but not as a system of record. Even Elastic’s own guidance has long suggested that your source of truth should live somewhere else, with Elasticsearch serving as a secondary index. Yet, over the last decade, many teams have tried to stretch the search engine into being their primary database, usually with unexpected results.
 

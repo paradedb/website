@@ -5,14 +5,22 @@ import DDIA from "../../../public/blog/ddia.png";
 
 # Elasticsearch, PostgreSQL, and the ACID Test
 
-<div className="relative bottom-10 flex h-6 space-x-3">
-  <Image src={Headshot} className="h-7 w-7 rounded-full z-50 hidden sm:block" />
-  <div className="relative top-3">
+<div className="not-prose flex items-center gap-3 mt-1">
+  <Image
+    src={Headshot}
+    alt="Author headshot"
+    className="h-7 w-7 rounded-full flex-shrink-0"
+  />
+  <span className="text-base leading-6">
     By James Blackwood-Sewell on September 29, 2025
-  </div>
+  </span>
 </div>
 
-<Image src={Hero} className="rounded-xl md:mt-6" />
+<Image
+  src={Hero}
+  alt="Postgres and Elasticsearch vs ACID"
+  className="rounded-xl mt-3"
+ />
 
 When developers talk about databases, one acronym comes up again and again: **ACID**. Atomicity, consistency, isolation, and durability are the safety guarantees that define what it means to be a transactional system. If your database is the source of truth, these guarantees keep your data safe.
 
