@@ -6,8 +6,13 @@ import DDIA from "../../../public/blog/ddia.png";
 # Elasticsearch, PostgreSQL, and the ACID Test
 
 <div className="relative bottom-10 flex h-6 space-x-3">
-  <Image src={Headshot} className="h-7 w-7 rounded-full" />
-  <p className="relative top-3">By James Blackwood-Sewell on September 18, 2025</p>
+  <Image
+    src={Headshot}
+    className="h-7 w-7 rounded-full z-50 hidden sm:block"
+  />
+  <div className="relative top-3">
+    By James Blackwood-Sewell on September 29, 2025
+  </div>
 </div>
 
 <Image src={Hero} className="rounded-xl md:mt-6" />
@@ -16,7 +21,7 @@ When developers talk about databases, one acronym comes up again and again: **AC
 
 Search engines were built with a different goal. Systems like [Elasticsearch](https://www.elastic.co/elasticsearch) prioritize distributed indexing and scale. Transactional guarantees were never part of the design. By contrast, relational databases like [PostgreSQL](https://www.postgresql.org/) were born in the transactional era, with ACID at their core from the beginning. 
 
-Many Postgres users already combine these two worlds by treating their favorite database as a search engine, leaning on  built-in full-text search or extensions like `pg_search` (providing bm25 relevance scoring). By doing this, they get something Elasticsearch cannot offer: an ACID-compliant search engine. Or, as we like to call it, a **search database**.
+Many Postgres users already combine these two worlds by treating their favorite database as a search engine, leaning on  built-in full-text search or extensions like [`pg_search`](https://github.com/paradedb/paradedb) (providing bm25 relevance scoring). By doing this, they get something Elasticsearch cannot offer: an ACID-compliant search engine. Or, as we like to call it, a **search database**.
 
 But to understand why ACID matters in this context, and why it draws such a sharp line between databases and search engines, we need to revisit what the acronym actually means.
 
@@ -27,7 +32,7 @@ The idea of transactions dates back to IBM’s [System R](https://dl.acm.org/doi
 A decade later, [Theo Härder and Andreas Reuter coined the acronym **ACID**](https://cs-people.bu.edu/mathan/reading-groups/papers-classics/recovery.pdf) to describe the four essential properties of these transactions:
 
 - **Atomicity** means all-or-nothing. If one part of an action fails, the whole transaction is rolled back.
-- **Consistency** means that transactions preserve invariants. If the database starts valid, it ends valid. It’s worth noting that consistency is the most overloaded term. This isn’t the same as distributed / eventual consistency or CAP theorem consistency.
+- **Consistency** means that transactions preserve invariants. If the database starts valid, it ends valid. It’s worth two things. Firstly, consistency is the most overloaded term: this isn’t the same as distributed / eventual consistency or CAP theorem consistency. Secondly, it's up for debate is this is something applications or databases should be responsible for (although it's nice when databases can help).
 - **Isolation** means concurrent transactions don’t interfere with each other; the outcome is as if they ran one after another.
 - **Durability** means that once a transaction or action commits, its changes survive crashes or power loss.
 
@@ -51,7 +56,7 @@ Kleppmann notes that ACID has become slippery over time. Different systems inter
 
 At first glance, it might seem odd to even suggest a relationship between ACID and search systems. Isn’t search about relevance and ranking? In practice, search is almost always tied to the mutable, relational data it’s sourced from. The difference between a search database and a search engine is the amount of trust you can put in these two worlds being in sync.
 
-This matters where the searcher is motivated by precision. Financial records and legal documents are constantly changing; and when a search is executed the result should reflect now, not some stage in the past. Imagine searching for a record that was just deleted. In Elasticsearch it may still show up, even though the source of truth has moved on. In Postgres, that would be impossible. These results are driving important business decisions. 
+This matters where the searcher is motivated by precision. Financial records and legal documents are constantly changing; and when a search is executed the result should reflect now, not some stage in the past. Imagine searching for a record that was just deleted. In Elasticsearch it may still show up, even though the source of truth has moved on. In Postgres, that would be impossible. These results can be driving important business decisions.
 
 This is what ACID brings to search: trust. You can rely on your search results to reflect the system of record in real time, without dangling references or stale indexes. As a side-effect it also reduces technology sprawl, removes sync jobs, and eliminates reconciliation logic. A search database is a simpler and safer foundation for user-facing search workloads which prioritize correctness.
 
@@ -85,14 +90,14 @@ PostgreSQL, by contrast, was built with transactions at its core. Its entire mod
 
 Outside of ACID Postgres also guarantees strict *read-your-writes* semantics: once you commit a change, your subsequent reads will always reflect it. Because Postgres isn’t a distributed system, there’s no ambiguity: visibility is immediate and consistent. 
 
-Postgres’s extensibility means new workloads can live directly alongside its transactional core — from time-series to geospatial to vector search. ParadeDB follows in that tradition, bringing full-text search and analytics into the database while keeping ACID guarantees intact.
+Postgres’s extensibility means new workloads can live directly alongside its transactional core: from time-series, to geospatial, to vector search. ParadeDB follows in that tradition, bringing full-text search and analytics into the database while keeping ACID guarantees intact.
 
 ## Summary
 
 Elasticsearch optimizes for scalability. Postgres optimizes for trust. For years, developers stitched them together: Postgres for correctness, Elastic for search, with pipelines in between. That works, but keeping the two systems aligned creates data lag (or even differences), stale indexes, consistency gaps, and operational overhead.
 
-ParadeDB removes that complexity. By extending Postgres with BM25-powered search and a dedicated SQL search API, it becomes something new: a **search database**. You get the safety of ACID transactions and the power of a search engine (stuff like bm25, tokenization, fuzzy matching, boosting, proximity queries, and faceting) in one system.
+ParadeDB removes that complexity. By extending Postgres with BM25-powered search and a dedicated SQL search API, it becomes something new: a **search database**. You get the safety of ACID transactions and the power of a search engine (think bm25, tokenization, fuzzy matching, boosting, proximity queries, and faceting) in one system.
 
-*And you don’t have to replace what you already run. ParadeDB can serve as your primary database, or as a logical replica that delivers real-time search on top of your existing Postgres.*
+*And you don’t have to replace what you already run. ParadeDB can serve as your primary database, or as a logical replica that delivers real-time search next to your existing Postgres server.*
 
 Ready to try ACID-compliant search? [Get started with ParadeDB](https://paradedb.com/)
