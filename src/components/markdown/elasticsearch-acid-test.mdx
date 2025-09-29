@@ -6,10 +6,7 @@ import DDIA from "../../../public/blog/ddia.png";
 # Elasticsearch, PostgreSQL, and the ACID Test
 
 <div className="relative bottom-10 flex h-6 space-x-3">
-  <Image
-    src={Headshot}
-    className="h-7 w-7 rounded-full z-50 hidden sm:block"
-  />
+  <Image src={Headshot} className="h-7 w-7 rounded-full z-50 hidden sm:block" />
   <div className="relative top-3">
     By James Blackwood-Sewell on September 29, 2025
   </div>
@@ -21,7 +18,7 @@ When developers talk about databases, one acronym comes up again and again: **AC
 
 Search engines were built with a different goal. Systems like [Elasticsearch](https://www.elastic.co/elasticsearch) prioritize distributed indexing and scale. Transactional guarantees were never part of the design. By contrast, relational databases like [PostgreSQL](https://www.postgresql.org/) were born in the transactional era, with ACID at their core from the beginning.
 
-Many Postgres users already combine these two worlds by treating their favorite database as a search engine, leaning on  built-in full-text search or extensions like [`pg_search`](https://github.com/paradedb/paradedb) (providing bm25 relevance scoring). By doing this, they get something Elasticsearch cannot offer: an ACID-compliant search engine. Or, as we like to call it, a **search database**.
+Many Postgres users already combine these two worlds by treating their favorite database as a search engine, leaning on built-in full-text search or extensions like [`pg_search`](https://github.com/paradedb/paradedb) (providing bm25 relevance scoring). By doing this, they get something Elasticsearch cannot offer: an ACID-compliant search engine. Or, as we like to call it, a **search database**.
 
 But to understand why ACID matters in this context, and why it draws such a sharp line between databases and search engines, we need to revisit what the acronym actually means.
 
@@ -36,7 +33,7 @@ A decade later, [Theo Härder and Andreas Reuter coined the acronym **ACID**](ht
 - **Isolation** means concurrent transactions don’t interfere with each other; the outcome is as if they ran one after another.
 - **Durability** means that once a transaction or action commits, its changes survive crashes or power loss.
 
-For many developers today, the clearest introduction to these ideas comes from Martin Kleppmann’s *Designing Data-Intensive Applications.*
+For many developers today, the clearest introduction to these ideas comes from Martin Kleppmann’s _Designing Data-Intensive Applications._
 
 <figure className="flex flex-col items-center">
   <Image
@@ -45,10 +42,10 @@ For many developers today, the clearest introduction to these ideas comes from M
     className="rounded-xl"
   />
   <figcaption className="mt-2 text-sm text-gray-500">
-  ❤️ Kleppmann, M. (2017). Designing data-intensive applications: The big ideas behind reliable, scalable, and maintainable systems. O’Reilly Media
+    ❤️ Kleppmann, M. (2017). Designing data-intensive applications: The big
+    ideas behind reliable, scalable, and maintainable systems. O’Reilly Media
   </figcaption>
 </figure>
-
 
 Kleppmann notes that ACID has become slippery over time. Different systems interpret isolation differently, vendors sometimes use “ACID compliant” as a pure marketing slogan, and often consistency feels like an application goal instead of a database one. Still, the four letters remain a useful guide when comparing systems with different design goals.
 
@@ -88,7 +85,7 @@ PostgreSQL, by contrast, was built with transactions at its core. Its entire mod
 
 **Durability** is guaranteed by the write-ahead log (WAL). A transaction isn’t acknowledged until its WAL record is safely flushed to disk. If Postgres says the transaction committed, that fact will survive crashes and power failures.
 
-Outside of ACID Postgres also guarantees strict *read-your-writes* semantics: once you commit a change, your subsequent reads will always reflect it. Because Postgres isn’t a distributed system, there’s no ambiguity: visibility is immediate and consistent.
+Outside of ACID Postgres also guarantees strict _read-your-writes_ semantics: once you commit a change, your subsequent reads will always reflect it. Because Postgres isn’t a distributed system, there’s no ambiguity: visibility is immediate and consistent.
 
 Postgres’s extensibility means new workloads can live directly alongside its transactional core: from time-series, to geospatial, to vector search. ParadeDB follows in that tradition, bringing full-text search and analytics into the database while keeping ACID guarantees intact.
 
@@ -98,6 +95,6 @@ Elasticsearch optimizes for scalability. Postgres optimizes for trust. For years
 
 ParadeDB removes that complexity. By extending Postgres with BM25-powered search and a dedicated SQL search API, it becomes something new: a **search database**. You get the safety of ACID transactions and the power of a search engine (think bm25, tokenization, fuzzy matching, boosting, proximity queries, and faceting) in one system.
 
-*And you don’t have to replace what you already run. ParadeDB can serve as your primary database, or as a logical replica that delivers real-time search next to your existing Postgres server.*
+_And you don’t have to replace what you already run. ParadeDB can serve as your primary database, or as a logical replica that delivers real-time search next to your existing Postgres server._
 
 Ready to try ACID-compliant search? [Get started with ParadeDB](https://paradedb.com/)
