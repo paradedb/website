@@ -1,6 +1,6 @@
 "use client";
 
-import { blog } from "@/lib/links";
+// Removed dynamic blog import
 import Link from "next/link";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
@@ -15,7 +15,7 @@ const caseStudies = [
     unit: "%",
     description: "Fewer Query Timeouts",
     logo: () => <Bilt fill="black" className="h-6 md:h-8" />,
-    link: blog.find((b) => b.href === "case_study_bilt")?.href,
+    link: "case_study_bilt",
     imageBgStyle: "bg-slate-50",
     bgStyle: "bg-slate-50",
     textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
@@ -27,7 +27,7 @@ const caseStudies = [
     unit: "x",
     description: "Read Throughput",
     logo: () => <Alibaba fill="#ff6600" className="h-6 md:h-8" />,
-    link: blog.find((b) => b.href === "case_study_alibaba")?.href,
+    link: "case_study_alibaba",
     imageBgStyle: "bg-slate-50",
     bgStyle: "bg-slate-50",
     textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",

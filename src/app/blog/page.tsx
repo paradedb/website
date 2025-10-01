@@ -1,7 +1,8 @@
-import { blog } from "@/lib/links";
+import { getBlogLinks } from "@/lib/blog";
 import { redirect } from "next/navigation";
 import { siteConfig } from "../siteConfig";
 
-export default function Blog() {
-  redirect(`${siteConfig.baseLinks.blog}/${blog[0].href}`);
+export default async function Blog() {
+  const blogLinks = await getBlogLinks();
+  redirect(`${siteConfig.baseLinks.blog}/${blogLinks[0]?.href || ''}`);
 }

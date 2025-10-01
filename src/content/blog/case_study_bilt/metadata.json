@@ -1,0 +1,7 @@
+{
+  "title": "Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB",
+  "date": "2025-07-28T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How Bilt improved their Postgres performance with ParadeDB, reducing query timeouts by 95%.",
+  "categories": ["case-study", "bilt", "performance"]
+}

@@ -21,7 +21,7 @@ function CustomHeading(props: any) {
     {
       id: slug,
       className: clsx(
-        "scroll-mt-36 md:scroll-mt-24 inline-flex",
+        "scroll-mt-36 md:scroll-mt-24 group relative",
         props.className,
       ),
     },
@@ -31,23 +31,19 @@ function CustomHeading(props: any) {
         key: `link-${slug}`,
         className: "anchor-link",
       }),
+      props.children,
     ],
-    props.children,
   );
 }
 
 export const H1 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
-  <CustomHeading
-    className="text-3xl font-bold normal-case tracking-tight text-gray-900 sm:text-4xl"
-    level={1}
-  >
+  <h1 className="text-2xl font-bold normal-case tracking-tight text-gray-900 scroll-mt-36 md:scroll-mt-24">
     {children}
-  </CustomHeading>
+  </h1>
 );
 
 export const H2 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
   <CustomHeading
-    className="mb-4 text-lg font-semibold normal-case tracking-tight text-gray-900"
     level={2}
   >
     {children}
@@ -138,3 +134,35 @@ export const ChangelogImage = ({
     {...props}
   />
 );
+
+// Import headshots for shared use
+import JamesHeadshot from "../../public/blog/james_headshot.jpeg";
+import PhilHeadshot from "../../public/blog/phil_headshot.png";
+import MingHeadshot from "../../public/blog/ming_headshot.png";
+import StuHeadshot from "../../public/blog/stu_headshot.png";
+
+// Create headshot components
+const Headshot = ({ author }: { author?: string }) => {
+  const authorHeadshots = {
+    "James Blackwood-Sewell": JamesHeadshot,
+    "Philippe Noël": PhilHeadshot,
+    "Ming Ying": MingHeadshot,
+    "Stu Hood": StuHeadshot,
+  };
+  
+  const headshotSrc = authorHeadshots[author as keyof typeof authorHeadshots] || JamesHeadshot;
+  
+  return (
+    <Image
+      src={headshotSrc}
+      alt="Author headshot"
+      className="h-7 w-7 rounded-full flex-shrink-0"
+    />
+  );
+};
+
+export const mdxComponents = {
+  h1: H1,
+  h2: H2,
+  h3: H3,
+};

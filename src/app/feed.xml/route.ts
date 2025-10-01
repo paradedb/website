@@ -1,19 +1,21 @@
-import { blog } from "@/lib/links";
+import { getBlogLinks } from "@/lib/blog";
 import RSS from "rss";
 import { siteConfig } from "../siteConfig";
 
-const feed = new RSS({
-  title: siteConfig.name,
-  description: siteConfig.description,
-  site_url: siteConfig.url,
-  feed_url: `${siteConfig.url}/feed.xml`,
-  copyright: `${new Date().getFullYear()} ParadeDB`,
-  language: "en",
-  pubDate: new Date(),
-});
-
 export async function GET() {
-  blog.map((post: any) => {
+  const blogLinks = await getBlogLinks();
+  
+  const feed = new RSS({
+    title: siteConfig.name,
+    description: siteConfig.description,
+    site_url: siteConfig.url,
+    feed_url: `${siteConfig.url}/feed.xml`,
+    copyright: `${new Date().getFullYear()} ParadeDB`,
+    language: "en",
+    pubDate: new Date(),
+  });
+
+  blogLinks.map((post) => {
     feed.item({
       title: post.name,
       url: `${siteConfig.url}/blog/${post.href}`,

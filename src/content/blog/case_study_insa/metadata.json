@@ -1,0 +1,7 @@
+{
+  "title": "INSA Strasbourg Powers New Research Database with ParadeDB",
+  "date": "2024-08-29T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How INSA replaced Elasticsearch with ParadeDB for better performance and simplicity.",
+  "categories": ["case-study", "insa", "elasticsearch"]
+}

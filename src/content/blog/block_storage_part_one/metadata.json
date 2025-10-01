@@ -1,0 +1,7 @@
+{
+  "title": "A New Postgres Block Storage Layout for Full Text Search",
+  "date": "2025-01-16T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How we implemented a new block storage layout in Postgres for full text search performance.",
+  "categories": ["postgres", "search", "performance"]
+}
