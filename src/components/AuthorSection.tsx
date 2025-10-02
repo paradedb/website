@@ -12,42 +12,54 @@ interface AuthorSectionProps {
   };
 }
 
-export function AuthorSection({ authorName, date, hideAuthor = false, metadata }: AuthorSectionProps) {
-  
+export function AuthorSection({
+  authorName,
+  date,
+  hideAuthor = false,
+  metadata,
+}: AuthorSectionProps) {
   // Check both explicit prop and metadata flag
   if (hideAuthor || metadata?.hideAuthor) return null;
-  
+
   // Use props if provided, otherwise fall back to metadata
   const finalAuthorName = authorName || metadata?.author;
   const finalDate = date || metadata?.date;
-  
+
   if (!finalAuthorName || !finalDate) {
     return null;
   }
-  
+
   // Handle both single author and multiple authors
-  const authorNames = Array.isArray(finalAuthorName) ? finalAuthorName : [finalAuthorName];
-  
+  const authorNames = Array.isArray(finalAuthorName)
+    ? finalAuthorName
+    : [finalAuthorName];
+
   // Get author info for each author
-  const authors = authorNames.map(name => 
-    AUTHORS[name] || {
-      name: name,
-      headshot: null // No headshot - will use fallback
-    }
+  const authors = authorNames.map(
+    (name) =>
+      AUTHORS[name] || {
+        name: name,
+        headshot: null, // No headshot - will use fallback
+      },
   );
 
   // Filter to only authors with headshots
-  const authorsWithHeadshots = authors.filter(author => author.headshot);
+  const authorsWithHeadshots = authors.filter((author) => author.headshot);
   const authorsWithoutHeadshots = authors.length - authorsWithHeadshots.length;
 
   // Format author names for display
-  const formatAuthorNames = (authorList: { name: string; headshot: string | null }[]) => {
+  const formatAuthorNames = (
+    authorList: { name: string; headshot: string | null }[],
+  ) => {
     if (authorList.length === 1) {
       return authorList[0].name;
     } else if (authorList.length === 2) {
       return `${authorList[0].name} and ${authorList[1].name}`;
     } else {
-      const allButLast = authorList.slice(0, -1).map(a => a.name).join(', ');
+      const allButLast = authorList
+        .slice(0, -1)
+        .map((a) => a.name)
+        .join(", ");
       const last = authorList[authorList.length - 1].name;
       return `${allButLast}, and ${last}`;
     }
@@ -58,7 +70,11 @@ export function AuthorSection({ authorName, date, hideAuthor = false, metadata }
       {/* Show avatars only for authors with headshots, plus overflow indicator */}
       <div className="flex -space-x-1">
         {authorsWithHeadshots.slice(0, 3).map((author, index) => (
-          <div key={author.name} className="relative" style={{ zIndex: 10 - index }}>
+          <div
+            key={author.name}
+            className="relative"
+            style={{ zIndex: 10 - index }}
+          >
             <Image
               src={author.headshot}
               alt={`${author.name} headshot`}
@@ -68,15 +84,19 @@ export function AuthorSection({ authorName, date, hideAuthor = false, metadata }
         ))}
         {(authorsWithHeadshots.length > 3 || authorsWithoutHeadshots > 0) && (
           <div className="h-7 w-7 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-xs text-white font-semibold">
-            +{(authorsWithHeadshots.length > 3 ? authorsWithHeadshots.length - 3 : 0) + authorsWithoutHeadshots}
+            +
+            {(authorsWithHeadshots.length > 3
+              ? authorsWithHeadshots.length - 3
+              : 0) + authorsWithoutHeadshots}
           </div>
         )}
       </div>
       <span className="text-base leading-6">
-        By {formatAuthorNames(authors)} on {new Date(finalDate).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'long', 
-          day: 'numeric'
+        By {formatAuthorNames(authors)} on{" "}
+        {new Date(finalDate).toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         })}
       </span>
     </div>

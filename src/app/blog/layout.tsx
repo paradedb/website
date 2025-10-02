@@ -7,10 +7,6 @@ export default async function BlogLayout({
   children: React.ReactNode;
 }) {
   const blogLinks = await getBlogLinks();
-  
-  return (
-    <BlogLayoutClient blogLinks={blogLinks}>
-      {children}
-    </BlogLayoutClient>
-  );
+
+  return <BlogLayoutClient blogLinks={blogLinks}>{children}</BlogLayoutClient>;
 }

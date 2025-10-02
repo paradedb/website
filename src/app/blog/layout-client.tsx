@@ -43,7 +43,9 @@ export default function BlogLayoutClient({
   blogLinks: BlogLink[];
 }) {
   const pathname = usePathname();
-  const currentPageIdx = blogLinks.findIndex((item) => pathname.endsWith(item.href));
+  const currentPageIdx = blogLinks.findIndex((item) =>
+    pathname.endsWith(item.href),
+  );
   const canGoBackward = currentPageIdx > 0;
   const canGoForward = currentPageIdx < blogLinks.length - 1;
   const nextHref = canGoForward
@@ -87,21 +89,13 @@ export default function BlogLayoutClient({
       {/* Blog content */}
       <main className="w-full px-6 py-4 md:py-0">
         <div className="mx-auto flex justify-between">
-          <div>
-            {canGoBackward && <BackButton href={previousHref} />}
-          </div>
-          <div>
-            {canGoForward && <NextButton href={nextHref} />}
-          </div>
+          <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+          <div>{canGoForward && <NextButton href={nextHref} />}</div>
         </div>
         <div className="w-full py-4">{children}</div>
         <div className="mx-auto flex justify-between">
-          <div>
-            {canGoBackward && <BackButton href={previousHref} />}
-          </div>
-          <div>
-            {canGoForward && <NextButton href={nextHref} />}
-          </div>
+          <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+          <div>{canGoForward && <NextButton href={nextHref} />}</div>
         </div>
       </main>
     </div>

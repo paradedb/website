@@ -4,5 +4,5 @@ import { siteConfig } from "../siteConfig";
 
 export default async function Blog() {
   const blogLinks = await getBlogLinks();
-  redirect(`${siteConfig.baseLinks.blog}/${blogLinks[0]?.href || ''}`);
+  redirect(`${siteConfig.baseLinks.blog}/${blogLinks[0]?.href || ""}`);
 }

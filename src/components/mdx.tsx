@@ -43,11 +43,7 @@ export const H1 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
 );
 
 export const H2 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
-  <CustomHeading
-    level={2}
-  >
-    {children}
-  </CustomHeading>
+  <CustomHeading level={2}>{children}</CustomHeading>
 );
 
 export const H3 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (

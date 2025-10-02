@@ -4,7 +4,7 @@ import { siteConfig } from "../siteConfig";
 
 export async function GET() {
   const blogLinks = await getBlogLinks();
-  
+
   const feed = new RSS({
     title: siteConfig.name,
     description: siteConfig.description,

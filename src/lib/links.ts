@@ -40,4 +40,3 @@ export const email = {
   SUPPORT: "mailto:support@paradedb.com",
   SALES: "mailto:sales@paradedb.com",
 };
-
