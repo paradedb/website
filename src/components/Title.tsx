@@ -17,7 +17,6 @@ export function Title({ children, className = "text-2xl font-bold normal-case tr
   const titleContent = children || metadata?.title;
   
   if (!titleContent) {
-    console.warn('Title: No title content provided via children or metadata');
     return null;
   }
   

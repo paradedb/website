@@ -1,6 +1,5 @@
 import Image from "next/image";
 import { AUTHORS } from "@/lib/authors";
-import { AvatarFallback } from "./AvatarFallback";
 
 interface AuthorSectionProps {
   authorName?: string | string[];
@@ -22,10 +21,7 @@ export function AuthorSection({ authorName, date, hideAuthor = false, metadata }
   const finalAuthorName = authorName || metadata?.author;
   const finalDate = date || metadata?.date;
   
-  console.log('AuthorSection final values:', { finalAuthorName, finalDate });
-  
   if (!finalAuthorName || !finalDate) {
-    console.warn('AuthorSection: No author name or date provided via props or metadata');
     return null;
   }
   
@@ -45,14 +41,14 @@ export function AuthorSection({ authorName, date, hideAuthor = false, metadata }
   const authorsWithoutHeadshots = authors.length - authorsWithHeadshots.length;
 
   // Format author names for display
-  const formatAuthorNames = (authors: typeof authors) => {
-    if (authors.length === 1) {
-      return authors[0].name;
-    } else if (authors.length === 2) {
-      return `${authors[0].name} and ${authors[1].name}`;
+  const formatAuthorNames = (authorList: { name: string; headshot: string | null }[]) => {
+    if (authorList.length === 1) {
+      return authorList[0].name;
+    } else if (authorList.length === 2) {
+      return `${authorList[0].name} and ${authorList[1].name}`;
     } else {
-      const allButLast = authors.slice(0, -1).map(a => a.name).join(', ');
-      const last = authors[authors.length - 1].name;
+      const allButLast = authorList.slice(0, -1).map(a => a.name).join(', ');
+      const last = authorList[authorList.length - 1].name;
       return `${allButLast}, and ${last}`;
     }
   };

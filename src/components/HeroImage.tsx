@@ -20,7 +20,6 @@ export function HeroImage({ src, alt, className = "rounded-xl mt-3", metadata, h
   const imageSrc = src || heroImage;
   
   if (!imageSrc) {
-    console.warn('HeroImage: No image source provided');
     return null;
   }
   

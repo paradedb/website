@@ -52,7 +52,15 @@ export default function TableOfContents() {
         }
       );
 
-      headingElements.forEach((heading) => observer.observe(heading));
+      headingElements.forEach((heading) => {
+        observer.observe(heading);
+        
+        // Add click handler to heading to update URL
+        (heading as HTMLElement).style.cursor = 'pointer';
+        heading.addEventListener('click', () => {
+          window.history.pushState(null, '', `#${heading.id}`);
+        });
+      });
 
       return () => observer.disconnect();
     };
@@ -75,7 +83,7 @@ export default function TableOfContents() {
   if (headings.length === 0) return null;
 
   return (
-    <div className="fixed right-8 top-1/2 transform -translate-y-1/2 hidden lg:block z-50">
+    <div className="fixed right-8 top-1/2 transform -translate-y-1/2 hidden min-[1650px]:block z-50">
       <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-64">
         <h3 className="text-sm font-semibold text-gray-900 mb-3">Contents</h3>
         <nav>
