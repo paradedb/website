@@ -84,28 +84,29 @@ function copyBlogImages() {
       continue;
     }
 
+    // Create slug-specific directory in public/blog/
+    const slugPublicDir = path.join(publicBlogDir, slug);
+    fs.mkdirSync(slugPublicDir, { recursive: true });
+
     const imageFiles = fs.readdirSync(imagesDir);
     
     for (const imageFile of imageFiles) {
       const sourcePath = path.join(imagesDir, imageFile);
-      const destPath = path.join(publicBlogDir, imageFile);
       
-      // Copy image to public/blog/
-      fs.copyFileSync(sourcePath, destPath);
+      // Keep author headshots in main public/blog/ directory for sharing
+      if (imageFile.endsWith('_headshot.png') || imageFile.endsWith('_headshot.jpeg') || imageFile.endsWith('_headshot.jpg')) {
+        const destPath = path.join(publicBlogDir, imageFile);
+        fs.copyFileSync(sourcePath, destPath);
+      } else {
+        // Other images go to slug-specific directory
+        const destPath = path.join(slugPublicDir, imageFile);
+        fs.copyFileSync(sourcePath, destPath);
+      }
+      
       imagesCopied++;
     }
 
-    // Special handling for hero images - also copy with slug naming for easier access
-    const heroSvg = path.join(imagesDir, 'hero.svg');
-    const heroPng = path.join(imagesDir, 'hero.png');
-    
-    if (fs.existsSync(heroSvg)) {
-      fs.copyFileSync(heroSvg, path.join(publicBlogDir, `${slug}.svg`));
-      console.log(`📸 Copied hero image: ${slug}.svg`);
-    } else if (fs.existsSync(heroPng)) {
-      fs.copyFileSync(heroPng, path.join(publicBlogDir, `${slug}.png`));
-      console.log(`📸 Copied hero image: ${slug}.png`);
-    }
+    console.log(`📸 Copied images for ${slug}`);
   }
 
   console.log(`📸 Copied ${imagesCopied} blog images to public/blog/`);
@@ -172,10 +173,10 @@ function validateBlogImages(slug, postDir, mdxPath) {
         }
       }
       
-      // Also check for direct image references like ![alt](/blog/image.png)
+      // Also check for direct image references like ![alt](/blog/slug/image.png)
       const mdImageRegex = /!\[[^\]]*\]\(\/blog\/([^)]+)\)/g;
       while ((match = mdImageRegex.exec(mdxContent)) !== null) {
-        const imagePath = match[1]; // e.g., "hero.svg"
+        const imagePath = match[1]; // e.g., "slug/hero.svg"
         const fullImagePath = path.join(publicBlogDir, imagePath);
         
         if (!fs.existsSync(fullImagePath)) {
