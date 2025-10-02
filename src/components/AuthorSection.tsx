@@ -1,12 +1,13 @@
 import Image from "next/image";
 import { AUTHORS } from "@/lib/authors";
+import { AvatarFallback } from "./AvatarFallback";
 
 interface AuthorSectionProps {
-  authorName?: string;
+  authorName?: string | string[];
   date?: string;
   hideAuthor?: boolean;
   metadata?: {
-    author: string;
+    author: string | string[];
     date: string;
     hideAuthor?: boolean;
   };
@@ -28,22 +29,55 @@ export function AuthorSection({ authorName, date, hideAuthor = false, metadata }
     return null;
   }
   
-  const author = AUTHORS[finalAuthorName];
+  // Handle both single author and multiple authors
+  const authorNames = Array.isArray(finalAuthorName) ? finalAuthorName : [finalAuthorName];
   
-  if (!author) {
-    console.warn(`Author "${finalAuthorName}" not found in AUTHORS registry`);
-    return null;
-  }
+  // Get author info for each author
+  const authors = authorNames.map(name => 
+    AUTHORS[name] || {
+      name: name,
+      headshot: null // No headshot - will use fallback
+    }
+  );
+
+  // Filter to only authors with headshots
+  const authorsWithHeadshots = authors.filter(author => author.headshot);
+  const authorsWithoutHeadshots = authors.length - authorsWithHeadshots.length;
+
+  // Format author names for display
+  const formatAuthorNames = (authors: typeof authors) => {
+    if (authors.length === 1) {
+      return authors[0].name;
+    } else if (authors.length === 2) {
+      return `${authors[0].name} and ${authors[1].name}`;
+    } else {
+      const allButLast = authors.slice(0, -1).map(a => a.name).join(', ');
+      const last = authors[authors.length - 1].name;
+      return `${allButLast}, and ${last}`;
+    }
+  };
 
   return (
     <div className="not-prose flex items-center gap-3 mt-1">
-      <Image
-        src={author.headshot}
-        alt="Author headshot"
-        className="h-7 w-7 rounded-full flex-shrink-0"
-      />
+      {/* Show avatars only for authors with headshots, plus overflow indicator */}
+      <div className="flex -space-x-1">
+        {authorsWithHeadshots.slice(0, 3).map((author, index) => (
+          <div key={author.name} className="relative" style={{ zIndex: 10 - index }}>
+            <Image
+              src={author.headshot}
+              alt={`${author.name} headshot`}
+              className="h-7 w-7 rounded-full flex-shrink-0 border-2 border-white"
+            />
+          </div>
+        ))}
+        {(authorsWithHeadshots.length > 3 || authorsWithoutHeadshots > 0) && (
+          <div className="h-7 w-7 rounded-full bg-purple-600 border-2 border-white flex items-center justify-center text-xs text-white font-semibold">
+            +{(authorsWithHeadshots.length > 3 ? authorsWithHeadshots.length - 3 : 0) + authorsWithoutHeadshots}
+          </div>
+        )}
+      </div>
       <span className="text-base leading-6">
-        By {author.name} on {new Date(finalDate).toLocaleDateString('en-US', {
+        By {formatAuthorNames(authors)} on {new Date(finalDate).toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long', 
           day: 'numeric'

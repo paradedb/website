@@ -37,3 +37,13 @@ next-env.d.ts
 
 # VS Code
 .vscode/*
+
+
+# Generated blog pages (created by build script)
+src/app/blog/*/page.tsx
+
+# Generated blog links (populated at build time)
+src/lib/links.ts
+
+# Copied blog images (generated from src/content/blog/*/images/)
+public/blog/

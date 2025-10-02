@@ -15,12 +15,28 @@ export default function TableOfContents() {
     // Wait for content to load, then scan for headings
     const scanHeadings = () => {
       const headingElements = document.querySelectorAll("h1, h2");
-      const headingItems: TOCItem[] = Array.from(headingElements).map((heading) => ({
-        id: heading.id,
-        text: heading.textContent?.replace("#", "").trim() || "",
-      }));
+      const headingItems: TOCItem[] = Array.from(headingElements).map((heading) => {
+        // If heading doesn't have an id, generate one from the text
+        let id = heading.id;
+        if (!id) {
+          const text = heading.textContent?.replace("#", "").trim() || "";
+          id = text.toLowerCase()
+            .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+            .replace(/\s+/g, '-') // Replace spaces with hyphens
+            .replace(/-+/g, '-') // Replace multiple hyphens with single
+            .replace(/^-|-$/g, ''); // Remove leading/trailing hyphens
+          heading.id = id; // Set the id on the element
+        }
+        
+        return {
+          id,
+          text: heading.textContent?.replace("#", "").trim() || "",
+        };
+      });
       
-      setHeadings(headingItems);
+      // Filter out headings without valid ids
+      const validHeadings = headingItems.filter(h => h.id && h.text);
+      setHeadings(validHeadings);
 
       // Intersection Observer to track which heading is active
       const observer = new IntersectionObserver(
@@ -44,10 +60,16 @@ export default function TableOfContents() {
     // Initial scan
     scanHeadings();
     
-    // Retry after a delay in case content is still loading
-    const timeout = setTimeout(scanHeadings, 1000);
+    // Retry multiple times to catch dynamically loaded content
+    const timeout1 = setTimeout(scanHeadings, 500);
+    const timeout2 = setTimeout(scanHeadings, 1500);
+    const timeout3 = setTimeout(scanHeadings, 3000);
     
-    return () => clearTimeout(timeout);
+    return () => {
+      clearTimeout(timeout1);
+      clearTimeout(timeout2);
+      clearTimeout(timeout3);
+    };
   }, []);
 
   if (headings.length === 0) return null;
