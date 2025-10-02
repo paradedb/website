@@ -54,7 +54,7 @@ export const blog: Array<{
     "name": "Elasticsearch, PostgreSQL, and the ACID Test",
     "href": "elasticsearch-acid-test",
     "date": "2025-09-29T00:00:00.000Z",
-    "author": "James Blackwood-Sewell, Ming Ying, Philippe Noël",
+    "author": "James Blackwood-Sewell",
     "description": "A developer's look at how Elasticsearch and Postgres stack up against the ACID test",
     "categories": [
       "elasticsearch",

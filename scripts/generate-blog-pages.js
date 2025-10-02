@@ -218,6 +218,34 @@ function generateBlogPages() {
       continue;
     }
 
+    // Validate metadata.json is valid JSON
+    try {
+      const metadataContents = fs.readFileSync(metadataPath, 'utf8');
+      const metadata = JSON.parse(metadataContents);
+      
+      // Validate required fields
+      if (!metadata.title) {
+        totalErrors.push(`Missing required field 'title' in ${slug}/metadata.json`);
+      }
+      if (!metadata.date) {
+        totalErrors.push(`Missing required field 'date' in ${slug}/metadata.json`);
+      }
+      if (!metadata.author) {
+        totalErrors.push(`Missing required field 'author' in ${slug}/metadata.json`);
+      }
+      if (!metadata.description) {
+        totalErrors.push(`Missing required field 'description' in ${slug}/metadata.json`);
+      }
+      
+      // Validate date format
+      if (metadata.date && isNaN(new Date(metadata.date).getTime())) {
+        totalErrors.push(`Invalid date format in ${slug}/metadata.json: ${metadata.date}`);
+      }
+    } catch (err) {
+      totalErrors.push(`Invalid JSON in ${slug}/metadata.json: ${err.message}`);
+      continue; // Skip this post if JSON is invalid
+    }
+
     // Validate all images for this post
     const { errors, warnings } = validateBlogImages(slug, postDir, mdxPath);
     totalErrors.push(...errors);
