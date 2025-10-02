@@ -6,6 +6,8 @@ import { mdxComponents } from "@/components/mdx";
 import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
+// If you use next/image, you can import type StaticImageData
+// import type { StaticImageData } from "next/image";
 
 interface ContentProps {
   slug: string;
@@ -23,38 +25,46 @@ interface BlogMetadata {
   hideHeroImage?: boolean;
 }
 
+// Optional: tighten this if you use next/image
+type HeroImageSrc = string | /* StaticImageData | */ undefined;
+
 export default function Content({ slug }: ContentProps) {
-  const [BlogContent, setBlogContent] = useState<React.ComponentType | null>(null);
-  const [metadata, setMetadata] = useState<BlogMetadata | null>(null);
-  const [heroImage, setHeroImage] = useState<any>(null);
+  const [BlogContent, setBlogContent] = useState<React.ComponentType | undefined>(undefined);
+  const [metadata, setMetadata] = useState<BlogMetadata | undefined>(undefined);
+  const [heroImage, setHeroImage] = useState<HeroImageSrc>(undefined);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     async function loadContent() {
       try {
         setLoading(true);
+        setError(undefined);
+
         const [mdxModule, metadataModule] = await Promise.all([
           import(`@/content/blog/${slug}/index.mdx`),
-          import(`@/content/blog/${slug}/metadata.json`)
+          import(`@/content/blog/${slug}/metadata.json`),
         ]);
-        
+
         // Try to load hero image (try .png first, then .svg)
-        let heroImageModule = null;
+        let heroImageModule: { default: HeroImageSrc } | undefined;
         try {
           heroImageModule = await import(`@/content/blog/${slug}/images/hero.png`);
         } catch {
           try {
             heroImageModule = await import(`@/content/blog/${slug}/images/hero.svg`);
           } catch {
-            console.log(`No hero image found for ${slug}`);
+            // no hero image — that's fine
           }
         }
-        
-        
-        setMetadata(metadataModule.default);
+
+        setMetadata(metadataModule?.default as BlogMetadata | undefined);
         setHeroImage(heroImageModule?.default);
-        setBlogContent(() => (props: any) => mdxModule.default({ ...props, metadata: metadataModule.default }));
+
+        // Inject metadata into MDX default export
+        setBlogContent(() => (props: any) =>
+          mdxModule.default({ ...props, metadata: metadataModule?.default as BlogMetadata | undefined })
+        );
       } catch (err) {
         console.error(`Failed to load MDX for slug: ${slug}`, err);
         setError(`Blog post "${slug}" not found`);
@@ -66,15 +76,10 @@ export default function Content({ slug }: ContentProps) {
     loadContent();
   }, [slug]);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  if (loading) return <div>Loading...</div>;
+  if (error || !BlogContent) return <div>{error || "Blog post not found"}</div>;
 
-  if (error || !BlogContent) {
-    return <div>{error || "Blog post not found"}</div>;
-  }
-
-  // Create enhanced components with metadata context
+  // Components accept `metadata?: ...`, so passing `metadata` (possibly undefined) is OK now.
   const enhancedComponents = {
     ...mdxComponents,
     AuthorSection: (props: any) => <AuthorSection {...props} metadata={metadata} />,
@@ -87,7 +92,7 @@ export default function Content({ slug }: ContentProps) {
       <Title metadata={metadata} />
       <AuthorSection metadata={metadata} />
       <HeroImage metadata={metadata} heroImage={heroImage} />
-      <BlogContent metadata={metadata} />
+      <BlogContent />
     </MDXProvider>
   );
 }

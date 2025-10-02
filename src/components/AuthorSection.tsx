@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AUTHORS, Author } from "@/lib/authors";
+import { AUTHORS } from "@/lib/authors";
 
 interface AuthorSectionProps {
   authorName?: string;

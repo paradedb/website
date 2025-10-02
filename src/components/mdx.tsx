@@ -136,30 +136,6 @@ export const ChangelogImage = ({
 );
 
 // Import headshots for shared use
-import JamesHeadshot from "../../public/blog/james_headshot.jpeg";
-import PhilHeadshot from "../../public/blog/phil_headshot.png";
-import MingHeadshot from "../../public/blog/ming_headshot.png";
-import StuHeadshot from "../../public/blog/stu_headshot.png";
-
-// Create headshot components
-const Headshot = ({ author }: { author?: string }) => {
-  const authorHeadshots = {
-    "James Blackwood-Sewell": JamesHeadshot,
-    "Philippe Noël": PhilHeadshot,
-    "Ming Ying": MingHeadshot,
-    "Stu Hood": StuHeadshot,
-  };
-  
-  const headshotSrc = authorHeadshots[author as keyof typeof authorHeadshots] || JamesHeadshot;
-  
-  return (
-    <Image
-      src={headshotSrc}
-      alt="Author headshot"
-      className="h-7 w-7 rounded-full flex-shrink-0"
-    />
-  );
-};
 
 export const mdxComponents = {
   h1: H1,
