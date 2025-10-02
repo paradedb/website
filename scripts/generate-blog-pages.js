@@ -293,95 +293,14 @@ function generateBlogPages() {
   console.log(`✅ All images validated successfully!`);
 }
 
-// Generate blog links for links.ts
-function generateBlogLinks() {
-  console.log('🔗 Generating blog links...');
-  
-  if (!fs.existsSync(contentDir)) {
-    console.error('Content directory not found:', contentDir);
-    return;
-  }
-
-  const blogPosts = fs.readdirSync(contentDir, { withFileTypes: true })
-    .filter(dirent => dirent.isDirectory())
-    .map(dirent => dirent.name);
-
-  const links = [];
-
-  for (const slug of blogPosts) {
-    const postDir = path.join(contentDir, slug);
-    const metadataPath = path.join(postDir, 'metadata.json');
-    const mdxPath = path.join(postDir, 'index.mdx');
-
-    // Only include posts with both metadata and content
-    if (!fs.existsSync(metadataPath) || !fs.existsSync(mdxPath)) {
-      continue;
-    }
-
-    try {
-      const metadataContents = fs.readFileSync(metadataPath, 'utf8');
-      const metadata = JSON.parse(metadataContents);
-      
-      // Handle both single author and array of authors
-      const authorDisplay = Array.isArray(metadata.author) 
-        ? metadata.author.join(', ')
-        : metadata.author;
-
-      links.push({
-        name: metadata.title,
-        href: slug,
-        date: metadata.date,
-        author: authorDisplay,
-        description: metadata.description,
-        categories: metadata.categories || []
-      });
-    } catch (err) {
-      console.warn(`⚠️  Could not parse metadata for ${slug}: ${err.message}`);
-    }
-  }
-
-  // Sort by date (newest first)
-  links.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
-
-  // Generate the updated links.ts content
-  const linksPath = path.join(process.cwd(), 'src/lib/links.ts');
-  
-  if (!fs.existsSync(linksPath)) {
-    console.error('links.ts not found:', linksPath);
-    return;
-  }
-
-  const currentContent = fs.readFileSync(linksPath, 'utf8');
-  
-  // Replace the blog export with the generated links
-  const blogLinksCode = `// This is dynamically generated at build time
-export const blog: Array<{
-  name: string;
-  href: string;
-  date: string;
-  author: string;
-  description: string;
-  categories?: string[];
-}> = ${JSON.stringify(links, null, 2)};`;
-
-  const updatedContent = currentContent.replace(
-    /\/\/ This (?:will be|is) dynamically generated at build time\nexport const blog: Array<\{[^}]+\}> = (?:\[\]|[^;]+);/s,
-    blogLinksCode
-  );
-
-  fs.writeFileSync(linksPath, updatedContent);
-  console.log(`🔗 Generated ${links.length} blog links in links.ts`);
-}
-
 // Main execution
 function main() {
   console.log('🚀 Generating blog pages and assets...');
-  
+
   cleanupExistingPages();
   copyBlogImages();
   generateBlogPages();
-  generateBlogLinks();
-  
+
   console.log('✨ Blog generation complete!');
 }
 
@@ -389,4 +308,4 @@ if (require.main === module) {
   main();
 }
 
-module.exports = { generateBlogPages, cleanupExistingPages, copyBlogImages, generateBlogLinks };
+module.exports = { generateBlogPages, cleanupExistingPages, copyBlogImages };
