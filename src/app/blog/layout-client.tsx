@@ -87,13 +87,21 @@ export default function BlogLayoutClient({
       {/* Blog content */}
       <main className="w-full px-6 py-4 md:py-0">
         <div className="mx-auto flex justify-between">
-          {canGoBackward && <BackButton href={previousHref} />}
-          {canGoForward && <NextButton href={nextHref} />}
+          <div>
+            {canGoBackward && <BackButton href={previousHref} />}
+          </div>
+          <div>
+            {canGoForward && <NextButton href={nextHref} />}
+          </div>
         </div>
         <div className="w-full py-4">{children}</div>
         <div className="mx-auto flex justify-between">
-          {canGoBackward && <BackButton href={previousHref} />}
-          {canGoForward && <NextButton href={nextHref} />}
+          <div>
+            {canGoBackward && <BackButton href={previousHref} />}
+          </div>
+          <div>
+            {canGoForward && <NextButton href={nextHref} />}
+          </div>
         </div>
       </main>
     </div>
