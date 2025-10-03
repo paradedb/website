@@ -1,0 +1,44 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+## Sweetspot Overview
+
+[Sweetspot](https://sweetspot.so) is an AI-driven platform for government procurement and contracting. Sweetspot streamlines the entire contracting process from
+opportunity identification to bid/no-bid decision making to proposal development.
+
+## The Challenge
+
+Sweetspot needed a hybrid search — the combination of full-text and vector search — solution to power its contract search and AI-assisted proposal drafting products.
+
+Since Sweetspot was already using Postgres, it was important that their search solution interoperated seamlessly with Postgres. Before using ParadeDB, Sweetspot
+experienced significant friction synchronizing large volumes of data between Postgres and external databases like Elasticsearch.
+This synchronization involved writing and maintaining custom connectors, which were prone to bugs and data inconsistencies. Additionally,
+many of the vector databases that Sweetspot evaluated had unreliable infrastructure which caused frequent downtime in their application.
+
+## The Solution
+
+Sweetspot needed a search solution that was easy to integrate, compatible with existing Postgres architecture, and offered reliable performance over
+15 million documents and 2 million vectors.
+
+After an extensive review, Sweetspot selected ParadeDB. With ParadeDB, Sweetspot unified its data stack on Postgres, which removed the need to manage a
+separate database or use custom connectors. ParadeDB's advanced full-text and vector search capabilities enabled Sweetspot to build powerful hybrid search
+experiences without additional operational complexity.
+
+## Outcomes
+
+Integrating with ParadeDB took less than a week since Sweetspot was already using Postgres and could reuse its existing code.
+
+Post-integration, Sweetspot observed a 50% overall reduction in query latency. Hybrid search queries achieved a P99 latency of 50 milliseconds and had improved
+precision and recall compared to pure vector search.
+
+ParadeDB also simplifies the process of achieving FedRAMP and NIST compliance since Postgres has robust authentication, access control, logging, and disaster recovery built in.
+
+If you think that ParadeDB can solve a use case for your organization, we invite you to [contact us](mailto:sales@paradedb.com).

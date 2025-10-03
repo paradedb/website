@@ -1,0 +1,286 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+[ParadeDB](https://github.com/paradedb/paradedb) has been licensed under the [GNU Affero General Public License 3.0](https://www.gnu.org/licenses/agpl-3.0.en.html) — also known as AGPL — from day one. We reached this decision after evaluating four licenses and interviewing dozens of other open source companies. Since then, we've received many questions about our license. We've decided to detail our thought process and offer up a case study on why we picked AGPL.
+
+## What is AGPL?
+
+The AGPL license permits free use, modification, and distribution of software, provided that distributed, derivative works of the software are released under the same license. This provision, called the copyleft provision, ensures that modifications remain open and discourages proprietary forks.
+
+## What is ParadeDB?
+
+ParadeDB is an open-source Elasticsearch alternative built on Postgres. The advice we’re about to share is most applicable to companies like us: startups aiming to build a sustainable business on top of open source.
+
+## Why the Right License Matters
+
+We see open-source licenses as a contract among authors, community contributors, and users. By defining what each party can expect when they use, modify, or distribute a project, the license facilitates successful cooperation among strangers.
+
+The license is also one of the first things that companies read when deciding whether to adopt a project. Companies are much more likely to use projects with licenses that are already approved by their legal team.
+
+Over the years, we’ve seen authors of large open source projects leave the choice of license as an afterthought, only to realize too late that they are unhappy with their license. If the authors change the project’s license, they risk alienating their users, who feel that the contract they implicitly signed has been broken. We wanted to avoid this by being thoughtful about our choice of license early on.
+
+## What We Optimized For
+
+There were three goals we wanted to accomplish with our license:
+
+1. **Be familiar**. We’re developers, not lawyers. Neither are our users and contributors. Our license should be easy to understand and common enough that most developers are already familiar with it. Users should not need to read a custom license to decide whether they can adopt a project.
+2. **Be future-proof**. We wanted to protect our IP from cloud vendors early on so that we would never need to relicense. Our users should trust that our project will stand the test of time, so they can feel comfortable adopting it for the long term.
+3. **Be community-driven**. We wanted our project to be true open-source with a license approved by the Open Source Initiative (OSI). We believe that approved licenses incentivize developers to contribute to a project. On the flip side, we've seen many projects that start with an unrestrictive license but switch to a more restrictive license get forked, which fragments the project’s community.
+
+## Licenses We Evaluated
+
+We evaluated licenses from four categories:
+
+1. **Fully permissive**: Apache 2.0
+2. **Eventually permissive**: Business Source License (BSL)
+3. **Copyleft permissive**: AGPL
+4. **Non-permissive**: Elastic License 2.0 (ELv2)
+
+Here is how they stacked up:
+
+<table
+  id="table"
+  style={{
+    width: "100%",
+    borderRadius: "10px",
+  }}
+>
+  <tbody>
+    <tr
+      style={{
+        display: "flex",
+        borderBottom: "solid 1px #ddd",
+      }}
+    >
+      <th align="center" style={{ width: "28%", textAlign: "left" }}></th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        Apache 2.0
+      </th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        BSL
+      </th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        AGPLv3
+      </th>
+      <th
+        align="center"
+        style={{ width: "18%", textAlign: "left", paddingLeft: 32 }}
+      >
+        ELv2
+      </th>
+    </tr>
+    <tr style={{ display: "flex" }}>
+      <td
+        align="center"
+        style={{
+          width: "28%",
+          textAlign: "left",
+          fontWeight: "bold",
+        }}
+      >
+        Familiar
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+    </tr>
+    <tr style={{ display: "flex" }}>
+      <td
+        align="center"
+        style={{
+          width: "28%",
+          textAlign: "left",
+          fontWeight: "bold",
+        }}
+      >
+        Future-Proof
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+    </tr>
+    <tr style={{ display: "flex" }}>
+      <td
+        align="center"
+        style={{
+          width: "28%",
+          textAlign: "left",
+          fontWeight: "bold",
+        }}
+      >
+        Community-Driven
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ✅
+      </td>
+      <td
+        align="center"
+        style={{
+          width: "18%",
+          textAlign: "left",
+          paddingLeft: 32,
+        }}
+      >
+        ❌
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+Whether each license meets these criteria is subjective and open to debate, so we’ll explain how we evaluated each.
+
+### AGPL
+
+AGPL was the only license that met all our criteria.
+
+1. **Familiar.** When it comes to businesses the AGPL license has been hugely helpful. It's been tested and used for years by companies like [MinIO](https://github.com/minio/minio), [Grafana](https://github.com/grafana/grafana), [Citus](https://github.com/citusdata/citus), and [Quickwit](https://github.com/quickwit-oss/quickwit). As a result, most companies with legal teams will already have a policy in place for whether or not they can use AGPL licensed code.
+2. **Future-Proof**: Thanks to the copyleft provision, cloud vendors cannot easily resell our project without our consent. This gives us confidence in our ability to monetize without fear of predatory competition. ParadeDB just turned one year old, and we’ve already been contacted by four cloud providers who, had we not chosen the AGPL license, may have privately forked and distributed ParadeDB.
+3. **Community-Driven**: AGPL is officially approved by the Open Source Initiative. When we started ParadeDB, we wanted to be honest with our community. We did not feel comfortable calling ourselves open source under an unapproved license but wanted to acknowledge our ambition to build a sustainable open-source business. AGPL struck the perfect balance.
+
+### BSL
+
+BSL restricts the use of software in production for a specified period, usually up to four years. After this period, the software is released under an open-source license, allowing for unrestricted use and distribution.
+
+While BSL can successfully deter managed providers from reselling the software, we believe that BSL’s temporary restrictions on production use contradict the principles of open source. Developers who feel similarly may choose to not contribute to the project. Enterprises concerned about BSL’s licensing costs and compliance issues may choose not to use the software.
+
+### ELv2
+
+ELv2 prohibits use of the software as part of a managed or hosted service. Its primary purpose is to prevent cloud vendors from reselling a project and undercutting the original authors.
+
+We liked the defensibility that ELv2 provides and its rising popularity. Since its inception in 2021, ELv2 has been adopted by projects like [Airbyte](https://github.com/airbytehq/airbyte) and [MindsDB](https://github.com/mindsdb/mindsdb).
+
+Ultimately, however, ELv2 is not approved by the OSI and we could not convince ourselves that it was truly open source. Prior to building ParadeDB, we worked on a project licensed under ELv2 that has since been deprecated. From this experience, we learned that many organizations have policies which disallow usage of projects with non-approved licenses like ELv2.
+
+### Apache 2.0
+
+Apache 2.0 is a fully permissive license that allows for free use, modification, and distribution for any purpose. While this license fosters goodwill among developers and helps grow the community, we were worried about its long-term defensibility. We observed how Elasticsearch began with an Apache 2.0 license and relicensed years later, which led AWS to create the OpenSearch fork. Today, OpenSearch has siphoned significant mindshare and business away from Elasticsearch. While this concern may not be applicable to all open source projects, we felt that it was particularly relevant to us since we are building an Elasticsearch alternative.
+
+Over the past few months, we have been contacted by several Apache-licensed projects who want to integrate with ParadeDB but are worried about licensing conflicts with AGPL. To address these concerns, we issued commercial licenses to these companies (please [contact us](mailto:support@paradedb.com) if you’re interested in doing the same).
+
+## Results: One Year Later
+
+One year after picking AGPL, we are incredibly happy with the results. While many other factors are at play, we believe that AGPL has helped in several areas:
+
+1. **Open source traction**. ParadeDB has gained 5K stars in the past year, making it one of the fastest-growing open source database projects. We have an active community of members and contributors.
+2. **Usage**. ParadeDB has been deployed 40K times and is used by several Fortune 1000 companies.
+3. **Defensibility**. We have been contacted by and are working with several large cloud providers to integrate ParadeDB with their managed Postgres service.
+4. **Monetization**. We have monetized through support contracts and issuing commercial, non-AGPL licenses, which also contain a few closed-source enterprise features.
+
+We invite you to check out our [GitHub repo](https://github.com/paradedb/paradedb) to learn more or to join our [**Slack community**](https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw) if you have any questions. And please don’t hesitate to show your support by [**giving us a star**](https://github.com/paradedb/paradedb)!

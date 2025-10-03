@@ -1,0 +1,70 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+<p className="relative top-10 font-semibold text-indigo-600">Overview</p>
+
+## About INSA Strasbourg
+
+INSA Strasbourg (National Institute of Applied Sciences) is a leading engineering institution located in France. INSA Strasbourg's engineering sciences research division consists of 200 scientists who primarily conduct health and environmental research.
+
+<p className="relative top-10 font-semibold text-indigo-600">Problem</p>
+
+## INSA Strasbourg Needed a Reliable Data Store and Search Engine to Back Cutting-Edge Scientific Research
+
+INSA Strasbourg was building an internal system that could be used by researchers to search over a massive corpus of scientific publications. Their dataset was 1.5 terabytes, consisting of 66 million documents alongside metadata like publication dates, numeric, and boolean flags.
+
+Their engineers outlined five requirements for their document retrieval system:
+
+1. **BM25 support**: The BM25 algorithm is the established standard for full text retrieval.
+2. **SQL support**: Since INSA Strasbourg's engineers were familiar with SQL, they wanted to avoid query languages that strayed from SQL.
+3. **Python compatibility**: INSA Strasbourg wanted to easily interact with the chosen solution from Python code.
+4. **Kubernetes compatibility**: This would make it easy for INSA Strasbourg to deploy their solution.
+5. **Open source**: INSA Strasbourg's engineering philosophy is centered around the adoption of open source, which enables them to experiment with software on their own infrastructure without long approval processes.
+
+<p className="relative top-10 font-semibold text-indigo-600">Solution</p>
+
+## ParadeDB Wins on Operational Simplicity and Postgres Compatibility
+
+<div className="rounded-xl bg-indigo-600 px-8 py-4 md:my-2 md:px-12">
+  <span className="font-medium text-white md:text-2xl">
+    We wanted to avoid going with the obvious Elasticsearch route because we
+    wanted to avoid JVM overhead. We also wanted an extensible ecosystem.
+  </span>
+  <span className="pt-4 text-sm text-white md:text-lg">
+    Iliass Ayaou, Research Engineer
+  </span>
+</div>
+
+In addition to ParadeDB, INSA Strasbourg also evaluated Elasticsearch, Manticore Search, Meilisearch, Typesense and Quickwit.
+
+After an initial evaluation process, INSA Strasbourg narrowed its options down to ParadeDB and Elasticsearch. However, the operations team was concerned about Elastic. They wanted to avoid the overhead that Elastic’s JVM (Java virtual machine), which is notoriously resource-intensive and difficult to manage, would add to their infrastructure.
+
+Unlike Elasticsearch, ParadeDB is built on Postgres, a battle-tested relational database that INSA Strasbourg already knew how to operate. This meant that INSA Strasbourg could leverage the entire Postgres ecosystem, including other Postgres extensions and Postgres-compatible tooling. INSA Strasbourg trusted that the Postgres ecosystem would continue to grow and evolve in the coming years.
+
+<p className="relative top-10 font-semibold text-indigo-600">Outcomes</p>
+
+## INSA Strasbourg Supercharges Their Document Search System
+
+<div className="rounded-xl bg-indigo-600 px-8 py-4 md:my-2 md:px-12">
+  <span className="font-medium text-white md:text-2xl">
+    We have been more than satisfied with ParadeDB's BM25 performance for
+    search.
+  </span>
+  <span className="pt-4 text-sm text-white md:text-lg">
+    Iliass Ayaou, Research Engineer
+  </span>
+</div>
+
+Integrating ParadeDB with INSA Strasbourg's existing on-prem Kubernetes cluster took a matter of days. From an operational perspective, INSA’s database administrator was already experienced with configuring and scaling Postgres. For engineers, ParadeDB integrated seamlessly with the existing code base, since interacting with ParadeDB from any programming language is the same as interacting with a Postgres database.
+
+Since moving ParadeDB into production, INSA Strasbourg has supercharged their document search experience. The engineering team has been extremely satisfied with ParadeDB’s sub-100ms query speeds, BM25 scoring, and hybrid search capabilities. Using ParadeDB saves several hours of engineering time per week, since their engineers know how to use Postgres and don’t need to learn a new query language.
+
+If you think that ParadeDB can solve a use case for your organization, we invite you to [contact us](sales@paradedb.com).

@@ -1,3 +1,0 @@
-{
-  "buildCommand": "node scripts/generate-blog-pages.js && next build"
-}

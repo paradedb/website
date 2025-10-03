@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const contentDirectory = path.join(process.cwd(), "src/content/blog");
+const contentDirectory = path.join(process.cwd(), "src/app/blog");
 
 export interface BlogPost {
   slug: string;

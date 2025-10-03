@@ -1,0 +1,126 @@
+import Image from "next/image";
+import { Info, Check } from "@mintlify/components";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+We wrote our first line of documentation for ParadeDB over one year ago. Since then, we’ve rewritten our documentation three times. Recently, we analyzed several months of community support messages and dozens of user interviews to determine what changes were the most impactful. Here’s what we learned.
+
+## Why Thoughtful Documentation Matters
+
+In the early days of ParadeDB, we wrote our documentation hastily because most of our time was spent building the product.
+
+Over time, we realized that flaws in our documentation were causing significant amounts of churn. We estimated that, for every ten companies that reached out for enterprise licenses, three of them disengaged due to “missing features” which, after further analysis, were actually just poorly documented.
+
+Developers are already careful when using products built by startups and are quick to attribute gaps in documentation to project immaturity. First impressions matter, especially for mission-critical products like databases.
+
+## Deploy Documentation Like Code
+
+We were inspired by the folks at [Write the Docs](https://www.writethedocs.org/guide/) to treat our docs as code.
+
+Bundling our documentation as Markdown files in the ParadeDB monorepo is one of the most useful documentation decisions we made. The contents of these Markdown files are automatically published to [Mintlify](https://mintlify.com), our documentation provider, on production releases.
+
+Deploying documentation with the rest of the code ensures that it does not go out of sync with the actual API. It also allows our users to contribute to the documentation by submitting pull requests.
+
+## Make Code Blocks Runnable
+
+Before testing ParadeDB on their data, an engineer always verifies that ParadeDB works in a sandbox environment. To streamline this process, we center our documentation around pre-populated test data and make all our code blocks directly runnable. The faster we get a new user running queries, the faster they’ll want to run those queries on their own data.
+
+```sql
+-- ParadeDB comes with a procedure that dumps a
+-- pre-populated table into the user's database
+CALL paradedb.create_bm25_test_table(
+  schema_name => 'public',
+  table_name => 'mock_items'
+);
+```
+
+Wherever possible, we avoid placeholders in favor of hard-coded example values that the user can just copy, paste, and run.
+
+```sql
+SELECT * FROM <index_name>.search(
+	query => paradedb.fuzzy_term(field => '<field_name>', value => '<value>')
+);
+```
+
+<Info>
+  **Before**: Code blocks had placeholder values, which forced users to stop and
+  think about how to fill them in and led to user error.
+</Info>
+
+```sql
+SELECT * FROM search_idx.search(
+	query => paradedb.fuzzy_term(field => 'description', value => 'shoez')
+);
+```
+
+<Check>
+  **After**: Code blocks are runnable as-is because they consistently reference
+  hard-coded example values.
+</Check>
+
+This gives us the benefit of the doubt. If a user makes a mistake but already ran the hard-coded query successfully, they’re less likely to blame ParadeDB and more likely to double-check their own code.
+
+## Test Documentation Like Code
+
+Documented code that doesn’t work significantly hurts a product’s credibility. While this may seem like a naive mistake, it can easily creep into the documentation as a side effect of refactors, bugs, or breaking API changes.
+
+Six months ago, we committed to writing an integration test for every example code block that we provide. Since then, we’ve reduced the number of reports of non-working code in our documentation to zero.
+
+## Structure Documentation Like Code
+
+Poorly organized documentation buries information, which can lead users to conclude that it’s not even there. The solution we came up with was to reduce the scope of individual pages as much as possible. Just as code should be composable, so should sections of documentation.
+
+```plaintext
+API/
+│
+└─── Full Text Search
+```
+
+<Info>
+  **Before**: All full text search APIs were buried inside the “Full Text
+  Search” page. Users clicking on this page had no idea what was contained
+  inside.
+</Info>
+
+```plaintext
+API/
+│
+└─── Full Text Search/
+     ├─── Overview
+     ├─── Term Search
+     ├─── Phrase Search
+     ├─── JSON Search
+     ├─── Filtering
+     ├─── Pagination
+     ├─── BM25 Scoring
+     ├─── Highlighting
+     ├─── Sorting
+     ├─── Boosting
+```
+
+<Check>
+  **After**: Full text search is a group, split into various pages for each
+  feature. Users clicking on each page know exactly what to expect.
+</Check>
+
+## Adopt Documentation Guidelines
+
+We decided to follow the [documentation system](https://docs.divio.com/documentation-system/) put forth by Divio. Aligning all documentation contributors around the same framework has helped maintain a level of consistency and quality.
+
+## The Results
+
+After the latest documentation refresh, we’ve observed a 50%+ decrease in each of the following categories:
+
+1. Developers asking questions in our Slack community that are already addressed somewhere in the docs
+2. Prospective customers disengaging from the sales pipeline due to “missing features”
+3. Bug reports of unexpected behavior that actually stemmed from a misunderstanding of the API
+
+We invite you to check out the [final product](https://docs.paradedb.com) for yourself. We’d also like to extend a thank you to the dozens of community members who have already contributed to our docs. We welcome [feedback](https://github.com/paradedb/paradedb/issues)
+and [new contributors](https://github.com/paradedb/paradedb/pulls).
