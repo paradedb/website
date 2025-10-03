@@ -1,0 +1,7 @@
+{
+  "title": "Full Text Search over Postgres: Elasticsearch vs. Alternatives",
+  "date": "2024-07-31T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "A comprehensive comparison between Elasticsearch and PostgreSQL for search workloads.",
+  "categories": ["elasticsearch", "postgres", "comparison"]
+}

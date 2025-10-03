@@ -1,0 +1,90 @@
+import Image from "next/image";
+
+[Elasticsearch](https://www.elastic.co/elasticsearch) was never a database. It was built as a search engine API over [Apache Lucene](https://lucene.apache.org/) (an incredibly powerful full-text search library), but not as a system of record. Even Elastic’s own guidance has long suggested that your source of truth should live somewhere else, with Elasticsearch serving as a secondary index. Yet, over the last decade, many teams have tried to stretch the search engine into being their primary database, usually with unexpected results.
+
+## What Do We Mean by “Database”?
+
+Just to be clear up front, when we say _database_ in this context we mean a system you can use as your primary datastore for OLTP transactional workloads: the place where your application’s truth lives. Think Postgres (voted [most loved database](https://survey.stackoverflow.co/2025/technology#most-popular-technologies-database-prof) three years running), MySQL, or even Oracle.
+
+## How Did We Get Here?
+
+The story often begins with a simple need: search. A team is already using Postgres or MySQL to store their application data, but the built-in text search features don’t scale. Elasticsearch looks like the perfect solution; it’s fast, flexible, and easy to spin up.
+
+At first, it’s just an index. Documents live in the database, and a copy lives in Elastic for search. But over time the line starts to blur. If documents are already in Elasticsearch, why bother writing them to the database at all? The process to keep the two stores in sync is the most brittle part of the stack, so why not get rid of it? Now the search index is also the database. The system of record has quietly shifted.
+
+That’s where the trouble begins. A database isn’t just a place to keep JSON, text documents, and some metadata. It’s the authoritative source of truth, the arbiter that keeps your application data safe. This role carries expectations: atomic transactions, predictable updates, the ability to evolve schema safely, rich queries that let you ask questions beyond retrieval, and reliability under failure. Elasticsearch wasn’t built to solve this set of problems. It’s brilliant as an index, but brittle as a database.
+
+## Transactions That Never Were
+
+The first cracks appear around consistency. In a relational database, transactions guarantee that related writes succeed or fail together. If you insert an order and decrement inventory, those two operations are atomic. Either both happen, or neither does.
+
+Elasticsearch can’t make that guarantee beyond a single document. Writes succeed independently, and potentially out of order. If one fails from a logical group, you’re left with half an operation applied. At first, teams add retries or reconciliation jobs, trying to patch over the gaps. But this is the moment Elasticsearch stops behaving like a database. A system of record shouldn’t ever let inconsistencies creep in over time.
+
+You can see the same problem on the read side. Elasticsearch actually has two kinds of reads: `GET` by ID and `SEARCH`. A `GET` always returns the latest acknowledged version of a document, mirroring how databases work (although under failure-cases [dirty reads are possible](https://www.elastic.co/docs/deploy-manage/distributed-architecture/reading-and-writing-documents)). A `SEARCH`, however, only looks at Lucene segments, which are refreshed asynchronously. That means a recently acknowledged write may not show up until the next refresh.
+
+Databases solve these issues with transaction boundaries and isolation levels. Elasticsearch has neither, because it doesn’t need them to be an effective search engine.
+
+## Schema Migrations That Need Reindexes
+
+Then the application changes. A field that was once an integer now needs decimals. A text field is renamed. In Postgres or MySQL, this would be a straightforward `ALTER TABLE`. In Elasticsearch, [index mappings](https://www.elastic.co/docs/manage-data/data-store/mapping#mapping-manage-update) are immutable once set, so sometimes the [only option](https://www.elastic.co/docs/manage-data/migrate) is to create a new index with the updated mapping and transfer every document into it.
+
+When Elasticsearch is downstream of another database this is painful (a full network transfer) but safe, you can replay from the real source of truth. But when Elasticsearch is the only store, schema migrations require moving the entire system of record into a new structure, under load, with no safety net (other than a restore). What should be a routine schema change can become a high-risk operation.
+
+## **Queries Without Joins**
+
+Once Elasticsearch is the primary store, developers naturally want more than just search. They want to ask questions of the data. This is where you start to hit another wall.
+
+Elasticsearch’s JSON-based Query DSL is powerful for full-text queries and aggregations, but limited for relational workloads. In Elastic’s [own words](http://elastic.co/docs/explore-analyze/query-filter/languages/querydsl), it “enables complex searching, filtering, and aggregations,” but if you want to move beyond that, the cracks show. Features you’d expect from a system of record (like basic joins) are either missing or only partially supported.
+
+Consider the following SQL query:
+
+```sql
+-- What are the top ten products by average review rating,
+-- only considering products with at least 50 reviews
+
+SELECT p.id, p.name, AVG(r.rating) AS avg_rating
+FROM products p
+JOIN reviews r ON r.product_id = p.id
+GROUP BY p.id, p.name
+HAVING COUNT(r.id) >= 50
+ORDER BY avg_rating DESC
+LIMIT 10;
+```
+
+In Postgres, this is routine. In Elasticsearch, your options are clumsy: denormalize reviews into each product document (rewriting the product on every new review), embed reviews in products as children, or query both indexes separately and stitch the results back together in application code.
+
+Elastic has been working on this gap. The more recent ES|QL introduces a [similar feature called lookup joins](https://www.elastic.co/blog/esql-lookup-join-elasticsearch), and Elastic SQL provides a more familiar syntax (with [no joins](https://www.elastic.co/docs/reference/query-languages/sql/sql-syntax-select)). But these are still bound by Lucene’s underlying index model. On top of that, developers now face a confusing sprawl of overlapping query syntaxes (currently: [Query DS](https://www.elastic.co/docs/explore-analyze/query-filter/languages/querydsl)L, [ES|QL](https://www.elastic.co/docs/explore-analyze/query-filter/languages/esql-kibana), [SQL](https://www.elastic.co/docs/explore-analyze/query-filter/languages/sql), [EQL](https://www.elastic.co/docs/explore-analyze/query-filter/languages/eql), [KQL](https://www.elastic.co/docs/explore-analyze/query-filter/languages/kql)), each suited to different use cases, and with different strengths and weaknesses.
+
+It is progress, but not parity with a relational database.
+
+## Reliability That Can Fall Short
+
+Eventually every system fails. The difference between an index and a database is how they recover. Databases use write-ahead or redo logs to guarantee that once a transaction is committed, _all_ of its changes are durable and will replay cleanly after a crash.
+
+Under normal operation Elasticsearch is also durable at the level it was designed for: individual document writes. The [translog](https://www.elastic.co/docs/reference/elasticsearch/index-settings/translog) ensures acknowledged docs are fsynced on the primary shard, can survive crashes, and can be replayed on recovery. But, as we saw with transactions, that durability doesn’t extend beyond a single document. There are no transaction boundaries to guarantee that related writes survive or fail together (because that concept simply doesn’t exist). A failure can leave half-applied operations, and recovery won’t roll them back the way a database would.
+
+That assumption is fine when Elasticsearch is an index layered on top of a database. If it’s your only store, though, the gap in transactional durability becomes a gap in correctness. Outages don’t just slow down search, they put your system of record at risk.
+
+## Operations That Strain Stability
+
+Operating Elasticsearch at scale introduces another reality check. Databases are supposed to be steady foundations: you run them, monitor them, and trust they’ll keep your data safe. Elasticsearch was designed for a different priority: elasticity. Shards can move, clusters can grow and shrink, and data can be reindexed or rebalanced. That flexibility is powerful, but distributed systems come with operational tradeoffs. Shards drift out of balance, JVM heaps demand careful tuning, reindexing consumes cluster capacity, and rolling upgrades can stall traffic.
+
+Elastic has added tools to ease these challenges, and many teams do run large clusters successfully. But the baseline expectation is different. A relational database is engineered for stability and correctness because it assumes it will be your source of truth. Elasticsearch is [“optimized for speed and relevance”](https://www.elastic.co/docs/get-started/), and running it also as a system of record means accepting more operational risk than a database would impose.
+
+## The Cost of Misuse
+
+Elasticsearch is already complex to operate and heavy on resources. When you try to make it your primary database as well, both of those costs are magnified. Running on a single system feels like a simplification, but it often makes everything harder because you have two different optimization goals.
+
+Transaction gaps, brittle migrations, limited queries, complex operations, and workarounds all pile up. Instead of reducing complexity, you’ve concentrated it in the most fragile place possible. The result is worse than your original solution: increased engineering effort, higher operational cost, and still none of the guarantees you would expect from a source of truth.
+
+## So Where Does That Leave Elasticsearch?
+
+Honestly, that leaves it right where it should be, and where it started: a search engine. Elasticsearch (and Apache Lucene under it) is an incredible achievement, bringing world-class search to developers everywhere. As long as you’re not trying to use it as a system of record, it does exactly what it was built for.
+
+Even when used “correctly”, though, the hardest part often isn’t search itself, it’s everything around it. ETL pipelines, sync jobs, and ingest layers quickly become the most fragile parts of the stack.
+
+That’s where ParadeDB comes in. Run it as your primary database, combining OLTP and full-text search in one system, or keep your existing Postgres database and eliminate ETL by deploying it as a logical follower.
+
+If you want open-source search with correctness, simplicity, and world-class performance, [get started with ParadeDB](https://paradedb.com).
+
+---

@@ -1,0 +1,92 @@
+import Image from "next/image";
+
+<b>
+  Bilt Rewards deployed ParadeDB as a logical replica of their primary Postgres,
+  hosted in GCP. ParadeDB handles BILT’s most expensive faceted and fuzzy search
+  queries, improving accuracy and reducing query timeouts by 95%.
+</b>
+<div className="border-t border-0.5 border-slate-300">
+  {/* Desktop Table */}
+  <table className="table-auto w-full mt-6 hidden md:table">
+    <thead className="border-0">
+      <tr className="text-2xl font-medium border-0">
+        <th className="py-0 px-0">5ms</th>
+        <th className="py-0 px-0">300GB</th>
+        <th className="py-0 px-0">7K rows/s</th>
+        <th className="py-0 px-0">40 QPS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="font-light border-0">
+        <td className="py-0 px-0">P95 Query Latency</td>
+        <td className="py-0 px-0">Data Stored</td>
+        <td className="py-0 px-0">Write Volume</td>
+        <td className="py-0 px-0">Read Volume</td>
+      </tr>
+    </tbody>
+  </table>
+  {/* Mobile Vertical List */}
+  <div className="block md:hidden mt-6">
+    <div className="flex justify-between py-2">
+      <span>P95 Query Latency</span>
+      <span className="font-medium">5ms</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Data Stored</span>
+      <span className="font-medium">300GB</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Write Volume</span>
+      <span className="font-medium">7K rows/s</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Read Volume</span>
+      <span className="font-medium">40 QPS</span>
+    </div>
+  </div>
+</div>
+
+### Overview
+
+Bilt is the housing and neighborhood commerce network that turns everyday housing and neighborhood spend into valuable rewards and benefits. It’s the first program that lets members earn rewards on rent and HOA payments while helping them build a path to homeownership. As of December 2024, Bilt was processing over $36 billion in annual rent and HOA payments.
+
+The Bilt Alliance — developed in partnership with some of the nation’s largest residential owners and operators — is a network of more than 4.5 million homes across the country.
+This all-in-one platform enables property managers to monitor resident and payment information across all lease units,
+manage loyalty incentive programs, and streamline rent payments.
+
+### The Problem
+
+The platform’s original search functionality — built on Postgres — was lackluster and prevented Bilt from delivering a premium user experience.
+
+The first problem was accuracy of search results. Postgres' limited tokenizers and query types meant that users often couldn’t find what they were looking for. Bilt's system relied on exact token matching that compared the hashed values of the query with the hashed, underlying text data. Bilt also tried Postgres' built-in trigram index, which improved results but remained unsatisfactory.
+
+The second issue was speed. Queries frequently encountered high latency and timeouts, particularly for users who needed to search millions of data records. Operations like filters, `ORDER BY` clauses, and cross-schema `JOIN`s were especially time-intensive. As a stopgap solution, Bilt prohibited engineers from joining across schemas in a single query. Instead, the system orchestrated multiple separate API calls and combined their results on the client side — a workaround which created a tangled mess of spaghetti code.
+
+### The Solution
+
+When Bilt brought in ParadeDB, they saw an instant speedup to their search queries.
+This is because ParadeDB's modern query execution engine can efficiently parallelize and execute SQL `WHERE`, `ORDER BY`, `JOIN`, and other clauses. ParadeDB outperformed Bilt's vanilla Postgres setup, which handles these clauses as separate post-processing steps.
+
+Search accuracy also improved, thanks to ParadeDB’s built-in support for fuzzy matching. The results were especially noticeable in Bilt's "property reviews" page,
+which implements fuzzy search over property and property manager information.
+
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-gray-900 md:text-2xl">
+      Using ParadeDB has unlocked the ability to rapidly launch new search
+      capabilities across our products—something that previously would have
+      taken weeks of effort.
+    </span>
+    <span className="pt-4">John King, Backend Engineer</span>
+  </div>
+</div>
+
+### Results
+
+Bilt chose ParadeDB because it required the least amount of infrastructure changes and engineering effort to unlock these search functionalities. Unlike any other search database, syncing a primary Postgres with ParadeDB requires almost zero operational effort. This is because ParadeDB can use Postgres’ built-in logical replication to ingest data from the primary Postgres.
+
+ParadeDB also enabled Bilt to leverage its existing Postgres knowledge and deploy within its cloud provider, GCP. Implementation required only minor adjustments to existing Postgres search queries, which saved weeks of engineering effort compared to migrating the query logic to an alternate solution.
+
+In Bilt’s Resident Loyalty Portal — where property managers can search for resident, payment, and unit identifiers — query timeouts dropped by 95% and P95 query latency fell by 50%. At the same time, Bilt was able to move the most expensive queries out of their primary Postgres and into ParadeDB.
+
+Ultimately, ParadeDB's robust, performant architecture has enabled Bilt to rapidly launch new search capabilities across its suite of products. Bilt’s success story demonstrates why platforms built on Postgres demand a Postgres-native search solution.

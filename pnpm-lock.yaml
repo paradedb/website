@@ -88,6 +88,9 @@ importers:
       next:
         specifier: 14.2.5
         version: 14.2.5(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      next-mdx-remote:
+        specifier: ^5.0.0
+        version: 5.0.0(@types/react@18.3.10)(react@18.3.1)
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -106,12 +109,18 @@ importers:
       rehype-highlight:
         specifier: ^7.0.0
         version: 7.0.0
+      rehype-slug:
+        specifier: ^6.0.0
+        version: 6.0.0
       rss:
         specifier: ^1.2.2
         version: 1.2.2
       sharp:
         specifier: ^0.33.5
         version: 0.33.5
+      tailwind-merge:
+        specifier: ^3.3.1
+        version: 3.3.1
       tailwind-variants:
         specifier: ^0.2.1
         version: 0.2.1(tailwindcss@3.4.13)
@@ -163,6 +172,20 @@ packages:
         integrity: sha512-UrcABB+4bUrFABwbluTIBErXwvbsU/V7TZWfmbgJfbkwiBuziS9gxdODUyuiecfdGQ85jglMW6juS3+z5TsKLw==,
       }
     engines: { node: ">=10" }
+
+  "@babel/code-frame@7.27.1":
+    resolution:
+      {
+        integrity: sha512-cjQ7ZlQ0Mv3b47hABuTevyTuYN4i+loJKGeV9flcCgIK37cCXRh+L1bd3iBHlynerhQ7BhCkn2BPbQUL+rGqFg==,
+      }
+    engines: { node: ">=6.9.0" }
+
+  "@babel/helper-validator-identifier@7.27.1":
+    resolution:
+      {
+        integrity: sha512-D2hP9eA+Sqx1kBZgzxZh0y1trbuU+JoDkiEwqhQ36nodYqJwyEIhPSdMNd7lOm/4io72luTPWH20Yda0xOuUow==,
+      }
+    engines: { node: ">=6.9.0" }
 
   "@babel/runtime@7.25.6":
     resolution:
@@ -2882,6 +2905,12 @@ packages:
         integrity: sha512-k9PN+cFBmaLWtVz29SkUoqU5O0slLuHJXt/2P+tMVFT+phsSGXGkp9t3rQIqdz0e+06EHNGs3oM6ZX1s2zHxRg==,
       }
 
+  github-slugger@2.0.0:
+    resolution:
+      {
+        integrity: sha512-IaOQ9puYtjrkq7Y0Ygl9KDZnrf/aiUJYUpVf89y8kyaxbRG7Y1SrX/jaumrv81vc61+kiMempujsM3Yw7w5qcw==,
+      }
+
   glob-parent@5.1.2:
     resolution:
       {
@@ -3041,6 +3070,12 @@ packages:
         integrity: sha512-Nz7FfPBuljzsN3tCQ4kCBKqdNhQE2l0Tn+X1ubgKBPRoiDIu1mL08Cfw4k7q71+Duyaw7DXDN+VTAp4Vh3oCOw==,
       }
 
+  hast-util-heading-rank@3.0.0:
+    resolution:
+      {
+        integrity: sha512-EJKb8oMUXVHcWZTDepnr+WNbfnXKFNf9duMesmr4S8SXTJBJ9M4Yok08pu9vxdJwdlGRhVumk9mEhkEvKGifwA==,
+      }
+
   hast-util-is-element@2.1.3:
     resolution:
       {
@@ -3087,6 +3122,12 @@ packages:
     resolution:
       {
         integrity: sha512-02AQ3vLhuH3FisaMM+i/9sm4OXGSq1UhOOCpTLLQtHdL3tZt7qil69r8M8iDkZYyC0HCFylcYoP+8IO7ddta1A==,
+      }
+
+  hast-util-to-string@3.0.1:
+    resolution:
+      {
+        integrity: sha512-XelQVTDWvqcl3axRfI0xSeoVKzyIFPwsAGSLIsKdJKQMXDYJS4WYrBNF/8J7RdhIcFI2BOHgAifggsvsxp/3+A==,
       }
 
   hast-util-to-text@3.1.2:
@@ -4430,6 +4471,15 @@ packages:
       react: ">=16.x <=18.x"
       react-dom: ">=16.x <=18.x"
 
+  next-mdx-remote@5.0.0:
+    resolution:
+      {
+        integrity: sha512-RNNbqRpK9/dcIFZs/esQhuLA8jANqlH694yqoDBK8hkVdJUndzzGmnPHa2nyi90N4Z9VmzuSWNRpr5ItT3M7xQ==,
+      }
+    engines: { node: ">=14", npm: ">=7" }
+    peerDependencies:
+      react: ">=16"
+
   next-themes@0.3.0:
     resolution:
       {
@@ -4670,6 +4720,12 @@ packages:
     resolution:
       {
         integrity: sha512-TQ92mBOW0l3LeMeyLV6mzy/kWr8lkd/hp3mTg7wYK7zJhuBStmGMBG0BdeDZS/dZx1IukaX6Bk11zcln25o1Aw==,
+      }
+
+  picocolors@1.1.1:
+    resolution:
+      {
+        integrity: sha512-xceH2snhtb5M9liqDsmEw56le376mTZkEX/jEb/RxNFyegNul7eNslCXP9FDj/Lcu0X8KEyMceP2ntpaHrDEVA==,
       }
 
   picomatch@2.3.1:
@@ -5055,6 +5111,12 @@ packages:
     resolution:
       {
         integrity: sha512-ByZlRwRUcWegNbF70CVRm2h/7xy7jQ3R9LaY4VVSvjnoVWwWVhNL60DiZsBpC5tSzYQOCvDbzncIpIjPZWodZA==,
+      }
+
+  rehype-slug@6.0.0:
+    resolution:
+      {
+        integrity: sha512-lWyvf/jwu+oS5+hL5eClVd3hNdmwM1kAC0BUvEGD19pajQMIzcNUd/k9GsfQ+FfECvX+JE+e9/btsKH0EjJT6A==,
       }
 
   remark-gfm@3.0.1:
@@ -5549,6 +5611,12 @@ packages:
         integrity: sha512-kjEBm+pvD+6eAwzJL2Bi+02/9LFLal1Gs61+QB7HvTfQQ0aXwC5LGT8PEt1gS0CWKktKe6ysPTAy3cBC5MeiIg==,
       }
 
+  tailwind-merge@3.3.1:
+    resolution:
+      {
+        integrity: sha512-gBXpgUm/3rp1lMZZrM/w7D8GKqshif0zAymAhbCyIt8KMe+0v9DQ7cdYLR4FHH/cKpdTXb+A/tKKU3eolfsI+g==,
+      }
+
   tailwind-variants@0.2.1:
     resolution:
       {
@@ -5823,6 +5891,12 @@ packages:
         integrity: sha512-TkBb0HABNmxzAcfLf4qsIbFbaPDvMO6wa3b3j4VcEzFVaw1LBKwnW4/sRJ/atSLSzoIg41JWEdnE7N6DIhGDGQ==,
       }
 
+  unist-util-remove@3.1.1:
+    resolution:
+      {
+        integrity: sha512-kfCqZK5YVY5yEa89tvpl7KnBBHu2c6CzMkqHUrlOqaRgGOMp0sMvwWOVrbAtj03KhovQB7i96Gda72v/EFE0vw==,
+      }
+
   unist-util-stringify-position@3.0.3:
     resolution:
       {
@@ -5936,6 +6010,12 @@ packages:
     resolution:
       {
         integrity: sha512-CAAIDwnh6ZdtrqAuxdElUqQRQDQgbbIrYtDYI8gCjXS1qQ+1XdLoK8FIZWxJwn0/I+BkSSZpar3SOgjemQz4fg==,
+      }
+
+  vfile-matter@5.0.1:
+    resolution:
+      {
+        integrity: sha512-o6roP82AiX0XfkyTHyRCMXgHfltUNlXSEqCIS80f+mbAyiQBE2fxtDVMtseyytGx75sihiJFo/zR6r/4LTs2Cw==,
       }
 
   vfile-message@3.1.4:
@@ -6092,6 +6172,14 @@ packages:
 
 snapshots:
   "@alloc/quick-lru@5.2.0": {}
+
+  "@babel/code-frame@7.27.1":
+    dependencies:
+      "@babel/helper-validator-identifier": 7.27.1
+      js-tokens: 4.0.0
+      picocolors: 1.1.1
+
+  "@babel/helper-validator-identifier@7.27.1": {}
 
   "@babel/runtime@7.25.6":
     dependencies:
@@ -7977,6 +8065,8 @@ snapshots:
     dependencies:
       resolve-pkg-maps: 1.0.0
 
+  github-slugger@2.0.0: {}
+
   glob-parent@5.1.2:
     dependencies:
       is-glob: 4.0.3
@@ -8096,6 +8186,10 @@ snapshots:
       vfile-location: 4.1.0
       web-namespaces: 2.0.1
 
+  hast-util-heading-rank@3.0.0:
+    dependencies:
+      "@types/hast": 3.0.4
+
   hast-util-is-element@2.1.3:
     dependencies:
       "@types/hast": 2.3.10
@@ -8187,6 +8281,10 @@ snapshots:
   hast-util-to-string@2.0.0:
     dependencies:
       "@types/hast": 2.3.10
+
+  hast-util-to-string@3.0.1:
+    dependencies:
+      "@types/hast": 3.0.4
 
   hast-util-to-text@3.1.2:
     dependencies:
@@ -9324,6 +9422,19 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
+  next-mdx-remote@5.0.0(@types/react@18.3.10)(react@18.3.1):
+    dependencies:
+      "@babel/code-frame": 7.27.1
+      "@mdx-js/mdx": 3.0.1
+      "@mdx-js/react": 3.0.1(@types/react@18.3.10)(react@18.3.1)
+      react: 18.3.1
+      unist-util-remove: 3.1.1
+      vfile: 6.0.3
+      vfile-matter: 5.0.1
+    transitivePeerDependencies:
+      - "@types/react"
+      - supports-color
+
   next-themes@0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       react: 18.3.1
@@ -9483,6 +9594,8 @@ snapshots:
   phenomenon@1.6.0: {}
 
   picocolors@1.1.0: {}
+
+  picocolors@1.1.1: {}
 
   picomatch@2.3.1: {}
 
@@ -9704,6 +9817,14 @@ snapshots:
       hast-util-to-text: 3.1.2
       katex: 0.16.11
       unist-util-visit: 4.1.2
+
+  rehype-slug@6.0.0:
+    dependencies:
+      "@types/hast": 3.0.4
+      github-slugger: 2.0.0
+      hast-util-heading-rank: 3.0.0
+      hast-util-to-string: 3.0.1
+      unist-util-visit: 5.0.0
 
   remark-gfm@3.0.1:
     dependencies:
@@ -10080,6 +10201,8 @@ snapshots:
 
   tailwind-merge@2.5.2: {}
 
+  tailwind-merge@3.3.1: {}
+
   tailwind-variants@0.2.1(tailwindcss@3.4.13):
     dependencies:
       tailwind-merge: 2.5.2
@@ -10284,6 +10407,12 @@ snapshots:
       "@types/unist": 2.0.11
       unist-util-visit: 4.1.2
 
+  unist-util-remove@3.1.1:
+    dependencies:
+      "@types/unist": 2.0.11
+      unist-util-is: 5.2.1
+      unist-util-visit-parents: 5.1.3
+
   unist-util-stringify-position@3.0.3:
     dependencies:
       "@types/unist": 2.0.11
@@ -10322,7 +10451,7 @@ snapshots:
     dependencies:
       browserslist: 4.24.0
       escalade: 3.2.0
-      picocolors: 1.1.0
+      picocolors: 1.1.1
 
   uri-js@4.4.1:
     dependencies:
@@ -10370,6 +10499,11 @@ snapshots:
       "@types/js-yaml": 4.0.9
       is-buffer: 2.0.5
       js-yaml: 4.1.0
+
+  vfile-matter@5.0.1:
+    dependencies:
+      vfile: 6.0.3
+      yaml: 2.5.1
 
   vfile-message@3.1.4:
     dependencies:

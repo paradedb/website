@@ -1,0 +1,7 @@
+{
+  "title": "Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse",
+  "date": "2024-09-24T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How Alibaba Cloud integrated ParadeDB for full text search in their Postgres-based data warehouse.",
+  "categories": ["case-study", "alibaba", "data-warehouse"]
+}

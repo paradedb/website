@@ -1,0 +1,151 @@
+import Image from "next/image";
+import { Info } from "@mintlify/components";
+import BlockStorageCreateIndex from "./images/block_storage_create_index.png";
+import BlockStorageTps from "./images/block_storage_tps.png";
+import TantivyLayout from "./images/tantivy_layout.png";
+import BlockStorageLayout from "./images/block_storage_layout.png";
+import BlockLinkedList from "./images/block_linked_list.png";
+import Postings from "./images/postings.png";
+
+We recently completed one of our biggest engineering bets to date: migrating [`pg_search`](https://github.com/paradedb/paradedb/tree/dev/pg_search), a
+Postgres extension for full text search and analytics, to Postgres' block storage system. In doing so, `pg_search` is the first-ever extension<sup>1</sup> to port an
+external file format to Postgres block storage.
+
+For context - block storage is Postgres’ storage API that backs all of Postgres’ tables and built-in index types. Prior to this migration, `pg_search` operated outside of block storage. This means that the extension created files which were not managed by Postgres and could read the contents of those files directly from disk.
+While it’s not uncommon<sup>2</sup> for Postgres extensions to do this, block storage has enabled `pg_search` to simultaneously achieve:
+
+1. Postgres write-ahead log (WAL) integration, which is necessary for physical replication of the index
+2. Crash and point-in-time recovery
+3. Full support for Postgres MVCC (multi-version concurrency control)
+4. Integration with Postgres’ buffer cache, which has led to massive improvements in index creation times and write throughput
+
+<Image
+  src={BlockStorageCreateIndex}
+  className="max-w-xs sm:max-w-md md:max-w-xl"
+/>
+<Image src={BlockStorageTps} />
+
+At first, we weren’t sure if reconciling the data access patterns and concurrency model of Postgres and [Tantivy](https://github.com/quickwit-oss/tantivy) — `pg_search`'s underlying search library — was possible without drastic changes to Tantivy<sup>3</sup>.
+In this blog post, we’ll dive into how we architected `pg_search`'s new block storage layout and data access patterns.
+
+In the near future, we'll release two more posts: one to discuss how we designed and tested `pg_search` to be MVCC-safe in update-heavy scenarios, and another to dive into how we customized the block storage layout for analytical workloads (e.g. faceted search, aggregates).
+
+### What Is Block Storage?
+
+The fundamental unit of block storage is a block: a chunk of 8192 bytes. When executing a query, Postgres reads blocks into buffers, which are stored in Postgres’ buffer cache.
+
+DML (`INSERT`, `UPDATE`, `DELETE`, `COPY`) statements do not modify the physical block. Instead, their changes are written to the underlying buffers, which are later flushed to disk when evicted from the buffer cache or during a checkpoint.
+
+If Postgres crashes, modifications to buffers that have not been flushed can become lost. To guard against this, any changes to the index must be written to the write-ahead log (WAL). During crash recovery, Postgres replays the WAL to restore the database to its most recent state.
+
+### What Is `pg_search`?
+
+pg_search is a Postgres extension that implements a custom index for full text search and analytics. The extension is powered by Tantivy, a search library written in Rust and inspired by Lucene.
+
+### Why Migrate To Block Storage?
+
+A custom Postgres index has two choices for persistence: use Postgres block storage or the filesystem. At first, using the filesystem may seem like the easier option. Integrating with block storage requires solving a series of problems:
+
+1. Some data structures may not fit within a single 8KB block. Splitting data across multiple blocks can create lock contention, garbage collection, and concurrency challenges.
+2. Once a block has been allocated to a Postgres index, it cannot be physically deleted — only recycled. This means that the size of an index strictly increases until a `VACUUM FULL` or `REINDEX` is run. The index must be careful to return blocks that have been tombstoned by deletes or vacuums to Postgres’ free space map for reuse.
+3. In update-heavy scenarios, the index can become dominated by space that once belonged to dead (i.e. deleted) rows. This may increase the number of I/O operations required for searches and updates, which degrades performance. The index must find ways to reorganize and compact the index during vacuums.
+4. Because Postgres is single-threaded, multiple threads cannot concurrently read from block storage<sup>4</sup>. The index may need to leverage Postgres’ parallel workers.
+
+Once the index overcomes these hurdles, however, Postgres block storage does an incredible amount of heavy lifting. After a year of working with the filesystem, it became clear that block storage was the way forward.
+
+1. Being able to use the buffer cache means a huge reduction in disk I/O and massive improvements to read and write throughput.
+2. Postgres provides a simple, battle-tested API to write buffers to the WAL. Without block storage, extensions must define custom WAL record types and implement their own WAL replay logic, which drastically increases complexity and surface area for bugs.
+3. Postgres handles the physical creation and cleanup of files for us. The index doesn’t need to clean up after aborted transactions or `DROP INDEX` statements.
+
+### Tantivy’s File-Based Index Layout
+
+<Image src={TantivyLayout} />
+
+The first challenge was migrating [Tantivy’s](<(https://github.com/quickwit-oss/tantivy)>) file-based index layout to block storage. Let’s quickly examine how Tantivy’s index is structured.
+
+#### Segments
+
+A Tantivy index is comprised of multiple segments. A segment is like a database shard — it contains a subset of the documents in the index. Each segment, in turn, is made up of multiple files:
+
+1. **Postings**: Stores a mapping of terms to document IDs and term frequencies, allowing Tantivy to efficiently retrieve documents that contain a specific term. This is the backbone of the inverted index.
+2. **Positions**: Tracks the positions of terms within documents, enabling phrase queries by identifying where terms appear in relation to each other.
+3. **Terms**: Contains the list of unique terms in the index and metadata for each term, such as document frequency and offsets into the postings file.
+4. **Fieldnorms**: Stores normalization factors for each field in a document, which are used to adjust term scores during ranking.
+5. **Fast fields**: Columnar storage for numeric and categorical fields, enabling fast filtering and sorting.
+6. **Deletes**: A bitset that tracks which documents in the segment have been deleted.
+7. **Store**: Stores the original document. This file is not used by `pg_search` since the heap table already contains the original value.
+
+New segments are created whenever new documents are committed to the index. To maintain a target segment count, Tantivy’s merge process combines smaller segments into a single, larger segment.
+
+#### **Metadata**
+
+When a segment is created, Tantivy assigns it a unique UUID. Segments are tracked across two files. The first file contains a `Vec<PathBuf>` of all files in the index. The second file contains a list of segment UUIDs that are currently visible. If a segment is present in first file but not the second, that means that the segment has been tombstoned by the merge process and is subject to being removed by garbage collection.
+
+In addition, the second file also stores index’s schema and settings.
+
+#### **Locks**
+
+Tantivy uses a file-based locking approach — if a lock file exists, then the lock is being held by another process. Locks are important for Tantivy because Tantivy is not a database capable of handling concurrent readers and writers. They ensure that only one writer exists per index, and that reads and writes to the metadata files are atomic. In Part 2, we’ll discuss how we used Postgres MVCC controls to lift Tantivy’s “one writer per index” limitation.
+
+## Migrating to a Block Storage Layout
+
+<Image src={BlockStorageLayout} />
+
+#### **Segments**
+
+Rather than being written to a file, segments are serialized and written to blocks. Large segments that spill past a single block are stored in a linked list of blocks.
+
+#### **Metadata**
+
+Separate blocks are used to store the index schema, settings, and list of segment UUIDs.
+
+Postgres MVCC visibility information is stored alongside each segment UUID. At query time, the extension uses MVCC visibility rules to construct a snapshot of the list of all visible segments, which eliminates the need for a second list of visible segments<sup>4</sup>.
+
+#### **Locks**
+
+Tantivy’s lock files are no longer needed since Postgres provides buffer-level, interprocess locking mechanisms.
+
+### Challenge 1: Large Files Can Spill Over a Single Block
+
+<Image src={BlockLinkedList} />
+
+A segment file can exceed an 8KB block. To accommodate these files, we implement a linked list over block storage, where each block is a node.
+
+The linked list starts with a header block that contains a bitpacked representation of all subsequent block numbers. This structure enables O(1) lookups by directly mapping the starting offset of any byte range to its position in the list.
+
+After the header block, the next block stores the file’s serialized data. Once the block becomes full, a new block is allocated. In Postgres, every block has an area reserved for metadata called special data. The current block's special data section is updated to store the block number of the newly allocated block, forming the linked list.
+
+### Challenge 2: Blocks Cannot Be Memory Mapped
+
+Tantivy’s data access patterns for fast fields assume that the underlying file can be memory mapped, which means that Tantivy can leverage zero-copy access for the entire fast field. This is not the case for block storage — the buffer cache can only provide a pointer to the contents of a single block. If a fast field spans multiple blocks, each block must be copied into memory, introducing significant overhead.
+
+To address this problem, we [modified Tantivy](https://github.com/paradedb/tantivy/commit/b42a45dd4aa29ce880864c95f2b6e69ad26cdc06) to defer dereferencing large slices of bytes up front. Instead, bytes are dereferenced lazily and
+cached in memory to avoid re-reading blocks that have been previously accessed.
+
+### Challenge 3: The Segment Count Explodes in Update-Heavy Scenarios
+
+Because segments are immutable, every DML statement in Tantivy creates at least one new segment. Having too many segments can degrade performance because there is a cost to opening a segment reader, searching over the segment, and merging the results with other segments. While the ideal number of segments depends on the dataset and the underlying hardware, having more than a hundred segments is generally not optimal.
+
+If a table experiences a high volume of updates, the number of segments quickly explodes. To address this, we introduce a step called `merge_on_insert` , which looks for merge opportunities after an `INSERT` completes.
+
+It is critical that only one merge process runs concurrently. If two merge processes run at the same time, they could both see the same segments, merge them together, and create duplicate segments. To guard against this, every merge process atomically writes its transaction ID to a metadata block. Subsequent merge attempts first read this transaction ID, and are only allowed to proceed if the effects of that transaction ID are MVCC-visible.
+
+### Wrapping Up
+
+The following parts of this blog post series will dive into some more exciting challenges we faced with block storage, with a focus on concurrency and analytical performance.
+
+In the meantime, you can check out the [Github repo](https://github.com/paradedb/paradedb) for more details or [join our community](https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw) with questions.
+And please don’t hesitate to [give us a star](https://github.com/paradedb/paradedb)!
+
+<hr />
+
+<ol>
+  <li className="text-sm">That we know of.</li>
+  <li className="text-sm">
+    [ZomboDB](https://github.com/zombodb/zombodb) and
+    [pg_parquet](https://github.com/CrunchyData/pg_parquet) are examples of
+    Postgres extensions that directly interact with the filesystem.
+  </li>
+  <li className="text-sm">Fortunately this ended up not being the case.</li>
+  <li className="text-sm">This will be covered in detail in Parts 2 and 3.</li>
+</ol>

@@ -1,0 +1,7 @@
+{
+  "title": "Elasticsearch, PostgreSQL, and the ACID Test",
+  "date": "2025-09-29T00:00:00.000Z",
+  "author": ["James Blackwood-Sewell"],
+  "description": "A developer's look at how Elasticsearch and Postgres stack up against the ACID test",
+  "categories": ["elasticsearch", "oltp", "postgres"]
+}
