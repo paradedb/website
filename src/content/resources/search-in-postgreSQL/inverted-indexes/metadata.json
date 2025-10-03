@@ -1,0 +1,11 @@
+{
+    "title": "Understanding Inverted Indexes in Search",
+    "date": "2024-10-02T00:00:00.000Z",
+    "author": "James Blackwood-Sewell",
+    "description": "A comprehensive guide to inverted indexes and how they power fast search",
+    "type": "guide",
+    "order": 2,
+    "categories": ["search", "indexing"],
+    "hideHeroImage": true,
+    "hideAuthor": true
+}
