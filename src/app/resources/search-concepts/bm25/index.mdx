@@ -5,23 +5,23 @@ import { Title } from "@/components/Title";
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 
-If you’ve ever looked at your search results and wondered, *“why did this come up first?”,* the answer is usually BM25.
+If you’ve ever looked at your search results and wondered, *“why did this come up first?”*, the answer is usually BM25.
 
 > BM25 (short for Best Matching 25, sometimes called Okapi BM25) is a ranking algorithm that scores documents by relevance. It’s a bag-of-words model: it doesn’t care about word order, only about which words appear, how often, and how rare they are.
 > 
 
-That’s it. Three simple factors. And yet this decades-old algorithm remains the **baseline for relevance** in modern search. Even the newest retrieval methods, from neural rerankers to vector embeddings, still benchmark themselves against BM25. If your ranking can’t beat BM25 (and you probably can’t), you probably should just join it.
+That’s it. Three simple factors. And yet this decades-old algorithm remains the baseline for relevance in modern search. Even the newest retrieval methods, from neural rerankers to vector embeddings, still benchmark themselves against BM25. If your ranking can’t beat BM25 (and it probably can’t), you should probably just join the BM25 club.
 
 ## What is BM25 in Search?
 
-BM25 is a **ranking function.** Given a query and a set of documents, it assigns each document a score that represents “relevance.” Sort by score, and you get an ordering of results that feels useful.
+BM25 is a **ranking function**. Given a query and a set of documents, it assigns each document a score that represents “relevance”. Sort by score, and you get an ordering of results that feels useful.
 
 This is what separates search from `grep` or other brute force search tools. `grep` just tells you “the word exists in these documents.” BM25 tells you “this document is more relevant than that one.” It transforms matching into ranking.
 
 The way it does this is fairly straightforward:
 
 - Documents that mention your query terms more often score higher.
-- Documents that use *rare* terms get boosted more than those that only use common ones.
+- Documents that use rare terms get boosted more than those that only use common ones.
 - Shorter, more focused documents are preferred over longer ones that only mention the query in passing.
 
 Those three signals — frequency, rarity, and length — are the foundation of BM25.
@@ -30,7 +30,7 @@ Those three signals — frequency, rarity, and length — are the foundation of 
 
 BM25 wasn’t invented at Google or by a modern startup. It came out of the library sciences.
 
-In the 1980s and 1990s, researchers at City University in London were working on the **Okapi information retrieval system**. The dominant method at the time, TF-IDF, consistently favored long documents. A 10,000-word encyclopedia entry could outrank a concise article that was actually more relevant, simply because it had more words to work with.
+In the 1980s and 1990s, researchers at City University in London were working on the Okapi information retrieval system. The dominant method at the time, TF-IDF, consistently favored long documents. A 10,000-word encyclopedia entry could outrank a concise article that was actually more relevant, simply because it had more words to work with.
 
 Stephen Robertson and Karen Spärck Jones introduced a new family of “Best Matching” formulas to fix the problem. BM25 was the 25th tweak in that series. The number itself means nothing, it just happened to be the version that worked best. But the name stuck, and over time it became the standard.
 
@@ -41,18 +41,32 @@ Today, BM25 is everywhere: Elasticsearch, Solr, OpenSearch, Lucene, Postgres wit
 Here’s the (somewhat daunting looking) BM25 formula in its standard form:
 
 $$
-⁍
+\text{BM25}(q, d) = \sum_{i=1}^{|q|} \text{IDF}(q_i) \cdot \frac{f(q_i, d) \cdot (k_1 + 1)}{f(q_i, d) + k_1 \cdot \left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}
 $$
 
-Breaking it down:
 
-- `f(t, D)`: how many times the term *t* appears in document *D* (term frequency).
-- `IDF(t)`: how rare the term is across all documents (inverse document frequency).
-- `|D|`: document length.
-- `avgdl`: average document length across the whole collection.
-- `k`, `b`: tunable parameters.
+Where:
+- $q$ = query terms
+- $d$ = document
+- $f(q_i, d)$ = frequency of term $q_i$ in document $d$
+- $|d|$ = length of document $d$
+- $\text{avgdl}$ = average document length in the collection
+- $k_1$ = term frequency saturation parameter (typically 1.2)
+- $b$ = length normalization parameter (typically 0.75)
+- $\text{IDF}(q_i)$ = inverse document frequency of term $q_i$
 
-The math says:
+The IDF component is calculated as:
+
+$$
+\text{IDF}(q_i) = \ln\left(\frac{N - n(q_i) + 0.5}{n(q_i) + 0.5}\right)
+$$
+
+Where:
+- $N$ = total number of documents
+- $n(q_i)$ = number of documents containing term $q_i$
+
+
+That's a lot, but the math says:
 
 - More mentions → higher score.
 - Rarer terms → higher score.
@@ -60,18 +74,18 @@ The math says:
 
 But it also says: *there’s a curve*. Seeing a word 10 times is better than once, but 100 times isn’t much better than 10. BM25 builds in diminishing returns, which is why it feels “natural.”
 
-## Parameters: Tuning `k` and `b`
+## Parameters: Tuning $k$ and $b$
 
-BM25 isn’t completely fixed — you can tune it.
+BM25 isn’t completely fixed,  you can tune it.
 
-- **`k` (term frequency saturation):** controls how fast you hit diminishing returns. At low `k`, extra mentions of a term quickly stop adding value. At higher `k`, frequency matters more. Default is usually ~1.2.
-- **`b` (length normalization):** controls how much document length affects scoring. At `b = 0`, length doesn’t matter; at `b = 1`, length normalization is fully applied. Default is usually ~0.75.
+- **$k$ (term frequency saturation):** controls how fast you hit diminishing returns. At low $k$, extra mentions of a term quickly stop adding value. At higher $k$, frequency matters more. Default is usually ~1.2.
+- **$b$ (length normalization):** controls how much document length affects scoring. At $b = 0$, length doesn’t matter; at $b = 1$, length normalization is fully applied. Default is usually ~0.75.
 
-For most cases, the defaults work fine. But in practice, tweaking `k` and `b` can improve results depending on your dataset.
+For most cases, the defaults work fine. But in practice, tweaking $k$ and $b$ can improve results depending on your dataset.
 
-- If your documents are very short (e.g., tweets), you might lower `b`.
+- If your documents are very short (e.g., tweets), you might lower $b$.
 - If your documents are long (e.g., research articles), you might increase it.
-- If term frequency is particularly important (e.g., product reviews), raising `k` helps.
+- If term frequency is particularly important (e.g., product reviews), raising $k$ helps.
 
 This flexibility is part of why BM25 has lasted so long.
 

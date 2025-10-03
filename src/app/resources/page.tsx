@@ -69,9 +69,6 @@ export default async function Resources() {
               <p className="text-gray-600 text-sm leading-relaxed mb-4">
                 {resource.description}
               </p>
-              <div className="flex items-center text-sm text-gray-500">
-                <span>By {resource.author}</span>
-              </div>
             </div>
           </Link>
         ))}

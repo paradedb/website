@@ -1,0 +1,166 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+
+Imagine you’re tasked with building a search feature for a massive library of documents. At first, you might try the obvious approach: go through each document one by one to see if it contains the search term. This brute-force method works for a handful of files, but as the library grows into thousands or millions of documents, it becomes painfully slow. This is the predicament early search pioneers — and plenty of developers today — faced. How can we flip this process to avoid scanning every document?
+
+The answer lies in a simple but powerful data structure that underpins virtually every modern search engine: the **inverted index**.
+
+## Inverted Index Definition
+
+An inverted index is a data structure that organizes information *by term*, not by document. Instead of associating each document with the words it contains (as a normal or “forward” index would), an inverted index flips the relationship: it maps each word (term) to the list of documents that contain that word.
+
+Think of the index at the back of a textbook: under each topic, it lists the page numbers where that topic is mentioned. An inverted index is the same idea applied to a collection of documents (or web pages, log files, records, etc.). Each term points to one or more *posting lists* — essentially the IDs of documents that contain that term.
+
+This concept has deep roots in information retrieval history. Variants of inverted indexes (sometimes called *inverted files*) were already being used in the 1950s and 60s. Today, the inverted index remains *the central data structure in virtually every search system*. From Elasticsearch and Solr to Postgres full-text search and ParadeDB, the inverted index is everywhere.
+
+## How an Inverted Index Works
+
+Building an inverted index for a set of documents involves a few key steps:
+
+1. **Collect documents**
+    
+    Each document is given a unique identifier (ID, UUID, or URL).
+    
+2. **Tokenization and normalization**
+    
+    Break text into individual tokens (usually words). Normalize them so they match consistently: lowercase everything, strip punctuation, maybe remove stop words. Some systems also apply stemming (e.g. “running” → “run”).
+    
+    Example: `"The Quick Brown Fox"` → tokens: `[the, quick, brown, fox]`.
+    
+3. **Build posting lists**
+    
+    Add each token to the inverted index. The index is like a dictionary:
+    
+    - Key = token
+    - Value = list of documents where the token appears
+
+Posting lists are often augmented with:
+
+- **Term frequency (TF):** how many times the term appears in the doc
+- **Positions:** where the term occurs (for phrase queries)
+- **Offsets or payloads:** extra metadata
+
+These statistics allow ranking algorithms like TF-IDF or BM25 to use the inverted index as raw input.
+
+## Inverted Index Example
+
+Suppose we have three short documents:
+
+- Doc 1: “The quick brown fox jumps over the lazy dog.”
+- Doc 2: “The lazy dog slept in the sun.”
+- Doc 3: “A quick brown cat sleeps in the sun.”
+
+Tokenize and normalize:
+
+- Doc 1 → [the, quick, brown, fox, jumps, over, the, lazy, dog]
+- Doc 2 → [the, lazy, dog, slept, in, the, sun]
+- Doc 3 → [a, quick, brown, cat, sleeps, in, the, sun]
+
+Now build the index:
+
+| **Term** | **Posting List** |
+| --- | --- |
+| a | [3] |
+| brown | [1, 3] |
+| cat | [3] |
+| dog | [1, 2] |
+| fox | [1] |
+| in | [2, 3] |
+| jumps | [1] |
+| lazy | [1, 2] |
+| over | [1] |
+| quick | [1, 3] |
+| slept | [2] |
+| sleeps | [3] |
+| sun | [2, 3] |
+| the | [1, 2, 3] |
+
+With this, queries become trivial:
+
+- `"lazy"` → {1, 2}
+- `"quick"` → {1, 3}
+- `"lazy AND sun"` → intersect {1, 2} ∩ {2, 3} = {2}
+
+The heavy work happens at **index time**, not query time. That’s why inverted indexes scale to millions of documents.
+
+## Inverted Index vs Forward Index
+
+A **forward index** maps documents → terms. It’s easy to build but terrible for search. To find docs containing “cat,” you’d scan every document’s term list.
+
+An **inverted index** maps terms → documents. More work up front, but queries are lightning-fast.
+
+Both structures are often kept together: forward indexes for reconstructing results, inverted indexes for finding them. This mirrors the tradeoffs databases make with B-trees and hash indexes: storage overhead for massive query-time speed.
+
+## Inverted Index Optimizations
+
+At scale, naïve inverted indexes would be too large and slow. Search engines optimize them with:
+
+- **Sorted posting lists:** Document IDs in ascending order for fast intersections.
+- **Skip lists:** Jump pointers to skip ahead in long postings.
+- **Compression:** Store postings as deltas between doc IDs, then compress.
+
+These tricks keep index size manageable and make queries blazing fast, even at web scale.
+
+## Multi-Term Query Example
+
+Suppose a user searches for `"quick brown"`.
+
+From the index:
+
+- `quick` → [1, 3]
+- `brown` → [1, 3]
+
+Intersection = [1, 3]. Both docs are candidates.
+
+If the query is `"quick fox"`:
+
+- `quick` → [1, 3]
+- `fox` → [1]
+
+Intersection = [1]. Only Doc 1 matches.
+
+This shows why inverted indexes are so efficient: queries reduce to set operations on integers, not text scanning.
+
+## Inverted Index and Ranking Algorithms
+
+The inverted index doesn’t decide *which* results are best — it just provides the candidate set. Ranking functions like **TF-IDF** and **BM25** then score those candidates.
+
+- Posting lists provide **document IDs**.
+- Term frequency counts give you **TF**.
+- Global stats (like number of docs containing a term) give you **IDF**.
+
+BM25, TF-IDF, and neural rerankers all rely on the inverted index. It’s the substrate — without it, relevance scoring would be infeasible at scale.
+
+## History of the Inverted Index
+
+The concept dates back to library science. Early “inverted files” in the 1950s and 60s were built to let punched-card systems retrieve academic abstracts. Gerard Salton’s SMART system in the 1960s formalized many of these ideas. By the 1990s, inverted indexes were powering CD-ROM encyclopedias.
+
+When Lucene appeared in 1999, it made inverted indexes practical for everyday developers. Elasticsearch, Solr, and later OpenSearch all built on this foundation. Postgres added inverted-index-based full-text search in version 8.3 (via GIN indexes), and today ParadeDB extends that tradition by giving Postgres-native search with BM25.
+
+## Inverted Index in Modern Search Systems
+
+Inverted indexes appear everywhere:
+
+- **Search engines:** Google, Bing, DuckDuckGo
+- **Libraries:** Apache Lucene (core of Elasticsearch, Solr, OpenSearch), Tantivy (Rust based search library)
+- **Databases:** Postgres GIN indexes, ParadeDB’s `pg_search`
+- **Code search:** GitHub and IDEs use inverted indexes to find symbols instantly
+
+Even vector databases often combine inverted indexes with embeddings, hybrid search depends on both.
+
+## Why Inverted Indexes Are Still Essential
+
+With the rise of vector search and embeddings, it’s easy to wonder if inverted indexes are outdated. The reality: they’re still irreplaceable.
+
+- Exact keyword matching
+- Boolean queries (`AND`, `OR`, `NOT`)
+- Phrase queries
+- High performance at massive scale
+
+Most production systems combine both approaches: inverted indexes for recall, vectors or rerankers for semantic ranking. ParadeDB does exactly this, unifying BM25 and vector scoring in a single Postgres-native database.
+
+In short, the inverted index is the **foundation** of search. BM25 provides the **ranking layer** on top. Vectors and rerankers add further refinement. But none of those would be practical without the inverted index underneath. Whenever you type a query into a search bar — in Google, GitHub, or Postgres — you’re relying on this data structure. It’s the backbone of information retrieval and will remain so for the foreseeable future.

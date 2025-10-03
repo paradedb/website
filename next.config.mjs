@@ -2,6 +2,9 @@
 import createMDX from "@next/mdx";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -45,7 +48,8 @@ const withMDX = createMDX({
   options: {
     // You can add rehype/remark plugins here if desired
     providerImportSource: "@mdx-js/react",
-    rehypePlugins: [rehypeSlug, rehypeHighlight],
+    remarkPlugins: [remarkMath, remarkGfm],
+    rehypePlugins: [rehypeSlug, rehypeHighlight, rehypeKatex],
   },
 });
 
