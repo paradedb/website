@@ -1,11 +1,20 @@
 import Image from "next/image";
 import { Info } from "@mintlify/components";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from './images/hero.png';
 import BlockStorageCreateIndex from "./images/block_storage_create_index.png";
 import BlockStorageTps from "./images/block_storage_tps.png";
 import TantivyLayout from "./images/tantivy_layout.png";
 import BlockStorageLayout from "./images/block_storage_layout.png";
 import BlockLinkedList from "./images/block_linked_list.png";
 import Postings from "./images/postings.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
 
 We recently completed one of our biggest engineering bets to date: migrating [`pg_search`](https://github.com/paradedb/paradedb/tree/dev/pg_search), a
 Postgres extension for full text search and analytics, to Postgres' block storage system. In doing so, `pg_search` is the first-ever extension<sup>1</sup> to port an

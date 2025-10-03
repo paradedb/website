@@ -1,5 +1,14 @@
 import Image from "next/image";
 import { Info, Check } from "@mintlify/components";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from './images/hero.png';
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
 
 We wrote our first line of documentation for ParadeDB over one year ago. Since then, we’ve rewritten our documentation three times. Recently, we analyzed several months of community support messages and dozens of user interviews to determine what changes were the most impactful. Here’s what we learned.
 

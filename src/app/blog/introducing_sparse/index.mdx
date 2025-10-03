@@ -1,4 +1,13 @@
 import { Note } from "@mintlify/components";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from './images/hero.png';
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
 
 <Note>
   With the release of `v0.7.0`, sparse vector support was added to `pgvector`.

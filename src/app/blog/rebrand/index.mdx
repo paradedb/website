@@ -1,3 +1,13 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from './images/hero.png';
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
 We're excited to unveil our rebranded [landing page](https://paradedb.com) and [docs](https://docs.paradedb.com). For the past year, the ParadeDB team has
 been focused on growing adoption of our open source project among the developer community. The old branding — dark mode with bright emerald as the primary color — reflected that.
 

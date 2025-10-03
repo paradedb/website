@@ -1,5 +1,14 @@
 import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from './images/hero.svg';
 import DDIA from "./images/ddia.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
 
 When developers talk about databases, one acronym comes up again and again: **ACID**. Atomicity, consistency, isolation, and durability are the safety guarantees that define what it means to be a transactional system. If your database is the source of truth, these guarantees keep your data safe.
 

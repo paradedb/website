@@ -1,3 +1,13 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from './images/hero.svg';
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
 We're excited to announce our $12M Series A fundraising round, led by [Craft Ventures](https://craftventures.com/) and joined by existing investors including [Y Combinator](https://ycombinator.com). This brings our total capital raised to $14M and accelerates our mission to build a modern Elasticsearch alternative on Postgres.
 
 Our Series A comes on the heels of success stories with our early customers. These companies range from Fortune 500s like [Alibaba Cloud](https://alibabacloud.com); fast-growing startups like [Bilt Rewards](https://biltrewards.com), [Modern Treasury](https://moderntreasury.com), and [UnifyGTM](https://unifygtm.com); legal tech giants like [TCDI](https://tcdi.com). While these companies build different products, they share a similar story: they use Postgres as the source of truth, experience high volumes of updates, and require Elastic-quality search and analytics with zero ETL.
