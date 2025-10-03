@@ -55,9 +55,6 @@ export default async function Resources() {
           >
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6 h-full">
               <div className="flex items-start justify-between mb-3">
-                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800 capitalize">
-                  {resource.type}
-                </span>
                 <time className="text-sm text-gray-500">
                   {new Date(resource.date).toLocaleDateString('en-US', {
                     month: 'short',
