@@ -120,7 +120,7 @@ export default function Footer() {
             <div className="grid grid-cols-2 gap-8">
               <div>
                 <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Support
+                  Resources
                 </h3>
                 <ul
                   role="list"
