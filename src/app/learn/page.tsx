@@ -10,39 +10,15 @@ export default async function Resources() {
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
   
-  // If no resources, show empty state
-  if (allResources.length === 0) {
-    return (
-      <div>
-            <article className="prose">
-              <h1 className="text-2xl font-bold normal-case tracking-tight text-gray-900">
-                Resources
-              </h1>
-              <p className="text-gray-600">
-                Resources and guides are coming soon. Check back later for tutorials, documentation, and helpful guides.
-              </p>
-              <div className="mt-8">
-                <a
-                  href={siteConfig.baseLinks.blog}
-                  className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                  Visit our Blog
-                </a>
-              </div>
-            </article>
-      </div>
-    );
-  }
-
   // Show resources landing page with cards
   return (
     <div className="mx-auto max-w-6xl px-6 md:mt">
       <div className="mb-12">
         <h1 className="text-2xl font-semibold text-gray-900 mb-6">
-          Resources
+          Learn
         </h1>
         <p className="text-lg text-gray-600 mb-6">
-          Explore our collection of guides, tutorials, and documentation to help you get the most out of ParadeDB.
+          Deep dive into search concepts, learn how to build powerful search features in Postgres, and master search database fundamentals.
         </p>
       </div>
 

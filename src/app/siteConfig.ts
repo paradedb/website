@@ -6,7 +6,7 @@ export const siteConfig = {
     home: "/",
     pricing: "/pricing",
     blog: "/blog",
-    resources: "/resources",
+    resources: "/learn",
   },
 };
 

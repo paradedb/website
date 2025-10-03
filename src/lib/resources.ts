@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 
-const contentDirectory = path.join(process.cwd(), "src/app/resources");
+const contentDirectory = path.join(process.cwd(), "src/app/learn");
 
 export interface Resource {
   slug: string;

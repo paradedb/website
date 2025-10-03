@@ -81,19 +81,33 @@ Now build the index:
 
 With this, queries become trivial:
 
-- `"lazy"` → {1, 2}
-- `"quick"` → {1, 3}
-- `"lazy AND sun"` → intersect {1, 2} ∩ {2, 3} = {2}
+- `"lazy"` → \{ 1, 2 \}
+- `"quick"` → \{ 1, 3 \}
+- `"lazy AND sun"` → intersect \{ 1, 2 \} ∩ \{ 2, 3 \} = \{ 2 \}
 
 The heavy work happens at **index time**, not query time. That’s why inverted indexes scale to millions of documents.
 
-## Inverted Index vs Forward Index
+## **Inverted Index vs. B-Tree Indexes**
 
-A **forward index** maps documents → terms. It’s easy to build but terrible for search. To find docs containing “cat,” you’d scan every document’s term list.
+If you work with relational databases, you’re used to **B-trees**. A B-tree is great for key–value style lookups: *“give me the row where id = 123.”* It’s a balanced tree that lets you jump straight to the value for a given key (or to a range of keys) in logarithmic time.
 
-An **inverted index** maps terms → documents. More work up front, but queries are lightning-fast.
+An **inverted index** flips that logic inside out. Instead of mapping keys → values, it breaks apart the values to many sub-values. For every token in your corpus, the index stores a postings list of all the documents (and positions) where that token occurs. That’s why it’s called “inverted”: you’re indexing *into* the values rather than from the keys.
 
-Both structures are often kept together: forward indexes for reconstructing results, inverted indexes for finding them. This mirrors the tradeoffs databases make with B-trees and hash indexes: storage overhead for massive query-time speed.
+- **B-tree index:** Optimized for lookups by a single field (exact match, range scans, ordered queries).
+- **Inverted index:** Optimized for searching across unstructured text.
+
+This difference is what makes inverted indexes the foundation of full-text search. If you tried to use a B-tree for search, you’d be able to quickly find documents where a word starts with “cat…,” but you’d have no efficient way to combine multiple terms, track frequencies, or compute relevance scores like BM25. With an inverted index, you can take a query like *“inverted index”*, pull the postings lists for both “inverted” and “index,” and then intersect and score them efficiently.
+
+In short:
+
+| **Feature** | **B-tree Index** | **Inverted Index** |
+| --- | --- | --- |
+| Keyed on | Row values | Terms (tokens) |
+| Best for | Equality/range lookups | Full-text search and relevance ranking |
+| Data structure | Balanced tree | Term dictionary + postings lists |
+| Scoring | Not applicable | Supports TF-IDF, BM25, hybrid methods |
+
+This is why search engines (and BM25 specifically) are always paired with inverted indexes: the structure is what makes those relevance calculations efficient at scale.
 
 ## Inverted Index Optimizations
 
@@ -104,26 +118,6 @@ At scale, naïve inverted indexes would be too large and slow. Search engines op
 - **Compression:** Store postings as deltas between doc IDs, then compress.
 
 These tricks keep index size manageable and make queries blazing fast, even at web scale.
-
-## Multi-Term Query Example
-
-Suppose a user searches for `"quick brown"`.
-
-From the index:
-
-- `quick` → [1, 3]
-- `brown` → [1, 3]
-
-Intersection = [1, 3]. Both docs are candidates.
-
-If the query is `"quick fox"`:
-
-- `quick` → [1, 3]
-- `fox` → [1]
-
-Intersection = [1]. Only Doc 1 matches.
-
-This shows why inverted indexes are so efficient: queries reduce to set operations on integers, not text scanning.
 
 ## Inverted Index and Ranking Algorithms
 
@@ -155,11 +149,6 @@ Even vector databases often combine inverted indexes with embeddings, hybrid sea
 ## Why Inverted Indexes Are Still Essential
 
 With the rise of vector search and embeddings, it’s easy to wonder if inverted indexes are outdated. The reality: they’re still irreplaceable.
-
-- Exact keyword matching
-- Boolean queries (`AND`, `OR`, `NOT`)
-- Phrase queries
-- High performance at massive scale
 
 Most production systems combine both approaches: inverted indexes for recall, vectors or rerankers for semantic ranking. ParadeDB does exactly this, unifying BM25 and vector scoring in a single Postgres-native database.
 

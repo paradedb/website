@@ -114,7 +114,7 @@ export function Navigation() {
                   )}
                   href={siteConfig.baseLinks.resources}
                 >
-                  Resources
+                  Learn
                 </Link>
                 <Link
                   target="_blank"
@@ -187,7 +187,7 @@ export function Navigation() {
                 <Link href={siteConfig.baseLinks.blog}>Blog</Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.resources}>Resources</Link>
+                <Link href={siteConfig.baseLinks.resources}>Learn</Link>
               </li>
               <li onClick={() => setOpen(false)}>
                 <Link target="_blank" href={documentation.CHANGELOG}>
