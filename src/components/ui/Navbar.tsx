@@ -106,6 +106,17 @@ export function Navigation() {
                   Blog
                 </Link>
                 <Link
+                  className={classNames(
+                    "px-2 py-1 hover:text-indigo-600",
+                    pathname.startsWith(siteConfig.baseLinks.resources)
+                      ? "text-indigo-600"
+                      : "text-indigo-900",
+                  )}
+                  href={siteConfig.baseLinks.resources}
+                >
+                  Resources
+                </Link>
+                <Link
                   target="_blank"
                   className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
                   href={documentation.BASE}
@@ -174,6 +185,9 @@ export function Navigation() {
               </li>
               <li onClick={() => setOpen(false)}>
                 <Link href={siteConfig.baseLinks.blog}>Blog</Link>
+              </li>
+              <li onClick={() => setOpen(false)}>
+                <Link href={siteConfig.baseLinks.resources}>Resources</Link>
               </li>
               <li onClick={() => setOpen(false)}>
                 <Link target="_blank" href={documentation.CHANGELOG}>

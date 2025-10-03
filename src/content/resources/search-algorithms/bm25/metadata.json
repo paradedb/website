@@ -1,0 +1,11 @@
+{
+    "title": "What is BM25 and Why Does it Matter?",
+    "date": "2024-10-03T00:00:00.000Z",
+    "author": "James Blackwood-Sewell",
+    "description": "Resource description",
+    "type": "explainer",
+    "order": 1,
+    "categories": ["optional", "tags"],
+    "hideHeroImage": true,
+    "hideAuthor": true
+}
