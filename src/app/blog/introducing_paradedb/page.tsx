@@ -5,7 +5,6 @@ import TableOfContents from "@/components/TableOfContents";
 // Import the MDX content directly
 import BlogContent from "./index.mdx";
 
-
 export default function BlogPost() {
   return (
     <>
