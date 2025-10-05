@@ -106,6 +106,13 @@ export function Navigation() {
                   Blog
                 </Link>
                 <Link
+                  target="_blank"
+                  className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
+                  href={documentation.BASE}
+                >
+                  Documentation
+                </Link>
+                <Link
                   className={classNames(
                     "px-2 py-1 hover:text-indigo-600",
                     pathname.startsWith(siteConfig.baseLinks.resources)
@@ -115,13 +122,6 @@ export function Navigation() {
                   href={siteConfig.baseLinks.resources}
                 >
                   Learn
-                </Link>
-                <Link
-                  target="_blank"
-                  className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
-                  href={documentation.BASE}
-                >
-                  Documentation
                 </Link>
                 <Link
                   target="_blank"
