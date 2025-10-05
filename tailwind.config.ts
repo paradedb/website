@@ -14,11 +14,11 @@ const config: Config = {
         DEFAULT: {
           css: {
             blockquote: {
-              borderLeftColor: '#4F46E5', // Parurple
+              borderLeftColor: "#4F46E5", // Parurple
             },
-	    ".prose h1": {
-              fontSize: "1.5rem",   // ~24px
-              lineHeight: "2rem",   // ~32px
+            ".prose h1": {
+              fontSize: "1.5rem", // ~24px
+              lineHeight: "2rem", // ~32px
               fontWeight: "700",
             },
             ".prose ul": {
