@@ -1,0 +1,41 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.svg";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+We're excited to announce our $12M Series A fundraising round, led by [Craft Ventures](https://craftventures.com/) and joined by existing investors including [Y Combinator](https://ycombinator.com). This brings our total capital raised to $14M and accelerates our mission to build a modern Elasticsearch alternative on Postgres.
+
+Our Series A comes on the heels of success stories with our early customers. These companies range from Fortune 500s like [Alibaba Cloud](https://alibabacloud.com); fast-growing startups like [Bilt Rewards](https://biltrewards.com), [Modern Treasury](https://moderntreasury.com), and [UnifyGTM](https://unifygtm.com); legal tech giants like [TCDI](https://tcdi.com). While these companies build different products, they share a similar story: they use Postgres as the source of truth, experience high volumes of updates, and require Elastic-quality search and analytics with zero ETL.
+
+## Bringing Elastic-Quality Search and Analytics to Postgres
+
+Postgres is on the rise. As the world’s most-loved relational database, Postgres commands an $80B+ market size that is expected to double in the coming years. This momentum hasn’t gone unnoticed: Neon and Crunchy Data, two Postgres startups, were recently [acquired by Databricks](https://www.databricks.com/company/newsroom/press-releases/databricks-agrees-acquire-neon-help-developers-deliver-ai-systems) and Snowflake to deepen their AI platforms.
+
+However, Postgres’ search and analytical capabilities are nascent. On the search front, Postgres lacks first-class support for Elastic-style boolean, fuzzy, phrase, and BM25-scored queries. On the analytics front, Postgres’ storage and query engines were designed for transactional — not analytical — workloads.
+
+As a result, many Postgres users adopt an external search engine like Elasticsearch. While powerful, Elasticsearch is a cumbersome piece of technology that is painful to run, tune, and manage. Syncing Postgres and Elastic requires denormalization and is error-prone for update-heavy workloads. Elastic is not a reliable data store, causing downtime or incorrect results in production, and can become incredibly expensive at scale.
+
+## Our Story So Far
+
+In late 2023, we launched the first version of ParadeDB as an open-source Postgres extension for full text search. Within months, ParadeDB became one of the [fastest-growing Postgres projects](https://github.com/paradedb/paradedb), reaching 7K+ Github stars and 100K+ installs.
+
+In 2024, we shipped several critical features that brought ParadeDB closer to a production-grade Elastic replacement. These included a columnar index to support certain flavors of analytical queries and integration with the Postgres write-ahead log (WAL), which delivered crash recovery and high availability.
+
+Around the same time, we began onboarding large enterprise customers. Our first large customer was Alibaba Cloud, who reached out because they needed a text search engine that was compatible with their Postgres-based data warehouse. Shortly after, we onboarded Modern Treasury, the payment processing API. Modern Treasury’s engineers had previously spent years wrangling Elastic clusters and understood the pain of syncing Postgres with Elastic. Their application consumes financial transactions, which require a search engine that’s relational, transaction-safe, and always in sync with their primary Postgres. ParadeDB’s architecture was a perfect fit for their use case.
+
+## What’s Next
+
+For the past two years, we’ve been focused on building world-class text search inside Postgres. That work laid the foundation for a search experience that rivals Elasticsearch. We’ve pushed the boundaries of what’s possible inside Postgres, enabling complex filtered, sorted, and faceted search queries while maintaining Postgres’ transactional consistency and query language.
+
+Now, we’re setting our sights on the next frontier: making Postgres a first-class analytical (OLAP) engine that rivals Elastic’s analytical performance. Our goal is to dramatically accelerate analytical queries written in plain SQL, the kind used to power dashboards, drill-downs, and real-time insights.
+
+This means rethinking everything from Postgres’ file formats, query planner, and execution engine. We’re drawing inspiration from existing OLAP engines like Elastic while staying true to the Postgres ethos.
+
+To tackle this deeply technical challenge, we’ve assembled a world-class team. Engineers on our team have decades of experience in Postgres internals, search, and analytical query engines. They’ve spent their careers writing core infrastructure for the Postgres ecosystem or building database systems at companies like MongoDB, Meta, Google, and Twitter.
+
+Thank you to everyone who’s been part of our journey so far. If you’d like to help shape the journey ahead, [we're hiring](https://paradedb.notion.site/)!
