@@ -4,21 +4,20 @@ import Link from "next/link";
 
 export default async function Resources() {
   const allResources = await getResourceLinks();
-  
+
   // Get the 3 most recently updated resources
   const recentResources = allResources
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
     .slice(0, 3);
-  
+
   // Show resources landing page with cards
   return (
     <div className="mx-auto max-w-6xl px-6 md:mt">
       <div className="mb-12">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">
-          Learn
-        </h1>
+        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Learn</h1>
         <p className="text-lg text-gray-600 mb-6">
-          Deep dive into search concepts, learn how to build powerful search features in Postgres, and master search database fundamentals.
+          Deep dive into search concepts, and learn how to build powerful search
+          features in Postgres.
         </p>
       </div>
 
@@ -32,10 +31,10 @@ export default async function Resources() {
             <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6 h-full">
               <div className="flex items-start justify-between mb-3">
                 <time className="text-sm text-gray-500">
-                  {new Date(resource.date).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric'
+                  {new Date(resource.date).toLocaleDateString("en-US", {
+                    month: "short",
+                    day: "numeric",
+                    year: "numeric",
                   })}
                 </time>
               </div>

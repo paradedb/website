@@ -14,7 +14,9 @@ export default function ResourcesLayoutClient({
   resourceSections: ResourceSection[];
 }) {
   const pathname = usePathname();
-  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(new Set());
+  const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
+    new Set(),
+  );
 
   const toggleSection = (sectionName: string) => {
     const newCollapsed = new Set(collapsedSections);
@@ -43,7 +45,9 @@ export default function ResourcesLayoutClient({
                     <svg
                       className={classNames(
                         "h-4 w-4 transform transition-transform",
-                        collapsedSections.has(section.name) ? "rotate-0" : "rotate-90"
+                        collapsedSections.has(section.name)
+                          ? "rotate-0"
+                          : "rotate-90",
                       )}
                       fill="currentColor"
                       viewBox="0 0 20 20"
@@ -69,8 +73,12 @@ export default function ResourcesLayoutClient({
                             )}
                           >
                             <div className="flex flex-col">
-                              <span className="text-sm font-medium">{item.name}</span>
-                              <span className="text-xs text-gray-500 capitalize">{item.type}</span>
+                              <span className="text-sm font-medium">
+                                {item.name}
+                              </span>
+                              <span className="text-xs text-gray-500 capitalize">
+                                {item.type}
+                              </span>
                             </div>
                           </a>
                         </li>

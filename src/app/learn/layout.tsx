@@ -13,5 +13,9 @@ export default async function ResourcesLayout({
     return <div>{children}</div>;
   }
 
-  return <ResourcesLayoutClient resourceSections={resourceSections}>{children}</ResourcesLayoutClient>;
+  return (
+    <ResourcesLayoutClient resourceSections={resourceSections}>
+      {children}
+    </ResourcesLayoutClient>
+  );
 }

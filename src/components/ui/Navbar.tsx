@@ -112,7 +112,7 @@ export function Navigation() {
                 >
                   Documentation
                 </Link>
-{/* 
+                {/* 
                 <Link
                   className={classNames(
                     "px-2 py-1 hover:text-indigo-600",
@@ -188,7 +188,7 @@ export function Navigation() {
               <li onClick={() => setOpen(false)}>
                 <Link href={siteConfig.baseLinks.blog}>Blog</Link>
               </li>
-{/* 
+              {/* 
               <li onClick={() => setOpen(false)}>
                 <Link href={siteConfig.baseLinks.resources}>Learn</Link>
               </li>

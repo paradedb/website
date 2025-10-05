@@ -44,7 +44,7 @@ export async function getAllResources(): Promise<ResourceMetadata[]> {
 
     for (const sectionName of sectionDirectories) {
       const sectionPath = path.join(contentDirectory, sectionName);
-      
+
       // Get all resource directories within this section
       const resourceDirectories = fs
         .readdirSync(sectionPath, { withFileTypes: true })
@@ -62,9 +62,9 @@ export async function getAllResources(): Promise<ResourceMetadata[]> {
 
           // Convert section directory name to readable format
           const sectionDisplay = sectionName
-            .split('-')
-            .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-            .join(' ');
+            .split("-")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(" ");
 
           resources.push({
             slug: `${sectionName}/${resourceSlug}`, // Include section in slug for unique identification
@@ -90,7 +90,9 @@ export async function getAllResources(): Promise<ResourceMetadata[]> {
   );
 }
 
-export async function getResourceBySlug(slug: string): Promise<Resource | null> {
+export async function getResourceBySlug(
+  slug: string,
+): Promise<Resource | null> {
   // slug is now in format "section-name/resource-name"
   const resourcePath = path.join(contentDirectory, slug);
   const metadataPath = path.join(resourcePath, "metadata.json");
@@ -105,11 +107,11 @@ export async function getResourceBySlug(slug: string): Promise<Resource | null> 
   const content = fs.readFileSync(mdxPath, "utf8");
 
   // Extract section name from slug
-  const sectionName = slug.split('/')[0];
+  const sectionName = slug.split("/")[0];
   const sectionDisplay = sectionName
-    .split('-')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .split("-")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
 
   return {
     slug,
