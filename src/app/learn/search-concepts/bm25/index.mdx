@@ -13,7 +13,7 @@ Even though it's over 30 years old, BM25 remains the default ranking algorithm i
 
 ## How BM25 Works
 
-It's important to note that BM25 is what’s known as a bag-of-words model. It doesn’t look at term order, phrase structure, or proximity: only at which words appear and how frequently they occur.
+It's important to note that BM25 is what’s known as a [bag-of-words](https://en.wikipedia.org/wiki/Bag-of-words_model) retrieval function. It doesn’t look at term order, phrase structure, or proximity: only at which words appear and how frequently they occur.
 
 BM25 starts by breaking the search query into individual terms. For each term, it scores how well every document matches based on three main signals:
 
@@ -32,7 +32,7 @@ $$
 where the adjusted term frequency reduces the impact of very frequent terms and normalizes for document length.
 
 <Note>
-  The full BM25 formula is slightly more complex. It includes tunable parameters
+  The full [BM25 formula](https://en.wikipedia.org/wiki/Okapi_BM25#The_ranking_function) is slightly more complex. It includes tunable parameters
   $k₁$ (how quickly term frequency saturates) and $b$ (how strongly document
   length is normalized). These controls make BM25 adaptable across different
   datasets and document types.
@@ -50,17 +50,16 @@ Because of these traits, BM25 remains the baseline for relevance in modern searc
 
 ## When to Use BM25
 
-Use BM25 when:
+BM25 excels in keyword-based retrieval workloads, where users search using exact terms or short phrases rather than natural language. It’s ideal when you want to find ranked documents that contain the same words a user types.
 
-- You’re building keyword-based or full-text search.
-- You need explainable and consistent ranking.
-- You need instant responses to search or auto-completion queries.
+Think of use cases like:
+- Searching for a brand name in a product catalog
+- Looking up a stock ticker in a trading app
+- Matching a merchant name in a credit card transaction ledger
+- Finding names in a legal document
+- Finding a diagnosis code in a medical report
 
-Suppliment BM25 wth another approach when:
-
-- You need semantic or meaning-based retrieval.
-
-Many production systems combine BM25 with vector search or neural re-ranking to balance precision and semantic understanding.
+Because BM25 relies on simple term statistics (how often a word appears and how common it is across documents) it’s accurate, consistent and extremely fast. That makes it a popular choice in applications where low query latency is critical, and where semantic meaning isn’t as important as exact keyword relevance.
 
 ## Example: Scoring a Query with BM25
 
