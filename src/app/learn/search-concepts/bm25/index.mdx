@@ -7,7 +7,7 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) is a **ranking function** used in search engines to score documents by relevance to a query.  The BM is short for `best matching`, and `25` is the version of the function that worked best in testing. It improves on earlier methods like [TF-IDF ](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) by accounting for document length and diminishing returns from repeated terms.  It powers systems like [Elasticsearch](https://github.com/elastic/elasticsearch), [Solr](https://github.com/apache/solr), and Postgres extensions like [pg_search](https://github.com/paradedb/paradedb).
+[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) is a **ranking function** used in search engines to score documents by relevance to a query. The BM is short for `best matching`, and `25` is the version of the function that worked best in testing. It improves on earlier methods like [TF-IDF ](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) by accounting for document length and diminishing returns from repeated terms. It powers systems like [Elasticsearch](https://github.com/elastic/elasticsearch), [Solr](https://github.com/apache/solr), and Postgres extensions like [pg_search](https://github.com/paradedb/paradedb).
 
 Even though it's over 30 years old, BM25 remains the default ranking algorithm in most search engines because it’s simple, explainable, and performs well in practice.
 
@@ -29,12 +29,13 @@ $$
 \text{score} = \sum \text{IDF} \times \text{adjusted\_term\_frequency}
 $$
 
-
 where the adjusted term frequency reduces the impact of very frequent terms and normalizes for document length.
 
 <Note>
-The full BM25 formula is slightly more complex. It includes tunable parameters $k₁$ (how quickly term frequency saturates) and $b$ (how strongly document length is normalized).
-These controls make BM25 adaptable across different datasets and document types.
+  The full BM25 formula is slightly more complex. It includes tunable parameters
+  $k₁$ (how quickly term frequency saturates) and $b$ (how strongly document
+  length is normalized). These controls make BM25 adaptable across different
+  datasets and document types.
 </Note>
 
 ## Why BM25 Works Well
@@ -69,16 +70,16 @@ BM25 first breaks the query into two terms: **“inverted”** and **“index.�
 
 Then, for each document, it scores how well those terms match:
 
-| **Document** | **Length** | **Term counts** | **TF–IDF signals** | **Relative Score** |
-| --- | --- | --- | --- | --- |
-| **Doc A** | 60 words | inverted: 1<br />index: 1 | rare → high IDF<br />common → low IDF | **Higher** |
-| **Doc B** | 200 words | inverted: 1<br />index: 10 | rare → high IDF<br />common → low IDF<br />+ length penalty | **Lower** |
+| **Document** | **Length** | **Term counts**            | **TF–IDF signals**                                          | **Relative Score** |
+| ------------ | ---------- | -------------------------- | ----------------------------------------------------------- | ------------------ |
+| **Doc A**    | 60 words   | inverted: 1<br />index: 1  | rare → high IDF<br />common → low IDF                       | **Higher**         |
+| **Doc B**    | 200 words  | inverted: 1<br />index: 10 | rare → high IDF<br />common → low IDF<br />+ length penalty | **Lower**          |
 
-Even though *Doc B* repeats “index” more times, BM25 favors *Doc A* because:
+Even though _Doc B_ repeats “index” more times, BM25 favors _Doc A_ because:
 
 1. “inverted” is a rare term with higher IDF,
 2. both documents mention it once (similar TF), and
-3. *Doc A* is shorter, so its matches are more concentrated.
+3. _Doc A_ is shorter, so its matches are more concentrated.
 
 **BM25 rewards focused, relevant mentions of rare terms, not repetition in long text.**
 
