@@ -7,7 +7,7 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) is a **ranking function** used in search engines to score documents by relevance to a query. The BM is short for `best matching`, and `25` is the version of the function that worked best in testing. It improves on earlier methods like [TF-IDF ](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) by accounting for document length and diminishing returns from repeated terms. It powers systems like [Elasticsearch](https://github.com/elastic/elasticsearch), [Solr](https://github.com/apache/solr), and Postgres extensions like [pg_search](https://github.com/paradedb/paradedb).
+[Okapi BM25](https://en.wikipedia.org/wiki/Okapi_BM25) is a **ranking function** used in search engines to score documents by relevance to a query. The BM is short for `best matching`, and `25` is the version of the function that worked best in testing. It improves on earlier methods like [TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf) by accounting for document length and diminishing returns from repeated terms. It powers Apache Lucene-based search systems like [Elasticsearch](https://github.com/elastic/elasticsearch) and [Solr](https://github.com/apache/solr), and Tantivy-based search systems like [ParadeDB](https://github.com/paradedb/paradedb).
 
 Even though it's over 30 years old, BM25 remains the default ranking algorithm in most search engines because it’s simple, explainable, and performs well in practice.
 
