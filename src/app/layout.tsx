@@ -49,6 +49,11 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+
+  // ✅ Default canonical for the homepage
+  alternates: {
+    canonical: "/", // resolves to `${siteConfig.url}/`
+  },
 };
 
 export default function RootLayout({
