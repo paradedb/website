@@ -32,10 +32,12 @@ $$
 where the adjusted term frequency reduces the impact of very frequent terms and normalizes for document length.
 
 <Note>
-  The full [BM25 formula](https://en.wikipedia.org/wiki/Okapi_BM25#The_ranking_function) is slightly more complex. It includes tunable parameters
-  $k₁$ (how quickly term frequency saturates) and $b$ (how strongly document
-  length is normalized). These controls make BM25 adaptable across different
-  datasets and document types.
+  The full [BM25
+  formula](https://en.wikipedia.org/wiki/Okapi_BM25#The_ranking_function) is
+  slightly more complex. It includes tunable parameters $k₁$ (how quickly term
+  frequency saturates) and $b$ (how strongly document length is normalized).
+  These controls make BM25 adaptable across different datasets and document
+  types.
 </Note>
 
 ## Why BM25 Works Well
@@ -53,6 +55,7 @@ Because of these traits, BM25 remains the baseline for relevance in modern searc
 BM25 excels in keyword-based retrieval workloads, where users search using exact terms or short phrases rather than natural language. It’s ideal when you want to find ranked documents that contain the same words a user types.
 
 Think of use cases like:
+
 - Searching for a brand name in a product catalog
 - Looking up a stock ticker in a trading app
 - Matching a merchant name in a credit card transaction ledger
