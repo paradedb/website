@@ -38,3 +38,6 @@ next-env.d.ts
 # VS Code
 .vscode/*
 
+# Sitemaps
+/public/robots.txt
+/public/sitemap*.xml
