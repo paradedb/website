@@ -15,16 +15,23 @@ RRF's elegance lies in its simplicity: rather than normalizing scores within eac
 
 RRF operates on a simple principle: documents that appear highly ranked across multiple search methods are likely to be genuinely relevant.
 
-The RRF formula is very simple:
+The standard RRF formula treats all ranking sources equally:
 
 $$
 \text{RRF}(d) = \sum_{r \in R} \frac{1}{k + rank_r(d)}
+$$
+
+However, **Weighted RRF** allows different ranking sources to have different influence, which is often more effective:
+
+$$
+\text{WeightedRRF}(d) = \sum_{r \in R} w_r \cdot \frac{1}{k + rank_r(d)}
 $$
 
 Where:
 - $d$ is a document
 - $R$ is the set of ranked lists
 - $rank_r(d)$ is the rank of document $d$ in ranking $r$
+- $w_r$ is the weight for ranking $r$ (typically between 0 and 1)
 - $k$ is a constant (typically 60) that controls the fusion behavior
 
 The fusion process works as follows:
@@ -88,25 +95,55 @@ Consider a search for `machine learning tutorial` using both lexical and semanti
 - "AI and Deep Learning" appears only in semantic (rank 1): `1/61 = 0.0164`
 - "Tutorial: Intro to ML" appears only in lexical (rank 2): `1/62 = 0.0161`
 
-## Weighted RRF
+Weights allow you to emphasize one retrieval method over another. For instance, in a hybrid setup:
+- BM25 might have a weight of 1.0 for lexical precision.
+- A vector search model might have 0.7 for semantic similarity.
 
-In some search systems, not all ranking signals are equally reliable. For example, a semantic model might capture conceptual meaning better than a keyword ranker, or a title field might deserve more influence than body text. Weighted Reciprocal Rank Fusion (Weighted RRF) extends the standard formula to reflect these preferences.
+The effect is simple but powerful: RRF still rewards agreement across rankers, but weights let you encode which signals you trust most. This makes weighted RRF especially useful in production systems where retrieval sources vary in quality or purpose.
 
-Weighted RRF assigns a weight $w_r$ to each ranking source, giving more trusted systems a stronger voice in the combined result:
+## Implementation in SQL
 
-$$
-\text{WeightedRRF}(d) = \sum_{r \in R} w_r \cdot \frac{1}{k + rank_r(d)}
-$$
+A variety of databases and search enginges have pre-implemented RRF, but it's a very simple formula and can be easily demonstrated in SQL as follows:
 
-Here:
-- $w_r$ is the weight for ranking $r$, typically between 0 and 1.
-- The other parameters are the same as in standard RRF.
+```sql
+WITH 
+--- Full-text search, using pg_search and BM25 for ranking
+fulltext AS 
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
+  FROM mock_items
+  WHERE description @@@ 'keyboard'
+  LIMIT 20
+),
 
-By tuning weights, you can emphasize one retrieval method over another. For instance, in a hybrid setup:
-- BM25 might have a weight of 0.4 for lexical precision.
-- A vector search model might have 0.6 for semantic similarity.
+--- Semantic search, using pgvector and cosine distance for ranking
+semantic AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+  FROM mock_items
+  LIMIT 20
+),
 
-The effect is simple but powerful: RRF still rewards agreement across rankers, but weighted RRF lets you encode which signals you trust most. This makes it especially useful in production systems where retrieval sources vary in quality or purpose.
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 1.0 / (60 + r) AS s FROM fulltext, params
+  UNION ALL
+  SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
+)
+
+-- Sum the rrf scores, order by them, and join back the orginal data
+SELECT
+  m.id,
+  SUM(s) AS score,
+  m.description
+FROM rrf
+JOIN mock_items AS m USING (id)
+GROUP BY m.id, m.description
+ORDER BY score DESC
+LIMIT 5;
+```
 
 
 ## Summary
