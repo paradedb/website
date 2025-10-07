@@ -15,31 +15,27 @@ RRF's elegance lies in its simplicity: rather than normalizing scores within eac
 
 RRF operates on a simple principle: documents that appear highly ranked across multiple search methods are likely to be genuinely relevant.
 
-The standard RRF formula treats all ranking sources equally:
+The standard RRF formula treats all ranking sources equally, but _Weighted RRF_ allows you to assign different weights to each method.
 
-$$
-\text{RRF}(d) = \sum_{r \in R} \frac{1}{k + rank_r(d)}
-$$
-
-However, **Weighted RRF** allows different ranking sources to have different influence, which is often more effective:
+For example, when combining BM25 and vector search you might assign weights of 1.0 and 0.7 respectively to show that you value lexical over semantic meaning.
 
 $$
 \text{WeightedRRF}(d) = \sum_{r \in R} w_r \cdot \frac{1}{k + rank_r(d)}
 $$
 
-Where:
+Where
 
 - $d$ is a document
 - $R$ is the set of ranked lists
 - $rank_r(d)$ is the rank of document $d$ in ranking $r$
-- $w_r$ is the weight for ranking $r$ (typically between 0 and 1)
+- $w_r$ is the weight for ranking $r$ (typically between 0 and 1). In non-weighted/traditional RRF this is always 1.
 - $k$ is a constant (typically 60) that controls the fusion behavior
 
 The fusion process works as follows:
 
 1. Start with multiple ranked lists from different retrieval methods (discard the actual ranking numbers).
-2. Calculate RRF scores for each document that appears in any list
-3. Merge all documents and sort by their combined RRF scores
+1. Calculate RRF scores for each document that appears in any list and multiply by the weight (if used).
+1. Merge all documents and sort by their combined RRF scores
 
 Documents missing from a ranking contribute zero to that ranking's sum.
 
@@ -142,7 +138,7 @@ rrf AS (
   SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
 )
 
--- Sum the rrf scores, order by them, and join back the original data
+-- Sum the RRF scores, order by them, and join back the original data
 SELECT
   m.id,
   SUM(s) AS score,
