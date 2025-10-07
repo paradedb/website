@@ -1,0 +1,104 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+Search engines need a way to locate relevant documents instantly, without scanning every word of every file. The solution is the **inverted index**, the data structure that makes [full-text search](/learn/search-concepts/full-text-search) fast and efficient.
+
+Every modern system which supports search (from search engine like [Elasticsearch](https://github.com/elastic/elasticsearch) and [Solr](https://github.com/apache/solr), to databases like [PostgreSQL](https://postgresql.org)) relies on inverted indexes to quickly determine which documents contain which words, enabling search across millions of records in milliseconds. Instead of scanning documents linearly, the inverted index maps terms directly to the documents that contain them.
+
+## How Inverted Indexes Work
+
+The name *inverted index* comes from flipping the usual document-to-terms relationship.
+
+Instead of asking *"what terms appear in this document?"*, an inverted index can instantly answer *"which documents contain this term?"*
+
+When text is indexed, the system transforms raw documents into a searchable structure through a few key steps:
+
+1. **Tokenization:** Split each document’s text into individual words or tokens.
+2. **Normalization:** Convert to lowercase, remove punctuation and stop words, and optionally stem words ("running" → "run").
+3. **Index construction:** For each unique term, create a list of all documents containing that term.
+
+The core structure is a dictionary where each term maps to a postings list, a list of entries describing every document that contains the term.
+
+Each entry in a postings list typically includes:
+
+- The **document ID**
+- The **term frequency** (how often the term appears in that document)
+- Optionally, the **positions** where the term occurs (enabling phrase and proximity queries)
+
+## Example: Building an Inverted Index
+
+To deomonstrate how inverted indexes work let’s index three simple documents:
+
+| **ID** | **Text** |
+| --- | --- |
+| 1 | "ParadeDB uses PostgreSQL for search" |
+| 2 | "PostgreSQL supports full-text search" |
+| 3 | "Search engines use inverted indexes" |
+
+After tokenization and normalization, the inverted index looks like this:
+
+| **Term** | **Postings List** |
+| --- | --- |
+| paradedb | [(1, tf=1, pos=[0])] |
+| uses | [(1, tf=1, pos=[1])] |
+| postgresql | [(1, tf=1, pos=[2]), (2, tf=1, pos=[0])] |
+| search | [(1, tf=1, pos=[4]), (2, tf=1, pos=[3]), (3, tf=1, pos=[0])] |
+| supports | [(2, tf=1, pos=[1])] |
+| full | [(2, tf=1, pos=[2])] |
+| text | [(2, tf=1, pos=[3])] |
+| engines | [(3, tf=1, pos=[1])] |
+| inverted | [(3, tf=1, pos=[3])] |
+| indexes | [(3, tf=1, pos=[4])] |
+
+When you search for "PostgreSQL search", the system:
+
+1. Retrieves postings lists for both terms.
+2. Intersects them to find common documents: `[1, 2]`.
+3. Uses term frequencies and positions for relevance scoring.
+
+This approach scales seamlessly to millions of documents because the search engine never scans raw text, it operates entirely on indexed terms.
+
+## Query Processing with Inverted Indexes
+
+Once the index is built, different query types use it in different ways depending on how precise the match needs to be:
+
+- **Boolean queries** ("PostgreSQL AND search") use set intersection of postings lists to find documents containing all required terms.
+- **Phrase queries** use position information to ensure that terms appear consecutively in the correct order.
+- **Ranked queries** combine multiple postings lists and apply statistical algorithms like [BM25](/learn/search-concepts/bm25) to compute relevance scores based on term frequency and document frequency.
+
+## Performance Characteristics
+
+Inverted indexes are optimized for read-heavy workloads, trading write performance for extremely fast query execution. Their efficiency comes from how they store and access data, but that design introduces specific trade-offs.
+
+**Advantages**
+
+- **Fast retrieval:** $O(1)$ term lookup followed by efficient postings list intersection.
+- **Space efficient:** Each unique term is stored only once, regardless of corpus size.
+- **Flexible scoring:** Rich statistics support advanced ranking algorithms.
+
+**Challenges**
+
+- **Update complexity:** Adding documents may require modifying many postings lists.
+- **Memory usage:** Large vocabularies can consume substantial memory for the term dictionary.
+
+To handle updates efficiently, search engines use segment-based indexing: they build small inverted indexes in memory, then periodically merge them into larger on-disk structures. This approach balances write performance with query speed.
+
+## Optimizations and Compression
+
+Modern inverted indexes include a range of optimizations to improve performance and scalability.
+
+- **Compression techniques** such as variable-byte encoding and delta compression reduce storage requirements and improve cache locality.
+- **Skip lists** speed up the intersection of large postings lists by allowing the algorithm to jump over irrelevant sections.
+- **Index partitioning** distributes the index across multiple machines or shards for horizontal scaling in large-scale deployments (at the expense of transactionality and read-after write semantics)
+
+## Summary
+
+Inverted indexes remain the basis of modern search. By reversing the document–term relationship, they enable sub-second retrieval across massive text collections and provide the raw data that ranking algorithms like [BM25](/learn/search-concepts/bm25) rely on.
+
+They’re the reason full-text search systems can scale while still feeling instantaneous — transforming unstructured text into something searchable, measurable, and intelligent.

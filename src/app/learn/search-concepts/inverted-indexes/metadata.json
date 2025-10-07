@@ -1,0 +1,9 @@
+{
+    "title": "What are Inverted Indexes?",
+    "date": "2024-10-05T00:00:00.000Z",
+    "author": "James Blackwood-Sewell",
+    "description": "Learn about Inverted Indexes, the data structure that backs full-text search.",
+    "order": 2,
+    "hideHeroImage": true,
+    "hideAuthor": true
+}
