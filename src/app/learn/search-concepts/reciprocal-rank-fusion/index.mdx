@@ -64,21 +64,21 @@ Research consistently shows RRF's effectiveness when combining different retriev
 
 While RRF can be used any time there are multiple scoring systems which need to be combined in a single query it excels in several scenarios:
 
-**Hybrid Search Systems**  
+**Hybrid Search Systems**
 Combining lexical search ([BM25](/learn/search-concepts/bm25)) with semantic vector search:
 
 - BM25 finds specific keywords and technical terms
 - Vector search captures conceptual similarity
 - RRF harnesses both strengths
 
-**Multi-Field Search**  
+**Multi-Field Search**
 Search across different document parts with separate rankings:
 
 - Title search results
 - Body content results
 - Metadata results
 
-**Personalization**  
+**Personalization**
 Merge general relevance with personalized signals based on user behavior or preferences.
 
 ## Example: RRF in Action
@@ -112,7 +112,7 @@ The effect is simple but powerful: RRF still rewards agreement across rankers, b
 
 ## Implementation in SQL
 
-A variety of databases and search enginges have pre-implemented RRF, but it's a very simple formula and can be easily demonstrated in SQL as follows:
+A variety of databases and search engines have pre-implemented RRF, but it's a very simple formula and can be easily demonstrated in SQL as follows:
 
 ```sql
 WITH
@@ -142,7 +142,7 @@ rrf AS (
   SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
 )
 
--- Sum the rrf scores, order by them, and join back the orginal data
+-- Sum the rrf scores, order by them, and join back the original data
 SELECT
   m.id,
   SUM(s) AS score,
