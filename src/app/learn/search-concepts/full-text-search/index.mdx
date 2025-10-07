@@ -7,9 +7,9 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-Full-text search (FTS) enables finding documents based on the words they contain rather than just structured fields or metadata. It brings intelligence to text retrieval by analyzing and indexing language, allowing queries to return results ranked by relevance instead of simple matches.
+[Full-text search](https://en.wikipedia.org/wiki/Full-text_search) (FTS) enables finding documents based on the words they contain rather than just structured fields or metadata. It brings intelligence to text retrieval by analyzing and indexing language, allowing queries to return results ranked by relevance instead of simple matches.
 
-This capability transforms a database from a passive store of records into an information retrieval engine. Rather than forcing users to remember exact values or field names, full-text search lets them describe what they’re looking for in natural terms, and still find it.
+This capability transforms a datastore into a search engine. Rather than forcing users to remember exact values or field names, full-text search lets them describe what they’re looking for in natural terms, and still find it.
 
 ## How Full-Text Search Works
 
@@ -18,7 +18,7 @@ Full-text search changes how text is represented so it can query it more effecti
 This process begins with text analysis, where raw text is transformed into a form that computers can index efficiently. The pipeline typically includes:
 
 1. Tokenization: Splitting text into discrete terms or tokens, such as words or phrases.
-1. Normalization: Lowercasing terms, removing punctuation and stop words, and often applying stemming so that "running," “ran," and “run" are treated as related.
+1. Normalization: Lowercasing terms, removing punctuation and stop words, and often applying stemming so that `running`, `ran`, and `run` are treated as related.
 1. Indexing: Storing each token alongside the documents that contain it in a structure called an inverted index that is optimised for answering "which documents contain this word?"
 
 When a user submits a query, the same analysis steps are applied to their search terms, which are then looked up in the index. Algorithms like [BM25](/learn/search-concepts/bm25) score and rank the resulting documents, balancing term frequency, document length, and how rare each term is in the corpus.
@@ -26,17 +26,20 @@ When a user submits a query, the same analysis steps are applied to their search
 Full-text search used these methods to capture linguistic variation, but its focus remains lexical: it matches words, not meanings. For systems that need to also search based on similar sematics a hybrid system that also uses vector search is commonly used.
 
 <Note>
-Systems like PostgreSQL, Elasticsearch, and ParadeDB manage this entire pipeline automatically, allowing developers to add high-quality search to their applications without reinventing the underlying mechanics.
+Systems like [Elasticsearch](https://github.com/elastic/elasticsearch), [Solr](https://github.com/apache/solr), and [ParadeDB](https://github.com/paradedb/paradedb) manage this entire pipeline automatically, allowing developers to add high-quality search to their applications without reinventing the underlying mechanics.
+
+[PostgreSQL](https://www.postgresql.org/) (without the [pg_search](https://github.com/paradedb/paradedb) extension) offers some of this functionality, stopping short at BM25 ranking.
 </Note>
 
 ## Beyond Simple Text Matching
 
 Full-text search provides much more than the ability to find exact matches. It introduces a set of features that make search both flexible and forgiving. This is especially important for real users who misspell words or can’t recall exact phrasing.
 
-- Fuzzy matching corrects small errors and typos, so a query for "databse" still returns “database."
-- Phrase search allows users to wrap terms in quotes, finding exact expressions like "machine learning" instead of treating “machine" and “learning" as separate keywords.
-- Boolean operators give power users fine-grained control with logic like python AND (api OR web), filtering results to match complex conditions.
+- Fuzzy matching corrects small errors and typos, so a query for `databse` still returns `database`.
+- Phrase search allows users to wrap terms in quotes, finding exact expressions like `machine learning` instead of treating `machine` and `learning` as separate keywords.
+- Boolean operators give power users fine-grained control with logic like `python AND (api OR web)`, filtering results to match complex conditions.
 - Field weighting acknowledges that some parts of a document matter more than others — a match in a title often carries more importance than one in the body text.
+- Promimity queries find words which are located close to other words (`dogs within 5 words of cats`).
 
 Together, these features make search systems more aligned with human expectations. Users can make mistakes, be imprecise, or mix and match concepts, and still find what they meant to search for.
 
@@ -62,7 +65,7 @@ SELECT * FROM articles
 WHERE title LIKE '%machine learning%
 ```
 
-This query can only match our exact sequence of characters. It misses relevant variations like "machine-learning techniques" or “learning algorithms for machines."
+This query can only match our exact sequence of characters. It misses relevant variations like `machine-learning techniques` or `learning algorithms for machines`.
 
 Using the pipeline discussed above full-text search handles these cases automatically through tokenization, stemming, and normalization. It can match words with similar forms and rank results by importance, rather than by raw text order.
 
