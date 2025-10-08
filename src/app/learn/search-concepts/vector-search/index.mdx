@@ -1,0 +1,113 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+Vector search focuses on finding similar content based on semantic meaning rather than exact keyword matches. Unlike traditional [full-text search](/learn/search-concepts/full-text-search) that asks "which documents contain these tokens?", vector search asks "which documents mean something similar to this?" 
+
+This semantic understanding makes it particularly valuable for natural language queries, content recommendation, and applications where meaning matters more than exact terminology.
+
+Vector search operates through three core components: **embedding generation**, **indexing**, and **querying**. Embedding generation converts text into numerical vectors, indexing stores these vectors in specialized data structures, and querying uses mathematical similarity calculations to find the most relevant content.
+
+<Note>
+  Vector search and vector indexes can be provided either by specialized Vector Databases (like [Pinecone](https://www.pinecone.io/) or [Qdrant](https://qdrant.tech/)), by search engines with vector indexes (like [Elasticsearch](https://github.com/elastic/elasticsearch)), or by general purpose databases with vector extensions (like [PostgreSQL](https://postgresql.org) with [pgvector](https://github.com/pgvector/pgvector)). 
+</Note>
+
+## Embedding Generation
+
+Embedding generation is the foundation that lets vector search appear to understand intent. Machine learning models convert text into dense numerical vectors that try to capture semantic meaning rather than just lexical content. This isn't an exact science, just as two people can have different understanding of sentences, so can different embedding models.
+
+### The Embedding Pipeline
+
+The embedding process transforms raw text into searchable vectors through several steps:
+
+1. **Text preprocessing:** Cleaning, normalizing, and chunking input text. Because embedding systems can't handle large documents, input text will be broken down into smaller chunks which will be embedded seperately.
+2. **Model inference:** Running chunks through local or remote embedding models to generate high-dimensional vectors.
+3. **Vector normalization:** Often normalizing vectors for consistent similarity calculations.
+
+All vector search systems must decide whether to run embedding models locally or use remote APIs. 
+
+- **Local models** like [BGE-M3](https://bge-model.com/bge/bge_m3.html) or open-source alternatives provide full control over latency, costs, and data privacy. You can optimize inference speed and avoid per-request API costs, but require computational resources and model management.
+
+- **Remote APIs** like OpenAI or Anthropic's embedding services offer convenience without infrastructure overhead. However, they introduce network latency, per-request costs, and potential privacy concerns when sending data to external services.
+
+Embedding generation speed directly affects user experience. Local models can be optimized for your hardware and batched for efficiency, while remote APIs face network round-trip delays. For real-time applications, embedding pre-computation or caching strategies become essential regardless of the approach.
+
+The model's dimensionality also impacts both embedding speed and storage requirements: higher dimensions often mean better accuracy, but bring increased computational and storage costs.
+
+## Indexing
+
+Indexing stores the generated vectors in data structures optimized for fast similarity search. Unlike traditional search that builds inverted indexes of terms, vector search creates specialized indexes for high-dimensional numerical data. These indexes allow queries to efficiently find similar vectors without comparing every vector pair. Different indexing strategies optimize for various performance characteristics:
+
+- **HNSW (Hierarchical Navigable Small World):** Builds multi-layer graph structure for fast approximate search with good recall
+- **IVF (Inverted File Index):** Partitions vectors into clusters using k-means, searches only relevant clusters  
+- **DiskANN:** Optimized for SSD storage, enables vector search on datasets larger than RAM
+
+Many other index types exist for specialized use cases, each balancing search speed, accuracy, and memory requirements.
+
+### Example: Building a Vector Index
+
+Consider indexing two simple documents:
+
+| **ID** | **Text** |
+| --- | --- |
+| 1 | "machine learning tutorial" |
+| 2 | "AI programming guide" |
+
+After embedding generation, each document becomes a high-dimensional vector:
+
+| **Document** | **Vector (simplified 3D representation)** |
+| --- | --- |
+| 1 | `[0.8, 0.3, 0.1]` |
+| 2 | `[0.7, 0.4, 0.2]` |
+
+The vector index stores these vectors alongside their document IDs, optimized for fast similarity search operations. The choice of index type (HNSW, IVF, etc.) determines how these vectors are organized and accessed during search.
+
+## Querying
+
+Vector search converts user queries into vectors and finds the most similar documents through mathematical distance calculations.
+
+The process is straightforward: convert the query to a vector using the same embedding model, calculate similarity scores against all indexed vectors, and return results ranked by similarity.
+
+**Similarity measures** determine how close vectors are to each other:
+
+- **Cosine similarity:** Measures angle between vectors (most common)
+- **Dot product:** Considers both angle and magnitude
+- **Euclidean distance:** Straight-line distance in vector space
+
+Vector search systems often provide additional query capabilities like filtering by metadata, approximate search for speed, and threshold filtering to ensure quality results. 
+
+It's important to note that vector systems have no concept of tokens or words, so concepts like exact matching and proximity don't exist. The correctness of the results also relies on the embedding model's semantic understanding matching the end users. 
+
+## Where Vector Search Excels
+
+Vector search excels in applications where semantic understanding provides clear advantages:
+
+- **Content recommendation:** Find conceptually similar content regardless of exact wording
+- **Semantic search:** Natural language queries like "Why is my website slow?" find articles about optimization, performance, and CDNs
+- **Retrieval-Augmented Generation (RAG):** Find relevant context documents for language models to provide accurate, grounded responses
+- **Multimodal applications:** Visual similarity search, cross-modal search between text and images, audio/video content matching
+
+## When Vector Search Is Not Enough
+
+While vector search excels at semantic similarity, it has limitations when users need exact keyword matching or precise terminology:
+
+- **Exact keyword requirements:** Product codes, technical specifications, or proper names often require precise lexical matching.
+- **Positional queries:** Vector indexes have no concept of words or position in the document.
+
+Vector search also requires more storage space and computational power than traditional search, even at query time embedding generation and similarity calculations can introduce significant latency when compared to [BM25](/learn/search-concepts/bm25).
+
+In some scenarios, **[hybrid search](/learn/search-concepts/hybrid-search)** approaches that combine both vector and traditional [full-text search](/learn/search-concepts/full-text-search) often provide the best solution:
+- Full-text search for precise keyword matching and boolean logic
+- Vector search for semantic similarity and concept-based retrieval  
+- Ranking algorithms like [Reciprocal Rank Fusion](/learn/search-concepts/reciprocal-rank-fusion) that blend both approaches for optimal relevance
+
+## Summary
+
+Vector search represents a divergent advancement in information retrieval, enabling the discovery of semantically similar content by representing data as high-dimensional numerical vectors and using mathematical similarity measures for retrieval. This approach excels at understanding meaning and context, but can't search for exact words or phrases.
+
+The technology has become essential for recommendation systems and semantic search implementations that require nuanced understanding of content relationships. 
