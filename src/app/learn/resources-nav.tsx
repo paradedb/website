@@ -68,9 +68,7 @@ export function ResourcesNav({ resourceSections }: ResourcesNavProps) {
                       )}
                     >
                       <div className="flex flex-col">
-                        <span className="text-sm font-medium">
-                          {item.name}
-                        </span>
+                        <span className="text-sm font-medium">{item.name}</span>
                         <span className="text-xs text-gray-500 capitalize">
                           {item.type}
                         </span>

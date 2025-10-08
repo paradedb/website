@@ -6,10 +6,10 @@ import Link from "next/link";
 export default async function Resources() {
   const resourceSections = await getResourcesBySection();
   const allResources = await getResourceLinks();
-  
+
   // Sort all resources by date (most recent first)
   const sortedResources = allResources.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 
   return (

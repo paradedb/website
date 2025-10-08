@@ -30,8 +30,13 @@ export default function ResourcesLayoutClient({
 
   // Find current resource info for breadcrumbs
   const currentResource = resourceSections
-    .flatMap(section => section.resources.map(resource => ({ ...resource, sectionName: section.name })))
-    .find(resource => pathname.endsWith(resource.href));
+    .flatMap((section) =>
+      section.resources.map((resource) => ({
+        ...resource,
+        sectionName: section.name,
+      })),
+    )
+    .find((resource) => pathname.endsWith(resource.href));
 
   return (
     <div className="mx-auto flex max-w-6xl md:mt-12">
@@ -102,7 +107,10 @@ export default function ResourcesLayoutClient({
         {/* Mobile back navigation */}
         {currentResource && (
           <nav className="lg:hidden mb-4">
-            <a href="/learn" className="flex items-center text-sm text-gray-600 hover:text-indigo-600">
+            <a
+              href="/learn"
+              className="flex items-center text-sm text-gray-600 hover:text-indigo-600"
+            >
               <span className="mr-2">←</span>
               Learn
             </a>
