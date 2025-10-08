@@ -7,14 +7,20 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-Vector search focuses on finding similar content based on semantic meaning rather than exact keyword matches. Unlike traditional [full-text search](/learn/search-concepts/full-text-search) that asks "which documents contain these tokens?", vector search asks "which documents mean something similar to this?" 
+Vector search focuses on finding similar content based on semantic meaning rather than exact keyword matches. Unlike traditional [full-text search](/learn/search-concepts/full-text-search) that asks "which documents contain these tokens?", vector search asks "which documents mean something similar to this?"
 
 This semantic understanding makes it particularly valuable for natural language queries, content recommendation, and applications where meaning matters more than exact terminology.
 
 Vector search operates through three core components: **embedding generation**, **indexing**, and **querying**. Embedding generation converts text into numerical vectors, indexing stores these vectors in specialized data structures, and querying uses mathematical similarity calculations to find the most relevant content.
 
 <Note>
-  Vector search and vector indexes can be provided either by specialized Vector Databases (like [Pinecone](https://www.pinecone.io/) or [Qdrant](https://qdrant.tech/)), by search engines with vector indexes (like [Elasticsearch](https://github.com/elastic/elasticsearch)), or by general purpose databases with vector extensions (like [PostgreSQL](https://postgresql.org) with [pgvector](https://github.com/pgvector/pgvector)). 
+  Vector search and vector indexes can be provided either by specialized Vector
+  Databases (like [Pinecone](https://www.pinecone.io/) or
+  [Qdrant](https://qdrant.tech/)), by search engines with vector indexes (like
+  [Elasticsearch](https://github.com/elastic/elasticsearch)), or by general
+  purpose databases with vector extensions (like
+  [PostgreSQL](https://postgresql.org) with
+  [pgvector](https://github.com/pgvector/pgvector)).
 </Note>
 
 ## Embedding Generation
@@ -29,7 +35,7 @@ The embedding process transforms raw text into searchable vectors through severa
 2. **Model inference:** Running chunks through local or remote embedding models to generate high-dimensional vectors.
 3. **Vector normalization:** Often normalizing vectors for consistent similarity calculations.
 
-All vector search systems must decide whether to run embedding models locally or use remote APIs. 
+All vector search systems must decide whether to run embedding models locally or use remote APIs.
 
 - **Local models** like [BGE-M3](https://bge-model.com/bge/bge_m3.html) or open-source alternatives provide full control over latency, costs, and data privacy. You can optimize inference speed and avoid per-request API costs, but require computational resources and model management.
 
@@ -44,7 +50,7 @@ The model's dimensionality also impacts both embedding speed and storage require
 Indexing stores the generated vectors in data structures optimized for fast similarity search. Unlike traditional search that builds inverted indexes of terms, vector search creates specialized indexes for high-dimensional numerical data. These indexes allow queries to efficiently find similar vectors without comparing every vector pair. Different indexing strategies optimize for various performance characteristics:
 
 - **HNSW (Hierarchical Navigable Small World):** Builds multi-layer graph structure for fast approximate search with good recall
-- **IVF (Inverted File Index):** Partitions vectors into clusters using k-means, searches only relevant clusters  
+- **IVF (Inverted File Index):** Partitions vectors into clusters using k-means, searches only relevant clusters
 - **DiskANN:** Optimized for SSD storage, enables vector search on datasets larger than RAM
 
 Many other index types exist for specialized use cases, each balancing search speed, accuracy, and memory requirements.
@@ -53,17 +59,17 @@ Many other index types exist for specialized use cases, each balancing search sp
 
 Consider indexing two simple documents:
 
-| **ID** | **Text** |
-| --- | --- |
-| 1 | "machine learning tutorial" |
-| 2 | "AI programming guide" |
+| **ID** | **Text**                    |
+| ------ | --------------------------- |
+| 1      | "machine learning tutorial" |
+| 2      | "AI programming guide"      |
 
 After embedding generation, each document becomes a high-dimensional vector:
 
 | **Document** | **Vector (simplified 3D representation)** |
-| --- | --- |
-| 1 | `[0.8, 0.3, 0.1]` |
-| 2 | `[0.7, 0.4, 0.2]` |
+| ------------ | ----------------------------------------- |
+| 1            | `[0.8, 0.3, 0.1]`                         |
+| 2            | `[0.7, 0.4, 0.2]`                         |
 
 The vector index stores these vectors alongside their document IDs, optimized for fast similarity search operations. The choice of index type (HNSW, IVF, etc.) determines how these vectors are organized and accessed during search.
 
@@ -79,9 +85,9 @@ The process is straightforward: convert the query to a vector using the same emb
 - **Dot product:** Considers both angle and magnitude
 - **Euclidean distance:** Straight-line distance in vector space
 
-Vector search systems often provide additional query capabilities like filtering by metadata, approximate search for speed, and threshold filtering to ensure quality results. 
+Vector search systems often provide additional query capabilities like filtering by metadata, approximate search for speed, and threshold filtering to ensure quality results.
 
-It's important to note that vector systems have no concept of tokens or words, so concepts like exact matching and proximity don't exist. The correctness of the results also relies on the embedding model's semantic understanding matching the end users. 
+It's important to note that vector systems have no concept of tokens or words, so concepts like exact matching and proximity don't exist. The correctness of the results also relies on the embedding model's semantic understanding matching the end users.
 
 ## Where Vector Search Excels
 
@@ -102,12 +108,13 @@ While vector search excels at semantic similarity, it has limitations when users
 Vector search also requires more storage space and computational power than traditional search, even at query time embedding generation and similarity calculations can introduce significant latency when compared to [BM25](/learn/search-concepts/bm25).
 
 In some scenarios, **[hybrid search](/learn/search-concepts/hybrid-search)** approaches that combine both vector and traditional [full-text search](/learn/search-concepts/full-text-search) often provide the best solution:
+
 - Full-text search for precise keyword matching and boolean logic
-- Vector search for semantic similarity and concept-based retrieval  
+- Vector search for semantic similarity and concept-based retrieval
 - Ranking algorithms like [Reciprocal Rank Fusion](/learn/search-concepts/reciprocal-rank-fusion) that blend both approaches for optimal relevance
 
 ## Summary
 
 Vector search represents a divergent advancement in information retrieval, enabling the discovery of semantically similar content by representing data as high-dimensional numerical vectors and using mathematical similarity measures for retrieval. This approach excels at understanding meaning and context, but can't search for exact words or phrases.
 
-The technology has become essential for recommendation systems and semantic search implementations that require nuanced understanding of content relationships. 
+The technology has become essential for recommendation systems and semantic search implementations that require nuanced understanding of content relationships.
