@@ -1,0 +1,155 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+[Reciprocal Rank Fusion](https://plg.uwaterloo.ca/%7Egvcormac/cormacksigir09-rrf.pdf) (RRF) is a technique for combining multiple ranked lists of search results into a single ranking. Originally developed for information retrieval research, RRF has become essential in modern search systems to allow ranking across multiple retrieval methods, such as combining lexical and semantic search results in hybrid search applications.
+
+RRF's elegance lies in its simplicity: rather than normalizing scores within each scoring system, it works directly with document positions in the ranked lists.
+
+## How RRF Works
+
+RRF operates on a simple principle: documents that appear highly ranked across multiple search methods are likely to be genuinely relevant.
+
+The standard RRF formula treats all ranking sources equally, but _Weighted RRF_ allows you to assign different weights to each method.
+
+For example, when combining BM25 and vector search you might assign weights of 1.0 and 0.7 respectively to show that you value lexical over semantic meaning.
+
+$$
+\text{WeightedRRF}(d) = \sum_{r \in R} w_r \cdot \frac{1}{k + rank_r(d)}
+$$
+
+Where
+
+- $d$ is a document
+- $R$ is the set of ranked lists
+- $rank_r(d)$ is the rank of document $d$ in ranking $r$
+- $w_r$ is the weight for ranking $r$ (typically between 0 and 1). In non-weighted/traditional RRF this is always 1.
+- $k$ is a constant (typically 60) that controls the fusion behavior
+
+The fusion process works as follows:
+
+1. Start with multiple ranked lists from different retrieval methods (discard the actual ranking numbers).
+1. Calculate RRF scores for each document that appears in any list and multiply by the weight (if used).
+1. Merge all documents and sort by their combined RRF scores
+
+Documents missing from a ranking contribute zero to that ranking's sum.
+
+<Note>
+  The constant $k=60$ is almost always used because it has been empirically shown to work well across different datasets.
+
+$k$ can be tuned based on your specific use case and data characteristics. Lower values (20-40) will give top results more influence, higher values (80-100) will give a more gradual contribution difference.
+
+</Note>
+
+## Why RRF Works Well
+
+RRF has three key strengths:
+
+- **Simplicity:** No training data, complex optimization, or normalization required. Easy to implement and fast to compute.
+- **Robustness:** Works with different score scales without normalization. Handles partial results gracefully.
+- **Effectiveness:** Often outperforms more sophisticated fusion techniques, especially when combining complementary methods.
+
+Research consistently shows RRF's effectiveness when combining different retrieval approaches like keyword search with semantic similarity.
+
+## When to Use RRF
+
+While RRF can be used any time there are multiple scoring systems which need to be combined in a single query it excels in several scenarios:
+
+**Hybrid Search Systems**
+Combining lexical search ([BM25](/learn/search-concepts/bm25)) with semantic vector search:
+
+- BM25 finds specific keywords and technical terms
+- Vector search captures conceptual similarity
+- RRF harnesses both strengths
+
+**Multi-Field Search**
+Search across different document parts with separate rankings:
+
+- Title search results
+- Body content results
+- Metadata results
+
+**Personalization**
+Merge general relevance with personalized signals based on user behavior or preferences.
+
+## Example: RRF in Action
+
+Consider a search for `machine learning tutorial` using both lexical and semantic search:
+
+**Lexical Search Results:**
+
+1. "Complete Machine Learning Tutorial Guide"
+2. "Tutorial: Introduction to ML Algorithms"
+3. "Python Machine Learning Handbook"
+
+**Semantic Search Results:**
+
+1. "AI and Deep Learning Fundamentals"
+2. "Complete Machine Learning Tutorial Guide"
+3. "Beginner's Guide to Neural Networks"
+
+**RRF Calculation (k=60):**
+
+- "Complete ML Tutorial" appears in both lists (rank 1 and 2): `1/61 + 1/62 = 0.0326`
+- "AI and Deep Learning" appears only in semantic (rank 1): `1/61 = 0.0164`
+- "Tutorial: Intro to ML" appears only in lexical (rank 2): `1/62 = 0.0161`
+
+Weights allow you to emphasize one retrieval method over another. For instance, in a hybrid setup:
+
+- BM25 might have a weight of 1.0 for lexical precision.
+- A vector search model might have 0.7 for semantic similarity.
+
+The effect is simple but powerful: RRF still rewards agreement across rankers, but weights let you encode which signals you trust most. This makes weighted RRF especially useful in production systems where retrieval sources vary in quality or purpose.
+
+## Implementation in SQL
+
+A variety of databases and search engines have pre-implemented RRF, but it's a very simple formula and can be easily demonstrated in SQL as follows:
+
+```sql
+WITH
+--- Full-text search, using pg_search and BM25 for ranking
+fulltext AS
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
+  FROM mock_items
+  WHERE description @@@ 'keyboard'
+  LIMIT 20
+),
+
+--- Semantic search, using pgvector and cosine distance for ranking
+semantic AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+  FROM mock_items
+  LIMIT 20
+),
+
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 1.0 / (60 + r) AS s FROM fulltext, params
+  UNION ALL
+  SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
+)
+
+-- Sum the RRF scores, order by them, and join back the original data
+SELECT
+  m.id,
+  SUM(s) AS score,
+  m.description
+FROM rrf
+JOIN mock_items AS m USING (id)
+GROUP BY m.id, m.description
+ORDER BY score DESC
+LIMIT 5;
+```
+
+## Summary
+
+Reciprocal Rank Fusion provides an elegant solution for combining multiple search rankings without the complexity that comes from score based systems. Its simplicity, robustness, and proven effectiveness make it the standard approach for hybrid search systems that need to merge results from different retrieval techniques.
