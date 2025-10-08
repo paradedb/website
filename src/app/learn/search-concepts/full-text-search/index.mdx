@@ -26,19 +26,25 @@ The indexing process begins with text analysis, where raw text is transformed in
 3. **Indexing:** Storing each token alongside the documents that contain it in a structure called an inverted index.
 
 <Note>
-Systems like [Elasticsearch](https://github.com/elastic/elasticsearch), [Solr](https://github.com/apache/solr), [ParadeDB](https://github.com/paradedb/paradedb), and [PostgreSQL](https://postgresql.org) (either with tsvector or pg_search) manage this entire pipeline automatically, allowing developers to add high-quality search to their applications without reinventing the underlying mechanics.
+  Systems like [Elasticsearch](https://github.com/elastic/elasticsearch),
+  [Solr](https://github.com/apache/solr),
+  [ParadeDB](https://github.com/paradedb/paradedb), and
+  [PostgreSQL](https://postgresql.org) (either with tsvector or pg_search)
+  manage this entire pipeline automatically, allowing developers to add
+  high-quality search to their applications without reinventing the underlying
+  mechanics.
 </Note>
-
 
 ### Inverted Indexes
 
 The foundation of full-text search is the [inverted index](https://en.wikipedia.org/wiki/Inverted_index), a data structure that enables very fast lookups by reversing the usual document-to-terms relationship.
 
-Instead of asking *"what terms appear in this document?"*, an inverted index can be used to answer *"which documents contain this term?"*
+Instead of asking _"what terms appear in this document?"_, an inverted index can be used to answer _"which documents contain this term?"_
 
 The core structure is a dictionary where each term maps to a postings list, describing every document that contains the term.
 
 Each entry in a postings list typically includes:
+
 - The **document ID**
 - The **term frequency** (how often the term appears in that document)
 - Optionally, the **positions** where the term occurs (enabling phrase and proximity queries)
@@ -47,26 +53,27 @@ Each entry in a postings list typically includes:
 
 Consider indexing two simple documents:
 
-| **ID** | **Text** |
-| --- | --- |
-| 1 | "PostgreSQL supports search" |
-| 2 | "Search engines use indexes" |
+| **ID** | **Text**                     |
+| ------ | ---------------------------- |
+| 1      | "PostgreSQL supports search" |
+| 2      | "Search engines use indexes" |
 
 After tokenization and normalization, the inverted index looks like this:
 
-| **Term** | **Postings List** |
-| --- | --- |
-| postgresql | `[(1, tf=1, pos=[0])]` |
-| supports | `[(1, tf=1, pos=[1])]` |
-| search | `[(1, tf=1, pos=[2]), (2, tf=1, pos=[0])]` |
-| engines | `[(2, tf=1, pos=[1])]` |
-| indexes | `[(2, tf=1, pos=[3])]` |
+| **Term**   | **Postings List**                          |
+| ---------- | ------------------------------------------ |
+| postgresql | `[(1, tf=1, pos=[0])]`                     |
+| supports   | `[(1, tf=1, pos=[1])]`                     |
+| search     | `[(1, tf=1, pos=[2]), (2, tf=1, pos=[0])]` |
+| engines    | `[(2, tf=1, pos=[1])]`                     |
+| indexes    | `[(2, tf=1, pos=[3])]`                     |
 
 When you search for "search", the system looks up the term and finds documents `[1, 2]` without scanning any text.
 
 #### Performance Benefits
 
 Inverted indexes provide:
+
 - **Fast retrieval:** $O(1)$ term lookup followed by efficient postings list intersection
 - **Space efficiency:** Each unique stemmed term stored only once, regardless of corpus size
 - **Flexible scoring:** Rich statistics support advanced ranking algorithms
@@ -122,6 +129,7 @@ Consider these scenarios where traditional full-text search struggles:
 For these use cases, **vector search** provides a complementary approach. Vector search represents text as high-dimensional vectors that capture semantic meaning, allowing searches based on conceptual similarity rather than exact keyword matches.
 
 Many modern search systems use **hybrid approaches** that combine both full-text and vector search:
+
 - Full-text search for precise keyword matching and boolean logic
 - Vector search for semantic similarity and concept-based retrieval
 - Ranking algorithms that blend both approaches for optimal relevance
