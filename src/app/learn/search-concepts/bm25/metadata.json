@@ -3,7 +3,7 @@
   "date": "2024-10-05T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
   "description": "Learn about BM25, the ranking algorithm that powers modern search engines.",
-  "order": 1,
+  "order": 3,
   "hideHeroImage": true,
   "hideAuthor": true
 }
