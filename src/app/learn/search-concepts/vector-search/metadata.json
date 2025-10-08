@@ -1,0 +1,9 @@
+{
+  "title": "What is Vector Search?",
+  "date": "2024-10-06T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Learn about vector search, how it enables semantic similarity matching using high-dimensional embeddings.",
+  "order": 5,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}
