@@ -96,7 +96,7 @@ Different query types use inverted indexes in different ways:
 
 Full-text search provides much more than the ability to find exact matches. It introduces a set of features that make search both flexible and forgiving:
 
-- **Fuzzy matching** corrects small errors and typos, so a query for `databse` still returns `database`.
+- **Fuzzy matching** corrects small errors and typos, so a query for `databse` still returns `database`. {/* * codespell:ignore databse * */}
 - **Boolean operators** give power users fine-grained control with logic like `python AND (api OR web)`, filtering results to match complex conditions.
 - **Field weighting** acknowledges that some parts of a document matter more than others—a match in a title often carries more importance than one in the body text.
 - **Proximity queries** find words that are located close to other words (`dogs within 5 words of cats`).
