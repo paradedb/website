@@ -14,9 +14,9 @@ This semantic understanding makes it particularly valuable for natural language 
 Vector search operates through three core components: **embedding generation**, **indexing**, and **querying**. Embedding generation converts text into numerical vectors, indexing stores these vectors in specialized data structures, and querying uses mathematical similarity calculations to find the most relevant content.
 
 <Note>
-  Vector search and vector indexes can be provided either by specialized Vector
-  Databases (like [Pinecone](https://www.pinecone.io/) or
-  [Qdrant](https://qdrant.tech/)), by search engines with vector indexes (like
+  Vector search and vector indexes can be provided either by specialized vector
+  databases (like [Pinecone](https://www.pinecone.io/) or, by search engines
+  with vector indexes (like
   [Elasticsearch](https://github.com/elastic/elasticsearch)), or by general
   purpose databases with vector extensions (like
   [PostgreSQL](https://postgresql.org) with
@@ -105,7 +105,7 @@ While vector search excels at semantic similarity, it has limitations when users
 - **Exact keyword requirements:** Product codes, technical specifications, or proper names often require precise lexical matching.
 - **Positional queries:** Vector indexes have no concept of words or position in the document.
 
-Vector search also requires more storage space and computational power than traditional search, even at query time embedding generation and similarity calculations can introduce significant latency when compared to [BM25](/learn/search-concepts/bm25).
+Vector search requires more storage and compute resources than traditional search. Even at query time, generating embeddings and computing similarity scores can add noticeable latency compared to [BM25](/learn/search-concepts/bm25).
 
 In many scenarios, **[hybrid search](/learn/search-concepts/hybrid-search)** approaches that combine both vector and traditional [full-text search](/learn/search-concepts/full-text-search) often provide the best solution:
 
