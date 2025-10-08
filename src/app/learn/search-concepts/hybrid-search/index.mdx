@@ -1,0 +1,76 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+Hybrid search combines [full-text search](/learn/search-concepts/full-text-search) and [vector search](/learn/search-concepts/vector-search) to deliver both precise keyword matching and semantic understanding in a single query. This approach solves the fundamental trade-off between finding exact terms and discovering conceptually related content, making it particularly valuable for applications where users express queries in diverse ways but expect comprehensive, relevant results.
+
+## Why Combine Search Methods?
+
+Each search approach has distinct strengths and weaknesses that make combination valuable:
+
+- [Full-text search](/learn/search-concepts/full-text-search) relies on exact keyword matching and struggles when users express concepts differently than documents. A search for "automobile" won't find documents about "cars" unless explicit synonyms are configured. Technical terms, product codes, and precise specifications work well, but natural language queries often fail to match semantically related content.
+- [Vector search](/learn/search-concepts/vector-search) understands semantic relationships but may miss critical exact matches. Searching for a specific product model like "iPhone 15 Pro" might return results about "premium smartphones" that are semantically similar but factually incorrect. Product codes, technical specifications, and precise terminology can be overlooked in favor of conceptually related but wrong results.
+
+## Combining Rankings
+
+The core challenge in hybrid search is combining scores from different ranking algorithms. [Full-text search](/learn/search-concepts/full-text-search) systems like [BM25](/learn/search-concepts/bm25) produce relevance scores based on term frequency and document statistics, while [vector search](/learn/search-concepts/vector-search) generates similarity scores from mathematical distance calculations. These scores operate on different scales and can't be directly combined.
+
+[Reciprocal Rank Fusion](/learn/search-concepts/reciprocal-rank-fusion) (RRF) is one way of solving this problem. Instead of trying to normalize different scoring systems, RRF assigns scores based on where documents appear in each ranked list. Documents that rank highly in both search methods receive the highest combined scores.
+
+<Note>
+  For a full discussion of RRF, including why it works, how it can be weighted,
+  and a working SQL example, see our [Reciprocal Rank
+  Fusion](/learn/search-concepts/reciprocal-rank-fusion) article.
+</Note>
+
+## Query Processing in Hybrid Systems
+
+Hybrid search systems process queries through processing pipelines that can execute simultaneously:
+
+1. **Text processing:** The query undergoes traditional text analysis (tokenization, stemming, and stopword removal) before matching against the inverted index using algorithms like [BM25](/learn/search-concepts/bm25)
+2. **Vector generation:** The same query is converted into a dense vector embedding using machine learning models, then compared against document embeddings using similarity metrics like cosine distance
+3. **Result fusion:** Both result sets are combined using techniques like [Reciprocal Rank Fusion](/learn/search-concepts/reciprocal-rank-fusion) to produce a unified ranking
+
+This parallel processing allows hybrid systems to capture different aspects of relevance. A query for "wireless headphones with noise cancellation" will match documents containing those exact terms while also finding content about "Bluetooth earbuds with ANC" that shares semantic meaning but uses different terminology. {\*\* codespell:ignore anc \*\*\}
+
+## Implementation Considerations
+
+Building effective hybrid search requires careful attention to several technical factors:
+
+- **Index synchronization** ensures that text and vector indexes remain consistent as documents are added, updated, or deleted. Inconsistencies between indexes can cause confusing results where documents appear in one search method but not the other.
+- **Embedding model selection** significantly impacts semantic search quality. Models trained on domain-specific data typically outperform general-purpose models for specialized applications. A medical search system benefits from embeddings trained on medical literature rather than general web content.
+- **Fusion weight tuning** requires experimentation with real user queries and feedback. The relative weighting between text and vector search depends on user behavior. Technical users might prefer exact keyword matching, while casual users benefit from semantic flexibility.
+
+## When Hybrid Search Excels
+
+Hybrid search provides clear advantages in applications requiring both precision and semantic understanding:
+
+- **E-commerce search:** Find exact product names and models while understanding descriptive queries like "comfortable running shoes"
+- **Technical documentation:** Match precise API names and error codes while finding conceptually related troubleshooting content
+- **Enterprise search:** Locate specific documents by title or ID while discovering semantically related information across different departments
+- **Customer support:** Match exact error messages while understanding natural language problem descriptions
+- **Academic research:** Find papers with specific methodologies while discovering conceptually related work using different terminology
+
+In each case, users benefit from both the precision of keyword matching and the flexibility of semantic understanding.
+
+## Limitations
+
+While hybrid search offers superior relevance, it introduces significant complexity:
+
+- **Computational overhead:** Running both [full-text](/learn/search-concepts/full-text-search) and [vector search](/learn/search-concepts/vector-search) simultaneously doubles computational requirements and storage needs
+- **Implementation complexity:** Managing two different indexing systems, keeping them synchronized, and tuning fusion parameters requires substantial engineering effort
+- **Query latency:** Processing queries through multiple systems and combining results can increase response times
+- **Cost implications:** Maintaining both keyword indexes and vector embeddings significantly increases infrastructure costs
+
+For many applications, a single search method may provide sufficient results with much lower complexity. Hybrid search makes sense when the improved relevance justifies the additional overhead.
+
+## Summary
+
+Hybrid search represents the current state-of-the-art in information retrieval by combining the precision of [full-text search](/learn/search-concepts/full-text-search) with the semantic understanding of [vector search](/learn/search-concepts/vector-search).
+
+While the added complexity and computational overhead are significant, if they are tuned well hybrid systems can deliver superior relevance across diverse query types.
