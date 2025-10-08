@@ -28,8 +28,8 @@ The indexing process begins with text analysis, where raw text is transformed in
 <Note>
   Systems like [Elasticsearch](https://github.com/elastic/elasticsearch),
   [Solr](https://github.com/apache/solr),
-  [ParadeDB](https://github.com/paradedb/paradedb), and
-  [PostgreSQL ts_vector](https://www.postgresql.org/docs/current/datatype-textsearch.html)
+  [ParadeDB](https://github.com/paradedb/paradedb), and [PostgreSQL
+  ts_vector](https://www.postgresql.org/docs/current/datatype-textsearch.html)
   manage this entire pipeline automatically, allowing developers to add
   high-quality search to their applications without reinventing the underlying
   mechanics.
@@ -58,7 +58,7 @@ Consider indexing two simple documents:
 | 1      | "PostgreSQL supports search" |
 | 2      | "Search engines use indexes" |
 
-After tokenization and normalization, the inverted index looks like this:
+After tokenization and normalization, the inverted index looks like this (using an [english language tokenizer](https://docs.paradedb.com/documentation/indexing/tokenizers#default) with no stemming):
 
 | **Term**   | **Postings List**                          |
 | ---------- | ------------------------------------------ |
@@ -84,6 +84,9 @@ Modern implementations include optimizations like compression, skip lists, and i
 
 Once text is indexed, querying provides flexible ways to retrieve and rank relevant documents. When a user submits a query, the same analysis steps used during indexing are applied to their search terms, which are then looked up in the index.
 
+Modern search engines provide powerful query builder APIs that allow developers to programmatically construct complex search queries and integrate business logic directly into their search
+operations. This pushes as much work as possible down into the query engine (where it can happen the most efficiently), so the client doesn’t have to post-filter or reprocess results.
+
 ### Query Types and Processing
 
 Different query types use inverted indexes in different ways:
@@ -108,12 +111,22 @@ Full-text search becomes essential whenever large volumes of unstructured or sem
 
 Some common examples include:
 
+### Content and Communication Search
+
 - **Content discovery:** Searching across articles, blog posts, or documentation pages
 - **Communication search:** Navigating chat histories, emails, or support tickets
 - **E-commerce:** Product catalogs where users search by description, features, or brand names
-- **Technical data exploration:** Searching source code, configuration files, or log data for specific patterns
 
-In these workloads, users aren't just filtering—they're searching. They know what they want to find conceptually but not exactly where it's stored. Full-text search bridges that gap by turning text into a structured, ranked representation of meaning.
+### Technical Search
+
+- **Code search:** Finding functions, variables, or patterns across codebases
+- **Log search:** Analyzing application logs, error messages, and system events for debugging and monitoring
+
+### AI and Machine Learning
+
+- **Retrieval Augmented Generation (RAG):** Powering AI systems that need to find relevant context from knowledge bases before generating responses
+
+In all of these workloads, users aren't just filtering, they're searching. They know what they want to find conceptually but not exactly where it's stored. Full-text search bridges that gap by turning text into a structured, ranked representation of meaning.
 
 ## When Full-Text Search Is Not Enough
 
@@ -122,7 +135,6 @@ While full-text search excels at lexical matching, it has limitations when users
 Consider these scenarios where traditional full-text search struggles:
 
 - **Semantic similarity:** A search for "automobile" won't match documents about "cars" unless explicit synonyms are configured
-- **Conceptual queries:** Searching for "happy" won't find documents about "joyful" or "cheerful" unless those exact terms appear
 - **Cross-language search:** Keywords in one language won't match semantically equivalent content in another language
 - **Domain-specific terminology:** Technical concepts may be expressed differently across documents but carry the same meaning
 
