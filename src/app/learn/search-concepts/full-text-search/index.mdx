@@ -1,0 +1,153 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+[Full-text search](https://en.wikipedia.org/wiki/Full-text_search) (FTS) is designed to find documents based on the words they contain rather than just structured fields or metadata. It brings intelligence to text retrieval by analyzing and indexing language, allowing queries to return results ranked by relevance instead of simple matches.
+
+This capability transforms a datastore into a search engine. Rather than forcing users to remember exact values or field names, full-text search lets them describe what they're looking for in natural terms, and still find it.
+
+Full-text search operates through two core components: **indexing** and **querying**. Indexing transforms raw text into structured, searchable data, while querying provides flexible ways to retrieve and rank relevant documents.
+
+## Indexing
+
+Indexing is the foundation of full-text search performance. Instead of storing entire documents as opaque blocks that must be scanned linearly, indexing decomposes them into smaller, searchable parts and rebuilds them into structures optimized for retrieval.
+
+### Text Analysis Pipeline
+
+The indexing process begins with text analysis, where raw text is transformed into a form that computers can index efficiently. The pipeline typically includes:
+
+1. **Tokenization:** Splitting text into discrete terms or tokens, such as words or phrases.
+2. **Normalization:** Lowercasing terms, removing punctuation and stop words, and often applying stemming so that `running`, `ran`, and `run` are treated as related.
+3. **Indexing:** Storing each token alongside the documents that contain it in a structure called an inverted index.
+
+<Note>
+  Systems like [Elasticsearch](https://github.com/elastic/elasticsearch),
+  [Solr](https://github.com/apache/solr),
+  [ParadeDB](https://github.com/paradedb/paradedb), and [PostgreSQL
+  ts_vector](https://www.postgresql.org/docs/current/datatype-textsearch.html)
+  manage this entire pipeline automatically, allowing developers to add
+  high-quality search to their applications without reinventing the underlying
+  mechanics.
+</Note>
+
+### Inverted Indexes
+
+The foundation of full-text search is the [inverted index](https://en.wikipedia.org/wiki/Inverted_index), a data structure that enables very fast lookups by reversing the usual document-to-terms relationship.
+
+Instead of asking _"what terms appear in this document?"_, an inverted index can be used to answer _"which documents contain this term?"_
+
+The core structure is a dictionary where each term maps to a postings list, describing every document that contains the term.
+
+Each entry in a postings list typically includes:
+
+- The **document ID**
+- The **term frequency** (how often the term appears in that document)
+- Optionally, the **positions** where the term occurs (enabling phrase and proximity queries)
+
+#### Example: Building an Inverted Index
+
+Consider indexing two simple documents:
+
+| **ID** | **Text**                     |
+| ------ | ---------------------------- |
+| 1      | "PostgreSQL supports search" |
+| 2      | "Search engines use indexes" |
+
+After tokenization and normalization, the inverted index looks like this (using an [english language tokenizer](https://docs.paradedb.com/documentation/indexing/tokenizers#default) with no stemming):
+
+| **Term**   | **Postings List**                          |
+| ---------- | ------------------------------------------ |
+| postgresql | `[(1, tf=1, pos=[0])]`                     |
+| supports   | `[(1, tf=1, pos=[1])]`                     |
+| search     | `[(1, tf=1, pos=[2]), (2, tf=1, pos=[0])]` |
+| engines    | `[(2, tf=1, pos=[1])]`                     |
+| indexes    | `[(2, tf=1, pos=[3])]`                     |
+
+When you search for "search", the system looks up the term and finds documents `[1, 2]` without scanning any text.
+
+#### Performance Benefits
+
+Inverted indexes provide:
+
+- **Fast retrieval:** $O(1)$ term lookup followed by efficient postings list intersection
+- **Space efficiency:** Each unique stemmed term stored only once, regardless of corpus size
+- **Flexible scoring:** Rich statistics support advanced ranking algorithms
+
+Modern implementations include optimizations like compression, skip lists, and index partitioning to handle large-scale deployments efficiently.
+
+## Querying
+
+Once text is indexed, querying provides flexible ways to retrieve and rank relevant documents. When a user submits a query, the same analysis steps used during indexing are applied to their search terms, which are then looked up in the index.
+
+Modern search engines provide powerful query builder APIs that allow developers to programmatically construct complex search queries and integrate business logic directly into their search
+operations. This pushes as much work as possible down into the query engine (where it can happen the most efficiently), so the client doesn’t have to post-filter or reprocess results.
+
+### Query Types and Processing
+
+Different query types use inverted indexes in different ways:
+
+- **Boolean queries** ("PostgreSQL AND search") use set intersection of postings lists to find documents that match logical conditions.
+- **Phrase queries** use position information to ensure terms appear consecutively or in proximity to each other. For example, you could search for an exact match of "search engines" or for when "search" is within five words of "indexes".
+- **Ranked queries** apply algorithms like [BM25](/learn/search-concepts/bm25) using term frequency and document frequency statistics to give the most relevant results first.
+
+### Advanced Query Features
+
+Full-text search provides much more than the ability to find exact matches. It introduces a set of features that make search both flexible and forgiving:
+
+- **Fuzzy matching** corrects small errors and typos, so a query for `databse` still returns `database`. {/* * codespell:ignore databse * */}
+- **Boolean operators** give power users fine-grained control with logic like `python AND (api OR web)`, filtering results to match complex conditions.
+- **Field weighting** acknowledges that some parts of a document matter more than others—a match in a title often carries more importance than one in the body text.
+- **Proximity queries** find words that are located close to other words (`dogs within 5 words of cats`).
+- **Faceting** enables users to filter search results by categories or attributes (like "brand," "price range," or "date") while maintaining text-based relevance scoring.
+
+## When Full-Text Search Shines
+
+Full-text search becomes essential whenever large volumes of unstructured or semi-structured text need to be queried quickly and intuitively. It thrives in scenarios where users think in terms of language, not schema.
+
+Some common examples include:
+
+### Content and Communication Search
+
+- **Content discovery:** Searching across articles, blog posts, or documentation pages
+- **Communication search:** Navigating chat histories, emails, or support tickets
+- **E-commerce:** Product catalogs where users search by description, features, or brand names
+
+### Technical Search
+
+- **Code search:** Finding functions, variables, or patterns across codebases
+- **Log search:** Analyzing application logs, error messages, and system events for debugging and monitoring
+
+### AI and Machine Learning
+
+- **Retrieval Augmented Generation (RAG):** Powering AI systems that need to find relevant context from knowledge bases before generating responses
+
+In all of these workloads, users aren't just filtering, they're searching. They know what they want to find conceptually but not exactly where it's stored. Full-text search bridges that gap by turning text into a structured, ranked representation of meaning.
+
+## When Full-Text Search Is Not Enough
+
+While full-text search excels at lexical matching, it has limitations when users search by meaning rather than keywords. Full-text search uses these methods to capture linguistic variation, but its focus remains lexical: it matches words, not meanings.
+
+Consider these scenarios where traditional full-text search struggles:
+
+- **Semantic similarity:** A search for "automobile" won't match documents about "cars" unless explicit synonyms are configured
+- **Cross-language search:** Keywords in one language won't match semantically equivalent content in another language
+- **Domain-specific terminology:** Technical concepts may be expressed differently across documents but carry the same meaning
+
+For these use cases, **vector search** provides a complementary approach. Vector search represents text as high-dimensional vectors that capture semantic meaning, allowing searches based on conceptual similarity rather than exact keyword matches.
+
+Many modern search systems use **hybrid approaches** that combine both full-text and vector search:
+
+- Full-text search for precise keyword matching and boolean logic
+- Vector search for semantic similarity and concept-based retrieval
+- Ranking algorithms that blend both approaches for optimal relevance
+
+## Summary
+
+Full-text search brings lexical structure to unstructured data. By analyzing, indexing, and ranking text, it makes information findable through natural language rather than rigid filters or exact matches.
+
+It remains one of the most effective tools for large-scale text retrieval: fast, reliable, and deeply optimized for keyword relevance. Its success lies in bridging how people think about information with how computers store it.
