@@ -101,6 +101,9 @@ importers:
       next-themes:
         specifier: ^0.3.0
         version: 0.3.0(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      porter-stemmer:
+        specifier: ^0.9.1
+        version: 0.9.1
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -2968,6 +2971,9 @@ packages:
   pirates@4.0.6:
     resolution: {integrity: sha512-saLsH7WeYYPiD25LDuLRRY/i+6HaPYr6G1OUlN39otzkSTxKnubR9RTxS3/Kk50s1g2JTgFwWQDQyplC5/SHZg==}
     engines: {node: '>= 6'}
+
+  porter-stemmer@0.9.1:
+    resolution: {integrity: sha512-vnSYgMMWKMo0+zCUumdcQAYE2RD55k2b27sPySqseetSRaGtXCCktv3llCB4EXyU1nQApMM5u+rGwVWcW72AHg==}
 
   possible-typed-array-names@1.0.0:
     resolution: {integrity: sha512-d7Uw+eZoloe0EHDIYoe+bQ5WXnGMOpmiZFTuMWCwpjzzkL2nTjcKiAk4hh8TjnGye2TwWOk3UXucZ+3rbmBa8Q==}
@@ -7523,6 +7529,8 @@ snapshots:
   pify@2.3.0: {}
 
   pirates@4.0.6: {}
+
+  porter-stemmer@0.9.1: {}
 
   possible-typed-array-names@1.0.0: {}
 

@@ -1,0 +1,119 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.svg";
+import { Note } from "@mintlify/components";
+
+import TokenizerDemo from '@/components/blog/TokenizerDemo';
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+When you type a sentence into a search box, it’s easy to imagine the search engine seeing the same thing you do. A neat little string of words, ready to compare to the exact text it has stored. In reality that isn’t quite how it works, and not having a good mental model of the process that gets from text to token can lead to misunderstanding the results (or lack of results) that you get back from your queries.
+
+Search engines (or [search databases](https://paradedb.com)) don’t store blobs of text, and they don’t store sentences. They don’t even store words in the way you think of them. They dismantle input text (both indexed and query), scrub it clean, and reassemble it into something slightly more abstract and far more useful: tokens. These tokens are what you search with, and what is stored in your inverted indexes to search over.
+
+Let’s slow down and watch this process happen. We’ll feed a sentence through a tokenization pipeline, pausing at each stage to see how language gets broken apart and remade, and how that effects our search.
+
+This twist on "The quick brown fox jumps over the lazy dog" will serve as our test case. It contains most of the elements that make tokenization interesting: capitalization, punctuation, and words that will transform as they move through the pipeline. By the time we're done, this sentence will look different, but it will be perfectly prepared for search.
+
+<TokenizerDemo mode="display" defaultText="The database jumped over the lazy dog!" />
+
+<p />
+<Note>
+This pipeline is the same for most lexical search implementations. Order and naming may differ, and different options may be on or off by default, but the same high-level steps remain regardless of if you’re talking about Lucene/Elasticsearch, Tantivy/ParadeDB, or even something more basic like Postgres full-text search.
+</Note>
+
+## Character Filtering
+
+Before we even think about breaking our text down we need to think about rejecting anything which isn’t useful. This usually means filtering the characters which make up our text string, removing punctuation, and transforming all letters to lower-case. 
+
+This ensures that we don’t end up with any tokens like `dog!` in our search string or index, but it can present problems for words like `full-text` . The behavior for hyphenated words is entirely dependent on the tokenizer being used. In ParadeDB we convert this to `full text` .
+
+Lowercasing our text makes sure that e will match `database` with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to reatain uppercase.
+
+Let’s take a look at how our input string is transformed by character filtering. We are replacing the capital T with a lower-case one, and also removing the exclamation mark. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
+
+<TokenizerDemo mode="character-filtering" defaultText="The database jumped over the lazy dog!"/>
+<p />
+<Note>
+
+In ParadeDB character filtering is controlled by the base tokenizer which is configured for the `bm25` index. The `default` tokenizer replaces punctuation, but different tokenizers have slightly different behaviors:
+
+- `source_code` doesn’t remove punctuation which might have meaning in source code.
+- `whitespace` doesn’t remove punctuation
+
+All tokenizers replace upper-case by default. You can read more about [how to enable tokenizers here](https://docs.paradedb.com/documentation/indexing/tokenizers).
+
+</Note>
+
+## Splitting Text Into Searchable Pieces with Tokenization
+
+The tokenization phase takes our filtered text and splits it up into indexable units. This is where we move from dealing with a sentence as a single unit to treating it as a collection of discrete, searchable parts called tokens.
+
+
+The most common approach is simple whitespace tokenization: split on spaces and you have your tokens. But even this seemingly straightforward step has nuances. What about tabs? Line breaks? Multiple spaces in a row? Different tokenizers handle these edge cases differently, which is why understanding your search engine's tokenization behavior matters when you're debugging why a search didn't return expected results.
+
+Generally speaking there are three classes of tokenizers:
+
+1. **Word oriented tokenizers** break text into individual words at word boundaries. This includes simple whitespace tokenizers that split on spaces, as well as more sophisticated language-aware tokenizers that understand non-English character sets. These work well for most search applications where you want to match whole words.
+
+2. **Partial Word Tokenizers** split words into smaller fragments, useful for matching parts of words or handling compound terms. N-gram tokenizers create overlapping character sequences, while edge n-gram tokenizers focus on prefixes or suffixes. These are powerful for autocomplete features and fuzzy matching but can create noise in search results.
+
+3. **Structured Text Tokenizers** are designed for specific data formats like URLs, email addresses, file paths, or structured data. They preserve meaningful delimiters and handle domain-specific patterns that would be mangled by general-purpose tokenizers. These can be essential when your content contains non-prose text that needs special handling.
+
+For our example we will be using a simple English whitespace tokenizer, but you can also toggle to a trigram (an n-gram with a length of 3) tokenizer below to get a feel for how different the output would be.
+
+<TokenizerDemo mode="tokenization" defaultText="the database jumped over the lazy dog"/>
+
+## Throwing Out Filler With Stopwords
+
+Some words carry little weight. They appear everywhere, diluting meaning: "the," "and," "of," "are." These are stopwords. Search engines often throw them out entirely, betting that what remains will carry more signal.
+
+This is not without risk. In *The Who*, "the" matters. That's why stopword lists are usually configurable and not universal. In systems which support BM25 they are often left out altogether because the ranking formula gives less weight to very common terms, but in systems which don't support BM25 (like Postgres tsvector) stopwords are critically important. 
+
+<TokenizerDemo mode="stopwords" defaultText="the database jumped over the lazy dog"/>
+
+Notice how removing stopwords immediately makes our token list more focused. We've gone from eight tokens to six, and what remains carries more semantic weight. In this case "Quick," "database," and "jumped" tell us much more about the content than "the" ever could.
+
+## Cutting Down to the Root
+
+`Jump`, `jumps`, `jumped`, `jumping`. Humans see the connection instantly. Computers don't, unless we give them a way.
+
+Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from Martin Porter's 1980 algorithm, which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure.
+
+The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's `good enough` approach.
+
+<TokenizerDemo mode="stemming" defaultText="database jumped over lazy dog"/>
+
+Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept.
+
+## The Final Tokens
+
+Our sentence has traveled through the complete pipeline. What started as *"The quick brown database jumped over the lazy dog!"* has been transformed through each stage: stripped of punctuation and capitalization, split into individual words, filtered of common stopwords, and finally reduced to stems.
+
+The result is a clean set of five tokens: 
+<TokenizerDemo mode="display" displayAsTokens={true} defaultText="database jump over lazi dog"/>
+
+This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenize: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly.
+
+## Why this matters
+
+Tokenization doesn't get the glory. Nobody brags about their stopword filter at conferences. But it's the quiet engine of search. Without it, `dogs` wouldn't match `dog.` `Jumping` wouldn't find `jump.` You'd miss results that feel obvious, and you'd get noise you never wanted.
+
+Every search engine spends immense effort here, because it sets the stage for everything else. Scoring algorithms like BM25 are powerless if the tokens themselves aren't right.
+
+So when we say *tokenizing becomes token*, we mean this: the messy complexity of human language reduced to a set of small, sharp units. Not pretty, not perfect, but consistent. The bridge between words and data.
+
+Understanding this process helps you debug unexpected search results, choose the right tokenizer settings, and build better search experiences. When your users can't find what they're looking for, the answer often lies in these quiet transformations happening behind the scenes.
+
+## Conclusion
+
+Tokenization is search's invisible foundation. Every query, every result, every autocomplete suggestion depends on this quiet pipeline that turns human language into machine-readable tokens. When it works well, it's invisible. When it doesn't, your search feels broken.
+
+The next time you're building search functionality, remember: the magic isn't just in the scoring algorithm or the fancy indexes. It starts here, with understanding how your words become tokens. Get this right, and everything else follows.
+
+Ready to build search? [Get started with ParadeDB](https://paradedb.com) and see how modern search databases handle tokenization for you.
+
