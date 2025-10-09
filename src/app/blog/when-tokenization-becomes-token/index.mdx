@@ -11,9 +11,9 @@ import TokenizerDemo from "@/components/blog/TokenizerDemo";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-When you type a sentence into a search box, it’s easy to imagine the search engine seeing the same thing you do. In reality, search engines (or search databases) (or [search databases](https://paradedb.com)) don’t store blobs of text, and they don’t store sentences. They don’t even store words in the way you think of them. They dismantle input text (both indexed and query), scrub it clean, and reassemble it into something slightly more abstract and far more useful: tokens. These tokens are what you search with, and what is stored in your inverted indexes to search over.
+When you type a sentence into a search box, it’s easy to imagine the search engine seeing the same thing you do. In reality, search engines (or [search databases](https://www.paradedb.com/blog/elasticsearch-acid-test)) don’t store blobs of text, and they don’t store sentences. They don’t even store words in the way you think of them. They dismantle input text (both indexed and query), scrub it clean, and reassemble it into something slightly more abstract and far more useful: tokens. These tokens are what you search with, and what is stored in your inverted indexes to search over.
 
-Let’s slow down and watch this process happen. We’ll feed a sentence through a tokenization pipeline, pausing at each stage to see how language gets broken apart and remade, and how that effects our search.
+Let’s slow down and watch this process happen. We’ll feed a sentence through a tokenization pipeline, pausing at each stage to see how language gets broken apart and remade, and how that affects our search.
 
 This twist on "The quick brown fox jumps over the lazy dog" will serve as our test case. It contains most of the elements that make tokenization interesting: capitalization, punctuation, and words that will transform as they move through the pipeline. By the time we're done, this sentence will look different, but it will be perfectly prepared for search.
 
@@ -35,9 +35,9 @@ This twist on "The quick brown fox jumps over the lazy dog" will serve as our te
 
 Before we even think about breaking our text down we need to think about rejecting anything which isn’t useful. This usually means filtering the characters which make up our text string, removing punctuation, and transforming all letters to lower-case.
 
-This ensures that we don’t end up with any tokens like `dog!` in our search string or index, but it can present problems for words like `full-text` . The behavior for hyphenated words is entirely dependent on the tokenizer being used. In ParadeDB we convert this to `full text` .
+This ensures that we don’t end up with any tokens like `dog!` in our search string or index, but it can present problems for words like `full-text` . The behavior for hyphenated words is entirely dependent on the tokenizer being used.
 
-Lowercasing our text makes sure that e will match `database` with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
+Lowercasing our text makes sure that `database` will match with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
 
 Let’s take a look at how our input string is transformed by character filtering. We are replacing the capital T with a lower-case one, and also removing the exclamation mark. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
 
@@ -102,7 +102,7 @@ Here's the final transformation: our tokens have been reduced to their essential
 
 ## The Final Tokens
 
-Our sentence has traveled through the complete pipeline. What started as _"The quick brown database jumped over the lazy dog!"_ has been transformed through each stage: stripped of punctuation and capitalization, split into individual words, filtered of common stopwords, and finally reduced to stems.
+Our sentence has traveled through the complete pipeline. What started as _"The database jumped over the lazy dog!"_ has been transformed through each stage: stripped of punctuation and capitalization, split into individual words, filtered of common stopwords, and finally reduced to stems.
 
 The result is a clean set of four tokens:
 
