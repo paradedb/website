@@ -30,7 +30,7 @@ Before we even think about breaking our text down we need to think about rejecti
 
 This ensures that we don’t end up with any tokens like `dog!` in our search string or index, but it can present problems for words like `full-text` . The behavior for hyphenated words is entirely dependent on the tokenizer being used. In ParadeDB we convert this to `full text` .
 
-Lowercasing our text makes sure that e will match `database` with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to reatain uppercase.
+Lowercasing our text makes sure that e will match `database` with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
 
 Let’s take a look at how our input string is transformed by character filtering. We are replacing the capital T with a lower-case one, and also removing the exclamation mark. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
 
@@ -74,7 +74,7 @@ This is not without risk. In *The Who*, "the" matters. That's why stopword lists
 
 <TokenizerDemo mode="stopwords" defaultText="the database jumped over the lazy dog"/>
 
-Notice how removing stopwords immediately makes our token list more focused. We've gone from eight tokens to six, and what remains carries more semantic weight. In this case "Quick," "database," and "jumped" tell us much more about the content than "the" ever could.
+Notice how removing stopwords immediately makes our token list more focused. We've gone from eight tokens to four, and what remains carries more semantic weight. In this case "Quick," "database," and "jumped" tell us much more about the content than "the" ever could.
 
 ## Cutting Down to the Root
 
@@ -82,9 +82,9 @@ Notice how removing stopwords immediately makes our token list more focused. We'
 
 Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from Martin Porter's 1980 algorithm, which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure.
 
-The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's `good enough` approach.
+The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach.
 
-<TokenizerDemo mode="stemming" defaultText="database jumped over lazy dog"/>
+<TokenizerDemo mode="stemming" defaultText="database jumped lazy dog"/>
 
 Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept.
 
@@ -92,26 +92,17 @@ Here's the final transformation: our tokens have been reduced to their essential
 
 Our sentence has traveled through the complete pipeline. What started as *"The quick brown database jumped over the lazy dog!"* has been transformed through each stage: stripped of punctuation and capitalization, split into individual words, filtered of common stopwords, and finally reduced to stems.
 
-The result is a clean set of five tokens: 
-<TokenizerDemo mode="display" displayAsTokens={true} defaultText="database jump over lazi dog"/>
+The result is a clean set of four tokens: 
+<TokenizerDemo mode="display" displayAsTokens={true} defaultText="databas jump lazi dog"/>
 
 This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenize: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly.
 
-## Why this matters
+## Why Tokenization Matters
 
-Tokenization doesn't get the glory. Nobody brags about their stopword filter at conferences. But it's the quiet engine of search. Without it, `dogs` wouldn't match `dog.` `Jumping` wouldn't find `jump.` You'd miss results that feel obvious, and you'd get noise you never wanted.
+Tokenization doesn’t get the glory. Nobody brags about their stopword filter at conferences. But it’s the quiet engine of search. Without it, `dogs` wouldn’t match `dog`, and `jumping` wouldn’t find `jump`.
 
-Every search engine spends immense effort here, because it sets the stage for everything else. Scoring algorithms like BM25 are powerless if the tokens themselves aren't right.
+Every search engine invests heavily here because everything else—scoring, ranking, relevance—depends on getting tokens right.
 
-So when we say *tokenizing becomes token*, we mean this: the messy complexity of human language reduced to a set of small, sharp units. Not pretty, not perfect, but consistent. The bridge between words and data.
+When we say “tokenizing becomes token,” we mean this: the chaos of language reduced to a smaller set of consistent units. Not pretty, but precise: get this right, and everything else follows. 
 
-Understanding this process helps you debug unexpected search results, choose the right tokenizer settings, and build better search experiences. When your users can't find what they're looking for, the answer often lies in these quiet transformations happening behind the scenes.
-
-## Conclusion
-
-Tokenization is search's invisible foundation. Every query, every result, every autocomplete suggestion depends on this quiet pipeline that turns human language into machine-readable tokens. When it works well, it's invisible. When it doesn't, your search feels broken.
-
-The next time you're building search functionality, remember: the magic isn't just in the scoring algorithm or the fancy indexes. It starts here, with understanding how your words become tokens. Get this right, and everything else follows.
-
-Ready to build search? [Get started with ParadeDB](https://paradedb.com) and see how modern search databases handle tokenization for you.
-
+[Get started with ParadeDB](https://paradedb.com) and see how modern search databases handle tokenization for you.
