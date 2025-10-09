@@ -11,9 +11,7 @@ import TokenizerDemo from '@/components/blog/TokenizerDemo';
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-When you type a sentence into a search box, it’s easy to imagine the search engine seeing the same thing you do. A neat little string of words, ready to compare to the exact text it has stored. In reality that isn’t quite how it works, and not having a good mental model of the process that gets from text to token can lead to misunderstanding the results (or lack of results) that you get back from your queries.
-
-Search engines (or [search databases](https://paradedb.com)) don’t store blobs of text, and they don’t store sentences. They don’t even store words in the way you think of them. They dismantle input text (both indexed and query), scrub it clean, and reassemble it into something slightly more abstract and far more useful: tokens. These tokens are what you search with, and what is stored in your inverted indexes to search over.
+When you type a sentence into a search box, it’s easy to imagine the search engine seeing the same thing you do. In reality, search engines (or search databases) (or [search databases](https://paradedb.com)) don’t store blobs of text, and they don’t store sentences. They don’t even store words in the way you think of them. They dismantle input text (both indexed and query), scrub it clean, and reassemble it into something slightly more abstract and far more useful: tokens. These tokens are what you search with, and what is stored in your inverted indexes to search over.
 
 Let’s slow down and watch this process happen. We’ll feed a sentence through a tokenization pipeline, pausing at each stage to see how language gets broken apart and remade, and how that effects our search.
 
