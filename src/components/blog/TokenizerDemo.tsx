@@ -34,6 +34,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
 
   // Calculate text width for cursor positioning
   const getTextWidth = (text: string) => {
+    if (typeof document === 'undefined') return text.length * 8;
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
     if (!context) return text.length * 8;
@@ -118,8 +119,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
         return 'display only';
     }
   };
-
-  const outputIsArray = mode === 'tokenization' || mode === 'stemming' || mode === 'stopwords';
 
   return (
     <div className="tokenizer-demo">
