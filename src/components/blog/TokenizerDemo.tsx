@@ -1,10 +1,15 @@
-'use client';
+"use client";
 
-import React, { useState, useMemo } from 'react';
-import { stemmer } from 'porter-stemmer';
+import React, { useState, useMemo } from "react";
+import { stemmer } from "porter-stemmer";
 
-type DemoMode = 'character-filtering' | 'tokenization' | 'stemming' | 'stopwords' | 'display';
-type TokenizationMethod = 'whitespace' | 'trigram';
+type DemoMode =
+  | "character-filtering"
+  | "tokenization"
+  | "stemming"
+  | "stopwords"
+  | "display";
+type TokenizationMethod = "whitespace" | "trigram";
 
 interface TokenizerDemoProps {
   mode: DemoMode;
@@ -12,56 +17,70 @@ interface TokenizerDemoProps {
   displayAsTokens?: boolean;
 }
 
-const TokenizerDemo: React.FC<TokenizerDemoProps> = ({ 
+const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
   mode,
   defaultText = "running easily generational",
-  displayAsTokens = false
+  displayAsTokens = false,
 }) => {
   const [text, setText] = useState(defaultText);
-  const [tokenizationMethod, setTokenizationMethod] = useState<TokenizationMethod>('whitespace');
-  const [inputTokens, setInputTokens] = useState<string[]>(() => 
-    defaultText.split(/[\s,]+/).map(token => token.trim()).filter(token => token.length > 0)
+  const [tokenizationMethod, setTokenizationMethod] =
+    useState<TokenizationMethod>("whitespace");
+  const [inputTokens, setInputTokens] = useState<string[]>(() =>
+    defaultText
+      .split(/[\s,]+/)
+      .map((token) => token.trim())
+      .filter((token) => token.length > 0),
   );
-  const [tokenInput, setTokenInput] = useState(() => 
-    defaultText.split(/[\s,]+/).map(token => token.trim()).filter(token => token.length > 0).join(' ')
+  const [tokenInput, setTokenInput] = useState(() =>
+    defaultText
+      .split(/[\s,]+/)
+      .map((token) => token.trim())
+      .filter((token) => token.length > 0)
+      .join(" "),
   );
-  const [stopwordTokens, setStopwordTokens] = useState<string[]>(() => 
-    mode === 'stopwords' ? defaultText.split(/[\s,]+/).map(token => token.trim()).filter(token => token.length > 0) : []
+  const [stopwordTokens, setStopwordTokens] = useState<string[]>(() =>
+    mode === "stopwords"
+      ? defaultText
+          .split(/[\s,]+/)
+          .map((token) => token.trim())
+          .filter((token) => token.length > 0)
+      : [],
   );
-  const [stopwordInput, setStopwordInput] = useState(() => 
-    mode === 'stopwords' ? defaultText : ""
+  const [stopwordInput, setStopwordInput] = useState(() =>
+    mode === "stopwords" ? defaultText : "",
   );
 
   // Calculate text width for cursor positioning
   const getTextWidth = (text: string) => {
-    if (typeof document === 'undefined') return text.length * 8;
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
+    if (typeof document === "undefined") return text.length * 8;
+    const canvas = document.createElement("canvas");
+    const context = canvas.getContext("2d");
     if (!context) return text.length * 8;
-    context.font = '16px Arial';
+    context.font = "16px Arial";
     return context.measureText(text).width;
   };
 
   const processText = useMemo(() => {
     switch (mode) {
-      case 'character-filtering':
+      case "character-filtering":
         return text
           .toLowerCase()
-          .replace(/[^\w\s]/g, ' ')
-          .replace(/\s+/g, ' ')
+          .replace(/[^\w\s]/g, " ")
+          .replace(/\s+/g, " ")
           .trim();
-      
-      case 'tokenization':
-        if (tokenizationMethod === 'whitespace') {
+
+      case "tokenization":
+        if (tokenizationMethod === "whitespace") {
           // Character filtering pre-step: remove punctuation & lowercase, then tokenize
           const filtered = text
             .toLowerCase()
-            .replace(/[^\w\s]/g, ' ')
-            .replace(/\s+/g, ' ')
+            .replace(/[^\w\s]/g, " ")
+            .replace(/\s+/g, " ")
             .trim();
-          return filtered.split(/\s+/).filter(token => token.length > 0);
-        } else { // trigram
-          const cleanText = text.replace(/\s+/g, ' ').trim();
+          return filtered.split(/\s+/).filter((token) => token.length > 0);
+        } else {
+          // trigram
+          const cleanText = text.replace(/\s+/g, " ").trim();
           if (cleanText.length < 3) return [cleanText];
           const trigrams = [];
           for (let i = 0; i <= cleanText.length - 3; i++) {
@@ -69,54 +88,89 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           }
           return trigrams;
         }
-      
-      case 'stemming':
+
+      case "stemming":
         // For stemming, use the inputTokens array
         return inputTokens;
-      
-      case 'stopwords':
+
+      case "stopwords":
         // For stopwords, use the stopwordTokens array
         return stopwordTokens;
-      
-      case 'display':
+
+      case "display":
         // For display mode, show as text or tokens based on displayAsTokens prop
         if (displayAsTokens) {
-          return defaultText.split(/\s+/).filter(token => token.length > 0);
+          return defaultText.split(/\s+/).filter((token) => token.length > 0);
         }
         return defaultText;
-      
+
       default:
         return text;
     }
-  }, [text, mode, tokenizationMethod, inputTokens, stopwordTokens, defaultText, displayAsTokens]);
+  }, [
+    text,
+    mode,
+    tokenizationMethod,
+    inputTokens,
+    stopwordTokens,
+    defaultText,
+    displayAsTokens,
+  ]);
 
   const stemmedTokens = useMemo(() => {
-    if (mode === 'stemming' && Array.isArray(processText)) {
-      return processText.map(word => stemmer(word));
+    if (mode === "stemming" && Array.isArray(processText)) {
+      return processText.map((word) => stemmer(word));
     }
     return null;
   }, [processText, mode]);
 
   const filteredTokens = useMemo(() => {
-    if (mode === 'stopwords' && Array.isArray(processText)) {
-      const stopwords = ['the', 'a', 'an', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for', 'of', 'with', 'by', 'is', 'are', 'was', 'were', 'this', 'that', 'over', 'under'];
-      return processText.filter(word => !stopwords.includes(word.toLowerCase()));
+    if (mode === "stopwords" && Array.isArray(processText)) {
+      const stopwords = [
+        "the",
+        "a",
+        "an",
+        "and",
+        "or",
+        "but",
+        "in",
+        "on",
+        "at",
+        "to",
+        "for",
+        "of",
+        "with",
+        "by",
+        "is",
+        "are",
+        "was",
+        "were",
+        "this",
+        "that",
+        "over",
+        "under",
+      ];
+      return processText.filter(
+        (word) => !stopwords.includes(word.toLowerCase()),
+      );
     }
     return null;
   }, [processText, mode]);
 
   const getLabel = () => {
     switch (mode) {
-      case 'character-filtering':
-        return 'remove punctuation & lowercase';
-      case 'tokenization':
-        return tokenizationMethod === 'whitespace' ? 'split on whitespace' : 'trigram tokenization';
-      case 'stemming':
-        return 'porter stemming';
-      case 'stopwords':
-        return 'remove stop words';
-      case 'display':
-        return 'display only';
+      case "character-filtering":
+        return "remove punctuation & lowercase";
+      case "tokenization":
+        return tokenizationMethod === "whitespace"
+          ? "split on whitespace"
+          : "trigram tokenization";
+      case "stemming":
+        return "porter stemming";
+      case "stopwords":
+        return "remove stop words";
+      case "display":
+        return "display only";
     }
   };
 
@@ -129,7 +183,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           text-align: center;
           padding: 10px 0 12px 0;
         }
-        
+
         .controls {
           margin-bottom: 2px;
           display: flex;
@@ -137,10 +191,10 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           gap: 12px;
           align-items: center;
         }
-        
+
         .text-input {
           background-color: white;
-          border: 3px solid #4A90E2;
+          border: 3px solid #4a90e2;
           border-radius: 15px;
           padding: 0 10px;
           font-size: 16px;
@@ -149,7 +203,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           width: 100%;
           max-width: 500px;
           min-height: 56px;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           outline: none;
           font-family: inherit;
           resize: none;
@@ -161,15 +215,14 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           padding-bottom: 0;
           caret-color: transparent;
         }
-        
-        
+
         .method-selector {
           display: flex;
           gap: 8px;
           flex-wrap: wrap;
           justify-content: center;
         }
-        
+
         .method-button {
           background-color: white;
           border: 2px solid #666;
@@ -180,29 +233,29 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           cursor: pointer;
           transition: all 0.2s ease;
         }
-        
+
         .method-button:hover {
           background-color: #f0f0f0;
         }
-        
+
         .method-button.active {
-          background-color: #4A90E2;
-          border-color: #4A90E2;
+          background-color: #4a90e2;
+          border-color: #4a90e2;
           color: white;
         }
-        
+
         .ngram-controls {
           display: flex;
           align-items: center;
           gap: 8px;
           justify-content: center;
         }
-        
+
         .ngram-controls label {
           font-size: 14px;
           color: #666;
         }
-        
+
         .ngram-input {
           background-color: white;
           border: 2px solid #666;
@@ -223,7 +276,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           gap: 2px;
           background-color: white;
         }
-        
+
         .arrow {
           font-size: 24px;
           color: #666;
@@ -231,16 +284,16 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           margin: 0;
           padding: 0;
         }
-        
+
         .arrow-label {
           font-size: 12px;
           color: #666;
           font-weight: normal;
         }
-        
+
         .processed-text {
           background-color: white;
-          border: 3px solid #4A90E2;
+          border: 3px solid #4a90e2;
           border-radius: 15px;
           padding: 0 10px;
           font-size: 16px;
@@ -250,7 +303,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           max-width: 500px;
           min-height: 56px;
           margin: 4px auto 0;
-          box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -258,7 +311,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           box-sizing: border-box;
           line-height: 52px;
         }
-        
+
         .tokenized-text {
           width: fit-content;
           margin: 4px auto 2px;
@@ -272,7 +325,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           box-sizing: border-box;
           max-width: 90%;
         }
-        
+
         .token {
           background-color: white;
           border: 3px solid #28a745;
@@ -288,14 +341,13 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           min-height: 40px;
           box-sizing: border-box;
         }
-        
-        
+
         .token-count {
           margin: 4px 0 0 0;
           font-size: 14px;
           color: #666;
         }
-        
+
         .cursor {
           display: inline-block;
           width: 2px;
@@ -304,12 +356,18 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           margin-left: 1px;
           animation: blink 1s infinite;
         }
-        
+
         @keyframes blink {
-          0%, 50% { opacity: 1; }
-          51%, 100% { opacity: 0; }
+          0%,
+          50% {
+            opacity: 1;
+          }
+          51%,
+          100% {
+            opacity: 0;
+          }
         }
-        
+
         .editable-token {
           background-color: white;
           border: 3px solid #28a745;
@@ -331,7 +389,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       `}</style>
 
       <div className="controls">
-        {mode === 'display' ? (
+        {mode === "display" ? (
           displayAsTokens ? (
             <div className="tokenized-text">
               {(processText as string[]).map((token, index) => (
@@ -341,69 +399,87 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               ))}
             </div>
           ) : (
-            <div className="processed-text">
-              {defaultText}
-            </div>
+            <div className="processed-text">{defaultText}</div>
           )
-        ) : (mode === 'stemming' || mode === 'stopwords') ? (
-          <div className="tokenized-text" style={{ position: 'relative' }}>
+        ) : mode === "stemming" || mode === "stopwords" ? (
+          <div className="tokenized-text" style={{ position: "relative" }}>
             <input
               type="text"
-              value={mode === 'stemming' ? tokenInput : stopwordInput}
+              value={mode === "stemming" ? tokenInput : stopwordInput}
               onChange={(e) => {
                 const value = e.target.value;
-                if (mode === 'stemming') {
+                if (mode === "stemming") {
                   setTokenInput(value);
-                  const tokens = value.split(/\s+/).filter(token => token.length > 0);
-                  setInputTokens(tokens.length > 0 ? tokens : ['']);
+                  const tokens = value
+                    .split(/\s+/)
+                    .filter((token) => token.length > 0);
+                  setInputTokens(tokens.length > 0 ? tokens : [""]);
                 } else {
                   setStopwordInput(value);
-                  const tokens = value.split(/\s+/).filter(token => token.length > 0);
-                  setStopwordTokens(tokens.length > 0 ? tokens : ['']);
+                  const tokens = value
+                    .split(/\s+/)
+                    .filter((token) => token.length > 0);
+                  setStopwordTokens(tokens.length > 0 ? tokens : [""]);
                 }
               }}
               onSelect={(e) => {
                 // Always move cursor to the end
                 const target = e.target as HTMLInputElement;
                 setTimeout(() => {
-                  target.setSelectionRange(target.value.length, target.value.length);
+                  target.setSelectionRange(
+                    target.value.length,
+                    target.value.length,
+                  );
                 }, 0);
               }}
               onClick={(e) => {
                 // Always move cursor to the end
                 const target = e.target as HTMLInputElement;
-                target.setSelectionRange(target.value.length, target.value.length);
+                target.setSelectionRange(
+                  target.value.length,
+                  target.value.length,
+                );
               }}
               onKeyDown={(e) => {
                 // Always ensure cursor is at the end
                 const target = e.target as HTMLInputElement;
                 if (target.selectionStart !== target.value.length) {
-                  target.setSelectionRange(target.value.length, target.value.length);
+                  target.setSelectionRange(
+                    target.value.length,
+                    target.value.length,
+                  );
                 }
               }}
               style={{
-                position: 'absolute',
+                position: "absolute",
                 top: 0,
                 left: 0,
-                width: '100%',
-                height: '100%',
+                width: "100%",
+                height: "100%",
                 opacity: 0,
-                border: 'none',
-                outline: 'none',
-                fontSize: '16px',
-                cursor: 'text'
+                border: "none",
+                outline: "none",
+                fontSize: "16px",
+                cursor: "text",
               }}
               placeholder=""
             />
-            {(mode === 'stemming' ? inputTokens : stopwordTokens).map((token, index) => (
-              <span key={`${token}-${index}`} className="token">
-                {token || '\u00A0'}
-                {index === (mode === 'stemming' ? inputTokens : stopwordTokens).length - 1 && <span className="cursor"></span>}
-              </span>
-            ))}
+            {(mode === "stemming" ? inputTokens : stopwordTokens).map(
+              (token, index) => (
+                <span key={`${token}-${index}`} className="token">
+                  {token || "\u00A0"}
+                  {index ===
+                    (mode === "stemming" ? inputTokens : stopwordTokens)
+                      .length -
+                      1 && <span className="cursor"></span>}
+                </span>
+              ),
+            )}
           </div>
         ) : (
-          <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
+          <div
+            style={{ position: "relative", width: "100%", maxWidth: "500px" }}
+          >
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
@@ -411,36 +487,39 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               placeholder=""
               rows={1}
               style={{
-                height: 'auto',
-                minHeight: '56px'
+                height: "auto",
+                minHeight: "56px",
               }}
               onInput={(e) => {
                 const target = e.target as HTMLTextAreaElement;
-                target.style.height = 'auto';
-                target.style.height = Math.max(56, target.scrollHeight) + 'px';
+                target.style.height = "auto";
+                target.style.height = Math.max(56, target.scrollHeight) + "px";
               }}
             />
-            <span className="cursor" style={{ 
-              position: 'absolute', 
-              left: `calc(50% + ${getTextWidth(text) / 2 + 1}px)`,
-              top: '50%', 
-              transform: 'translateY(-75%)',
-              margin: 0
-            }}></span>
+            <span
+              className="cursor"
+              style={{
+                position: "absolute",
+                left: `calc(50% + ${getTextWidth(text) / 2 + 1}px)`,
+                top: "50%",
+                transform: "translateY(-75%)",
+                margin: 0,
+              }}
+            ></span>
           </div>
         )}
-        
-        {mode === 'tokenization' && (
+
+        {mode === "tokenization" && (
           <div className="method-selector">
             <button
-              className={`method-button ${tokenizationMethod === 'whitespace' ? 'active' : ''}`}
-              onClick={() => setTokenizationMethod('whitespace')}
+              className={`method-button ${tokenizationMethod === "whitespace" ? "active" : ""}`}
+              onClick={() => setTokenizationMethod("whitespace")}
             >
               Whitespace
             </button>
             <button
-              className={`method-button ${tokenizationMethod === 'trigram' ? 'active' : ''}`}
-              onClick={() => setTokenizationMethod('trigram')}
+              className={`method-button ${tokenizationMethod === "trigram" ? "active" : ""}`}
+              onClick={() => setTokenizationMethod("trigram")}
             >
               Trigram
             </button>
@@ -448,14 +527,14 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
         )}
       </div>
 
-      {mode !== 'display' && (
+      {mode !== "display" && (
         <div className="arrow-container">
           <div className="arrow">↓</div>
           <div className="arrow-label">{getLabel()}</div>
         </div>
       )}
-      
-      {mode === 'display' ? null : mode === 'tokenization' ? (
+
+      {mode === "display" ? null : mode === "tokenization" ? (
         <>
           <div className="tokenized-text">
             {(processText as string[]).map((token, index) => (
@@ -468,7 +547,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
             {(processText as string[]).length} tokens
           </div>
         </>
-      ) : mode === 'stemming' && stemmedTokens ? (
+      ) : mode === "stemming" && stemmedTokens ? (
         <>
           <div className="tokenized-text">
             {stemmedTokens.map((token, index) => (
@@ -477,11 +556,9 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               </span>
             ))}
           </div>
-          <div className="token-count">
-            {stemmedTokens.length} tokens
-          </div>
+          <div className="token-count">{stemmedTokens.length} tokens</div>
         </>
-      ) : mode === 'stopwords' && filteredTokens ? (
+      ) : mode === "stopwords" && filteredTokens ? (
         <>
           <div className="tokenized-text">
             {filteredTokens.map((token, index) => (
@@ -490,14 +567,10 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               </span>
             ))}
           </div>
-          <div className="token-count">
-            {filteredTokens.length} tokens
-          </div>
+          <div className="token-count">{filteredTokens.length} tokens</div>
         </>
       ) : (
-        <div className="processed-text">
-          {processText as string}
-        </div>
+        <div className="processed-text">{processText as string}</div>
       )}
     </div>
   );
