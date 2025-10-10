@@ -36,7 +36,7 @@ The same general ideas apply whether you're using [Lucene](https://github.com/ap
 
 ## Filtering Text With Case and Character Folding
 
-Before we even think about breaking our text down we need to think about filtering out anything which isn’t useful. This usually means auditing the characters which make up our text string: transforming all letters to lower-case, and if we know we might have them folding any diacritics (like in résumé, façade, or noël) to their base letter.
+Before we even think about breaking our text down we need to think about filtering out anything which isn’t useful. This usually means auditing the characters which make up our text string: transforming all letters to lower-case, and if we know we might have them folding any diacritics (like in résumé, façade, or Noël) to their base letter.
 
 This step ensures that characters are normalized and consistent before tokenization begins. Café becomes cafe, and résumé becomes resume, allowing searches to match regardless of accents. Lowercasing ensures that database matches Database, though it can introduce quirks: like matching Olive (the name) with olive (the snack). Most systems accept this trade-off: false positives are better than missed results. Code search is a notable exception, since it often needs to preserve symbols and respect casing like _camelCase_ or _PascalCase_.
 
