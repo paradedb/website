@@ -7,7 +7,7 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-**Tantivy** is a full-text search engine library written in Rust that reimagines Apache Lucene's design with modern performance optimizations. Like Lucene, Tantivy is a library that you embed directly into your applications rather than a search engine that runs as a separate service. Think of it as a modern, Rust-based evolution of Lucene's core principles.
+**[Tantivy](https://github.com/quickwit-oss/tantivy)** is a [full-text search](/learn/search-concepts/full-text-search) library library written in Rust that reimagines Apache Lucene's design with modern performance optimizations. Like Lucene, Tantivy is a library that you embed directly into your applications rather than a search engine that runs as a separate service. Think of it as a modern, Rust-based evolution of Lucene's core principles.
 
 Tantivy follows Lucene's fundamental architecture and algorithms, including [BM25](/learn/search-concepts/bm25) scoring and similar indexing strategies, but takes advantage of Rust's memory safety and performance characteristics. The result is a search library that starts up in under 10 milliseconds and runs approximately twice as fast as Lucene in benchmarks while providing equivalent search capabilities.
 
@@ -24,7 +24,7 @@ Search operations work by parsing queries into execution plans against the inver
 Tantivy includes the core features you'd expect from a modern search library:
 
 **Text Analysis:**
-- Configurable [tokenization](/learn/search-concepts/tokenization) pipeline with language support
+- Configurable tokenization pipeline with language support
 - Stemming to match word variations (running, runs, ran)
 - Stop word removal and custom text processing
 - Built-in configurations for common languages
@@ -51,13 +51,13 @@ The library approach means search availability is tied to your application, ther
 
 ## The Tantivy Ecosystem
 
-If you need a complete search engine rather than just the library, several projects build on Tantivy to provide higher-level functionality. Just as Lucene serves as the foundation for search servers like Elasticsearch and Solr, Tantivy has become the foundation for specialized search solutions.
+If you need a complete search engine rather than just the library, several projects build on Tantivy to provide higher-level functionality. Just as Lucene serves as the foundation for search servers like [Elasticsearch](https://github.com/elastic/elasticsearch) and Solr, Tantivy has become the foundation for specialized search solutions.
 
-Quickwit builds on Tantivy to create a distributed search engine designed for log management and observability data. Where Elasticsearch might struggle with the volume and velocity of log data, Quickwit uses Tantivy's efficiency plus cloud-native architecture to handle massive log ingestion and search workloads. It's particularly well-suited for applications that need to search through petabytes of time-series data.
+[Quickwit](https://github.com/quickwit-oss/quickwit) builds on Tantivy to create a distributed search engine designed for log management and observability data. Where Elasticsearch might struggle with the volume and velocity of log data, Quickwit uses Tantivy's efficiency plus cloud-native architecture to handle massive log ingestion and search workloads. It's particularly well-suited for applications that need to search through petabytes of time-series data.
 
-ParadeDB takes a different approach, embedding Tantivy directly into PostgreSQL as an extension. This gives you modern search capabilities, including BM25 scoring and advanced text analysis, without leaving your existing database infrastructure. ParadeDB bridges the gap between traditional SQL databases and modern search engines, letting you run sophisticated search queries alongside your regular database operations.
+[ParadeDB](https://github.com/paradedb/paradedb) takes a different approach, embedding Tantivy directly into [PostgreSQL](https://postgresql.org) as an extension. This gives you modern search capabilities, including BM25 scoring and advanced text analysis, without leaving your existing database infrastructure. ParadeDB bridges the gap between traditional SQL databases and modern search engines, letting you run sophisticated search queries alongside your regular database operations.
 
-These ecosystem projects demonstrate Tantivy's flexibility as a foundation for building complete search solutions when the library alone isn't enough for your use case.
+These ecosystem projects demonstrate Tantivy's flexibility as a foundation for building complete search solutions.
 
 ## Getting Started
 
