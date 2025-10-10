@@ -87,14 +87,14 @@ Notice how removing stopwords immediately makes our token list more focused. We'
 
 Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from Martin Porter's 1980 algorithm, which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure. Today many stemmers are based on the Snowball variant.
 
-The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach. {/* * codespell:ignore databse * */}
+The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach. {/* * codespell:ignore databas * */}
 
 <TokenizerDemo
   mode="stemming"
   defaultText="full text database jumped lazy cafe dog"
 />
 
-Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept. {/* * codespell:ignore databse * */}
+Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept. {/* * codespell:ignore databas * */}
 
 ## The Final Tokens
 
@@ -102,13 +102,10 @@ Our sentence has traveled through the complete pipeline. What started as _"The d
 
 The result is a clean set of five tokens:
 
-<TokenizerDemo
-  mode="display"
-  displayAsTokens={true}
-  defaultText="databas jump lazi cafe dog" {/* * codespell:ignore databse * */}
-/>
+{/* prettier-ignore */}
+<TokenizerDemo mode="display" displayAsTokens={true} defaultText="databas jump lazi cafe dog" /> {/* * codespell:ignore databas * */}
 
-This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenized: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly. {/* * codespell:ignore databse * */}
+This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenized: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly. {/* * codespell:ignore databas * */}
 
 ## Why Tokenization Matters
 
@@ -120,7 +117,7 @@ When we say “tokenizing becomes token,” we mean this: the chaos of language 
 
 [Get started with ParadeDB](https://paradedb.com) and see how modern search databases handle tokenization for you.
 
-## <p />
+---
 
 [^1]: General purpose morphological libraries like [Jieba](https://github.com/fxsjy/jieba) and [Lindera](https://github.com/lindera/lindera) are often used to provide tokenizers that can deal with Chinese, Korean, Japanese and characters.
 
