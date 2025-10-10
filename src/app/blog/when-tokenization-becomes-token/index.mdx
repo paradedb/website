@@ -15,50 +15,40 @@ When you type a sentence into a search box, it’s easy to imagine the search en
 
 Let’s slow down and watch this process happen. We’ll feed a sentence through a tokenization pipeline, pausing at each stage to see how language gets broken apart and remade, and how that affects our search.
 
-This twist on "The quick brown fox jumps over the lazy dog" will serve as our test case. It contains most of the elements that make tokenization interesting: capitalization, punctuation, and words that will transform as they move through the pipeline. By the time we're done, this sentence will look different, but it will be perfectly prepared for search.
+This twist on "The quick brown fox jumps over the lazy dog" will serve as our test case. It contains most of the elements that make tokenization interesting: capitalization, punctuation, an accent, and words that will transform as they move through the pipeline. By the time we're done, this sentence will look different, but it will be perfectly prepared for search.
 
 <TokenizerDemo
   mode="display"
-  defaultText="The database jumped over the lazy dog!"
+  defaultText="The full-text database jumped over the lazy café dog"
 />
 
 <p />
 <Note>
-  This pipeline is the same for most lexical search implementations. Order and
-  naming may differ, and different options may be on or off by default, but the
-  same high-level steps remain regardless of if you’re talking about
-  Lucene/Elasticsearch, Tantivy/ParadeDB, or even something more basic like
-  Postgres full-text search.
+  This isn’t a complete pipeline, just a look at some of the common filters
+  you’ll find in lexical search systems. Different databases and search engines
+  expose many of these filters as composable building blocks that you can
+  enable, disable, or reorder to suit your needs. The same general ideas apply
+  whether you’re using Lucene/Elasticsearch, Tantivy/ParadeDB, or Postgres
+  full-text search.
 </Note>
 
-## Character Filtering
+## Filtering Text With Case and Character Folding
 
-Before we even think about breaking our text down we need to think about rejecting anything which isn’t useful. This usually means filtering the characters which make up our text string, removing punctuation, and transforming all letters to lower-case.
+Before we even think about breaking our text down we need to think about transforming anything which isn’t useful. This usually means filtering the characters which make up our text string: transforming all letters to lower-case, and if we know we might have them folding any diacritics (like in résumé, façade, or noël) to their base letter.
 
-This ensures that we don’t end up with any tokens like `dog!` in our search string or index, but it can present problems for words like `full-text` . The behavior for hyphenated words is entirely dependent on the tokenizer being used.
+This ensures that characters are normalized and consistent before tokenization begins. Words like `Café` become `cafe` and `résumé` becomes `resume`, which allows searches to match regardless of how the original text was accented. Lowercasing our text makes sure that `database` will match with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
 
-Lowercasing our text makes sure that `database` will match with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
+Let’s take a look at how our input string is transformed. We are replacing the capital T with a lower-case one, and also folding the `é` to an `e`. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
 
-Let’s take a look at how our input string is transformed by character filtering. We are replacing the capital T with a lower-case one, and also removing the exclamation mark. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
+<TokenizerDemo mode="character-filtering" defaultText="The full-text database jumped over the lazy café dog"/>
 
-<TokenizerDemo mode="character-filtering" defaultText="The database jumped over the lazy dog!"/>
-<p />
-<Note>
-
-In ParadeDB character filtering is controlled by the base tokenizer which is configured for the `bm25` index. The `default` tokenizer replaces punctuation, but different tokenizers have slightly different behaviors:
-
-- `source_code` doesn’t remove punctuation which might have meaning in source code.
-- `whitespace` doesn’t remove punctuation
-
-All tokenizers replace upper-case by default. You can read more about [how to enable tokenizers here](https://docs.paradedb.com/documentation/indexing/tokenizers).
-
-</Note>
+Of course there are a lot more filters which may happen here, but for the sake of brevity lets move on.
 
 ## Splitting Text Into Searchable Pieces with Tokenization
 
 The tokenization phase takes our filtered text and splits it up into indexable units. This is where we move from dealing with a sentence as a single unit to treating it as a collection of discrete, searchable parts called tokens.
 
-The most common approach is simple whitespace tokenization: split on spaces and you have your tokens. But even this seemingly straightforward step has nuances. What about tabs? Line breaks? Multiple spaces in a row? Different tokenizers handle these edge cases differently, which is why understanding your search engine's tokenization behavior matters when you're debugging why a search didn't return expected results.
+The most common approach for English text is simple whitespace and punctuation tokenization: split on spaces and marks, and you’ve got tokens. But even this basic step has nuances—tabs, line breaks, or hyphenated words like full-text can all behave differently. Each system has its quirks: the default Lucene tokenizer turns `it’s` into `[it's]`, while the default Tantivy one splits into `[it, s]`.
 
 Generally speaking there are three classes of tokenizers:
 
@@ -68,11 +58,11 @@ Generally speaking there are three classes of tokenizers:
 
 3. **Structured Text Tokenizers** are designed for specific data formats like URLs, email addresses, file paths, or structured data. They preserve meaningful delimiters and handle domain-specific patterns that would be mangled by general-purpose tokenizers. These can be essential when your content contains non-prose text that needs special handling.
 
-For our example we will be using a simple English whitespace tokenizer, but you can also toggle to a trigram (an n-gram with a length of 3) tokenizer below to get a feel for how different the output would be.
+For our example we will be using a simple tokenizer, but you can also toggle to a trigram (an n-gram with a length of 3) tokenizer below to get a feel for how different the output would be.
 
 <TokenizerDemo
   mode="tokenization"
-  defaultText="the database jumped over the lazy dog"
+  defaultText="the full-text database jumped over the lazy cafe dog"
 />
 
 ## Throwing Out Filler With Stopwords
@@ -83,20 +73,20 @@ This is not without risk. In _The Who_, "the" matters. That's why stopword lists
 
 <TokenizerDemo
   mode="stopwords"
-  defaultText="the database jumped over the lazy dog"
+  defaultText="the full text database jumped over the lazy cafe dog"
 />
 
-Notice how removing stopwords immediately makes our token list more focused. We've gone from eight tokens to four, and what remains carries more semantic weight. In this case "Quick," "database," and "jumped" tell us much more about the content than "the" ever could.
+Notice how removing stopwords immediately makes our token list more focused. We've gone from nine tokens to six, and what remains carries more semantic weight. 
 
-## Cutting Down to the Root
+## Cutting Down to the Root with Stemming
 
-`Jump`, `jumps`, `jumped`, `jumping`. Humans see the connection instantly. Computers don't, unless we give them a way.
+`Jump`, `jumps`, `jumped`, `jumping`. Humans see the connection instantly. Computers don't, unless we give them a way [^1].
 
-Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from Martin Porter's 1980 algorithm, which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure.
+Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from Martin Porter's 1980 algorithm, which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure. Today many stemmers are based on the Snowball variant.
 
 The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach.
 
-<TokenizerDemo mode="stemming" defaultText="database jumped lazy dog" />
+<TokenizerDemo mode="stemming" defaultText="full text database jumped lazy cafe dog" />
 
 Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept.
 
@@ -104,15 +94,17 @@ Here's the final transformation: our tokens have been reduced to their essential
 
 Our sentence has traveled through the complete pipeline. What started as _"The database jumped over the lazy dog!"_ has been transformed through each stage: stripped of punctuation and capitalization, split into individual words, filtered of common stopwords, and finally reduced to stems.
 
-The result is a clean set of four tokens:
+The result is a clean set of five tokens:
 
 <TokenizerDemo
   mode="display"
   displayAsTokens={true}
-  defaultText="databas jump lazi dog"
+  defaultText="databas jump lazi cafe dog"
 />
 
 This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenize: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly.
+
+[^1]: Another way is vector search, which trades lexical stemming for searching over sematic meaning.
 
 ## Why Tokenization Matters
 
@@ -120,6 +112,6 @@ Tokenization doesn’t get the glory. Nobody brags about their stopword filter a
 
 Every search engine invests heavily here because everything else—scoring, ranking, relevance—depends on getting tokens right.
 
-When we say “tokenizing becomes token,” we mean this: the chaos of language reduced to a smaller set of consistent units. Not pretty, but precise: get this right, and everything else follows.
+When we say “tokenizing becomes token,” we mean this: the chaos of language reduced to a smaller set of consistent units. Not pretty, but precise; get this right, and everything else follows.
 
 [Get started with ParadeDB](https://paradedb.com) and see how modern search databases handle tokenization for you.
