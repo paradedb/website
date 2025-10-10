@@ -36,7 +36,7 @@ This twist on "The quick brown fox jumps over the lazy dog" will serve as our te
 
 Before we even think about breaking our text down we need to think about transforming anything which isn’t useful. This usually means filtering the characters which make up our text string: transforming all letters to lower-case, and if we know we might have them folding any diacritics (like in résumé, façade, or noël) to their base letter.
 
-This ensures that characters are normalized and consistent before tokenization begins. Words like `Café` become `cafe` and `résumé` becomes `resume`, which allows searches to match regardless of how the original text was accented. Lowercasing our text makes sure that `database` will match with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exeptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
+This ensures that characters are normalized and consistent before tokenization begins. Words like `Café` become `cafe` and `résumé` becomes `resume`, which allows searches to match regardless of how the original text was accented. Lowercasing our text makes sure that `database` will match with `Database`, but sometimes it might have some undesired results like matching `Olive` (the name) with `olive` (the delicious snack). Generally speaking, this is a risk people are willing to take: false positives are more acceptable than false negatives. There are some exceptions here of course, code-search would need to know about certain symbols and would often need to search on camelCase or PascalCase.
 
 Let’s take a look at how our input string is transformed. We are replacing the capital T with a lower-case one, and also folding the `é` to an `e`. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
 
@@ -55,7 +55,7 @@ The most common approach for English text is simple whitespace and punctuation t
 
 Generally speaking there are three classes of tokenizers:
 
-1. **Word oriented tokenizers** break text into individual words at word boundaries. This includes simple whitespace tokenizers that split on spaces, as well as more sophisticated language-aware tokenizers that understand non-English character sets. These work well for most search applications where you want to match whole words.
+1. **Word oriented tokenizers** break text into individual words at word boundaries. This includes simple whitespace tokenizers that split on spaces, as well as more sophisticated language-aware tokenizers that understand non-English character sets[^1] . These work well for most search applications where you want to match whole words.
 
 2. **Partial Word Tokenizers** split words into smaller fragments, useful for matching parts of words or handling compound terms. N-gram tokenizers create overlapping character sequences, while edge n-gram tokenizers focus on prefixes or suffixes. These are powerful for autocomplete features and fuzzy matching but can create noise in search results.
 
@@ -83,18 +83,18 @@ Notice how removing stopwords immediately makes our token list more focused. We'
 
 ## Cutting Down to the Root with Stemming
 
-`Jump`, `jumps`, `jumped`, `jumping`. Humans see the connection instantly. Computers don't, unless we give them a way [^1].
+`Jump`, `jumps`, `jumped`, `jumping`. Humans see the connection instantly. Computers don't, unless we give them a way[^2].
 
 Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from Martin Porter's 1980 algorithm, which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure. Today many stemmers are based on the Snowball variant.
 
-The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach.
+The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach. {/* * codespell:ignore databse * */}
 
 <TokenizerDemo
   mode="stemming"
   defaultText="full text database jumped lazy cafe dog"
 />
 
-Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept.
+Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept. {/* * codespell:ignore databse * */}
 
 ## The Final Tokens
 
@@ -105,12 +105,10 @@ The result is a clean set of five tokens:
 <TokenizerDemo
   mode="display"
   displayAsTokens={true}
-  defaultText="databas jump lazi cafe dog"
+  defaultText="databas jump lazi cafe dog" {/* * codespell:ignore databse * */}
 />
 
-This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenize: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly.
-
-[^1]: Another way is vector search, which trades lexical stemming for searching over sematic meaning.
+This transformation is applied to any data we store in our inverted index, and also to our queries. When someone searches for "databases are jumping," that query gets tokenized: lowercased, split, stopwords removed, and stemmed. It becomes `databas` and `jump`, which will match our indexed content perfectly. {/* * codespell:ignore databse * */}
 
 ## Why Tokenization Matters
 
@@ -121,3 +119,9 @@ Every search engine invests heavily here because everything else—scoring, rank
 When we say “tokenizing becomes token,” we mean this: the chaos of language reduced to a smaller set of consistent units. Not pretty, but precise; get this right, and everything else follows.
 
 [Get started with ParadeDB](https://paradedb.com) and see how modern search databases handle tokenization for you.
+
+## <p />
+
+[^1]: General purpose morphological libraries like [Jieba](https://github.com/fxsjy/jieba) and [Lindera](https://github.com/lindera/lindera) are often used to provide tokenizers that can deal with Chinese, Korean, Japanese and characters.
+
+[^2]: Another method is vector search, which trades lexical stemming for searching over semantic meaning.
