@@ -40,6 +40,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       : [],
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const outputRef = useRef<HTMLDivElement>(null);
   const [isClient, setIsClient] = useState(false);
 
   // Set client flag after hydration
@@ -47,17 +48,43 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
     setIsClient(true);
   }, []);
 
-  // Auto-resize textarea on mobile only when text wraps
+  // Auto-resize textarea on mobile and ensure proper height calculation
   useEffect(() => {
-    if (textareaRef.current && isClient && window.innerWidth <= 768) {
+    if (textareaRef.current && isClient) {
       const target = textareaRef.current;
-      setTimeout(() => {
-        if (target.scrollHeight > 50) {
-          target.style.height = target.scrollHeight + "px";
-        }
-      }, 0);
+      // Reset height to auto to recalculate
+      target.style.height = "auto";
+      // Set to scrollHeight or minimum height
+      const newHeight = Math.max(50, target.scrollHeight);
+      target.style.height = newHeight + "px";
     }
   }, [text, isClient]);
+
+
+  // Force re-render on window resize to handle mobile rotation
+  useEffect(() => {
+    const handleResize = () => {
+      if (textareaRef.current && isClient) {
+        const target = textareaRef.current;
+        setTimeout(() => {
+          target.style.height = "auto";
+          const newHeight = Math.max(50, target.scrollHeight);
+          target.style.height = newHeight + "px";
+        }, 100);
+      }
+      if (outputRef.current && isClient) {
+        const target = outputRef.current;
+        setTimeout(() => {
+          target.style.height = "auto";
+          const newHeight = Math.max(50, target.scrollHeight);
+          target.style.height = newHeight + "px";
+        }, 100);
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [isClient]);
 
   const processText = useMemo(() => {
     switch (mode) {
@@ -163,6 +190,17 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
     }
     return null;
   }, [processText, mode]);
+
+  // Auto-resize output box when content changes
+  useEffect(() => {
+    if (outputRef.current && isClient) {
+      const target = outputRef.current;
+      // Force recalculation by temporarily setting height to auto
+      target.style.height = "auto";
+      const newHeight = Math.max(50, target.scrollHeight);
+      target.style.height = newHeight + "px";
+    }
+  }, [processText, isClient, mode]);
 
   const getLabel = () => {
     switch (mode) {
@@ -335,6 +373,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           }
           .processed-text {
             min-height: 50px;
+            height: auto !important;
           }
         }
 
@@ -427,6 +466,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
             </div>
           ) : (
             <div
+              ref={outputRef}
               className="processed-text"
               style={{
                 backgroundColor: "white",
@@ -798,6 +838,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
         </>
       ) : (
         <div
+          ref={outputRef}
           className="processed-text"
           style={{
             backgroundColor: "white",
