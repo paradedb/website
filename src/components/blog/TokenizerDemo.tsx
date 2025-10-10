@@ -31,13 +31,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       .map((token) => token.trim())
       .filter((token) => token.length > 0),
   );
-  const [tokenInput, setTokenInput] = useState(() =>
-    defaultText
-      .split(/[\s,]+/)
-      .map((token) => token.trim())
-      .filter((token) => token.length > 0)
-      .join(" "),
-  );
   const [stopwordTokens, setStopwordTokens] = useState<string[]>(() =>
     mode === "stopwords"
       ? defaultText
@@ -45,9 +38,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           .map((token) => token.trim())
           .filter((token) => token.length > 0)
       : [],
-  );
-  const [stopwordInput, setStopwordInput] = useState(() =>
-    mode === "stopwords" ? defaultText : "",
   );
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [isClient, setIsClient] = useState(false);
@@ -69,16 +59,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
     }
   }, [text, isClient]);
 
-  // Calculate text width for cursor positioning
-  const getTextWidth = (text: string) => {
-    if (typeof document === "undefined") return text.length * 8;
-    const canvas = document.createElement("canvas");
-    const context = canvas.getContext("2d");
-    if (!context) return text.length * 8;
-    context.font = "16px Arial";
-    return context.measureText(text).width;
-  };
-
   const processText = useMemo(() => {
     switch (mode) {
       case "character-filtering":
@@ -91,7 +71,9 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
 
       case "tokenization":
         if (tokenizationMethod === "whitespace") {
-          return text.split(/[\s\p{P}]+/u).filter((token) => token.length > 0);
+          return text
+            .split(/[\s.,;:!?()[\]{}'"]+/)
+            .filter((token) => token.length > 0);
         } else {
           // trigram
           const cleanText = text.replace(/\s+/g, " ").trim();
@@ -492,10 +474,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
 
                       if (mode === "stemming") {
                         setInputTokens(filtered);
-                        setTokenInput(filtered.join(" "));
                       } else {
                         setStopwordTokens(filtered);
-                        setStopwordInput(filtered.join(" "));
                       }
 
                       setTimeout(() => {
@@ -510,10 +490,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                     } else {
                       if (mode === "stemming") {
                         setInputTokens(tokens);
-                        setTokenInput(tokens.join(" "));
                       } else {
                         setStopwordTokens(tokens);
-                        setStopwordInput(tokens.join(" "));
                       }
                     }
                   }}
@@ -529,14 +507,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
 
                       if (mode === "stemming") {
                         setInputTokens(tokens);
-                        setTokenInput(
-                          tokens.filter((t) => t.length > 0).join(" "),
-                        );
                       } else {
                         setStopwordTokens(tokens);
-                        setStopwordInput(
-                          tokens.filter((t) => t.length > 0).join(" "),
-                        );
                       }
 
                       setTimeout(() => {
@@ -556,10 +528,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                       const filtered = tokens.filter((_, i) => i !== index);
                       if (mode === "stemming") {
                         setInputTokens(filtered);
-                        setTokenInput(filtered.join(" "));
                       } else {
                         setStopwordTokens(filtered);
-                        setStopwordInput(filtered.join(" "));
                       }
                     }
                   }}
