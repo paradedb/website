@@ -69,7 +69,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
     }
   }, [text, isClient]);
 
-
   // Calculate text width for cursor positioning
   const getTextWidth = (text: string) => {
     if (typeof document === "undefined") return text.length * 8;
@@ -190,7 +189,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="tokenizer-demo"
       style={{
         fontFamily: "Arial, sans-serif",
@@ -382,7 +381,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           color: #666;
         }
 
-
         .editable-token {
           background-color: white;
           border: 3px solid #28a745;
@@ -414,20 +412,20 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       <div className="controls">
         {mode === "display" ? (
           displayAsTokens ? (
-            <div 
-            className="tokenized-text"
-            style={{
-              width: "fit-content",
-              margin: "4px auto 2px",
-              padding: "8px 0",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "8px",
-              alignItems: "center",
-              justifyContent: "center",
-              maxWidth: "90%",
-            }}
-          >
+            <div
+              className="tokenized-text"
+              style={{
+                width: "fit-content",
+                margin: "4px auto 2px",
+                padding: "8px 0",
+                display: "flex",
+                flexWrap: "wrap",
+                gap: "8px",
+                alignItems: "center",
+                justifyContent: "center",
+                maxWidth: "90%",
+              }}
+            >
               {(processText as string[]).map((token, index) => (
                 <span key={`${token}-${index}`} className="token">
                   {token}
@@ -435,7 +433,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               ))}
             </div>
           ) : (
-            <div 
+            <div
               className="processed-text"
               style={{
                 backgroundColor: "white",
@@ -454,10 +452,12 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                 boxSizing: "border-box",
                 lineHeight: "1.2",
               }}
-            >{defaultText}</div>
+            >
+              {defaultText}
+            </div>
           )
         ) : mode === "stemming" || mode === "stopwords" ? (
-          <div 
+          <div
             className="tokenized-text"
             style={{
               width: "fit-content",
@@ -479,14 +479,17 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                   value={token || ""}
                   onChange={(e) => {
                     const newValue = e.target.value;
-                    const tokens = mode === "stemming" ? [...inputTokens] : [...stopwordTokens];
+                    const tokens =
+                      mode === "stemming"
+                        ? [...inputTokens]
+                        : [...stopwordTokens];
                     tokens[index] = newValue;
-                    
+
                     // If box becomes empty and there are other boxes, remove it and focus left
                     if (newValue === "" && tokens.length > 1) {
                       const parent = e.currentTarget.parentElement;
                       const filtered = tokens.filter((_, i) => i !== index);
-                      
+
                       if (mode === "stemming") {
                         setInputTokens(filtered);
                         setTokenInput(filtered.join(" "));
@@ -494,11 +497,13 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                         setStopwordTokens(filtered);
                         setStopwordInput(filtered.join(" "));
                       }
-                      
+
                       setTimeout(() => {
                         const leftIndex = Math.max(0, index - 1);
                         if (parent && parent.children[leftIndex]) {
-                          const leftInput = parent.children[leftIndex] as HTMLInputElement;
+                          const leftInput = parent.children[
+                            leftIndex
+                          ] as HTMLInputElement;
                           leftInput.focus();
                         }
                       }, 0);
@@ -516,27 +521,37 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                     if (e.key === " ") {
                       e.preventDefault();
                       const parent = e.currentTarget.parentElement;
-                      const tokens = mode === "stemming" ? [...inputTokens] : [...stopwordTokens];
+                      const tokens =
+                        mode === "stemming"
+                          ? [...inputTokens]
+                          : [...stopwordTokens];
                       tokens.splice(index + 1, 0, "");
-                      
+
                       if (mode === "stemming") {
                         setInputTokens(tokens);
-                        setTokenInput(tokens.filter(t => t.length > 0).join(" "));
+                        setTokenInput(
+                          tokens.filter((t) => t.length > 0).join(" "),
+                        );
                       } else {
                         setStopwordTokens(tokens);
-                        setStopwordInput(tokens.filter(t => t.length > 0).join(" "));
+                        setStopwordInput(
+                          tokens.filter((t) => t.length > 0).join(" "),
+                        );
                       }
-                      
+
                       setTimeout(() => {
                         if (parent && parent.children[index + 1]) {
-                          const nextInput = parent.children[index + 1] as HTMLInputElement;
+                          const nextInput = parent.children[
+                            index + 1
+                          ] as HTMLInputElement;
                           nextInput.focus();
                         }
                       }, 0);
                     }
                   }}
                   onBlur={() => {
-                    const tokens = mode === "stemming" ? inputTokens : stopwordTokens;
+                    const tokens =
+                      mode === "stemming" ? inputTokens : stopwordTokens;
                     if (token === "" && tokens.length > 1) {
                       const filtered = tokens.filter((_, i) => i !== index);
                       if (mode === "stemming") {
@@ -555,22 +570,31 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
                       const context = canvas.getContext("2d");
                       if (context) {
                         context.font = "16px Arial";
-                        const textWidth = context.measureText(target.value || "a").width;
-                        target.style.width = Math.max(40, textWidth + 26) + "px";
+                        const textWidth = context.measureText(
+                          target.value || "a",
+                        ).width;
+                        target.style.width =
+                          Math.max(40, textWidth + 26) + "px";
                       }
                     }
                   }}
                   style={{
-                    width: isClient ? (() => {
-                      const canvas = document.createElement("canvas");
-                      const context = canvas.getContext("2d");
-                      if (context) {
-                        context.font = "16px Arial";
-                        const textWidth = context.measureText(token || "a").width;
-                        return Math.max(40, textWidth + 26) + "px";
-                      }
-                      return Math.max(40, (token?.length || 1) * 9 + 26) + "px";
-                    })() : Math.max(40, (token?.length || 1) * 9 + 26) + "px",
+                    width: isClient
+                      ? (() => {
+                          const canvas = document.createElement("canvas");
+                          const context = canvas.getContext("2d");
+                          if (context) {
+                            context.font = "16px Arial";
+                            const textWidth = context.measureText(
+                              token || "a",
+                            ).width;
+                            return Math.max(40, textWidth + 26) + "px";
+                          }
+                          return (
+                            Math.max(40, (token?.length || 1) * 9 + 26) + "px"
+                          );
+                        })()
+                      : Math.max(40, (token?.length || 1) * 9 + 26) + "px",
                     backgroundColor: "white",
                     border: "3px solid #28a745",
                     borderRadius: "8px",
@@ -625,13 +649,14 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               const target = e.target as HTMLTextAreaElement;
               const minHeight = 50;
               target.style.height = minHeight + "px";
-              target.style.height = Math.max(minHeight, target.scrollHeight) + "px";
+              target.style.height =
+                Math.max(minHeight, target.scrollHeight) + "px";
             }}
           />
         )}
 
         {mode === "tokenization" && (
-          <div 
+          <div
             className="method-selector"
             style={{
               display: "flex",
@@ -644,7 +669,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               className={`method-button ${tokenizationMethod === "whitespace" ? "active" : ""}`}
               onClick={() => setTokenizationMethod("whitespace")}
               style={{
-                backgroundColor: tokenizationMethod === "whitespace" ? "#4a90e2" : "white",
+                backgroundColor:
+                  tokenizationMethod === "whitespace" ? "#4a90e2" : "white",
                 border: `2px solid ${tokenizationMethod === "whitespace" ? "#4a90e2" : "#666"}`,
                 borderRadius: "8px",
                 padding: "6px 12px",
@@ -660,7 +686,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               className={`method-button ${tokenizationMethod === "trigram" ? "active" : ""}`}
               onClick={() => setTokenizationMethod("trigram")}
               style={{
-                backgroundColor: tokenizationMethod === "trigram" ? "#4a90e2" : "white",
+                backgroundColor:
+                  tokenizationMethod === "trigram" ? "#4a90e2" : "white",
                 border: `2px solid ${tokenizationMethod === "trigram" ? "#4a90e2" : "#666"}`,
                 borderRadius: "8px",
                 padding: "6px 12px",
@@ -677,7 +704,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       </div>
 
       {mode !== "display" && (
-        <div 
+        <div
           className="arrow-container"
           style={{
             textAlign: "center",
@@ -689,7 +716,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
             backgroundColor: "white",
           }}
         >
-          <div 
+          <div
             className="arrow"
             style={{
               fontSize: "24px",
@@ -698,21 +725,25 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               margin: "0",
               padding: "0",
             }}
-          >↓</div>
-          <div 
+          >
+            ↓
+          </div>
+          <div
             className="arrow-label"
             style={{
               fontSize: "12px",
               color: "#666",
               fontWeight: "normal",
             }}
-          >{getLabel()}</div>
+          >
+            {getLabel()}
+          </div>
         </div>
       )}
 
       {mode === "display" ? null : mode === "tokenization" ? (
         <>
-          <div 
+          <div
             className="tokenized-text"
             style={{
               width: "fit-content",
@@ -738,7 +769,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
         </>
       ) : mode === "stemming" && stemmedTokens ? (
         <>
-          <div 
+          <div
             className="tokenized-text"
             style={{
               width: "fit-content",
@@ -762,7 +793,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
         </>
       ) : mode === "stopwords" && filteredTokens ? (
         <>
-          <div 
+          <div
             className="tokenized-text"
             style={{
               width: "fit-content",
@@ -785,7 +816,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           <div className="token-count">{filteredTokens.length} tokens</div>
         </>
       ) : (
-        <div 
+        <div
           className="processed-text"
           style={{
             backgroundColor: "white",
@@ -804,7 +835,9 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
             boxSizing: "border-box",
             lineHeight: "1.2",
           }}
-        >{processText as string}</div>
+        >
+          {processText as string}
+        </div>
       )}
     </div>
   );
