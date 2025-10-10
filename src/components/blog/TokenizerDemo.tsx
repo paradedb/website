@@ -72,7 +72,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       case "tokenization":
         if (tokenizationMethod === "whitespace") {
           return text
-            .split(/[\s.,;:!?()[\]{}'"]+/)
+            .split(/[\s.,;:!?()[\]{}'"-]+/)
             .filter((token) => token.length > 0);
         } else {
           // trigram
@@ -123,28 +123,39 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
   const filteredTokens = useMemo(() => {
     if (mode === "stopwords" && Array.isArray(processText)) {
       const stopwords = [
-        "the",
         "a",
         "an",
         "and",
-        "or",
-        "but",
-        "in",
-        "on",
-        "at",
-        "to",
-        "for",
-        "of",
-        "with",
-        "by",
-        "is",
         "are",
-        "was",
-        "were",
-        "this",
+        "as",
+        "at",
+        "be",
+        "but",
+        "by",
+        "for",
+        "if",
+        "in",
+        "into",
+        "is",
+        "it",
+        "no",
+        "not",
+        "of",
+        "on",
+        "or",
+        "such",
         "that",
-        "over",
-        "under",
+        "the",
+        "their",
+        "then",
+        "there",
+        "these",
+        "they",
+        "this",
+        "to",
+        "was",
+        "will",
+        "with",
       ];
       return processText.filter(
         (word) => !stopwords.includes(word.toLowerCase()),
@@ -159,7 +170,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
         return "lowercase & fold diacritics";
       case "tokenization":
         return tokenizationMethod === "whitespace"
-          ? "split on whitespace"
+          ? "split on whitespace and punctuation"
           : "trigram tokenization";
       case "stemming":
         return "porter stemming";
