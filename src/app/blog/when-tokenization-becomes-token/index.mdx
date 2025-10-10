@@ -89,7 +89,7 @@ Notice how removing stopwords immediately makes our token list more focused? We'
 
 Enter stemming. A stemmer is a rule-based machine that chops words down to a common core. Sometimes this happens elegantly, and sometimes it happens brutally. The foundation for most modern English stemming comes from [Martin Porter's 1980 algorithm](https://www.cs.toronto.edu/~frank/csc2501/Readings/R2_Porter/Porter-1980.pdf), which defined the approach that gave search engines consistent rules for stripping suffixes while respecting word structure. Today many stemmers are based on the [Snowball](https://snowballstem.org/) variant.
 
-The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach[^5]. {/* * codespell:ignore databas * */}
+The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one[^5]. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach[^6]. {/* * codespell:ignore databas * */}
 
 <TokenizerDemo
   mode="stemming"
@@ -128,5 +128,7 @@ When we say “tokenizing becomes token,” we mean this: the chaos of language 
 [^3]: Lucene and Tantivy both have stopwords off by default, and when enabled for English they use the same default list: `[a, an, and, are, as, at, be, but, by, for, if, in,into, is, it, no, not, of, on, or, such, that, the, their, then, there, these, they, this, to, was, will, with]`
 
 [^4]: Another method is vector search, which trades lexical stemming for searching over semantic meaning.
+
+[^5]: Words can also be overstemmed, consider `university` and `universe` which both stem to `univers`, but have very different meanings.
 
 [^5]: [Lemmatization](https://en.wikipedia.org/wiki/Lemmatization) uses actual word lists to make sure it only makes real words. To do this it accurately it needs to know the "part of speech" the source word is (noun, verb, etc..).
