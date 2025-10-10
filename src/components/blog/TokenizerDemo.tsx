@@ -248,7 +248,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           background-color: white;
           border: 3px solid #4a90e2;
           border-radius: 15px;
-          padding: 0 10px;
+          padding: 13px 10px;
           font-size: 16px;
           font-weight: normal;
           color: #333;
@@ -263,10 +263,11 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
           overflow-wrap: break-word;
           text-align: center;
           box-sizing: border-box;
-          line-height: 1.2;
-          padding: 16px 10px;
+          line-height: 1.4;
           height: auto;
           caret-color: auto;
+          display: flex;
+          align-items: center;
         }
 
         .method-selector {
@@ -650,7 +651,7 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               backgroundColor: "white",
               border: "3px solid #4a90e2",
               borderRadius: "15px",
-              padding: "16px 10px",
+              padding: "13px 10px",
               fontSize: "16px",
               color: "#333",
               width: "100%",
@@ -662,8 +663,10 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
               overflow: "hidden",
               textAlign: "center",
               boxSizing: "border-box",
-              lineHeight: "1.2",
+              lineHeight: "1.4",
               caretColor: "auto",
+              display: "flex",
+              alignItems: "center",
             }}
             onInput={(e) => {
               const target = e.target as HTMLTextAreaElement;
