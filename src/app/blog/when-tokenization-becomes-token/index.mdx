@@ -40,7 +40,10 @@ This ensures that characters are normalized and consistent before tokenization b
 
 Let’s take a look at how our input string is transformed. We are replacing the capital T with a lower-case one, and also folding the `é` to an `e`. Nothing too surprising here. All of these boxes are interactive, so feel free to put in your own sentences to see the results.
 
-<TokenizerDemo mode="character-filtering" defaultText="The full-text database jumped over the lazy café dog"/>
+<TokenizerDemo
+  mode="character-filtering"
+  defaultText="The full-text database jumped over the lazy café dog"
+/>
 
 Of course there are a lot more filters which may happen here, but for the sake of brevity lets move on.
 
@@ -76,7 +79,7 @@ This is not without risk. In _The Who_, "the" matters. That's why stopword lists
   defaultText="the full text database jumped over the lazy cafe dog"
 />
 
-Notice how removing stopwords immediately makes our token list more focused. We've gone from nine tokens to six, and what remains carries more semantic weight. 
+Notice how removing stopwords immediately makes our token list more focused. We've gone from nine tokens to six, and what remains carries more semantic weight.
 
 ## Cutting Down to the Root with Stemming
 
@@ -86,7 +89,10 @@ Enter stemming. A stemmer is a rule-based machine that chops words down to a com
 
 The results can look odd. `Database` becomes `databas,` `lazy` becomes `lazi.` But that's okay because stemmers don't care about aesthetics, they care about consistency. If every form of `lazy` collapses to `lazi,` the search engine can treat them as one. There's also lemmatization, which uses linguistic knowledge to convert words to their dictionary forms, but it's more complex and computationally expensive than stemming's "good enough" approach.
 
-<TokenizerDemo mode="stemming" defaultText="full text database jumped lazy cafe dog" />
+<TokenizerDemo
+  mode="stemming"
+  defaultText="full text database jumped lazy cafe dog"
+/>
 
 Here's the final transformation: our tokens have been reduced to their essential stems. `Jumped` becomes `jump,` `lazy` becomes `lazi,` and `database` becomes `databas.` These stems might not look like real words, but they serve a crucial purpose: they're consistent. Whether someone searches for `jumping,` `jumped,` or `jumps,` they'll all reduce to `jump` and match our indexed content. This is the power of stemming: bridging the gap between the many ways humans express the same concept.
 
