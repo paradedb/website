@@ -60,7 +60,6 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
     }
   }, [text, isClient]);
 
-
   // Force re-render on window resize to handle mobile rotation
   useEffect(() => {
     const handleResize = () => {
@@ -82,8 +81,8 @@ const TokenizerDemo: React.FC<TokenizerDemoProps> = ({
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, [isClient]);
 
   const processText = useMemo(() => {
