@@ -1,0 +1,7 @@
+{
+  "title": "From Text to Token: How Tokenization Pipelines Work",
+  "date": "2025-10-10T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Understanding how search engines transform text into tokens through character filtering, tokenization, stemming, and stopword removal.",
+  "categories": ["search", "full-text search", "elasticsearch", "tokenization"]
+}
