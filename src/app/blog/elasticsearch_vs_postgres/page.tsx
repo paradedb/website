@@ -1,3 +1,5 @@
+"use client";
+
 import BlogPostWrapper from "../BlogPostWrapper";
 import BlogContent from "./index.mdx";
 

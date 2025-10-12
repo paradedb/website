@@ -1,0 +1,135 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+BM25 is a ranking function for document search that ranks documents by relevance. For a complete explanation of how BM25 works, see our [BM25 concepts guide](/learn/search-concepts/bm25).
+
+While PostgreSQL supports full-text search with `ts_rank`, BM25 can provide better search relevance through the `pg_search` extension. This article compares PostgreSQL's native ranking with BM25 and shows how to implement BM25 in PostgreSQL.
+
+## BM25 vs PostgreSQL's Built-in Search
+
+## PostgreSQL Built-in Search vs BM25
+
+PostgreSQL includes built-in full-text search capabilities that use `ts_rank` for relevance scoring. Understanding the differences between PostgreSQL's native approach and BM25 helps determine when to use each.
+
+### PostgreSQL's Built-in Ranking
+
+PostgreSQL's full-text search stores documents as `tsvector` which contains term frequencies (TF) but lacks inverse document frequency (IDF) data. This fundamental limitation affects ranking quality.
+
+PostgreSQL provides two ranking functions:
+
+- **`ts_rank`**: Ranks based on term frequency within documents
+- **`ts_rank_cd`**: Adds "cover density" (term proximity) to the scoring
+
+```sql
+-- Basic term frequency ranking
+SELECT title, ts_rank(to_tsvector('english', content), plainto_tsquery('database optimization'))
+FROM articles
+WHERE to_tsvector('english', content) @@ plainto_tsquery('database optimization')
+ORDER BY ts_rank(to_tsvector('english', content), plainto_tsquery('database optimization')) DESC;
+
+-- Cover density ranking (considers term proximity)
+SELECT title, ts_rank_cd(to_tsvector('english', content), plainto_tsquery('database optimization'))
+FROM articles
+WHERE to_tsvector('english', content) @@ plainto_tsquery('database optimization')
+ORDER BY ts_rank_cd(to_tsvector('english', content), plainto_tsquery('database optimization')) DESC;
+```
+
+### Technical Limitations of tsvector
+
+The `tsvector` data structure has inherent limitations:
+
+- **No corpus statistics**: Cannot calculate how rare or common terms are across the entire dataset
+- **Missing IDF component**: Without inverse document frequency, common words like "the" carry the same weight as rare technical terms
+- **Expensive ranking**: Must consult the `tsvector` of each matching document during ranking, making it computationally expensive for large result sets
+
+### BM25 with pg_search
+
+BM25 addresses these limitations by storing corpus-wide statistics alongside document data. The `pg_search` extension maintains:
+
+- **Global term frequencies**: Tracks how often each term appears across all documents
+- **Document length statistics**: Enables proper length normalization
+- **Precomputed IDF values**: Allows instant calculation of term rarity
+
+```sql
+SELECT id, title, paradedb.score(id)
+FROM articles
+WHERE articles @@@ 'database optimization'
+ORDER BY paradedb.score(id) DESC;
+```
+
+While PostgreSQL's GIN indexes are optimized for finding matching documents, they don't store the corpus statistics needed for advanced ranking. BM25 indexes are specifically designed for both retrieval and relevance scoring.
+
+### Why BM25 Often Outperforms PostgreSQL's Ranking
+
+**Document length normalization**: ts_rank treats a 100-word article and a 10,000-word article equally if they mention "database" the same number of times. BM25 recognizes that the shorter article is likely more focused and relevant.
+
+**Term saturation**: If a document mentions "optimization" 50 times, ts_rank keeps increasing the score linearly. BM25 recognizes diminishing returns—after a certain point, more mentions don't mean more relevance.
+
+**More sophisticated scoring**: While ts_rank_cd adds term proximity, BM25 uses more input signals and better heuristics for relevance scoring.
+
+**Performance at scale**: PostgreSQL's ranking becomes computationally expensive with large result sets. As noted in PostgreSQL documentation, ranking can be "I/O bound and therefore slow" with millions of rows.
+
+### Performance Considerations
+
+PostgreSQL's full-text search has limitations at scale:
+
+- Ranking degrades with large result sets
+- Can use sampling techniques (limit to first 10K matches) for better performance
+- Alternative ranking signals (upvotes, reviews, recency) may be needed
+- Aggressive stop word filtering improves relevance
+
+## How BM25 Works in pg_search
+
+`pg_search` implements BM25 through [a custom index](https://docs.paradedb.com/welcome/architecture). When a table row is mutated, the BM25 index is immediately updated, avoiding any lag between the source data and search index.
+
+The BM25 index uses an LSM tree structure with inverted index and columnar index branches. This structure is optimized for both read performance and write throughput, with support for parallelization.
+
+You can access BM25 ranking using the custom operator `@@@`:
+
+```sql
+SELECT id
+FROM dresses
+WHERE description @@@ 'shoes';
+```
+
+BM25 scores can be retrieved with the `paradedb.score` function:
+
+```sql
+SELECT id, paradedb.score(id)
+FROM dresses
+WHERE description @@@ 'linen'
+ORDER BY paradedb.score(id)
+LIMIT 5;
+```
+
+Scores can be combined across multiple tables:
+
+```sql
+SELECT o.order_id, paradedb.score(o.order_id) + paradedb.score(m.id) as score
+FROM orders o
+JOIN dresses d ON o.product_id = d.id
+WHERE o.customer_name @@@ 'Johnson' AND d.description @@@ 'linen'
+ORDER BY score DESC, o.order_id
+LIMIT 5;
+```
+
+## Practical Use Cases for BM25 in PostgreSQL
+
+BM25 in PostgreSQL addresses the limitations of built-in ranking while maintaining database integration:
+
+**Scholarly repositories**: BM25's document length normalization promotes focused papers over lengthy surveys, while IDF weighting highlights niche terminology. Unlike ts_rank, which might favor papers that repeat keywords, BM25 identifies truly relevant content.
+
+**E-commerce platforms**: For product search across millions of items, BM25's term saturation prevents keyword stuffing from skewing results, while its sophisticated scoring handles the performance challenges that make PostgreSQL's ts_rank "I/O bound" at scale.
+
+**Real-time accuracy**: Unlike external search engines requiring synchronization, BM25 in PostgreSQL operates on live data, eliminating stale results while providing superior relevance scoring.
+
+## Getting Started with BM25 in PostgreSQL
+
+To implement BM25 in PostgreSQL, install the `pg_search` extension. The extension provides BM25 indexing capabilities while maintaining PostgreSQL's ACID properties and real-time consistency. This approach eliminates the complexity of maintaining separate search infrastructure while providing modern search relevance scoring that outperforms PostgreSQL's built-in ranking functions.
+

@@ -1,0 +1,222 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+**Tokenization** is the process of breaking down text into individual, searchable units called tokens. It's the foundational step that transforms human language into a format that search engines can understand and match against queries. Without tokenization, a search for "running" wouldn't find documents containing "run" or "runner."
+
+Every search system applies tokenization to both the documents being indexed and the queries being searched. This ensures consistent processing and enables effective matching between search terms and content.
+
+## The Tokenization Process
+
+Tokenization involves several sequential steps that clean, normalize, and structure text:
+
+### 1. Text Normalization
+
+The first step standardizes text format by handling character variations and inconsistencies:
+
+```
+Input:  "The QUICK Brown Fox Jumps!"
+Output: "the quick brown fox jumps"
+```
+
+**Common normalizations:**
+- **Case folding:** Convert to lowercase for case-insensitive matching
+- **Accent removal:** Transform "café" to "cafe" 
+- **Punctuation stripping:** Remove or standardize punctuation marks
+- **Unicode normalization:** Handle different encodings of the same character
+
+### 2. Text Segmentation
+
+Next, the normalized text gets split into discrete tokens. The most common approach uses whitespace and punctuation as boundaries:
+
+```
+Input:  "the quick brown fox jumps"
+Tokens: ["the", "quick", "brown", "fox", "jumps"]
+```
+
+**Different segmentation strategies:**
+
+**Word-level tokenization** splits on word boundaries and works well for most languages that use spaces:
+```sql
+-- PostgreSQL example
+SELECT ts_lexize('english_stem', 'jumping');
+-- Result: {jump}
+```
+
+**Character n-grams** create overlapping sequences for partial matching:
+```
+Input:  "search"
+3-grams: ["sea", "ear", "arc", "rch"]
+```
+
+**Subword tokenization** handles compound words and unknown terms by breaking words into smaller meaningful units.
+
+### 3. Stopword Filtering
+
+Common words that appear frequently but carry little meaning get removed to focus on content-bearing terms:
+
+```
+Before: ["the", "quick", "brown", "fox", "jumps"]
+After:  ["quick", "brown", "fox", "jumps"]
+```
+
+Typical English stopwords include: "the", "and", "of", "to", "a", "in", "is", "it", "you", "that"
+
+<Note>
+  Modern ranking algorithms like BM25 automatically reduce the impact of frequent terms, making aggressive stopword removal less critical than in simpler systems.
+</Note>
+
+### 4. Stemming and Lemmatization
+
+The final step reduces words to their root forms to match different grammatical variations:
+
+**Stemming** uses rule-based algorithms to remove common suffixes:
+```
+running → run
+jumped  → jump
+better  → better
+```
+
+**Lemmatization** uses linguistic knowledge to find dictionary root forms:
+```
+running → run
+jumped  → jump
+better  → good
+```
+
+Most search engines use stemming because it's faster and simpler while providing good results.
+
+## Language-Specific Considerations
+
+Different languages require different tokenization approaches:
+
+**English and similar languages:** Space-delimited words work well with standard algorithms.
+
+**Chinese, Japanese, Korean:** No spaces between words require specialized segmentation algorithms.
+
+**German:** Compound words like "Donaudampfschifffahrtsgesellschaft" need special handling.
+
+**Arabic, Hebrew:** Right-to-left text and connected letters present unique challenges.
+
+## Implementation Examples
+
+### PostgreSQL Full-Text Search
+
+```sql
+-- Create and use tsvector for tokenization
+SELECT to_tsvector('english', 'The quick brown fox jumps over lazy dogs');
+-- Result: 'brown':3 'dog':8 'fox':4 'jump':5 'lazi':7 'quick':2
+
+-- Search with tsquery
+SELECT title FROM articles 
+WHERE to_tsvector('english', content) @@ to_tsquery('english', 'fox & jump');
+```
+
+### Elasticsearch/Lucene
+
+```json
+{
+  "analyzer": {
+    "custom_analyzer": {
+      "type": "custom",
+      "char_filter": ["html_strip"],
+      "tokenizer": "standard",
+      "filter": ["lowercase", "stemmer", "stop"]
+    }
+  }
+}
+```
+
+### ParadeDB
+
+```sql
+-- Create BM25 index with built-in tokenization
+CREATE INDEX articles_idx ON articles 
+USING bm25(title, content) WITH (key_field='id');
+
+-- Search uses automatic tokenization
+SELECT id, title, paradedb.score(id) as relevance
+FROM articles 
+WHERE articles @@@ 'quick fox jumping'
+ORDER BY relevance DESC;
+```
+
+## Impact on Search Quality
+
+Tokenization directly affects what users can find:
+
+**Over-stemming problems:**
+- "universe" and "university" both stem to "univers"
+- False matches reduce search precision
+
+**Under-stemming problems:**
+- "running" and "ran" don't match
+- Relevant results get missed
+
+**Language mismatches:**
+- Applying English rules to Spanish text
+- Produces poor tokenization quality
+
+## Configuring Tokenization
+
+Most search systems allow customization:
+
+**Choose appropriate language analyzers:**
+```sql
+-- PostgreSQL with German text search
+CREATE TEXT SEARCH CONFIGURATION german_config (COPY = german);
+```
+
+**Adjust stemming aggressiveness:**
+```python
+# Python NLTK example
+from nltk.stem import PorterStemmer, SnowballStemmer
+
+porter = PorterStemmer()
+snowball = SnowballStemmer('english')
+
+word = "running"
+print(porter.stem(word))    # run
+print(snowball.stem(word))  # run
+```
+
+**Custom stopword lists:**
+```json
+{
+  "filter": {
+    "custom_stop": {
+      "type": "stop",
+      "stopwords": ["custom", "domain", "specific", "terms"]
+    }
+  }
+}
+```
+
+## Testing and Optimization
+
+Effective tokenization requires testing with real content:
+
+1. **Analyze your content:** What languages, domains, and text types do you have?
+
+2. **Test with sample queries:** How do users actually search your content?
+
+3. **Monitor search analytics:** Which queries fail to find expected results?
+
+4. **Iterate on configuration:** Adjust tokenization settings based on performance
+
+```sql
+-- PostgreSQL: Test tokenization output
+SELECT ts_debug('english', 'Your sample text here');
+-- Shows each step of the tokenization process
+```
+
+## Summary
+
+Tokenization transforms the chaos of human language into the structured tokens that power search. While often invisible to users, the quality of tokenization fundamentally determines what content can be found and how well queries match documents.
+
+The key is finding the right balance for your content and use case: aggressive enough to match variations, conservative enough to maintain precision. Start with standard configurations and refine based on your specific content and user behavior.

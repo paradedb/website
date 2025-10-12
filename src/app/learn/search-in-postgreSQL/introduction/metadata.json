@@ -1,0 +1,9 @@
+{
+    "title": "Full-Text Search in PostgreSQL",
+    "date": "2024-10-06T00:00:00.000Z",
+    "author": "James Blackwood-Sewell",
+    "description": "Learn how PostgreSQL's built-in full-text search capabilities work and when to use them.",
+    "order": 1,
+    "hideHeroImage": true,
+    "hideAuthor": true
+}

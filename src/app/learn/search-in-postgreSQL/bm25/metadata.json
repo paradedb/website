@@ -1,0 +1,9 @@
+{
+    "title": "BM25 in PostgreSQL",
+    "date": "2024-10-06T00:00:00.000Z",
+    "author": "James Blackwood-Sewell",
+    "description": "Learn how to implement BM25 ranking in PostgreSQL using pg_search extension and compare it with PostgreSQL's built-in ts_rank function",
+    "order": 3,
+    "hideHeroImage": true,
+    "hideAuthor": true
+}
