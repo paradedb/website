@@ -15,15 +15,13 @@ export default function BlogPostWrapper({ children }: BlogPostWrapperProps) {
     const timer = setTimeout(() => {
       setContentLoaded(true);
     }, 100);
-    
+
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
-      <article className="prose w-full max-w-3xl">
-        {children}
-      </article>
+      <article className="prose w-full max-w-3xl">{children}</article>
       {contentLoaded && <TableOfContents />}
     </>
   );

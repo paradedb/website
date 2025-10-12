@@ -25,8 +25,9 @@ Output: "the quick brown fox jumps"
 ```
 
 **Common normalizations:**
+
 - **Case folding:** Convert to lowercase for case-insensitive matching
-- **Accent removal:** Transform "café" to "cafe" 
+- **Accent removal:** Transform "café" to "cafe"
 - **Punctuation stripping:** Remove or standardize punctuation marks
 - **Unicode normalization:** Handle different encodings of the same character
 
@@ -42,6 +43,7 @@ Tokens: ["the", "quick", "brown", "fox", "jumps"]
 **Different segmentation strategies:**
 
 **Word-level tokenization** splits on word boundaries and works well for most languages that use spaces:
+
 ```sql
 -- PostgreSQL example
 SELECT ts_lexize('english_stem', 'jumping');
@@ -49,6 +51,7 @@ SELECT ts_lexize('english_stem', 'jumping');
 ```
 
 **Character n-grams** create overlapping sequences for partial matching:
+
 ```
 Input:  "search"
 3-grams: ["sea", "ear", "arc", "rch"]
@@ -68,7 +71,9 @@ After:  ["quick", "brown", "fox", "jumps"]
 Typical English stopwords include: "the", "and", "of", "to", "a", "in", "is", "it", "you", "that"
 
 <Note>
-  Modern ranking algorithms like BM25 automatically reduce the impact of frequent terms, making aggressive stopword removal less critical than in simpler systems.
+  Modern ranking algorithms like BM25 automatically reduce the impact of
+  frequent terms, making aggressive stopword removal less critical than in
+  simpler systems.
 </Note>
 
 ### 4. Stemming and Lemmatization
@@ -76,6 +81,7 @@ Typical English stopwords include: "the", "and", "of", "to", "a", "in", "is", "i
 The final step reduces words to their root forms to match different grammatical variations:
 
 **Stemming** uses rule-based algorithms to remove common suffixes:
+
 ```
 running → run
 jumped  → jump
@@ -83,6 +89,7 @@ better  → better
 ```
 
 **Lemmatization** uses linguistic knowledge to find dictionary root forms:
+
 ```
 running → run
 jumped  → jump
@@ -113,7 +120,7 @@ SELECT to_tsvector('english', 'The quick brown fox jumps over lazy dogs');
 -- Result: 'brown':3 'dog':8 'fox':4 'jump':5 'lazi':7 'quick':2
 
 -- Search with tsquery
-SELECT title FROM articles 
+SELECT title FROM articles
 WHERE to_tsvector('english', content) @@ to_tsquery('english', 'fox & jump');
 ```
 
@@ -136,12 +143,12 @@ WHERE to_tsvector('english', content) @@ to_tsquery('english', 'fox & jump');
 
 ```sql
 -- Create BM25 index with built-in tokenization
-CREATE INDEX articles_idx ON articles 
+CREATE INDEX articles_idx ON articles
 USING bm25(title, content) WITH (key_field='id');
 
 -- Search uses automatic tokenization
 SELECT id, title, paradedb.score(id) as relevance
-FROM articles 
+FROM articles
 WHERE articles @@@ 'quick fox jumping'
 ORDER BY relevance DESC;
 ```
@@ -151,14 +158,17 @@ ORDER BY relevance DESC;
 Tokenization directly affects what users can find:
 
 **Over-stemming problems:**
+
 - "universe" and "university" both stem to "univers"
 - False matches reduce search precision
 
 **Under-stemming problems:**
+
 - "running" and "ran" don't match
 - Relevant results get missed
 
 **Language mismatches:**
+
 - Applying English rules to Spanish text
 - Produces poor tokenization quality
 
@@ -167,12 +177,14 @@ Tokenization directly affects what users can find:
 Most search systems allow customization:
 
 **Choose appropriate language analyzers:**
+
 ```sql
 -- PostgreSQL with German text search
 CREATE TEXT SEARCH CONFIGURATION german_config (COPY = german);
 ```
 
 **Adjust stemming aggressiveness:**
+
 ```python
 # Python NLTK example
 from nltk.stem import PorterStemmer, SnowballStemmer
@@ -186,6 +198,7 @@ print(snowball.stem(word))  # run
 ```
 
 **Custom stopword lists:**
+
 ```json
 {
   "filter": {

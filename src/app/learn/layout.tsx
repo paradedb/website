@@ -5,7 +5,8 @@ import { siteConfig } from "../siteConfig";
 
 export async function generateMetadata(): Promise<Metadata> {
   const title = "Learn Search Concepts";
-  const description = "Deep dive into search concepts, and learn how to build powerful search features in Postgres.";
+  const description =
+    "Deep dive into search concepts, and learn how to build powerful search features in Postgres.";
   const url = `${siteConfig.url}/learn`;
 
   return {

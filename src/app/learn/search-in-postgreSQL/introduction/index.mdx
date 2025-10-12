@@ -23,6 +23,7 @@ PostgreSQL's native search converts text into searchable mathematical representa
 ### Core Data Types
 
 PostgreSQL uses two specialized data types for search:
+
 - **`tsvector`:** processed, searchable version of your text
 - **`tsquery`:** search criteria in optimized format
 
@@ -36,13 +37,14 @@ SELECT to_tsquery('english', 'quick & fox');
 -- Result: 'quick' & 'fox'
 
 -- Search for matches
-SELECT title FROM articles 
+SELECT title FROM articles
 WHERE to_tsvector('english', content) @@ to_tsquery('english', 'database & optimization');
 ```
 
 The `@@` operator tests matches, while functions like `ts_rank()` calculate relevance scores based on term frequency and proximity.
 
 **Advantages:**
+
 - No additional dependencies or extensions required
 - Fully transactional with ACID guarantees
 - Integrates seamlessly with existing SQL queries
@@ -51,6 +53,7 @@ The `@@` operator tests matches, while functions like `ts_rank()` calculate rele
 - Good performance for basic search needs
 
 **Limitations:**
+
 - Limited to PostgreSQL's built-in text processing
 - Basic relevance scoring compared to modern search engines
 - No advanced features like fuzzy matching or faceted search
@@ -67,23 +70,24 @@ ParadeDB uses specialized index types (like BM25) that provide more sophisticate
 
 ```sql
 -- Create a BM25 index with ParadeDB covering multiple columns
-CREATE INDEX articles_search_idx ON articles 
+CREATE INDEX articles_search_idx ON articles
 USING bm25(title, content) WITH (key_field='id');
 
 -- Search across all indexed columns (like PostgreSQL but with BM25)
 SELECT id, title, paradedb.score(id) as relevance
-FROM articles 
+FROM articles
 WHERE articles @@@ 'database optimization'
 ORDER BY relevance DESC;
 
 -- Query specific columns within the same index
 SELECT id, title, paradedb.score(id) as relevance
-FROM articles 
+FROM articles
 WHERE articles @@@ 'title:database OR content:optimization'
 ORDER BY relevance DESC;
 ```
 
 **Advantages:**
+
 - **All built-in PostgreSQL features:** tokenization, stemming, stop words, language support
 - **Advanced relevance scoring:** BM25 instead of basic tf-idf
 - **Enhanced text analysis:** configurable tokenization pipelines per column
@@ -94,10 +98,13 @@ ORDER BY relevance DESC;
 - **Full PostgreSQL integration:** maintains ACID guarantees and transactional consistency
 
 **Limitations:**
+
 - Requires extension installation and maintenance
 
 <Note>
-  Both approaches maintain PostgreSQL's ACID guarantees and transactional consistency, although ParadeDB can also be deployed as a logical follower to a standard PostgreSQL node.
+  Both approaches maintain PostgreSQL's ACID guarantees and transactional
+  consistency, although ParadeDB can also be deployed as a logical follower to a
+  standard PostgreSQL node.
 </Note>
 
 ## Choosing Between Approaches
@@ -143,18 +150,18 @@ ORDER BY rank DESC;
 
 ## Feature Comparison
 
-| Feature | Built-In Search | ParadeDB |
-|---------|----------------|----------|
-| **Setup Complexity** | None (built-in) | Requires extension installation |
-| **Text Processing** | Tokenization, stemming, stop words | Same + configurable pipelines |
-| **Query Syntax** | `@@` operator, `tsquery` | `@@@` operator, Lucene-style queries |
-| **Relevance Scoring** | tf-idf with `ts_rank()` | BM25, semantic similarity |
-| **Language Support** | Built-in configurations | Built-in + enhanced analyzers |
-| **Fuzzy Matching** | Limited | Advanced fuzzy search with `~` |
-| **Performance** | Good for moderate datasets | Significantly faster for search-heavy workloads |
-| **Multi-column Indexing** | Separate tsvector per search scope | Single BM25 index, query columns individually |
-| **Maintenance** | Standard PostgreSQL | Extension updates and management |
-| **Transactional** | Full ACID compliance | Full ACID compliance |
+| Feature                   | Built-In Search                    | ParadeDB                                        |
+| ------------------------- | ---------------------------------- | ----------------------------------------------- |
+| **Setup Complexity**      | None (built-in)                    | Requires extension installation                 |
+| **Text Processing**       | Tokenization, stemming, stop words | Same + configurable pipelines                   |
+| **Query Syntax**          | `@@` operator, `tsquery`           | `@@@` operator, Lucene-style queries            |
+| **Relevance Scoring**     | tf-idf with `ts_rank()`            | BM25, semantic similarity                       |
+| **Language Support**      | Built-in configurations            | Built-in + enhanced analyzers                   |
+| **Fuzzy Matching**        | Limited                            | Advanced fuzzy search with `~`                  |
+| **Performance**           | Good for moderate datasets         | Significantly faster for search-heavy workloads |
+| **Multi-column Indexing** | Separate tsvector per search scope | Single BM25 index, query columns individually   |
+| **Maintenance**           | Standard PostgreSQL                | Extension updates and management                |
+| **Transactional**         | Full ACID compliance               | Full ACID compliance                            |
 
 ## Implementation Examples
 
@@ -170,7 +177,7 @@ CREATE TABLE documents (
 );
 
 -- Update search vector when content changes (applies tokenization, stemming, stop words)
-UPDATE documents SET search_vector = 
+UPDATE documents SET search_vector =
   to_tsvector('english', coalesce(title,'') || ' ' || coalesce(content,''));
 
 -- Create GIN index for fast searching
@@ -201,7 +208,7 @@ CREATE TABLE documents (
 );
 
 -- Create single BM25 index covering multiple columns (applies same tokenization, stemming, stop words)
-CREATE INDEX documents_search_idx ON documents 
+CREATE INDEX documents_search_idx ON documents
 USING bm25(title, content) WITH (key_field='id');
 
 -- Search across all columns with BM25 relevance scoring
