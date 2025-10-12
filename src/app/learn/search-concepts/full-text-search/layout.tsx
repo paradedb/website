@@ -2,8 +2,7 @@ import type { Metadata } from "next";
 import { generateBlogMetadata } from "@/lib/blog-metadata";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const slug = "search-concepts/full-text-search";
-  return generateBlogMetadata(slug);
+  return generateBlogMetadata(__dirname);
 }
 
 export default function Layout({ children }: { children: React.ReactNode }) {

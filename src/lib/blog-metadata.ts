@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { siteConfig } from "@/app/siteConfig";
 import { readFileSync, existsSync } from "fs";
 import { join } from "path";
-import path from "path";
 
 interface BlogMetadata {
   title: string;
@@ -24,15 +23,17 @@ export function generateBlogMetadata(
   } else if (dirPath.includes('/learn/')) {
     slug = dirPath.split('/learn/')[1];
   } else {
-    slug = path.basename(dirPath);
+    // For paths like "search-concepts/full-text-search", use the full path as slug
+    slug = dirPath;
   }
 
   // Determine if this is a blog or learn path
   const isLearnPath = slug.includes('/');
   const baseUrl = isLearnPath ? '/learn' : '/blog';
   
-  // Load metadata.json
-  const metadataPath = join(dirPath, 'metadata.json');
+  // Always read from source directory (available in both dev and production)
+  const sourceDir = join(process.cwd(), 'src', 'app', baseUrl.slice(1), slug);
+  const metadataPath = join(sourceDir, 'metadata.json');
   let metadata: BlogMetadata;
   
   try {
@@ -56,10 +57,10 @@ export function generateBlogMetadata(
   // Find OG/Twitter social sharing image
   let socialImageUrl: string | undefined;
   
-  // Check for opengraph-image.png first
-  const ogImagePath = join(dirPath, 'images/opengraph-image.png');
-  const twitterImagePath = join(dirPath, 'images/twitter-image.png');
-  const heroPngPath = join(dirPath, 'images/hero.png');
+  // Check for opengraph-image.png first (using source directory)
+  const ogImagePath = join(sourceDir, 'images/opengraph-image.png');
+  const twitterImagePath = join(sourceDir, 'images/twitter-image.png');
+  const heroPngPath = join(sourceDir, 'images/hero.png');
   
   if (existsSync(ogImagePath)) {
     socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/opengraph-image.png`;
