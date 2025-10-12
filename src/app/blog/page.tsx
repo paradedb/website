@@ -1,8 +1,13 @@
-import { getBlogLinks } from "@/lib/blog";
 import { redirect } from "next/navigation";
-import { siteConfig } from "../siteConfig";
+import { getAllPosts } from "@/lib/blog";
 
-export default async function Blog() {
-  const blogLinks = await getBlogLinks();
-  redirect(`${siteConfig.baseLinks.blog}/${blogLinks[0]?.href || ""}`);
+export default async function BlogPage() {
+  const posts = await getAllPosts();
+  
+  if (posts.length > 0) {
+    // Redirect to the most recent blog post
+    redirect(`/blog/${posts[0].slug}`);
+  }
+  
+  return <div>No blog posts found</div>;
 }
