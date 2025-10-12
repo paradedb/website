@@ -1,5 +1,8 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/app/siteConfig";
+import { readFileSync, existsSync } from "fs";
+import { join } from "path";
+import path from "path";
 
 interface BlogMetadata {
   title: string;
@@ -7,17 +10,68 @@ interface BlogMetadata {
   date: string;
   author: string | string[];
   categories: string[];
+  canonical?: string;
+  image?: string;
 }
 
 export function generateBlogMetadata(
-  metadata: BlogMetadata & { canonical?: string },
-  slug: string,
-  heroImageUrl: string | any
+  dirPath: string
 ): Metadata {
-  const url = `${siteConfig.url}/blog/${slug}`;
+  // Extract slug from directory path
+  let slug: string;
+  if (dirPath.includes('/blog/')) {
+    slug = dirPath.split('/blog/')[1];
+  } else if (dirPath.includes('/learn/')) {
+    slug = dirPath.split('/learn/')[1];
+  } else {
+    slug = path.basename(dirPath);
+  }
+
+  // Determine if this is a blog or learn path
+  const isLearnPath = slug.includes('/');
+  const baseUrl = isLearnPath ? '/learn' : '/blog';
+  
+  // Load metadata.json
+  const metadataPath = join(dirPath, 'metadata.json');
+  let metadata: BlogMetadata;
+  
+  try {
+    const metadataContents = readFileSync(metadataPath, 'utf8');
+    metadata = JSON.parse(metadataContents);
+  } catch (error) {
+    // Fallback metadata if file doesn't exist
+    metadata = {
+      title: "Blog Post",
+      date: new Date().toISOString(),
+      author: "ParadeDB Team",
+      description: "A blog post from ParadeDB",
+      categories: [],
+    };
+  }
+
+  // Construct URLs
+  const url = `${siteConfig.url}${baseUrl}/${slug}`;
   const canonicalUrl = metadata.canonical || url;
-  const imageUrl = typeof heroImageUrl === 'string' ? heroImageUrl : heroImageUrl?.src || heroImageUrl;
-  const fullHeroImageUrl = imageUrl && imageUrl.startsWith('http') ? imageUrl : `${siteConfig.url}${imageUrl}`;
+  
+  // Find OG/Twitter social sharing image
+  let socialImageUrl: string | undefined;
+  
+  // Check for opengraph-image.png first
+  const ogImagePath = join(dirPath, 'images/opengraph-image.png');
+  const twitterImagePath = join(dirPath, 'images/twitter-image.png');
+  const heroPngPath = join(dirPath, 'images/hero.png');
+  
+  if (existsSync(ogImagePath)) {
+    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/opengraph-image.png`;
+  } else if (existsSync(twitterImagePath)) {
+    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/twitter-image.png`;
+  } else if (metadata.image && metadata.image.endsWith('.png')) {
+    // Only use metadata image if it's PNG
+    socialImageUrl = metadata.image.startsWith('http') ? metadata.image : `${siteConfig.url}${metadata.image}`;
+  } else if (existsSync(heroPngPath)) {
+    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/hero.png`;
+  }
+  // Otherwise no social image (SVG hero images don't work for social sharing)
   
   return {
     title: metadata.title,
@@ -32,20 +86,20 @@ export function generateBlogMetadata(
       type: "article",
       publishedTime: metadata.date,
       authors: Array.isArray(metadata.author) ? metadata.author : [metadata.author],
-      images: [
+      images: socialImageUrl ? [
         {
-          url: fullHeroImageUrl,
+          url: socialImageUrl,
           width: 1200,
           height: 630,
           alt: metadata.title,
         },
-      ],
+      ] : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: metadata.title,
       description: metadata.description,
-      images: [fullHeroImageUrl],
+      images: socialImageUrl ? [socialImageUrl] : undefined,
     },
   };
 }
