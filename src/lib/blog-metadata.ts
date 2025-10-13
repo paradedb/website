@@ -57,7 +57,7 @@ export function generateBlogMetadata(dirPath: string): Metadata {
 
   // Check for social.png in the blog's images directory
   const socialImagePath = join(sourceDir, "images/social.png");
-  
+
   if (existsSync(socialImagePath)) {
     socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/social.png`;
   } else {
