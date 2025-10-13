@@ -52,20 +52,28 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   const url = `${siteConfig.url}${baseUrl}/${slug}`;
   const canonicalUrl = metadata.canonical || url;
 
-  // Find social sharing image
-  let socialImageUrl: string | undefined;
+  // Find social sharing images
+  let ogImageUrl: string | undefined;
+  let twitterImageUrl: string | undefined;
 
-  // Check for Next.js special files (automatically served by Next.js)
-  const opengraphImagePath = join(sourceDir, "opengraph-image.png");
-  const twitterImagePath = join(sourceDir, "twitter-image.png");
+  // Check for Next.js special files in images directory (automatically served by Next.js)
+  const opengraphImagePath = join(sourceDir, "images/opengraph-image.png");
+  const twitterImagePath = join(sourceDir, "images/twitter-image.png");
 
+  // OpenGraph image
   if (existsSync(opengraphImagePath)) {
-    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/opengraph-image.png`;
-  } else if (existsSync(twitterImagePath)) {
-    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/twitter-image.png`;
+    ogImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/opengraph-image.png`;
   } else {
-    // Fallback to site-wide social image
-    socialImageUrl = `${siteConfig.url}/opengraph-image.png`;
+    // Fallback to site-wide OG image
+    ogImageUrl = `${siteConfig.url}/opengraph-image.png`;
+  }
+
+  // Twitter image
+  if (existsSync(twitterImagePath)) {
+    twitterImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/twitter-image.png`;
+  } else {
+    // Fallback to site-wide Twitter image or OG image
+    twitterImageUrl = `${siteConfig.url}/twitter-image.png`;
   }
 
   return {
@@ -83,10 +91,10 @@ export function generateBlogMetadata(dirPath: string): Metadata {
       authors: Array.isArray(metadata.author)
         ? metadata.author
         : [metadata.author],
-      images: socialImageUrl
+      images: ogImageUrl
         ? [
             {
-              url: socialImageUrl,
+              url: ogImageUrl,
               width: 1200,
               height: 630,
               alt: metadata.title,
@@ -98,7 +106,7 @@ export function generateBlogMetadata(dirPath: string): Metadata {
       card: "summary_large_image",
       title: metadata.title,
       description: metadata.description,
-      images: socialImageUrl ? [socialImageUrl] : undefined,
+      images: twitterImageUrl ? [twitterImageUrl] : undefined,
     },
   };
 }
