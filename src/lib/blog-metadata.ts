@@ -52,27 +52,18 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   const url = `${siteConfig.url}${baseUrl}/${slug}`;
   const canonicalUrl = metadata.canonical || url;
 
-  // Find OG/Twitter social sharing image
+  // Find social sharing image
   let socialImageUrl: string | undefined;
 
-  // Check for opengraph-image.png first (using source directory)
-  const ogImagePath = join(sourceDir, "images/opengraph-image.png");
-  const twitterImagePath = join(sourceDir, "images/twitter-image.png");
-  const heroPngPath = join(sourceDir, "images/hero.png");
-
-  if (existsSync(ogImagePath)) {
-    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/opengraph-image.png`;
-  } else if (existsSync(twitterImagePath)) {
-    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/twitter-image.png`;
-  } else if (metadata.image && metadata.image.endsWith(".png")) {
-    // Only use metadata image if it's PNG
-    socialImageUrl = metadata.image.startsWith("http")
-      ? metadata.image
-      : `${siteConfig.url}${metadata.image}`;
-  } else if (existsSync(heroPngPath)) {
-    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/hero.png`;
+  // Check for social.png in the blog's images directory
+  const socialImagePath = join(sourceDir, "images/social.png");
+  
+  if (existsSync(socialImagePath)) {
+    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/social.png`;
+  } else {
+    // Fallback to site-wide social image
+    socialImageUrl = `${siteConfig.url}/social.png`;
   }
-  // Otherwise no social image (SVG hero images don't work for social sharing)
 
   return {
     title: metadata.title,
