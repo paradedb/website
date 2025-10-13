@@ -55,14 +55,17 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   // Find social sharing image
   let socialImageUrl: string | undefined;
 
-  // Check for social.png in the blog's images directory
-  const socialImagePath = join(sourceDir, "images/social.png");
+  // Check for Next.js special files (automatically served by Next.js)
+  const opengraphImagePath = join(sourceDir, "opengraph-image.png");
+  const twitterImagePath = join(sourceDir, "twitter-image.png");
 
-  if (existsSync(socialImagePath)) {
-    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/social.png`;
+  if (existsSync(opengraphImagePath)) {
+    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/opengraph-image.png`;
+  } else if (existsSync(twitterImagePath)) {
+    socialImageUrl = `${siteConfig.url}${baseUrl}/${slug}/twitter-image.png`;
   } else {
     // Fallback to site-wide social image
-    socialImageUrl = `${siteConfig.url}/social.png`;
+    socialImageUrl = `${siteConfig.url}/opengraph-image.png`;
   }
 
   return {
