@@ -4,7 +4,7 @@ import ResourcesLayoutClient from "./layout-client";
 import { siteConfig } from "../siteConfig";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = "Learn Search Concepts";
+  const title = "Learn Search Concepts | ParadeDB";
   const description =
     "Deep dive into search concepts, and learn how to build powerful search features in Postgres.";
   const url = `${siteConfig.url}/learn`;
