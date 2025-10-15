@@ -30,18 +30,19 @@ A `tsvector` transforms raw text into a structured, searchable format:
 
 ```sql
 -- Convert text to tsvector
-SELECT to_tsvector('english', 'PostgreSQL provides full-text search capabilities');
+SELECT to_tsvector('english', 'PostgreSQL provides full-text search capabilities in database');
 ```
 
 ```
-'capab':5 'full':3 'full-text':3 'postgresql':1 'provid':2 'search':4 'text':4
+ 'capabl':7 'databas':9 'full':4 'full-text':3 'postgresql':1 'provid':2 'search':6 'text':5
 ```
 
 Notice how the result:
 - Normalizes words to lowercase
-- Removes stop words like "provides"
+- Stems the words ("provides" → "provid", "capabilities" → "capab")
+- Removes stop words like "in"
 - Records position information (`:1`, `:2`, etc.)
-- Groups related terms like "full-text" and "text"
+- Explodes hypenated terms like "full-text", also keeping the orginal
 
 #### Building tsquery
 
