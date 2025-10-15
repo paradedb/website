@@ -29,37 +29,37 @@ Let’s break apart these various approaches in detail.
 
 ## Routes to implement BM25 in Postgres
 
-There are many ways to implement BM25 in Postgres. Some are significantly more suitable for scaling than others. To begin, let’s start with the most rudimentary (and unscalable) approach: using *just* SQL. 
+There are many ways to implement BM25 in Postgres. Some are significantly more suitable for scaling than others. To begin, let's start with the most rudimentary approach: using just SQL. 
 
 ### Implementing BM25 using just SQL
 
-BM25’s three variables—document length, term frequency, and IDF—could be calculated using Postgres’s conventional count and matching functions. It’ll make for some gnarly looking SQL, but it’s entirely possible. That is … with profound levels of compute and memory.  Because BM25 requires these computations to be calculated for *every word* over the search results, it’s infeasibly slow without some measure of indexing. 
+BM25’s three variables—document length, term frequency, and IDF—could be calculated using Postgres’s conventional count and matching functions. It’ll make for some gnarly looking SQL, but it’s entirely possible. That is … with profound levels of compute and memory.  Because BM25 requires these computations to be calculated for every word over the search results, it's infeasibly slow without some measure of indexing. 
 
 ### Implementing BM25 using auxiliary tables
 
-A *slightly* more mature path to implementing BM25 is to use auxiliary tables. With each term occupying a row, index lookups are reduced to a single term per query. Then, these terms could be aggregated with a custom function.
+A more mature path to implementing BM25 is to use auxiliary tables. With each term occupying a row, index lookups are reduced to a single term per query. Then, these terms could be aggregated with a custom function.
 
-A library that takes this approach is [plpgsql_bm25](https://github.com/jankovicsandras/plpgsql_bm25) by [András Jankovics](https://github.com/jankovicsandras). plpgsql_bm25 implements BM25 using *just* SQL and auxiliary tables. For example, to create an index with plpgsql_bm25, you’d write something like: 
+A library that takes this approach is [plpgsql_bm25](https://github.com/jankovicsandras/plpgsql_bm25) by [András Jankovics](https://github.com/jankovicsandras). plpgsql_bm25 implements BM25 using just SQL and auxiliary tables. For example, to create an index with plpgsql_bm25, you'd write something like: 
 
 ```sql
 bm25createindex(tablename TEXT, columnname TEXT, algo TEXT DEFAULT '', stopwordslanguage TEXT DEFAULT '') RETURNS VOID
 ```
 
-plpgsql_bm25 includes an optional Python implementation that can rank things upwards of 30-40x faster. The library’s Python inclusion isn’t surprising, as SQL + auxiliary tables are still *very* slow. In general, raw Postgres isn’t designed for these “calculate, then aggregate” workflows. Rather, it’s a database oriented around OLTP correctness and flexibility, not number crunching. 
+plpgsql_bm25 includes an optional Python implementation that can rank things upwards of 30-40x faster. The library's Python inclusion reflects that SQL + auxiliary tables remain slow. Raw Postgres isn't designed for these "calculate, then aggregate" workflows. It's a database oriented around OLTP correctness and flexibility, not number crunching. 
 
-To fix this, we’ll need a more hybridized approach (similar to the aforementioned Postgres talk). The leading Postgres database that takes this path is ParadeDB. 
+To fix this, a more hybridized approach is needed. ParadeDB takes this path. 
 
 ### Use BM25 on ParadeDB, a Postgres database
 
-ParadeDB is an open-source Postgres database with built-in BM25 search, powered by the `pg_search` extension that’s managed by the ParadeDB team.  The ParadeDB community distribution is free with an optionally paid enterprise variant that targets issues of scale (e.g. larger clusters, physical replication, location replication, and point-in-time recovery).
+ParadeDB is an open-source Postgres database with built-in BM25 search, powered by the `pg_search` extension.
 
-ParadeDB implements BM25 through [a custom index](https://docs.paradedb.com/welcome/architecture). When a table row is mutated, the BM25 index is immediately altered. This avoids any lag between the *source of truth* and the *search engine*. 
+ParadeDB implements BM25 through [a custom index](https://docs.paradedb.com/welcome/architecture). When a table row is mutated, the BM25 index is immediately altered. This avoids any lag between the source of truth and the search engine. 
 
 ```sql
 CREATE INDEX ON dresses USING bm25(id, code, description)
 ```
 
-ParadeDB’s efficiency could be traced to its underlying memory structure: an LSM tree composed of inverted index and columnar index branches. The branch structure makes ParadeDB extremely efficient for reads, while the tree structure accommodates heavy writes. Additionally, this structure enables parallelization; accuracy boosts aside, the BM25 index significantly outpaces traditional Postgres’s Full-Text Search. 
+ParadeDB's efficiency stems from its underlying memory structure: an LSM tree composed of inverted index and columnar index branches. The branch structure makes ParadeDB extremely efficient for reads, while the tree structure accommodates heavy writes. This structure enables parallelization; the BM25 index significantly outpaces traditional Postgres's Full-Text Search. 
 
 ParadeDB users could access the BM25 ranking by using the custom operator, `@@@`. For example, results could be ordered (i.e. ranked) by their BM25 scores using the `paradedb.score` function: 
 
@@ -88,9 +88,9 @@ For developers that aren’t in a position to migrate to a new database, ParadeD
 
 Thus far, we’ve sidestepped the big question: why would we even want BM25 in Postgres? Especially when products like Elasticsearch exist? 
 
-Simply put: it’s nice to keep things in one place. More specifically, it’s ideal to avoid an ETL pipeline where data needs to be synced from Postgres onto an external search engine, introducing points of failure, increased latency, and the risk of stale content. 
+Keeping search functionality within the database avoids ETL pipelines where data syncs from Postgres to external search engines, reducing points of failure, latency, and stale content risks. 
 
-The risk of stale content is especially a problem at scale. Imagine a massive e-commerce platform, such as Wayfair. The platform might need to use BM25 to rank hundreds of results. With BM25, the search bar could surface products with matching descriptions, tags, or titles out of millions of cataloged options. However, with an external, lazily-updated search engine, there’s a significant chance that a popular product that’s gone out-of-stock is recommended. That’s a big problem: the user might bounce to another website in pursuit of the sold-out product. 
+Stale content becomes problematic at scale. Applications using BM25 to rank search results may return outdated information when external search engines lag behind database updates. External search engines with lazy updates can surface inconsistent data. 
 
 When BM25 stays within Postgres, results remain fresh and consolidated. 
 
