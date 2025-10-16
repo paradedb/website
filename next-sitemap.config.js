@@ -40,10 +40,10 @@ function getMostRecentContentDate(contentType) {
     // Recursively find all metadata.json files
     function findMetadataFiles(dir) {
       const items = fs.readdirSync(dir, { withFileTypes: true });
-      
+
       for (const item of items) {
         const fullPath = path.join(dir, item.name);
-        
+
         if (item.isDirectory()) {
           // Recursively search subdirectories
           findMetadataFiles(fullPath);
@@ -52,7 +52,7 @@ function getMostRecentContentDate(contentType) {
           try {
             const metadata = JSON.parse(fs.readFileSync(fullPath, "utf8"));
             const itemDate = new Date(metadata.updated || metadata.date);
-            
+
             if (!mostRecentDate || itemDate > mostRecentDate) {
               mostRecentDate = itemDate;
             }
