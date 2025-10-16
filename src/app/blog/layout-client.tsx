@@ -7,6 +7,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "../siteConfig";
+import CodeBlockEnhancer from "@/components/CodeBlockEnhancer";
 
 const BackButton = ({ href }: { href: string }) => (
   <Link href={href}>
@@ -98,6 +99,7 @@ export default function BlogLayoutClient({
           <div>{canGoForward && <NextButton href={nextHref} />}</div>
         </div>
       </main>
+      <CodeBlockEnhancer />
     </div>
   );
 }

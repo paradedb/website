@@ -49,11 +49,11 @@ const withMDX = createMDX({
     // You can add rehype/remark plugins here if desired
     providerImportSource: "@mdx-js/react",
     remarkPlugins: [
-      [remarkMath, { 
+      [remarkMath, {
         singleDollarTextMath: false,
         inlineMathDouble: true,
-        blockMathDouble: true 
-      }], 
+        blockMathDouble: true
+      }],
       remarkGfm
     ],
     rehypePlugins: [rehypeSlug, rehypeHighlight, rehypeKatex],
