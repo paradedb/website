@@ -49,6 +49,14 @@ Notice how the result:
 - Records position information (`:1`, `:2`, etc.)
 - Explodes hyphenated terms like "full-text" while keeping the original
 
+One limitation of tsvector is that it represents the text of a single row as a single vector. To combine multiple text fields, you typically concatenate them—title || ' ' || description || ' ' || body—into one tsvector. This works, but it flattens field boundaries, so you can’t search or rank fields independently. Alternatively, you could store separate tsvector columns for each field, but then each is indexed and scored independently, fragmenting your corpus.
+
+<Note>
+ParadeDB uses a BM25 covering index avoids this trade-off: it can maintain field-level statistics and weighting within a single index while still computing global document statistics.
+</Note>
+
+
+
 #### Building tsquery
 
 A `tsquery` represents search conditions with boolean logic that operates on a `tsvector` type:
@@ -212,7 +220,11 @@ The operational simplicity of managing a single database system rather than sepa
 
 While PostgreSQL's full-text search is powerful, it has limitations compared to specialized search engines. Performance degrades with very large document collections (millions of documents), and the system provides limited support for faceting, fuzzy matching, or complex highlighting. The ranking algorithms offer fewer options for customization compared to dedicated search engines, and real-time analytics capabilities are less sophisticated than what dedicated search engines provide.
 
-For applications requiring these advanced features, consider hybrid approaches that use PostgreSQL for transactional data and specialized search engines like Elasticsearch. Or keep your search in PostgreSQL and use ParadeDB for complex search workloads.
+For applications requiring these advanced features, consider sometimes consider hybrid approaches that use PostgreSQL for transactional data and specialized search engines like Elasticsearch. 
+
+<Note>
+We think the best option is to keep your data in PostgreSQL and use ParadeDB in place of the built in full-text search; which solves all of the issues mentioned above allowing Postgres to operate on-par with Elasticsearch.
+</Note>
 
 ## Summary
 
