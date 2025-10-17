@@ -23,8 +23,8 @@ BM25’s goal is to rank the results of a search query by relevancy.
 
 To do this BM25 considers three variables:
 
-- (i) the term frequency (TF) of each word.
-- (ii) the inverse document frequency (IDF), which quantifies and weights the rarity of each word.
+- (i) the term frequency (TF) of each word in the document.
+- (ii) the inverse document frequency (IDF), which quantifies and weights the rarity of each word across all documents
 - (iii) The document’s length. By factoring in the document’s length, BM25 can promote shorter documents that might be more centered around the search query.
 
 BM25 positively weights (i) shorter documents, (ii) those with a high frequency of query words, and (iii) terms that occur more rarely across documents. If you’re curious about the algorithm’s precise mechanics, you can learn more through our [BM25 chapter](https://www.paradedb.com/learn/search-concepts/bm25) in our [Search Concepts](https://www.paradedb.com/learn/search-concepts/full-text-search) collection.
@@ -33,7 +33,7 @@ BM25 positively weights (i) shorter documents, (ii) those with a high frequency 
 
 Despite not implementing BM25, Postgres does support full-text search via `tsvector` and its family of functions.
 
-Using `ts_rank`, Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it doesn’t account for inverse document frequency (IDF), meaning that longer documents will always be favored over shorted more targeted ones. It’s also slower, needing to read more data to return results from the index.
+Using `ts_rank`, Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it accounts for term frequency within a document, document length, but not inverse document frequency to capture the rarity of words in the full corpus. It’s also slower, needing to read from every tsvector in the set to return ranking results from the index (even for a LIMIT/topN query).
 
 ## Routes to Implement BM25 in Postgres
 
