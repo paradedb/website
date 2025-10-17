@@ -65,8 +65,6 @@ A more scalable approach is using Postgres's index access method (IAM) to create
 
 When an index is added to a table it can cover multiple columns, providing advanced full-text search DX, as well as fast columnar lookups and aggregations for non-text fields. 
 
-  
-
 ```sql
 CREATE INDEX search_idx ON mock_items
 USING bm25 (id, description, category, rating)
