@@ -42,7 +42,7 @@ BM25’s three variables—document length, term frequency, and IDF—could be c
 
 ### Implementing BM25 Using PL/PGSQL and Auxiliary Tables
 
-A  more usable path to implement BM25 is to use auxiliary tables. With each term occupying a row, table lookups are reduced to one per term in your query. These results can then be aggregated with a custom function. 
+A more usable path to implement BM25 is to use auxiliary tables. With each term occupying a row, table lookups are reduced to one per term in your query. These results can then be aggregated with a custom function. 
 
 A library that takes this approach is [plpgsql_bm25](https://github.com/jankovicsandras/plpgsql_bm25) by [András Jankovics](https://github.com/jankovicsandras). plpgsql_bm25 implements BM25 using just SQL and auxiliary tables. The function signature to create a BM25 structure looks like this:
 
