@@ -31,9 +31,9 @@ BM25 positively weights (i) shorter documents, (ii) those with a high frequency 
 
 ## Postgres Supports Full-Text Search, But Not BM25
 
-Despite not implementing BM25, Postgres does support full-text search via `tsvector` and its family of functions.
+Despite not implementing BM25, Postgres does support full-text search via [`tsvector`](https://www.postgresql.org/docs/current/datatype-textsearch.html) and its family of functions.
 
-Using `ts_rank`, Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it only accounts for term frequency within a document and document length, but not inverse document frequency to capture the rarity of words in the full corpus. It’s also slower, needing to read from every tsvector in the set to return ranking results from the index (even for a LIMIT/topN query).
+Using [`ts_rank`](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING), Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it only accounts for term frequency within a document and document length, but not inverse document frequency to capture the rarity of words in the full corpus. It’s also slower, needing to read from every tsvector in the set to return ranking results from the index (even for a LIMIT/topN query).
 
 ## Routes to Implement BM25 in Postgres
 
@@ -45,13 +45,13 @@ Let’s break apart some of these approaches in detail.
 
 The most rudimentary (and unscalable) approach is using just SQL at query time.
 
-BM25’s three variables—document length, term frequency, and IDF—could be calculated using Postgres’s conventional count and matching functions. However running this at query time with no index or materialized storage would be prohibitively slow.
+BM25’s three variables—document length, term frequency, and IDF can be calculated [manually](https://www.alibabacloud.com/blog/keyword-analysis-with-postgresql-cosine-and-linear-correlation-algorithms-for-text-analysis_595793) using `tsvector` objects and the `ts_stat` data which Postgres collects, however it's both very convoluted and very slow. It could potentially be an option for a static corpus that never changes, but still feels more like a proof-of-concept that a production ready method.
 
 ### Implementing BM25 Using PL/PGSQL and Auxiliary Tables
 
-A more usable path to implement BM25 is to use auxiliary tables. With each term occupying a row, table lookups are reduced to one per term in your query. These results can then be aggregated with a custom function.
+A more usable path to implement BM25 is to use custom PL/PSQL and auxiliary tables. With each term occupying a row, table lookups are reduced to one per term in your query. These results can then be aggregated with a custom function.
 
-A library that takes this approach is [plpgsql_bm25](https://github.com/jankovicsandras/plpgsql_bm25) by [András Jankovics](https://github.com/jankovicsandras). plpgsql_bm25 implements BM25 using just SQL and auxiliary tables. The function signature to create a BM25 structure looks like this:
+A library that takes this approach is [plpgsql_bm25](https://github.com/jankovicsandras/plpgsql_bm25) by [András Jankovics](https://github.com/jankovicsandras). plpgsql_bm25 implements BM25 using just SQL and auxiliary tables. The function signature to create a table that holds BM25 records looks like this:
 
 ```sql
 bm25createindex(
@@ -98,7 +98,7 @@ Bringing BM25 directly into Postgres has two major effects: it improves ranking 
 
 Postgres’s built-in full-text search—based on tsvector, tsquery, and ts_rank is capable but rudimentary. Its scoring function uses a linear weighting of term frequency and field importance, but it ignores inverse document frequency (IDF) and applies no document-length normalization.
 
-Running BM25 _inside_ Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the BM25 index, keeping search results transactionally consistent with the source of truth.
+Running BM25 inside Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the BM25 index, keeping search results transactionally consistent with the source of truth.
 
 Finally, because BM25 operates as a native index access method, it participates in Postgres’s planner and transaction model. Queries benefit from caching, parallelism, and predictable performance characteristics: something external search engines can’t easily guarantee.
 
