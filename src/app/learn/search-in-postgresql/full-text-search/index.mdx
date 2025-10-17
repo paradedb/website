@@ -220,7 +220,7 @@ The operational simplicity of managing a single database system rather than sepa
 
 While PostgreSQL's full-text search is powerful, it has limitations compared to specialized search engines. Performance degrades with very large document collections (millions of documents), and the system provides limited support for faceting, fuzzy matching, or complex highlighting. The ranking algorithms offer fewer options for customization compared to dedicated search engines, and real-time analytics capabilities are less sophisticated than what dedicated search engines provide.
 
-For applications requiring these advanced features, consider sometimes consider hybrid approaches that use PostgreSQL for transactional data and specialized search engines like Elasticsearch. 
+For applications requiring these advanced features, consider hybrid approaches that use PostgreSQL for transactional data and specialized search engines like Elasticsearch. 
 
 <Note>
 We think the best option is to keep your data in PostgreSQL and use ParadeDB in place of the built in full-text search; which solves all of the issues mentioned above allowing Postgres to operate on-par with Elasticsearch.
