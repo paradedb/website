@@ -1,0 +1,113 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.svg";
+import { Note } from "@mintlify/components"
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+
+
+Search systems were built for real people. For decades, they were tuned for short keyword queries, low latency, and a concise ranked list of results that a human could read and act on. 
+
+Agents are a newer consumer of search, and they do not behave this way. They iteratively issue structured queries, gather result sets, and read entire documents as part of longer reasoning loops. They can already make decisions; what they lack are interfaces that expose enough structure to make *good* ones.
+
+Most search APIs still treat agents like impatient humans: query in, ranked list out. There is no visibility into why a particular document ranked higher or how to modify that outcome. When an agent produces poor results, it has no insight into whether the query was underspecified, the weights were imbalanced, or the wrong signal dominated. Everything happens inside a black box.
+
+That opacity was once a design goal. Search for humans is meant to feel a little magical, an interface that hides its mechanics behind the screen delivering relevance as a service. But agents have no use for magic. They need transparency, determinism, and control. 
+
+<Note> 
+We aren’t selling agentic search, and we don’t have an agentic search product. We do firmly believe that however agentic search falls out the cornerstone will still be BM25, and that’s one of the reasons why we have built a better full-text search experience (including BM25) in PostgreSQL.
+</Note>
+
+## SQL: The Missing Interface Layer
+
+Agents don’t need a new retrieval algorithm, or even a catalog of tools which they can use; they need a way for retrieval to participate in their reasoning process. To analyze the data available, run queries, see scores, adjust weights, and combine evidence as they collect data-points to influence their next action.
+
+Crucially, they already speak the language for it. Large language models have absorbed SQL from the same public sources that taught humans for years: Stack Overflow, database documentation, open-source repositories, and Reddit discussions explaining joins and indexes. They have not only learned to *write* SQL but to *reason* about how it works; to understand schemas, constraints, and data relationships.
+
+That makes SQL a natural interface for search. It is not a new abstraction that agents must learn; it’s one they already understand, grounded in explicit semantics and predictable structure. Exposing search through SQL doesn’t feel new, it feels like meeting agents where they already are.
+
+Of course, some components of search will remain black boxes. The inner workings of a BM25 function or an embedding model are not easily interpretable. But the way these components are combined—the tuning, weighting, filtering, and metadata integration—can be transparent. SQL makes those relationships explicit. Query plans can be inspected, execution paths can be traced, and every stage of scoring or fusion can be seen and reasoned about.
+
+## Composing Signals
+
+Once we start thinking about ranking in this way, we can easily show an agent how to start composing queries using SQL:
+
+```sql
+WITH
+
+ Full-text search, using pg_search and BM25 for ranking
+fulltext AS
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
+  FROM mock_items
+  WHERE description @@@ 'keyboard'
+  LIMIT 20
+),
+
+ Semantic search, using pgvector and cosine distance for ranking
+semantic AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+  FROM mock_items
+  LIMIT 20
+),
+
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 1.0 / (60 + r) AS s FROM fulltext, params
+  UNION ALL
+  SELECT id, 0.7 / (60 + r) AS s FROM semantic,  params
+)
+
+-- Sum the RRF scores, order by them, and join back the original data
+SELECT
+  m.id,
+  SUM(s) AS score,
+  m.description
+FROM rrf
+JOIN mock_items AS m USING (id)
+GROUP BY m.id, m.description
+ORDER BY score DESC
+LIMIT 5;
+
+```
+
+Here, lexical and semantic signals coexist inside a single query. Nothing is hard-coded, and every assumption is visible. An agent could adjust the weighting dynamically or drop a signal entirely if it learns that the additional complexity doesn’t improve precision. Ranking becomes a living composition of evidence rather than a fixed pipeline of calls.
+
+## Context as Data
+
+Not every signal comes from searching over text. Recency, popularity, authority, and user preference often shape what is relevant. In SQL, these attributes exist in the same reasoning space as lexical and semantic signals. The data doesn’t even need to be in the same tables, agents are perfectly capable of following foreign keys and inferring relationships to metadata.
+
+```
+SELECT r.id, r.score, m.author
+FROM results r
+JOIN metadata m ON r.id = m.doc_id
+WHERE m.published_at > now() - interval '7 days'
+  AND m.category = 'research'
+ORDER BY r.score DESC;
+```
+
+## Openness as Capability
+
+What makes SQL distinct is not its syntax but its openness. It doesn’t close over search; it opens it. The same query that ranks documents can also filter, join, and reason about them:
+
+An agent can decide that only recent research papers matter, or that popularity should be recalibrated per author. It can run one query for recall and another for precision, using intermediate results as inputs to the next reasoning step.
+
+Even if the underlying scoring functions remain complex, the structure that connects them does not. SQL surfaces that structure—both in syntax and in query plans—so that agents can understand how a result was built, even if not every coefficient inside it is human-readable. Search becomes explainable in form, if not in every mathematical detail.
+
+This openness is what allows agents to think *through* data rather than merely retrieve it. Search stops being a discrete service boundary and becomes part of the relational fabric of decision-making.
+
+## Reasoning, Not Retrieval
+
+Agents do not reason in the human sense. They simulate reasoning by composing operations, evaluating feedback, and iterating toward better results. What they lack are interfaces that let them observe and adjust those operations inside the systems they depend on.
+
+Search should not hide its logic behind a response; it should expose that logic as data. SQL provides that kind of openness. It doesn’t make agents intelligent, but it gives them structure—a transparent way to combine, inspect, and refine evidence.
+
+That may be the essential shift: not smarter models, but clearer surfaces. Not faster answers, but systems that expose a mutually understood SQL interface.

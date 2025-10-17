@@ -1,0 +1,7 @@
+{
+  "title": "Why Agents Can't Search, And How SQL Solves That",
+  "date": "2025-09-18T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Current search interfaces treat agents like impatient humans. SQL could be the missing interface layer that enables true agentic search.",
+  "categories": ["agentic", "SQL", "search"]
+}
