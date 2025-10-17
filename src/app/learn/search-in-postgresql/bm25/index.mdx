@@ -93,7 +93,7 @@ If you can’t install the `pg_search` extension, or prefer to keep your existin
 
 Bringing BM25 directly into Postgres has two major effects: it improves ranking quality and simplifies system design.
 
-Postgres’s built-in full-text search—based on tsvector, tsquery, and ts_rank—is capable but rudimentary. Its scoring function uses a linear weighting of term frequency and field importance, but it ignores inverse document frequency (IDF) and applies no document-length normalization. .
+Postgres’s built-in full-text search—based on tsvector, tsquery, and ts_rank is capable but rudimentary. Its scoring function uses a linear weighting of term frequency and field importance, but it ignores inverse document frequency (IDF) and applies no document-length normalization.
 
 Running BM25 *inside* Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the BM25 index, keeping search results transactionally consistent with the source of truth.
 
