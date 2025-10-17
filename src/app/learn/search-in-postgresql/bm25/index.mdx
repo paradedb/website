@@ -33,7 +33,7 @@ BM25 positively weights (i) shorter documents, (ii) those with a high frequency 
 
 Despite not implementing BM25, Postgres does support full-text search via `tsvector` and its family of functions.
 
-Using `ts_rank`, Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it accounts for term frequency within a document, document length, but not inverse document frequency to capture the rarity of words in the full corpus. It’s also slower, needing to read from every tsvector in the set to return ranking results from the index (even for a LIMIT/topN query).
+Using `ts_rank`, Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it only accounts for term frequency within a document and document length, but not inverse document frequency to capture the rarity of words in the full corpus. It’s also slower, needing to read from every tsvector in the set to return ranking results from the index (even for a LIMIT/topN query).
 
 ## Routes to Implement BM25 in Postgres
 
