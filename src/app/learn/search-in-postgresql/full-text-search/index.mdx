@@ -7,16 +7,15 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-PostgreSQL includes powerful built-in full-text search capabilities that can transform the database into a search engine. Rather than relying on external services, you can implement sophisticated text search directly within PostgreSQL using the same ACID transactions, security model, and operational infrastructure that manages your application data.
+PostgreSQL includes powerful built-in [full-text search](/learn/search-concepts/full-text-search) capabilities that transform the database into a search engine. Rather than relying on external services, you can implement sophisticated text search directly within PostgreSQL using the same ACID transactions, security model, and operational infrastructure that manage your application data.
 
-PostgreSQL's full-text search handles the complete pipeline from text analysis to ranked results. It tokenizes documents, removes stop words, applies stemming, builds searchable indexes, and ranks results by relevance—all with the performance and reliability you expect from PostgreSQL. This article discusses what it can do, and where it falls short.
+PostgreSQL's full-text search handles the complete pipeline from text analysis to ranked results. It tokenizes documents, removes stop words, applies stemming, builds searchable indexes, and ranks results by relevance, all with the performance and reliability you expect from PostgreSQL. This article discusses what it can do, and where it falls short.
 
 <Note>
 **We love using PostgreSQL for full-text search, but we built ParadeDB because we don't think the built in full-text search is enough for a modern search application.**
 
-That's not to say that the built in features aren't great, but for when you need a streamlined developer experience, BM25 ranking, powerful facets, a feature set that matches Elasticsearch, or increased performance then ParadeDB is a better fit.
+That's not to say that the built in features aren't great, but for when you need a streamlined developer experience, [BM25](/learn/search-concepts/bm25) ranking, powerful facets, a feature set that matches Elasticsearch, or increased performance then ParadeDB is a better fit.
 
-We've kept that messaging out of this page, so you can learn about the native Postgres features and make the comparison on your own.
 </Note>
 
 ## Core Components
@@ -25,7 +24,7 @@ PostgreSQL's full-text search is built around specialized data types and functio
 
 ### Text Search Data Types
 
-PostgreSQL provides two fundamental data types for full-text search. The `tsvector` type represents processed, searchable text as a sorted list of distinct tokens with position information. The `tsquery` type represents search queries with boolean operators, phrase matching, and proximity requirements.
+PostgreSQL provides two fundamental data types for full-text search. The [`tsvector`](https://www.postgresql.org/docs/current/datatype-textsearch.html#DATATYPE-TSVECTOR) type represents processed, searchable text as a sorted list of distinct tokens with position information. The [`tsquery`](https://www.postgresql.org/docs/current/datatype-textsearch.html#DATATYPE-TSQUERY) type represents search queries with boolean operators, phrase matching, and proximity requirements.
 
 These types handle the complexity of text analysis while exposing a clean interface for indexing and querying.
 
@@ -35,11 +34,21 @@ A `tsvector` transforms raw text into a structured, searchable format:
 
 ```sql
 -- Convert text to tsvector
-SELECT to_tsvector('english', 'PostgreSQL provides full-text search capabilities in database');
+SELECT to_tsvector
+  ('english', 
+   'PostgreSQL provides full-text search capabilities in database'
+  );
 ```
 
 ```
- 'capabl':7 'databas':9 'full':4 'full-text':3 'postgresql':1 'provid':2 'search':6 'text':5
+ 'capabl':7
+ 'databas':9
+ 'full':4
+ 'full-text':3
+ 'postgresql':1
+ 'provid':2
+ 'search':6
+ 'text':5
 ```
 
 Notice how the result:
@@ -49,7 +58,7 @@ Notice how the result:
 - Records position information (`:1`, `:2`, etc.)
 - Explodes hyphenated terms like "full-text" while keeping the original
 
-One limitation of tsvector is that it represents the text of a single row as a single vector. To combine multiple text fields, you typically concatenate them—title || ' ' || description || ' ' || body—into one tsvector. This works, but it flattens field boundaries, so you can’t search or rank fields independently. Alternatively, you could store separate tsvector columns for each field, but then each is indexed and scored independently, fragmenting your corpus.
+One limitation of `tsvector` is that it represents the text of a single row as a single vector. To combine multiple text fields, you typically concatenate them (`title || ' ' || description || ' ' || body`) into one `tsvector`. This works, but it flattens field boundaries, so you can’t search or rank fields independently. Alternatively, you could store separate `tsvector` columns for each field, but then each is indexed and scored independently, fragmenting your corpus.
 
 <Note>
 ParadeDB uses a BM25 covering index avoids this trade-off: it can maintain field-level statistics and weighting within a single index while still computing global document statistics.
@@ -100,7 +109,7 @@ CREATE INDEX idx_articles_search ON articles
 USING GIN(to_tsvector('english', title || ' ' || content));
 ```
 
-This approach provides several advantages over storing `tsvector` in a column. You avoid duplicating your text data in the database, which saves storage space and reduces backup sizes. There's no need for triggers or other synchronization mechanisms to keep the search data current with your source text. The index automatically reflects any changes to the underlying text columns. Query performance remains identical to using a materialized `tsvector` column since PostgreSQL can use the index directly. Even if you did store `tsvector` data in a column, you'd still need to create an index on that column for acceptable performance.
+This approach provides several advantages over storing `tsvector` in a column. You avoid duplicating your text data in the database, which saves storage space and reduces backup sizes. There's no need for triggers or other synchronization mechanisms to keep the search data current with your source text. The index automatically reflects any changes to the underlying text columns. Query performance remains similar to using a materialized `tsvector` column since PostgreSQL can use the index directly. Even if you did store `tsvector` data in a column, you'd still need to create an index on that column for acceptable performance.
 
 GIN indexes excel at fast lookups for any query term, efficient boolean operations, and compact storage for large vocabularies. They're optimized for read-heavy workloads where the text content doesn't change frequently.
 
@@ -146,7 +155,7 @@ WHERE to_tsvector('english', title || ' ' || content) @@
 
 ### Ranking Results
 
-PostgreSQL provides ranking functions that score documents by relevance, though with important limitations compared to modern search engines:
+PostgreSQL provides [ranking functions](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING) that score documents by relevance, though with important limitations compared to modern search engines:
 
 ```sql
 -- Rank by relevance using ts_rank
@@ -157,7 +166,7 @@ WHERE to_tsvector('english', title || ' ' || content) @@ query
 ORDER BY rank DESC;
 ```
 
-PostgreSQL's `ts_rank` function provides basic relevance scoring, but it's significantly less sophisticated than modern ranking algorithms like BM25 used by Elasticsearch. The `ts_rank` function only considers term frequency within documents and lacks global document frequency information that would indicate how rare or common terms are across your entire corpus. This means common words aren't properly downweighted, and rare, potentially more relevant terms don't receive appropriate boosts.
+PostgreSQL's `ts_rank` function provides basic relevance scoring, but it's significantly less sophisticated than modern ranking algorithms like [BM25](/learn/search-concepts/bm25) used by Elasticsearch. The `ts_rank` function only considers term frequency within documents and lacks global document frequency information that would indicate how rare or common terms are across your entire corpus. This means common words aren't properly downweighted, and rare, potentially more relevant terms don't receive appropriate boosts.
 
 PostgreSQL also offers `ts_rank_cd` with cover density algorithms for alternative ranking approaches, but these still fall short of BM25's comprehensive approach to relevance scoring. For applications where search ranking quality is critical, this represents a significant limitation compared to dedicated search engines.
 
@@ -221,11 +230,11 @@ While PostgreSQL's full-text search is powerful, it has limitations compared to 
 For applications requiring these advanced features, consider hybrid approaches that use PostgreSQL for transactional data and specialized search engines like Elasticsearch. 
 
 <Note>
-We think the best option is to keep your data in PostgreSQL and use ParadeDB in place of the built in full-text search; which solves all of the issues mentioned above allowing Postgres to operate on-par with Elasticsearch.
+Another option is ParadeDB, which uses an extension to bring the feature set and performance of Elasticsearch inside Postgres.
 </Note>
 
 ## Summary
 
 PostgreSQL's built-in full-text search transforms your database into a capable search engine. With `tsvector`, `tsquery`, and proper indexing, you can implement sophisticated text search that integrates seamlessly with your application's data and transactions.
 
-The combination of SQL's expressiveness with full-text search capabilities makes PostgreSQL an excellent choice for applications where search is important but doesn't justify the complexity of separate search infrastructure.
+The combination of SQL's expressiveness with full-text search capabilities makes PostgreSQL an excellent choice for applications where search is important, but doesn't justify the complexity of separate search infrastructure.
