@@ -30,7 +30,7 @@ Using `ts_rank`, Postgres developers can rank documents by relevance, but all sc
 
 ## Routes to Implement BM25 in Postgres
 
-Of course where there is a will there is a way, Postgres enthusiasts have [found several methods to adding BM25 support,](https://www.postgresql.eu/events/pgconfeu2024/sessions/session/6012/slides/592/Di_Qi_LT_BM25.pdf) from raw SQL to dedicated extensions. 
+Of course where there is a will there is a way, Postgres enthusiasts have [found several methods to adding BM25 support,](https://www.postgresql.eu/events/pgconfeu2024/sessions/session/6012/slides/592/Di_Qi_LT_BM25.pdf) from raw SQL to a dedicated BM25 extension. 
 
 Let’s break apart some of these approaches in detail. 
 
@@ -85,8 +85,6 @@ LIMIT 5;
 
 In most cases ParadeDB performs similarly to Elasticsearch, returning results in milliseconds even across large datasets.
 
-If you can’t install the `pg_search` extension, or prefer to keep your existing Postgres database separate, ParadeDB can also be used [as a logical read replica](https://docs.paradedb.com/deploy/self-hosted/logical-replication/getting-started), providing BM25 search without impacting your primary database. 
-
 ## **What Are the Benefits of BM25 Support in Postgres?**
 
 Bringing BM25 directly into Postgres has two major effects: it improves ranking quality and simplifies system design.
@@ -96,8 +94,6 @@ Postgres’s built-in full-text search—based on tsvector, tsquery, and ts_rank
 Running BM25 *inside* Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the BM25 index, keeping search results transactionally consistent with the source of truth.
 
 Finally, because BM25 operates as a native index access method, it participates in Postgres’s planner and transaction model. Queries benefit from caching, parallelism, and predictable performance characteristics: something external search engines can’t easily guarantee.
-
-BM25 within Postgres improves relevance, reduces complexity, and keeps search as close as possible to the data that defines it.
 
 ## Getting Started with BM25 in Postgres
 
