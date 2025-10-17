@@ -55,8 +55,6 @@ One limitation of tsvector is that it represents the text of a single row as a s
 ParadeDB uses a BM25 covering index avoids this trade-off: it can maintain field-level statistics and weighting within a single index while still computing global document statistics.
 </Note>
 
-
-
 #### Building tsquery
 
 A `tsquery` represents search conditions with boolean logic that operates on a `tsvector` type:
