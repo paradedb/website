@@ -54,7 +54,7 @@ SELECT to_tsvector
 Notice how the result:
 
 - Normalizes words to lowercase
-- Stems the words ("provides" → "provid", "capabilities" → "capabl")
+- Stems the words ("provides" → "provid", "capabilities" → "capabl") {/* * codespell:ignore provid * */}
 - Removes stop words like "in"
 - Records position information (`:1`, `:2`, etc.)
 - Explodes hyphenated terms like "full-text" while keeping the original
