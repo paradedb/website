@@ -9,13 +9,13 @@ import { Title } from "@/components/Title";
 
 When developers need search functionality, the path often starts simple: PostgreSQL's full-text search handles basic lookups, and everything stays in one database. But as requirements evolve — better relevance, semantic understanding, "Google-like" results — teams face a choice: accept mediocre search or build complex multi-system architectures.
 
-The traditional solution has been moving to dedicated search engines like Elasticsearch. You get sophisticated ranking algorithms, but you lose the simplicity and consistency guarantees of keeping everything in your primary database.
+The traditional solution splits into two separate systems: Elasticsearch for lexical search and vector databases like Pinecone for semantic similarity. You get sophisticated ranking algorithms and embeddings, but you lose the simplicity and consistency guarantees of keeping everything in your primary database. Now you're managing ETL pipelines, eventual consistency, and the operational overhead of three different systems.
 
-What if you could have both?
+What if you could have both lexical precision and semantic understanding without leaving PostgreSQL?
 
 Hybrid search solves this by bringing sophisticated ranking algorithms directly into PostgreSQL. By combining lexical search (BM25) with vector search (semantic similarity), you get the precision of exact matching and the recall of semantic understanding — all expressible in SQL, all within a single transactional system.
 
-This isn't about replacing dedicated search engines. It's about recognizing that modern applications need both symbolic precision and semantic understanding, and PostgreSQL can deliver both without operational complexity.
+This isn't about replacing every search engine or vector database. It's about recognizing that most applications need both symbolic precision and semantic understanding, and PostgreSQL can deliver both without the operational complexity of managing multiple specialized systems.
 
 ## Why Not PostgreSQL's Native Full-Text Search?
 
