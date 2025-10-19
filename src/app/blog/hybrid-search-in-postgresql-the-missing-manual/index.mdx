@@ -7,15 +7,13 @@ import { Title } from "@/components/Title";
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 
-When developers need search functionality, the path often starts simple: PostgreSQL's full-text search handles basic lookups, and everything stays in one database. But as requirements evolve — better relevance, semantic understanding, "Google-like" results — teams face a choice: accept mediocre search or build complex multi-system architectures.
+Search in Postgres is changing. Until recently, developers had two separate paths: lexical search for matching words, and vector search for matching meaning.
 
-The traditional solution splits into two separate systems: Elasticsearch for lexical search and vector databases like Pinecone for semantic similarity. You get sophisticated ranking algorithms and embeddings, but you lose the simplicity and consistency guarantees of keeping everything in your primary database. Now you're managing ETL pipelines, eventual consistency, and the operational overhead of three different systems.
+Postgres now supports both. ParadeDB adds BM25 (the same ranking algorithm used in production search engines) for lexical relevance, while pgvector adds vector similarity for semantic understanding.
 
-What if you could have both lexical precision and semantic understanding without leaving PostgreSQL?
+The next step is using them together. Once BM25 and vector embeddings live in the same database, you can compose them in SQL: combine scores, apply filters, add metadata like recency or popularity, and keep everything transactional.
 
-Hybrid search solves this by bringing sophisticated ranking algorithms directly into PostgreSQL. By combining lexical search (BM25) with vector search (semantic similarity), you get the precision of exact matching and the recall of semantic understanding — all expressible in SQL, all within a single transactional system.
-
-This isn't about replacing every search engine or vector database. It's about recognizing that most applications need both symbolic precision and semantic understanding, and PostgreSQL can deliver both without the operational complexity of managing multiple specialized systems.
+This guide explains how to do that—how to build hybrid search directly in Postgres.
 
 ## Why Not PostgreSQL's Native Full-Text Search?
 
@@ -27,7 +25,7 @@ PostgreSQL's approach centers on two concepts: `tsvector` (a processed version o
 
 For a deeper dive into how PostgreSQL's full-text search works, see our [full-text search guide](../../learn/search-concepts/full-text-search).
 
-The basic operation is matching: does this document contain these search terms? PostgreSQL excels at this. GIN indexes make finding matching documents fast, even across millions of rows.
+The basic operation is matching: does this document contain these search terms? PostgreSQL excels at this, letting you use GIN indexes over tsvector to make finding matching documents fast.
 
 ```sql
 -- PostgreSQL native FTS
@@ -43,37 +41,7 @@ But matching isn't the same as ranking well. PostgreSQL offers two ranking funct
 
 When `ts_rank` sees that "PostgreSQL" appears three times in a document, it assigns a higher score than if it appears once. But it can't tell you whether "PostgreSQL" is a common word (appearing in 80% of your documents) or a rare, discriminating term (appearing in only 5%).
 
-This is the missing piece that makes search results feel "smart" — understanding how significant a term is across your entire collection, not just within individual documents.
-
-### What's Missing: Global Context
-
-Modern search engines like Google work because they understand the bigger picture. When you search for "Python tutorial", the algorithm knows that "Python" (in a programming context) is more specific than "tutorial", so documents that mention Python prominently should rank higher.
-
-PostgreSQL's ranking functions can't make these distinctions automatically. They don't have access to global term frequencies, can't automatically weight rare terms over common ones, and don't account for document length in sophisticated ways.
-
-### Performance at Scale
-
-The performance implications compound as your dataset grows. PostgreSQL must convert text to tsvector and calculate rankings for every matching document, then sort the entire result set. With large result sets, this becomes prohibitively expensive.
-
-### The ParadeDB Difference
-
-Compare the complexity above with ParadeDB's approach:
-
-```sql
--- ParadeDB with BM25
-SELECT id, title, paradedb.score(id) AS score
-FROM documents
-WHERE documents @@@ 'postgresql performance'
-ORDER BY score DESC;
-```
-
-Behind this simple syntax, ParadeDB automatically handles global term frequencies, document length normalization, and optimized scoring — the components that make search results feel intelligent rather than mechanical.
-
-### When PostgreSQL FTS Still Works
-
-PostgreSQL's native full-text search isn't obsolete. It's excellent for exact boolean queries (`find documents with "postgresql" but not "mysql"`), leveraging built-in language processing, or simple presence detection where ranking doesn't matter.
-
-But for modern search experiences — where users expect Google-like relevance — PostgreSQL's native ranking falls short. That's where [BM25](../../learn/search-concepts/bm25) and [hybrid search](../../learn/search-concepts/hybrid-search) transform PostgreSQL into a proper search database.
+This is the missing piece that makes search results feel "smart" — understanding how significant a term is across your entire collection, not just within individual documents. This lack of global context is the difference between basic ful-text search and BM25.
 
 ## The Foundation: Lexical Search with BM25
 
@@ -88,6 +56,8 @@ BM25 combines three intuitive signals:
 **Document Length Normalization:** Shorter documents are preferred over long, rambling ones. A concise answer often beats a verbose explanation.
 
 The mathematical formulation looks complex, but the intuition is simple: reward documents that mention query terms frequently, especially rare terms, while penalizing documents that are unnecessarily long.
+
+There a few ways to get BM25 in Postgres, but the easiest, fastest, and most scalable is through the ParadeDB pg_search extension.
 
 ### Building Your First BM25 Query
 
@@ -118,7 +88,7 @@ Now you can search with BM25 scoring:
 ```sql
 SELECT id, title, paradedb.score(id) AS bm25_score
 FROM documents
-WHERE documents @@@ 'postgresql search'
+WHERE documents ||| 'postgresql search'
 ORDER BY bm25_score DESC
 LIMIT 10;
 ```
@@ -131,26 +101,12 @@ Behind the scenes, BM25 depends on tokenization — breaking text into searchabl
 
 "Café" should match "cafe". "PostgreSQL" should match "postgres". Stop words like "the" and "and" should be filtered out. ParadeDB handles these normalizations automatically, but understanding them helps you debug relevance issues.
 
-For comparison, PostgreSQL's built-in full-text search requires explicit configuration:
+xxx
 
-```sql
--- PostgreSQL's native approach
-CREATE INDEX idx_docs_fts ON documents 
-USING gin(to_tsvector('english', title || ' ' || content));
-
-SELECT id, title, ts_rank(to_tsvector('english', title || ' ' || content), query) AS score
-FROM documents, to_tsquery('english', 'postgresql & search') query
-WHERE to_tsvector('english', title || ' ' || content) @@ query
-ORDER BY score DESC;
-```
-
-The syntax is more complex, but the underlying concept is identical: convert text to tokens, build an inverted index, and score matches.
 
 ### When BM25 Shines
 
-BM25 excels with structured queries and exact terminology. If users search for "HTTP 404 error" or "PostgreSQL connection pooling", lexical matching gives precise, explainable results.
-
-It's also fast and predictable. BM25 indexes are compact, updates are efficient, and query latency stays consistent regardless of corpus size.
+BM25 excels with structured queries and exact terminology. If users search for "HTTP 404 error" or "PostgreSQL connection pooling", lexical matching qucikly gives precise, explainable, predicatable results.
 
 But BM25 has limits. It can't understand that "car" and "automobile" are related, or that "PostgreSQL performance" and "database optimization" might be semantically similar. That's where vector search comes in.
 
@@ -158,7 +114,7 @@ But BM25 has limits. It can't understand that "car" and "automobile" are related
 
 [Vector search](../../learn/search-concepts/vector-search) approaches the relevance problem from a completely different angle. Instead of matching words, it matches meaning.
 
-An embedding model converts text into a high-dimensional vector — an array of floating-point numbers that captures semantic relationships. Documents with similar meanings cluster together in this vector space, even if they use completely different words.
+An embedding model converts text into a high-dimensional vector, an array of floating-point numbers that captures semantic relationships. Documents with similar meanings cluster together in this vector space, even if they use completely different words.
 
 ### Setting Up Vector Search
 
@@ -178,12 +134,8 @@ USING hnsw (embedding vector_cosine_ops);
 
 The `vector(1536)` type stores 1536-dimensional vectors — matching OpenAI's text-embedding-3-small model dimensions. The HNSW (Hierarchical Navigable Small World) index enables fast approximate nearest neighbor search.
 
-Now you need to generate embeddings. In production, you'd typically do this asynchronously, but for demonstration:
+Embeddings are usually generated outside your database (pgvector stores, but doesn't create embeddings). These can be created using your favorite model and either written at INSERT/UPDATE time, or later by another process.
 
-```sql
--- Generate embeddings (pseudo-code - you'd call an actual embedding API)
-UPDATE documents SET embedding = generate_embedding(title || ' ' || content);
-```
 
 ### Querying with Vector Similarity
 
@@ -227,15 +179,15 @@ This is why hybrid search matters. We need both precision and recall, both exact
 
 Now comes the critical step: combining BM25 and vector search results into a single, coherent ranking.
 
-The technique that makes this work elegantly is [Reciprocal Rank Fusion (RRF)](../../learn/search-concepts/reciprocal-rank-fusion). RRF takes multiple ranked lists and merges them by rewarding documents that appear near the top of any list.
+The technique that makes this work elegantly is [Reciprocal Rank Fusion (RRF)](../../learn/search-concepts/reciprocal-rank-fusion). RRF takes multiple ranked lists and merges them by rewarding documents that appear near the top of any list. This is needed because although BM25 and pgvector score documents, they don't do it on the same scale (in fact BM25 ranking are entirely corpus dependent and can't be compared cross-indexes either).
 
 ### The RRF Algorithm
 
 RRF's formula is deceptively simple:
 
-```
-RRF_score(document) = Σ 1 / (k + rank_i(document))
-```
+$$$
+RRF(document) = Σ 1 / (k + rank_i(document))
+$$$
 
 Where `rank_i(document)` is the position of the document in ranking system `i`, and `k` is a small constant (typically 60).
 
@@ -246,48 +198,46 @@ The intuition: documents that rank highly in multiple systems get the highest co
 Here's how to implement RRF using Common Table Expressions:
 
 ```sql
-WITH 
--- BM25 rankings
-lexical_results AS (
-    SELECT 
-        id,
-        paradedb.score(id) AS bm25_score,
-        ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS bm25_rank
-    FROM documents
-    WHERE documents @@@ 'postgresql vector search'
+WITH
+--- Full-text search, using pg_search and BM25 for ranking
+fulltext AS
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
+  FROM mock_items
+  WHERE description @@@ 'keyboard'
+  LIMIT 20
 ),
--- Vector similarity rankings  
-semantic_results AS (
-    SELECT 
-        id,
-        1 - (embedding <=> generate_embedding('postgresql vector search')) AS similarity,
-        ROW_NUMBER() OVER (ORDER BY 1 - (embedding <=> generate_embedding('postgresql vector search')) DESC) AS vector_rank
-    FROM documents
+
+--- Semantic search, using pgvector and cosine distance for ranking
+semantic AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+  FROM mock_items
+  LIMIT 20
 ),
--- Combine with RRF
-rrf_fusion AS (
-    SELECT 
-        COALESCE(l.id, s.id) AS id,
-        COALESCE(l.bm25_score, 0) AS bm25_score,
-        COALESCE(s.similarity, 0) AS vector_similarity,
-        (1.0 / (60 + COALESCE(l.bm25_rank, 1000))) + 
-        (1.0 / (60 + COALESCE(s.vector_rank, 1000))) AS rrf_score
-    FROM lexical_results l
-    FULL OUTER JOIN semantic_results s USING (id)
+
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 1.0 / (60 + r) AS s FROM fulltext, params
+  UNION ALL
+  SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
 )
-SELECT 
-    r.id,
-    d.title,
-    r.bm25_score,
-    r.vector_similarity,
-    r.rrf_score
-FROM rrf_fusion r
-JOIN documents d ON r.id = d.id
-ORDER BY r.rrf_score DESC
-LIMIT 10;
+
+-- Sum the RRF scores, order by them, and join back the original data
+SELECT
+  m.id,
+  SUM(s) AS score,
+  m.description
+FROM rrf
+JOIN mock_items AS m USING (id)
+GROUP BY m.id, m.description
+ORDER BY score DESC
+LIMIT 5;
 ```
 
-This query performs both searches, ranks the results, and fuses them using RRF. The `FULL OUTER JOIN` ensures documents found by either method contribute to the final ranking.
+This query performs both searches, ranks the results, and fuses them using RRF. The `UNION ALL` could be replaced by a `FULL OUTER JOIN` ensures documents found by either method contribute to the final ranking.
 
 ### Why RRF Works
 
@@ -303,7 +253,7 @@ RRF has several properties that make it ideal for hybrid search:
 
 ### Tuning RRF
 
-While RRF works well out of the box, you can adjust the `k` parameter to control fusion behavior:
+While RRF works well out of the box, you can adjust the `k` parameter (60 in the example above) to control fusion behavior:
 
 - **Lower k values (20-40):** More aggressive — strongly favor top-ranked documents
 - **Higher k values (80-100):** More conservative — give lower-ranked documents more influence
@@ -312,11 +262,12 @@ You can also add weights to balance lexical versus semantic influence:
 
 ```sql
 -- Weighted RRF example
-SELECT 
-    id,
-    0.7 * (1.0 / (60 + bm25_rank)) + 0.3 * (1.0 / (60 + vector_rank)) AS weighted_rrf
-FROM combined_results
-ORDER BY weighted_rrf DESC;
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 0.7 * 1.0 / (60 + r) AS s FROM fulltext, params
+  UNION ALL
+  SELECT id, 0.3 * 1.0 / (60 + r) AS s FROM semantic,  params
+)
 ```
 
 The weights (0.7 for lexical, 0.3 for semantic) let you favor precision over recall or vice versa, depending on your use case.
@@ -388,215 +339,7 @@ user_preference_results AS (
 )
 ```
 
-The beauty of RRF is its composability — you can keep adding ranking signals without fundamentally changing the fusion logic.
-
-## Advanced Query Patterns
-
-Real applications rarely need simple "search everything" functionality. They need sophisticated querying that combines search with filtering, field weighting, and domain-specific requirements. These patterns are fundamental to building production hybrid search systems.
-
-### Multi-Field Search with Weighted Importance
-
-Documents often have structured fields with different importance levels. A match in the title should weigh more than one buried in the body text. Product names matter more than descriptions.
-
-```sql
--- Multi-field search with custom weighting
-WITH 
-weighted_bm25 AS (
-    SELECT 
-        id,
-        -- Weight title matches higher than content, summary in between
-        (2.0 * paradedb.score(id, 'title')) + 
-        (1.0 * paradedb.score(id, 'content')) + 
-        (1.5 * paradedb.score(id, 'summary')) AS weighted_score,
-        ROW_NUMBER() OVER (ORDER BY 
-            (2.0 * paradedb.score(id, 'title')) + 
-            (1.0 * paradedb.score(id, 'content')) + 
-            (1.5 * paradedb.score(id, 'summary')) DESC
-        ) AS bm25_rank
-    FROM documents
-    WHERE title @@@ 'database performance' 
-       OR content @@@ 'database performance'
-       OR summary @@@ 'database performance'
-),
-vector_results AS (
-    SELECT 
-        id,
-        1 - (embedding <=> generate_embedding('database optimization techniques')) AS similarity,
-        ROW_NUMBER() OVER (ORDER BY 1 - (embedding <=> generate_embedding('database optimization techniques')) DESC) AS vector_rank
-    FROM documents
-    WHERE embedding IS NOT NULL
-)
-SELECT 
-    d.id,
-    d.title,
-    d.category,
-    COALESCE(b.weighted_score, 0) AS bm25_score,
-    COALESCE(v.similarity, 0) AS vector_similarity,
-    (1.0 / (60 + COALESCE(b.bm25_rank, 1000))) + 
-    (1.0 / (60 + COALESCE(v.vector_rank, 1000))) AS rrf_score
-FROM documents d
-LEFT JOIN weighted_bm25 b ON d.id = b.id
-LEFT JOIN vector_results v ON d.id = v.id
-WHERE (b.id IS NOT NULL OR v.id IS NOT NULL)
-ORDER BY rrf_score DESC
-LIMIT 20;
-```
-
-This pattern lets you boost matches in critical fields while still getting semantic understanding across the entire document.
-
-### Filtered Hybrid Search
-
-Production applications need precise filtering: categories, date ranges, user permissions, or content types. The key is applying filters before expensive similarity calculations.
-
-```sql
--- Filtered search with metadata constraints
-WITH 
-filtered_corpus AS (
-    SELECT id, title, content, embedding, created_at
-    FROM documents
-    WHERE category IN ('technical', 'tutorial')
-      AND created_at >= '2023-01-01'
-      AND status = 'published'
-      AND user_id IN (SELECT user_id FROM accessible_users WHERE viewer_id = $1)
-),
-bm25_results AS (
-    SELECT 
-        id,
-        paradedb.score(id) AS bm25_score,
-        ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS bm25_rank
-    FROM filtered_corpus
-    WHERE content @@@ 'machine learning optimization'
-),
-vector_results AS (
-    SELECT 
-        id,
-        1 - (embedding <=> generate_embedding('ML model performance tuning')) AS similarity,
-        ROW_NUMBER() OVER (ORDER BY 1 - (embedding <=> generate_embedding('ML model performance tuning')) DESC) AS vector_rank
-    FROM filtered_corpus
-    WHERE embedding IS NOT NULL
-)
-SELECT 
-    fc.id,
-    fc.title,
-    fc.created_at,
-    COALESCE(b.bm25_score, 0) AS bm25_score,
-    COALESCE(v.similarity, 0) AS vector_similarity,
-    (1.0 / (60 + COALESCE(b.bm25_rank, 1000))) + 
-    (1.0 / (60 + COALESCE(v.vector_rank, 1000))) AS rrf_score
-FROM filtered_corpus fc
-LEFT JOIN bm25_results b ON fc.id = b.id
-LEFT JOIN vector_results v ON fc.id = v.id
-WHERE (b.id IS NOT NULL OR v.id IS NOT NULL)
-ORDER BY rrf_score DESC
-LIMIT 10;
-```
-
-By filtering first, you reduce the search space and ensure relevance within the specific context that matters.
-
-### Faceted Search with Hybrid Ranking
-
-Modern search interfaces need faceted navigation: "Show me results, but also show counts for different categories." Hybrid search can power both the result ranking and facet generation.
-
-```sql
--- Faceted search with hybrid ranking
-WITH 
-search_results AS (
-    -- Main hybrid search query
-    SELECT id, category, author, document_type, rrf_score
-    FROM hybrid_search('postgresql performance optimization')
-),
-facet_counts AS (
-    -- Generate facets from the search corpus
-    SELECT 
-        'category' AS facet_type,
-        category AS facet_value,
-        COUNT(*) AS doc_count
-    FROM search_results
-    GROUP BY category
-    
-    UNION ALL
-    
-    SELECT 
-        'author' AS facet_type,
-        author AS facet_value,
-        COUNT(*) AS doc_count
-    FROM search_results
-    GROUP BY author
-    
-    UNION ALL
-    
-    SELECT 
-        'document_type' AS facet_type,
-        document_type AS facet_value,
-        COUNT(*) AS doc_count
-    FROM search_results
-    GROUP BY document_type
-)
--- Return both results and facet counts
-SELECT 
-    'results' AS result_type,
-    sr.id::text AS id,
-    d.title,
-    sr.category,
-    sr.author,
-    sr.rrf_score::text AS score
-FROM search_results sr
-JOIN documents d ON sr.id = d.id
-ORDER BY sr.rrf_score DESC
-LIMIT 10
-
-UNION ALL
-
-SELECT 
-    'facets' AS result_type,
-    facet_type AS id,
-    facet_value AS title,
-    NULL AS category,
-    NULL AS author,
-    doc_count::text AS score
-FROM facet_counts
-ORDER BY result_type, id, score DESC;
-```
-
-### Time-Decay and Recency Boosting
-
-Many applications need to balance relevance with recency. Recent documents might be more valuable, but classic content should still rank well. You can model this with time-decay functions in your RRF weighting.
-
-```sql
--- Time-aware search with configurable decay
-WITH 
-base_search AS (
-    SELECT id, bm25_rank, vector_rank, created_at, is_evergreen
-    FROM hybrid_search_results('react performance patterns')
-),
-time_weighted AS (
-    SELECT 
-        id,
-        bm25_rank,
-        vector_rank,
-        created_at,
-        is_evergreen,
-        CASE 
-            WHEN is_evergreen THEN 1.0  -- Evergreen content doesn't decay
-            ELSE EXP(-0.05 * EXTRACT(YEAR FROM AGE(CURRENT_DATE, created_at))) -- Gentle exponential decay
-        END AS time_weight
-    FROM base_search
-)
-SELECT 
-    d.id,
-    d.title,
-    d.created_at,
-    d.is_evergreen,
-    tw.time_weight,
-    -- Apply time weighting to the RRF score
-    ((1.0 / (60 + tw.bm25_rank)) + (1.0 / (60 + tw.vector_rank))) * tw.time_weight AS time_adjusted_score
-FROM time_weighted tw
-JOIN documents d ON tw.id = d.id
-ORDER BY time_adjusted_score DESC
-LIMIT 10;
-```
-
-These patterns show how hybrid search scales beyond simple relevance to handle the complex, domain-specific requirements that real applications demand. The key insight is that SQL's expressiveness lets you compose these requirements naturally — filtering, weighting, faceting, and ranking all become variations on the same theme.
+The beauty of RRF is its composability — you can keep adding ranking signals without fundamentally changing the fusion logic. The one thing yo uhave to be aware of is that you typically only want to return a limited number of datapoints from your RRF signal SQL. If you were to rank every document in your database then you'd be returning many datapoints which would slow everything down.  
 
 ## Real-World Implementation Patterns
 
