@@ -29,9 +29,7 @@ There are two common strategies (and a hybridized option) for efficiently storin
 
 ### Vector Search
 
-Most AI models convert inputs into multi-dimensional vectors known as **embeddings**. Two pieces of information that the AI model considers interrelated will produce proximate embeddings relative to other unrelated information. For example, `"yellow cat"` and `"orange leopard"` would render more similar embeddings than the embeddings of `"database index"` or `"full-text search"`. 
-
-[Vector search](/learn/search-concepts/vector-search) is ideal for RAG systems that must retrieve semantically similar information (e.g. `"full-text search"` and `"lexical processing"`). It is also ideal for multimodal applications (e.g. those that generate images or video) as multimodal AI models also produce embeddings. 
+[Vector search](/learn/search-concepts/vector-search) retrieves information based on semantic similarity using multi-dimensional vector embeddings. Vector search works best when users need conceptually related information, even if the exact words differ. It's particularly effective for multimodal applications and finding information that relates to the query's meaning rather than exact text matches. 
 
 ### Full-Text Search
 
@@ -46,7 +44,7 @@ Using [reciprocal rank fusion](/learn/search-concepts/reciprocal-rank-fusion), h
 
 ## Augmentation
 
-Once you retrieve relevant information, you need to combine it with the user's original query before sending it to the AI model. This augmentation step determines how effectively the model can use the retrieved context.
+Once a RAG application retrieves relevant information, it must combine it with the user's original query before sending the final prompt to the AI model. This augmentation step determines how effectively the model can use the retrieved context.
 
 The most common approach is to append the retrieved documents to the original prompt with clear delimiters. For example:
 
