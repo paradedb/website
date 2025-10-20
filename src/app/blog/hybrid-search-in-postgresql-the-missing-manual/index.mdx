@@ -13,7 +13,7 @@ Postgres now supports both. ParadeDB adds BM25 (the same ranking algorithm used 
 
 The next step is using them together. Once BM25 and vector embeddings live in the same database, you can compose them in SQL: combine scores, apply filters, add metadata like recency or popularity, and keep everything transactional.
 
-This guide explains how to do that—how to build hybrid search directly in Postgres.
+This guide explains how to do that, how to build hybrid search directly in Postgres.
 
 ## Why Not PostgreSQL's Native Full-Text Search?
 
@@ -57,7 +57,7 @@ BM25 combines three intuitive signals:
 
 The mathematical formulation looks complex, but the intuition is simple: reward documents that mention query terms frequently, especially rare terms, while penalizing documents that are unnecessarily long.
 
-There a few ways to get BM25 in Postgres, but the easiest, fastest, and most scalable is through the ParadeDB pg_search extension.
+There are several ways to get BM25 in Postgres. You could implement it from scratch using PostgreSQL's statistics functions, or use full-text search extensions. But the easiest, fastest, and most scalable approach is through the ParadeDB pg_search extension, which provides production-ready BM25 with minimal configuration.
 
 ### Building Your First BM25 Query
 
@@ -93,7 +93,9 @@ ORDER BY bm25_score DESC
 LIMIT 10;
 ```
 
-The `paradedb.score(id)` function returns the BM25 relevance score, while the `@@@` operator performs the search. Documents that mention both "postgresql" and "search" will score higher than those mentioning only one term.
+The `paradedb.score(id)` function returns the BM25 relevance score, while the `|||` operator performs the search. Documents that mention both "postgresql" and "search" will score higher than those mentioning only one term.
+
+Notice that we limit results to control performance - BM25 operations can be expensive over large result sets, so it's common to pre-filter to the top matches before applying more expensive operations like RRF fusion.
 
 ### Understanding Tokenization
 
@@ -101,7 +103,7 @@ Behind the scenes, BM25 depends on tokenization — breaking text into searchabl
 
 "Café" should match "cafe". "PostgreSQL" should match "postgres". Stop words like "the" and "and" should be filtered out. ParadeDB handles these normalizations automatically, but understanding them helps you debug relevance issues.
 
-xxx
+For most applications, ParadeDB's default tokenization works well. But if you need custom behavior — perhaps preserving technical terms like "OAuth2" or handling domain-specific abbreviations — you can configure custom tokenizers or preprocessing steps in your indexing pipeline.
 
 
 ### When BM25 Shines
@@ -128,11 +130,15 @@ CREATE EXTENSION IF NOT EXISTS vector;
 ALTER TABLE documents ADD COLUMN embedding vector(1536);
 
 -- Create vector index for fast similarity search
+-- HNSW is best for large datasets, ivfflat for smaller ones
 CREATE INDEX idx_documents_vector ON documents 
-USING hnsw (embedding vector_cosine_ops);
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
 ```
 
 The `vector(1536)` type stores 1536-dimensional vectors — matching OpenAI's text-embedding-3-small model dimensions. The HNSW (Hierarchical Navigable Small World) index enables fast approximate nearest neighbor search.
+
+The HNSW index parameters deserve explanation: `m` controls the number of bi-directional links created for each new element (higher values mean better recall but more memory), while `ef_construction` affects build time and quality. For most applications, the values above work well, but you can tune them based on your recall versus performance requirements.
 
 Embeddings are usually generated outside your database (pgvector stores, but doesn't create embeddings). These can be created using your favorite model and either written at INSERT/UPDATE time, or later by another process.
 
@@ -179,7 +185,9 @@ This is why hybrid search matters. We need both precision and recall, both exact
 
 Now comes the critical step: combining BM25 and vector search results into a single, coherent ranking.
 
-The technique that makes this work elegantly is [Reciprocal Rank Fusion (RRF)](../../learn/search-concepts/reciprocal-rank-fusion). RRF takes multiple ranked lists and merges them by rewarding documents that appear near the top of any list. This is needed because although BM25 and pgvector score documents, they don't do it on the same scale (in fact BM25 ranking are entirely corpus dependent and can't be compared cross-indexes either).
+The technique that makes this work elegantly is [Reciprocal Rank Fusion (RRF)](../../learn/search-concepts/reciprocal-rank-fusion). RRF takes multiple ranked lists and merges them by rewarding documents that appear near the top of any list. This is needed because BM25 scores and cosine similarities operate on completely different scales - you can't simply add a BM25 score of 1.2 to a cosine similarity of 0.87 and expect meaningful results.
+
+RRF solves this by ignoring raw scores entirely and focusing on rankings. A document ranked #1 in BM25 and #3 in vector search gets a higher combined score than one ranked #2 in BM25 but nowhere in vector search, regardless of the underlying score values.
 
 ### The RRF Algorithm
 
@@ -199,42 +207,52 @@ Here's how to implement RRF using Common Table Expressions:
 
 ```sql
 WITH
---- Full-text search, using pg_search and BM25 for ranking
-fulltext AS
+-- Full-text search using ParadeDB BM25 for ranking
+fulltext AS (
   SELECT
     id,
-    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
-  FROM mock_items
-  WHERE description @@@ 'keyboard'
-  LIMIT 20
+    paradedb.score(id) AS bm25_score,
+    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS rank
+  FROM documents
+  WHERE documents @@@ 'keyboard mechanical'
+  LIMIT 50  -- Pre-filter to control performance
 ),
 
---- Semantic search, using pgvector and cosine distance for ranking
+-- Semantic search using pgvector cosine similarity
 semantic AS (
   SELECT
     id,
-    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
-  FROM mock_items
-  LIMIT 20
+    1 - (embedding <=> '[0.1,0.2,0.3,...]'::vector) AS similarity,
+    ROW_NUMBER() OVER (ORDER BY embedding <=> '[0.1,0.2,0.3,...]'::vector) AS rank
+  FROM documents
+  WHERE embedding IS NOT NULL
+  ORDER BY embedding <=> '[0.1,0.2,0.3,...]'::vector
+  LIMIT 50  -- Pre-filter to control performance
 ),
 
--- Calculate RRF contributions from each ranker
+-- Calculate RRF scores with configurable constant
 rrf AS (
-  SELECT id, 1.0 / (60 + r) AS s FROM fulltext, params
+  SELECT id, 1.0 / (60 + rank) AS rrf_score FROM fulltext
   UNION ALL
-  SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
+  SELECT id, 1.0 / (60 + rank) AS rrf_score FROM semantic
 )
 
--- Sum the RRF scores, order by them, and join back the original data
+-- Aggregate RRF scores and return top results
 SELECT
-  m.id,
-  SUM(s) AS score,
-  m.description
+  d.id,
+  d.title,
+  d.content,
+  SUM(rrf.rrf_score) AS combined_score,
+  -- Include individual scores for debugging
+  MAX(f.bm25_score) AS bm25_score,
+  MAX(s.similarity) AS vector_similarity
 FROM rrf
-JOIN mock_items AS m USING (id)
-GROUP BY m.id, m.description
-ORDER BY score DESC
-LIMIT 5;
+JOIN documents d ON d.id = rrf.id
+LEFT JOIN fulltext f ON f.id = rrf.id
+LEFT JOIN semantic s ON s.id = rrf.id
+GROUP BY d.id, d.title, d.content
+ORDER BY combined_score DESC
+LIMIT 10;
 ```
 
 This query performs both searches, ranks the results, and fuses them using RRF. The `UNION ALL` could be replaced by a `FULL OUTER JOIN` ensures documents found by either method contribute to the final ranking.
@@ -808,17 +826,32 @@ CREATE TABLE documents (
     content TEXT NOT NULL,
     embedding vector(1536),
     metadata JSONB,
+    
+    -- Content fingerprinting for change detection
+    content_hash TEXT GENERATED ALWAYS AS (md5(title || content)) STORED,
+    
+    -- Embedding generation tracking
+    embedding_model TEXT DEFAULT 'text-embedding-3-small',
+    embedding_generated_at TIMESTAMPTZ,
+    
+    -- Standard audit fields
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- Indexes for both retrieval methods
 CREATE INDEX idx_documents_bm25 ON documents USING bm25 (id, title, content);
-CREATE INDEX idx_documents_vector ON documents USING hnsw (embedding vector_cosine_ops);
+CREATE INDEX idx_documents_vector ON documents 
+  USING hnsw (embedding vector_cosine_ops)
+  WITH (m = 16, ef_construction = 64);
+
+-- Operational indexes
 CREATE INDEX idx_documents_updated_at ON documents (updated_at);
+CREATE INDEX idx_documents_content_hash ON documents (content_hash);
+CREATE INDEX idx_documents_embedding_null ON documents (id) WHERE embedding IS NULL;
 ```
 
-This design guarantees that every insert, update, or delete maintains consistency between text and vectors within a single transaction.
+This design guarantees that every insert, update, or delete maintains consistency between text and vectors within a single transaction. The additional columns help track embedding freshness and enable efficient background processing.
 
 ### Managing Embedding Generation
 
@@ -846,28 +879,60 @@ Then run a background job to generate embeddings for documents where `embedding 
 
 Hybrid queries combine multiple index operations, so optimization matters:
 
-**Index tuning:**
+**Index parameter tuning:**
 ```sql
--- Adjust HNSW parameters for your data size
+-- For datasets < 100K documents, consider ivfflat
+CREATE INDEX idx_documents_vector_small ON documents 
+USING ivfflat (embedding vector_cosine_ops)
+WITH (lists = 100);
+
+-- For larger datasets, tune HNSW parameters
 CREATE INDEX idx_documents_vector ON documents 
 USING hnsw (embedding vector_cosine_ops)
-WITH (m = 16, ef_construction = 64);
+WITH (
+  m = 16,              -- 16 for balanced performance, 32+ for high recall
+  ef_construction = 64  -- Higher values = better quality, slower build
+);
 ```
 
-**Query optimization:**
+**Query-time performance settings:**
 ```sql
--- Use EXPLAIN ANALYZE to understand query plans
-EXPLAIN (ANALYZE, BUFFERS) 
-SELECT * FROM hybrid_search_query;
+-- Adjust search accuracy vs speed for HNSW
+SET hnsw.ef_search = 100;  -- Default 40, higher = more accurate but slower
+
+-- Control parallelism for large result sets
+SET max_parallel_workers_per_gather = 4;
 ```
 
 **Memory configuration:**
 ```sql
--- Increase work_mem for better sort performance
+-- Increase work_mem for complex CTEs and sorting
 SET work_mem = '256MB';
 
--- Increase maintenance_work_mem for index builds
+-- Increase shared_buffers for better index caching
+-- Typically 25% of RAM, up to several GB
+ALTER SYSTEM SET shared_buffers = '4GB';
+
+-- Index build performance
 SET maintenance_work_mem = '2GB';
+```
+
+**Query optimization patterns:**
+```sql
+-- Use EXPLAIN ANALYZE to identify bottlenecks
+EXPLAIN (ANALYZE, BUFFERS, FORMAT JSON) 
+SELECT * FROM hybrid_search('query text');
+
+-- Pre-filter before expensive operations
+WITH candidates AS (
+  SELECT id FROM documents 
+  WHERE created_at > NOW() - INTERVAL '1 year'
+    AND category = 'technical'
+)
+SELECT d.*, rrf_score
+FROM candidates c
+JOIN hybrid_search_results hsr ON c.id = hsr.id
+JOIN documents d ON d.id = c.id;
 ```
 
 ### Caching Strategies
@@ -958,12 +1023,14 @@ Hybrid search in PostgreSQL isn't just technically superior. It's architecturall
 Here's a production-ready hybrid search implementation that brings together everything we've covered:
 
 ```sql
--- Complete hybrid search function
+-- Production-ready hybrid search function with flexible filtering
 CREATE OR REPLACE FUNCTION hybrid_search(
     query_text TEXT,
+    query_filters JSONB DEFAULT '{}',
     result_limit INTEGER DEFAULT 10,
     bm25_weight FLOAT DEFAULT 0.6,
-    vector_weight FLOAT DEFAULT 0.4
+    vector_weight FLOAT DEFAULT 0.4,
+    rrf_constant INTEGER DEFAULT 60
 )
 RETURNS TABLE (
     doc_id BIGINT,
@@ -971,71 +1038,98 @@ RETURNS TABLE (
     content_snippet TEXT,
     bm25_score FLOAT,
     vector_similarity FLOAT,
-    final_score FLOAT
+    final_score FLOAT,
+    metadata JSONB
 ) AS $$
 DECLARE
     query_embedding vector(1536);
+    base_filter TEXT;
+    category_filter TEXT;
+    date_filter TEXT;
 BEGIN
-    -- Generate query embedding (implement this based on your embedding service)
+    -- Generate query embedding (implement based on your embedding service)
     query_embedding := generate_embedding(query_text);
     
-    RETURN QUERY
+    -- Build dynamic filters from JSONB parameters
+    base_filter := 'TRUE';
+    
+    IF query_filters ? 'categories' THEN
+        category_filter := format('metadata->>''category'' = ANY(%L)', 
+                                 ARRAY(SELECT jsonb_array_elements_text(query_filters->'categories')));
+        base_filter := base_filter || ' AND ' || category_filter;
+    END IF;
+    
+    IF query_filters ? 'date_after' THEN
+        date_filter := format('created_at >= %L', query_filters->>'date_after');
+        base_filter := base_filter || ' AND ' || date_filter;
+    END IF;
+    
+    RETURN QUERY EXECUTE format('
     WITH
-    -- BM25 lexical search
+    -- BM25 lexical search with dynamic filtering
     bm25_results AS (
         SELECT 
             d.id,
             d.title,
-            LEFT(d.content, 200) AS snippet,
+            LEFT(d.content, 300) AS snippet,
+            d.metadata,
             paradedb.score(d.id) AS score,
             ROW_NUMBER() OVER (ORDER BY paradedb.score(d.id) DESC) AS rank
         FROM documents d
-        WHERE d @@@ query_text
+        WHERE d @@@ $1
+          AND d.embedding IS NOT NULL  -- Ensure we can join with vector results
+          AND (%s)
         ORDER BY score DESC
-        LIMIT 100  -- Pre-filter for performance
+        LIMIT 100
     ),
     
-    -- Vector semantic search  
+    -- Vector semantic search with same filtering
     vector_results AS (
         SELECT 
             d.id,
             d.title,
-            LEFT(d.content, 200) AS snippet,
-            1 - (d.embedding <=> query_embedding) AS similarity,
-            ROW_NUMBER() OVER (ORDER BY 1 - (d.embedding <=> query_embedding) DESC) AS rank
+            LEFT(d.content, 300) AS snippet,
+            d.metadata,
+            1 - (d.embedding <=> $2) AS similarity,
+            ROW_NUMBER() OVER (ORDER BY d.embedding <=> $2) AS rank
         FROM documents d
         WHERE d.embedding IS NOT NULL
-        ORDER BY similarity DESC
-        LIMIT 100  -- Pre-filter for performance
+          AND (%s)
+        ORDER BY d.embedding <=> $2
+        LIMIT 100
     ),
     
-    -- RRF fusion
+    -- RRF fusion with configurable weights and constant
     fused_results AS (
         SELECT 
             COALESCE(b.id, v.id) AS id,
             COALESCE(b.title, v.title) AS title,
             COALESCE(b.snippet, v.snippet) AS content_snippet,
+            COALESCE(b.metadata, v.metadata) AS metadata,
             COALESCE(b.score, 0) AS bm25_score,
             COALESCE(v.similarity, 0) AS vector_similarity,
             
-            -- RRF calculation
-            bm25_weight * (1.0 / (60 + COALESCE(b.rank, 1000))) + 
-            vector_weight * (1.0 / (60 + COALESCE(v.rank, 1000))) AS rrf_score
+            -- Weighted RRF calculation with configurable constant
+            ($3 * (1.0 / ($6 + COALESCE(b.rank, 1000)))) + 
+            ($4 * (1.0 / ($6 + COALESCE(v.rank, 1000)))) AS rrf_score
             
         FROM bm25_results b
         FULL OUTER JOIN vector_results v USING (id)
     )
     
     SELECT 
-        id AS doc_id,
+        id,
         title,
         content_snippet,
         bm25_score,
         vector_similarity,
-        rrf_score AS final_score
+        rrf_score,
+        metadata
     FROM fused_results
-    ORDER BY final_score DESC
-    LIMIT result_limit;
+    ORDER BY rrf_score DESC
+    LIMIT $5
+    ', base_filter, base_filter)
+    USING query_text, query_embedding, bm25_weight, vector_weight, result_limit, rrf_constant;
     
 END;
 $$ LANGUAGE plpgsql;
@@ -1044,11 +1138,27 @@ $$ LANGUAGE plpgsql;
 Use this function to perform hybrid search with a single call:
 
 ```sql
--- Search for documents about PostgreSQL performance
-SELECT * FROM hybrid_search('postgresql performance optimization', 10, 0.7, 0.3);
+-- Basic search for PostgreSQL performance docs
+SELECT * FROM hybrid_search('postgresql performance optimization');
 
--- Search with equal weight for BM25 and vectors
-SELECT * FROM hybrid_search('database indexing strategies', 5, 0.5, 0.5);
+-- Search with category filtering and date constraints
+SELECT * FROM hybrid_search(
+    'database indexing strategies',
+    '{"categories": ["postgresql", "performance"], "date_after": "2024-01-01"}'::jsonb,
+    20,  -- result limit
+    0.7, -- BM25 weight
+    0.3  -- vector weight
+);
+
+-- Semantic-heavy search with custom RRF constant
+SELECT * FROM hybrid_search(
+    'machine learning embeddings',
+    '{}'::jsonb,
+    10,   -- result limit  
+    0.3,  -- BM25 weight
+    0.7,  -- vector weight
+    40    -- RRF constant (lower = more aggressive)
+);
 ```
 
 This implementation encapsulates the entire hybrid search pipeline — BM25 retrieval, vector similarity, and RRF fusion — in a single, reusable database function.
