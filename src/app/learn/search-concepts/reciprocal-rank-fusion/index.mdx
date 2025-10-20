@@ -25,11 +25,11 @@ $$
 
 Where
 
-- $d$ is a document
-- $R$ is the set of ranked lists
-- $rank_r(d)$ is the rank of document $d$ in ranking $r$
-- $w_r$ is the weight for ranking $r$ (typically between 0 and 1). In non-weighted/traditional RRF this is always 1.
-- $k$ is a constant (typically 60) that controls the fusion behavior
+- $$d$$ is a document
+- $$R$$ is the set of ranked lists
+- $$rank_r(d)$$ is the rank of document $$d$$ in ranking $$r$$
+- $$w_r$$ is the weight for ranking $$r$$ (typically between 0 and 1). In non-weighted/traditional RRF this is always 1.
+- $$k$$ is a constant (typically 60) that controls the fusion behavior
 
 The fusion process works as follows:
 
@@ -40,9 +40,9 @@ The fusion process works as follows:
 Documents missing from a ranking contribute zero to that ranking's sum.
 
 <Note>
-  The constant $k=60$ is almost always used because it has been empirically shown to work well across different datasets.
+  The constant $$k=60$$ is almost always used because it has been empirically shown to work well across different datasets.
 
-$k$ can be tuned based on your specific use case and data characteristics. Lower values (20-40) will give top results more influence, higher values (80-100) will give a more gradual contribution difference.
+$$k$$ can be tuned based on your specific use case and data characteristics. Lower values (20-40) will give top results more influence, higher values (80-100) will give a more gradual contribution difference.
 
 </Note>
 

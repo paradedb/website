@@ -1,0 +1,107 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+Postgres is a powerful general-purpose database: but its built-in full-text
+search has limits, especially around ranking. It supports basic term matching,
+but lacks a native implementation of BM25, the probabilistic ranking function
+that underpins most modern search systems (including Elasticsearch).
+[BM25](https://www.paradedb.com/learn/search-concepts/bm25) (short for *Best
+Matching 25*, often called *Okapi BM25*) measures relevance by balancing term
+frequency, document rarity, and length normalization, an approach that
+consistently outperforms both simpler and more complex ranking methods.
+
+In this guide, you will learn a few approaches to implementing BM25 in Postgres databases.
+
+## How Does BM25 Work?
+
+BM25’s goal is to rank the results of a search query by relevancy.
+
+To do this BM25 considers three variables:
+
+- (i) the term frequency (TF) of each word in the document.
+- (ii) the inverse document frequency (IDF), which quantifies and weights the rarity of each word across all documents
+- (iii) The document’s length. By factoring in the document’s length, BM25 can promote shorter documents that might be more centered around the search query.
+
+BM25 positively weights (i) shorter documents, (ii) those with a high frequency of query words, and (iii) terms that occur more rarely across documents. If you’re curious about the algorithm’s precise mechanics, you can learn more through our [BM25 chapter](https://www.paradedb.com/learn/search-concepts/bm25) in our [Search Concepts](https://www.paradedb.com/learn/search-concepts/full-text-search) collection.
+
+## Postgres Supports Full-Text Search, But Not BM25
+
+Despite not implementing BM25, Postgres does support full-text search via [`tsvector`](https://www.postgresql.org/docs/current/datatype-textsearch.html) and its family of functions.
+
+Using [`ts_rank`](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING), Postgres developers can rank documents by relevance, but all scoring is not the same. The built in ranking doesn’t perform as well as BM25 because it only accounts for term frequency within a document and document length, but not inverse document frequency to capture the rarity of words in the full corpus. It’s also slower, needing to read from every tsvector in the set to return ranking results from the index (even for a LIMIT/topN query).
+
+## Routes to Implement BM25 in Postgres
+
+Of course where there is a will there is a way, Postgres enthusiasts have [found several methods to adding BM25 support,](https://www.postgresql.eu/events/pgconfeu2024/sessions/session/6012/slides/592/Di_Qi_LT_BM25.pdf) from raw SQL to a dedicated BM25 extension.
+
+Let’s break apart some of these approaches in detail.
+
+### Implementing BM25 Using Just SQL
+
+The most rudimentary (and unscalable) approach is using just SQL at query time.
+
+BM25’s three variables—document length, term frequency, and IDF can be calculated [manually](https://www.alibabacloud.com/blog/keyword-analysis-with-postgresql-cosine-and-linear-correlation-algorithms-for-text-analysis_595793) using `tsvector` objects and the `ts_stat` data which Postgres collects, however it's both very convoluted and very slow. It could potentially be an option for a static corpus that never changes, but still feels more like a proof-of-concept that a production ready method.
+
+### Implementing BM25 Using PL/PGSQL and Auxiliary Tables
+
+A more usable path to implement BM25 is to use custom PL/PSQL and auxiliary tables. With each term occupying a row, table lookups are reduced to one per term in your query. These results can then be aggregated with a custom function.
+
+A library that takes this approach is [plpgsql_bm25](https://github.com/jankovicsandras/plpgsql_bm25) by [András Jankovics](https://github.com/jankovicsandras). plpgsql_bm25 implements BM25 using just SQL and auxiliary tables. The function signature to create a table that holds BM25 records looks like this:
+
+```sql
+bm25createindex(
+  tablename TEXT,
+  columnname TEXT,
+  algo TEXT DEFAULT '',
+  stopwordslanguage TEXT DEFAULT '')
+RETURNS VOID
+```
+
+Unfortunately this approach is still very slow, and the tables (and their indexes) need to be updated after every source data change which leads to write amplification.
+
+### Extending Postgres to Support BM25 Indexes
+
+A more scalable approach is using Postgres's index access method (IAM) to create a native BM25 index that is created on the source table.
+
+[ParadeDB](https://paradedb.com) uses this method to implement BM25 indexes in Rust, adding them to PostgreSQL though the open-source `pg_search` extension.
+
+When an index is added to a table it can cover multiple columns, providing advanced full-text search DX, as well as fast columnar lookups and aggregations for non-text fields.
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, description, category, rating)
+WITH (key_field='id');
+```
+
+The BM25 index is laid out on disk as an [**LSM tree**](https://docs.paradedb.com/welcome/architecture#lsm-tree), where each segment in the tree consists of both an inverted index and columnar index. The inverted and columnar indexes optimize for fast reads, while the LSM tree optimizes for high-frequency writes.
+
+ParadeDB users can access full-text search and BM25 relevancy ranking by using custom operators and functions. For example, a search using match disjunction (find all documents which match one or more terms), ordering by BM25 scores, and then returning the top 5 would look like this:
+
+```sql
+SELECT id, paradedb.score(id)
+FROM mock_items
+WHERE description ||| 'running shoes'
+ORDER BY paradedb.score(id)
+LIMIT 5;
+```
+
+In most cases ParadeDB performs similarly to Elasticsearch, returning results in milliseconds even across large datasets.
+
+## **What Are the Benefits of BM25 Support in Postgres?**
+
+Bringing BM25 directly into Postgres has two major effects: it improves ranking quality and simplifies system design.
+
+Postgres’s built-in full-text search—based on tsvector, tsquery, and ts_rank is capable but rudimentary. Its scoring function uses a linear weighting of term frequency and field importance, but it ignores inverse document frequency (IDF) and applies no document-length normalization.
+
+Running BM25 inside Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the BM25 index, keeping search results transactionally consistent with the source of truth.
+
+Finally, because BM25 operates as a native index access method, it participates in Postgres’s planner and transaction model. Queries benefit from caching, parallelism, and predictable performance characteristics: something external search engines can’t easily guarantee.
+
+## Getting Started with BM25 in Postgres
+
+Postgres doesn’t natively support BM25, but as we’ve seen, there are several ways to bring it into the database, from SQL-based prototypes to full extensions like ParadeDB’s pg_search. Each approach trades off simplicity, performance, and maintenance effort, but all share the same goal: better, more meaningful search results inside Postgres itself.

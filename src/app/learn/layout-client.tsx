@@ -5,6 +5,7 @@ import classNames from "classnames";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { siteConfig } from "../siteConfig";
+import CodeBlockEnhancer from "@/components/CodeBlockEnhancer";
 
 export default function ResourcesLayoutClient({
   children,
@@ -118,6 +119,7 @@ export default function ResourcesLayoutClient({
         )}
         <div className="w-full py">{children}</div>
       </main>
+      <CodeBlockEnhancer />
     </div>
   );
 }

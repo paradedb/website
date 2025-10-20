@@ -1,0 +1,244 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+PostgreSQL includes powerful built-in [full-text search](/learn/search-concepts/full-text-search) capabilities that transform the database into a search engine. Rather than relying on external services, you can implement sophisticated text search directly within PostgreSQL using the same ACID transactions, security model, and operational infrastructure that manage your application data.
+
+PostgreSQL's full-text search handles the complete pipeline from text analysis to ranked results. It tokenizes documents, removes stop words, applies stemming, builds searchable indexes, and ranks results by relevance, all with the performance and reliability you expect from PostgreSQL. This article discusses what it can do, and where it falls short.
+
+<Note>
+**We love using PostgreSQL for full-text search, but we built ParadeDB because we don't think the built in full-text search is enough for a modern search application.**
+
+That's not to say that the built in features aren't great, but for when you need a streamlined developer experience, [BM25](/learn/search-concepts/bm25) ranking, powerful facets, a feature set that matches Elasticsearch, or increased performance then ParadeDB is a better fit.
+
+</Note>
+
+## Core Components
+
+PostgreSQL's full-text search is built around specialized data types and functions that work together to provide comprehensive text search capabilities. These are combined to both store and query text vectors.
+
+### Text Search Data Types
+
+PostgreSQL provides two fundamental data types for full-text search. The [`tsvector`](https://www.postgresql.org/docs/current/datatype-textsearch.html#DATATYPE-TSVECTOR) type represents processed, searchable text as a sorted list of distinct tokens with position information. The [`tsquery`](https://www.postgresql.org/docs/current/datatype-textsearch.html#DATATYPE-TSQUERY) type represents search queries with boolean operators, phrase matching, and proximity requirements.
+
+These types handle the complexity of text analysis while exposing a clean interface for indexing and querying.
+
+#### Understanding tsvector
+
+A `tsvector` transforms raw text into a structured, searchable format:
+
+```sql
+-- Convert text to tsvector
+SELECT to_tsvector
+  ('english',
+   'PostgreSQL provides full-text search capabilities in database'
+  );
+```
+
+```
+ 'capabl':7
+ 'databas':9
+ 'full':4
+ 'full-text':3
+ 'postgresql':1
+ 'provid':2
+ 'search':6
+ 'text':5
+```
+
+Notice how the result:
+
+- Normalizes words to lowercase
+- Stems the words ("provides" → "provid", "capabilities" → "capabl") {/* * codespell:ignore provid * */}
+- Removes stop words like "in"
+- Records position information (`:1`, `:2`, etc.)
+- Explodes hyphenated terms like "full-text" while keeping the original
+
+One limitation of `tsvector` is that it represents the text of a single row as a single vector. To combine multiple text fields, you typically concatenate them (`title || ' ' || description || ' ' || body`) into one `tsvector`. This works, but it flattens field boundaries, so you can’t search or rank fields independently. Alternatively, you could store separate `tsvector` columns for each field, but then each is indexed and scored independently, fragmenting your corpus.
+
+<Note>
+  ParadeDB uses a BM25 covering index avoids this trade-off: it can maintain
+  field-level statistics and weighting within a single index while still
+  computing global document statistics.
+</Note>
+
+#### Building tsquery
+
+A `tsquery` represents search conditions with boolean logic that operates on a `tsvector` type:
+
+```sql
+-- Simple term query
+SELECT to_tsquery('english', 'postgresql');
+
+-- Boolean operators
+SELECT to_tsquery('english', 'postgresql & search');
+
+-- Phrase search
+SELECT to_tsquery('english', 'full <-> text');
+
+-- Prefix matching
+SELECT to_tsquery('english', 'post:*');
+```
+
+### Text Search Configurations
+
+PostgreSQL ships with predefined configurations for multiple languages, each with appropriate tokenization rules, stop word lists, and stemming algorithms. You can see the configurations available on your system with the following query:
+
+```sql
+-- Available configurations
+SELECT cfgname FROM pg_ts_config;
+```
+
+Common configurations include `english`, `spanish`, `french`, `german`, and `simple` (no stemming). You can also create custom configurations for specialized domains. While other systems like Elasticsearch operate on filter chaining, if you wanted to change the way Postgres full-text search works you'd create another configuration with different options enabled.
+
+## Indexing for Performance
+
+Full-text search performance depends entirely on proper indexing. In practice, you'll almost always use functional indexes rather than storing `tsvector` data in columns. Functional indexes avoid duplicating your text data, eliminate the need for synchronization triggers, and provide the same query performance as materialized columns.
+
+PostgreSQL supports two index types for text search, with GIN indexes being the standard choice for most applications.
+
+### GIN Indexes
+
+GIN (Generalized Inverted Index) indexes are the preferred approach for full-text search. Rather than adding a separate `tsvector` column, create the index directly on your text processing function:
+
+```sql
+-- Create functional GIN index (recommended approach)
+CREATE INDEX idx_articles_search ON articles
+USING GIN(to_tsvector('english', title || ' ' || content));
+```
+
+This approach provides several advantages over storing `tsvector` in a column. You avoid duplicating your text data in the database, which saves storage space and reduces backup sizes. There's no need for triggers or other synchronization mechanisms to keep the search data current with your source text. The index automatically reflects any changes to the underlying text columns. Query performance remains similar to using a materialized `tsvector` column since PostgreSQL can use the index directly. Even if you did store `tsvector` data in a column, you'd still need to create an index on that column for acceptable performance.
+
+GIN indexes excel at fast lookups for any query term, efficient boolean operations, and compact storage for large vocabularies. They're optimized for read-heavy workloads where the text content doesn't change frequently.
+
+### GiST Indexes
+
+GiST (Generalized Search Tree) indexes offer an alternative that can be more suitable for specific scenarios:
+
+```sql
+-- Create functional GiST index
+CREATE INDEX idx_articles_search_gist ON articles
+USING GiST(to_tsvector('english', title || ' ' || content));
+```
+
+GiST indexes perform better when you need proximity or phrase queries, when updates are frequent (GiST updates faster than GIN), or when index size is a concern. However, for most full-text search applications, GIN indexes provide better overall performance.
+
+## Basic Text Search Operations
+
+With your functional index in place, you can perform sophisticated text searches without any additional setup or data synchronization.
+
+### Executing Searches
+
+Use the `@@` operator to match text against search queries:
+
+```sql
+-- Find articles about PostgreSQL
+SELECT title, content
+FROM articles
+WHERE to_tsvector('english', title || ' ' || content) @@
+      to_tsquery('english', 'postgresql');
+
+-- Boolean search
+SELECT title, content
+FROM articles
+WHERE to_tsvector('english', title || ' ' || content) @@
+      to_tsquery('english', 'postgresql & (search | query)');
+
+-- Phrase search
+SELECT title, content
+FROM articles
+WHERE to_tsvector('english', title || ' ' || content) @@
+      to_tsquery('english', 'full <-> text');
+```
+
+### Ranking Results
+
+PostgreSQL provides [ranking functions](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING) that score documents by relevance, though with important limitations compared to modern search engines:
+
+```sql
+-- Rank by relevance using ts_rank
+SELECT title, content,
+  ts_rank(to_tsvector('english', title || ' ' || content), query) as rank
+FROM articles, to_tsquery('english', 'postgresql & search') query
+WHERE to_tsvector('english', title || ' ' || content) @@ query
+ORDER BY rank DESC;
+```
+
+PostgreSQL's `ts_rank` function provides basic relevance scoring, but it's significantly less sophisticated than modern ranking algorithms like [BM25](/learn/search-concepts/bm25) used by Elasticsearch. The `ts_rank` function only considers term frequency within documents and lacks global document frequency information that would indicate how rare or common terms are across your entire corpus. This means common words aren't properly downweighted, and rare, potentially more relevant terms don't receive appropriate boosts.
+
+PostgreSQL also offers `ts_rank_cd` with cover density algorithms for alternative ranking approaches, but these still fall short of BM25's comprehensive approach to relevance scoring. For applications where search ranking quality is critical, this represents a significant limitation compared to dedicated search engines.
+
+## Advanced Query Techniques
+
+### Highlighting Results
+
+PostgreSQL can highlight matching terms in search results:
+
+```sql
+SELECT title,
+  ts_headline('english', content, query) as highlighted_content
+FROM articles, to_tsquery('english', 'postgresql & search') query
+WHERE search_vector @@ query;
+```
+
+### Multi-Column Search
+
+Search across multiple text fields with different weights
+
+```sql
+-- Weight title more heavily than content
+SELECT title, content,
+  ts_rank_cd(
+    setweight(to_tsvector('english', title), 'A') ||
+    setweight(to_tsvector('english', content), 'B'),
+    query
+  ) as rank
+FROM articles, to_tsquery('english', 'postgresql') query
+WHERE (
+  setweight(to_tsvector('english', title), 'A') ||
+  setweight(to_tsvector('english', content), 'B')
+) @@ query
+ORDER BY rank DESC;
+```
+
+### Fuzzy Matching
+
+The `pg_trgm` extension can be added to handle typos and variations with similarity search:
+
+```sql
+-- Enable pg_trgm extension for trigram similarity
+CREATE EXTENSION pg_trgm;
+
+-- Find similar terms
+SELECT word FROM dictionary
+WHERE similarity(word, 'postgresgl') > 0.3
+ORDER BY similarity(word, 'postgresgl') DESC;
+```
+
+## When to Use PostgreSQL Full-Text Search
+
+PostgreSQL's built-in search excels when search needs to be transactional with other database operations, maintaining ACID guarantees across your entire application. It performs well for applications with millions of documents rather than billions, making it suitable for most business applications. The language-specific configurations work well for multi-language content, and the ability to join search results with other tables simplifies complex queries that would require multiple systems in other architectures.
+
+The operational simplicity of managing a single database system rather than separate search infrastructure makes PostgreSQL full-text search attractive for teams that want to avoid the complexity of distributed systems. PostgreSQL full-text search provides excellent performance for most applications while maintaining the operational simplicity of a single database system.
+
+## Limitations and Alternatives
+
+While PostgreSQL's full-text search is powerful, it has limitations compared to specialized search engines. Performance degrades with very large document collections (millions of documents), and the system provides limited support for faceting, fuzzy matching, or complex highlighting. The ranking algorithms offer fewer options for customization compared to dedicated search engines, and real-time analytics capabilities are less sophisticated than what dedicated search engines provide.
+
+For applications requiring these advanced features, consider hybrid approaches that use PostgreSQL for transactional data and specialized search engines like Elasticsearch.
+
+<Note>
+  Another option is [ParadeDB](https://paradedb.com), which uses an extension to
+  bring the feature set and performance of Elasticsearch inside Postgres.
+</Note>
+
+## Summary
+
+PostgreSQL's built-in full-text search transforms your database into a capable search engine. With `tsvector`, `tsquery`, and proper indexing, you can implement sophisticated text search that integrates seamlessly with your application's data and transactions.
+
+The combination of SQL's expressiveness with full-text search capabilities makes PostgreSQL an excellent choice for applications where search is important, but doesn't justify the complexity of separate search infrastructure.
