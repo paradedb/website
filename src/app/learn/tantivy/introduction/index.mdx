@@ -9,15 +9,47 @@ import Image from "next/image";
 
 **[Tantivy](https://github.com/quickwit-oss/tantivy)** is a [full-text search](/learn/search-concepts/full-text-search) library written in Rust that reimagines Apache Lucene's design with modern performance optimizations. Like Lucene, Tantivy is a library that you embed directly into your applications rather than a search engine that runs as a separate service. Think of it as a modern, Rust-based evolution of Lucene's core principles.
 
-Tantivy follows Lucene's fundamental architecture and algorithms, including [BM25](/learn/search-concepts/bm25) scoring and similar indexing strategies, but takes advantage of Rust's memory safety and performance characteristics. The result is a search library that starts up in under 10 milliseconds and runs approximately twice as fast as Lucene in benchmarks while providing equivalent search capabilities.
+The project emerged from creator [Paul Masurel](https://fulmicoton.com/)'s decade-long fascination with search engines and his discovery that "Rust was solving all of the pain points I experienced with C++ or Java with mindblowing elegance." What started as a Rust learning exercise became a production-ready search library that challenges the assumption that you need complex infrastructure to achieve powerful search capabilities.
+
+Tantivy follows Lucene's fundamental architecture and algorithms, including [BM25](/learn/search-concepts/bm25) scoring and similar indexing strategies, but takes advantage of Rust's memory safety and performance characteristics, plus some [innovative optimizations](https://fulmicoton.com/posts/tantivy-stacker/) that push the boundaries of what's possible with modern hardware. The result is a search library that starts up in under 10 milliseconds and runs approximately twice as fast as Lucene in benchmarks while providing equivalent search capabilities.
+
+## Why Tantivy?
+
+The search landscape has long been dominated by the choice between embedding Lucene (with its Java runtime requirements and memory overhead) or running separate search infrastructure like Elasticsearch. Tantivy offers a third path: embedded search that's fast, memory-efficient, and doesn't require a JVM.
+
+**Memory Efficiency:** Where Lucene-based solutions often require gigabytes of heap space, Tantivy can index massive datasets using minimal RAM. The library achieved indexing [5TB of data on just 8GB of RAM](https://fulmicoton.com/posts/tantivy-stacker/) through innovative memory management techniques, including custom memory arenas and exponential block allocation strategies.
+
+**Startup Performance:** Traditional search engines can take minutes to warm up and load indexes. Tantivy's design enables sub-10-millisecond startup times, making it practical for applications where search availability needs to match application availability.
+
+**Development Simplicity:** By embedding directly in your application, you eliminate the operational complexity of managing separate search infrastructure. No more coordinating deployments between your application and search cluster, no network calls for search operations, and no additional infrastructure to monitor and maintain.
+
+
 
 ## How Tantivy Works
 
 Like Lucene, Tantivy follows a schema-based approach where you define the structure and types of your searchable data upfront. This allows the library to build specialized indexes optimized for different kinds of queries, including inverted indexes for text search, and columnar fast fields for faceting and point lookup queries.
 
-The indexing process transforms your documents into these optimized data structures. Text fields go through tokenization and analysis to create searchable terms, while numeric and date fields are stored in formats that enable fast range operations. Tantivy uses an immutable document model, meaning once a document is indexed, it can only be updated through deletion and re-indexing.
+### The Segmented Architecture
 
-Search operations work by parsing queries into execution plans against the inverted indexes and fast fields. Tantivy uses BM25 scoring for relevance ranking and supports boolean queries, phrase matching, and fuzzy search. Results are returned in relevance order with minimal memory allocation overhead.
+Tantivy organizes indexes into multiple small "segments" rather than maintaining one monolithic index structure. This segmented approach enables several key capabilities:
+
+- **Concurrent Indexing:** Multiple threads can index documents simultaneously without blocking
+- **Memory Management:** Large datasets can be indexed without loading everything into RAM
+- **Incremental Updates:** New documents create new segments, avoiding expensive full index rebuilds
+
+Each segment operates as an independent, immutable unit containing its own inverted indexes, document storage, and metadata. During search operations, Tantivy queries all segments in parallel and merges results, while background processes periodically merge smaller segments into larger ones for optimal performance.
+
+### Advanced Memory Management
+
+The indexing process showcases Tantivy's innovative approach to memory efficiency. Instead of traditional hash tables that can waste significant memory, Tantivy employs a custom ["stacker" data structure](https://fulmicoton.com/posts/tantivy-stacker/) with exponential block allocation. Memory blocks grow from 16 bytes to 32 bytes to 64 bytes and beyond, guaranteeing 50-100% memory utilization efficiency.
+
+This design, combined with custom memory arenas that use "bump allocation," dramatically reduces the overhead of storing term frequencies and posting lists during indexing. The result is indexing performance that [achieved ~300GB/hour on desktop hardware](https://fulmicoton.com/posts/behold-tantivy-part2/).
+
+### Search and Retrieval
+
+Search operations work by parsing queries into execution plans against the inverted indexes and fast fields. Tantivy uses [BM25](/learn/search-concepts/bm25) scoring for relevance ranking and supports boolean queries, phrase matching, and fuzzy search. The library employs Finite State Transducers (FSTs) for efficient term dictionary storage and implements sophisticated integer compression techniques to minimize memory footprint.
+
+Results are returned in relevance order with minimal memory allocation overhead, taking advantage of Rust's zero-cost abstractions and careful memory management throughout the search pipeline.
 
 ## Key Features
 
@@ -47,7 +79,15 @@ Tantivy includes the core features you'd expect from a modern search library:
 
 Tantivy works well when you need search functionality embedded directly in your application. It's commonly used in desktop applications, command-line tools, and web applications where managing separate search infrastructure isn't practical.
 
-The library approach means search availability is tied to your application, there's no separate service to manage. This also simplifies development since you don't need to coordinate multiple services during testing.
+**Single-Process Applications:** Desktop software, CLI tools, and single-server web applications benefit from Tantivy's embedded nature. The search index lives alongside your application data, eliminating network latency and infrastructure complexity.
+
+**Resource-Constrained Environments:** Edge computing, IoT devices, and environments with limited memory benefit from Tantivy's efficiency. The library's minimal resource requirements make sophisticated search possible in contexts where running Elasticsearch would be impractical.
+
+**Development and Testing:** The embedded approach simplifies development workflows. Your test suite runs against the same search implementation as production, without requiring external services or complex test setup.
+
+**Real-Time Search Requirements:** Applications that need immediate search availability after data changes benefit from Tantivy's fast indexing. New documents become searchable within milliseconds rather than requiring separate batch processing.
+
+The library approach means search availability is tied to your application—there's no separate service to manage, monitor, or keep in sync. This also simplifies development since you don't need to coordinate multiple services during testing.
 
 ## The Tantivy Ecosystem
 
@@ -89,8 +129,25 @@ let query = query_parser.parse_query("sample")?;
 let top_docs = searcher.search(&query, &TopDocs::with_limit(10))?;
 ```
 
-The example uses an in-memory index for simplicity, but production applications typically use disk-based indexes for persistence. From this foundation, you can add more sophisticated features like faceted search, custom scoring, and specialized field types as your requirements grow.
+The example uses an in-memory index for simplicity, but production applications typically use disk-based indexes for persistence. The `writer(50_000_000)` call allocates 50MB for the indexing buffer—Tantivy's memory management ensures this space is used efficiently through its custom allocation strategies.
+
+### Performance Considerations
+
+Real-world performance depends heavily on your data characteristics and hardware. On modest desktop hardware, you can expect:
+
+- **Indexing Speed:** 100-300GB per hour for typical text documents
+- **Search Latency:** Sub-millisecond response times for most queries
+- **Memory Usage:** Significantly lower than equivalent Lucene implementations
+- **Startup Time:** Near-instantaneous index loading
+
+For optimal performance, consider using disk-based indexes (`Index::create_in_dir()`) with memory mapping, which allows the operating system to manage memory efficiently while providing fast access to frequently used data.
+
+From this foundation, you can add more sophisticated features like faceted search, custom scoring, and specialized field types as your requirements grow.
 
 ## Summary
 
-Tantivy brings the power of modern search engines directly into your application code. As a Rust-based reimagining of Lucene's proven design, it provides the same search capabilities that power major search platforms but with improved performance and memory safety. As an embeddable library, Tantivy enables both direct integration into applications and serves as the foundation for next-generation search engines like Quickwit and ParadeDB.
+Tantivy represents a fundamental shift in how we think about search infrastructure. Born from one developer's exploration of Rust's potential, it has evolved into a production-ready library that challenges the traditional trade-offs between performance, simplicity, and capability.
+
+By reimagining Lucene's proven architecture with modern systems programming principles, Tantivy demonstrates that you don't need to choose between powerful search capabilities and operational simplicity. Whether you're building a desktop application that needs instant search, a web service with strict latency requirements, or the foundation for the next generation of search infrastructure, Tantivy offers a path forward that prioritizes both developer experience and runtime efficiency.
+
+The project's emphasis on memory efficiency, startup performance, and embedded deployment makes sophisticated search accessible in contexts where it was previously impractical—from resource-constrained environments to applications that can't tolerate the complexity of distributed search infrastructure. As both a standalone library and the foundation for projects like Quickwit and ParadeDB, Tantivy is reshaping what's possible in search technology.
