@@ -114,7 +114,7 @@ let query = query_parser.parse_query("sample")?;
 let top_docs = searcher.search(&query, &TopDocs::with_limit(10))?;
 ```
 
-The example uses an in-memory index for simplicity, but production applications typically use disk-based indexes for persistence. The `writer(50_000_000)` call allocates 50MB for the indexing buffer, Tantivy's memory management ensures this space is used efficiently through its custom allocation strategies.
+The example uses an in-memory index for simplicity, but production applications typically use disk-based indexes for persistence. The `writer(50_000_000)` call allocates 50MB for the indexing buffer, Tantivy's memory management ensures this space is used efficiently through its custom allocation strategies. For more examples see the [Tantivy documentation](https://docs.rs/tantivy/latest/tantivy/).
 
 ## Summary
 
