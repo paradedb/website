@@ -1,7 +1,7 @@
 {
   "title": "Hybrid Search in PostgreSQL: The Missing Manual",
-  "date": "2025-10-13T00:00:00.000Z",
+  "date": "2025-10-22:00:00.000Z",
   "author": "James Blackwood-Sewell",
-  "description": "Build production-ready hybrid search that combines BM25 lexical matching with vector similarity search, all inside PostgreSQL. Learn RRF fusion, reranking, and why your search infrastructure belongs in your database.",
+  "description": "Build production-ready hybrid search that combines BM25 lexical matching with vector similarity search, all inside PostgreSQL",
   "categories": ["postgresql", "search", "vectors", "bm25"]
 }
