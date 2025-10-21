@@ -171,15 +171,15 @@ WITH
 --- Full-text search, using pg_search and BM25 for ranking
 fulltext AS (
   SELECT id, ROW_NUMBER() OVER (ORDER BY pdb.score(id) DESC) AS r
-  FROM mock_items
-  WHERE description ||| 'keyboard'
+  FROM documents
+  WHERE content ||| 'keyboard'
   LIMIT 20
 ),
 
 --- Semantic search, using pgvector and cosine distance for ranking
 semantic AS (
   SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
-  FROM mock_items
+  FROM documents
   LIMIT 20
 ),
 
@@ -194,10 +194,10 @@ rrf AS (
 SELECT
   m.id,
   SUM(s) AS score,
-  m.description
+  m.content
 FROM rrf
-JOIN mock_items AS m USING (id)
-GROUP BY m.id, m.description
+JOIN documents AS m USING (id)
+GROUP BY m.id, m.content
 ORDER BY score DESC
 LIMIT 5;
 
