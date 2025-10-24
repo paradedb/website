@@ -1,0 +1,9 @@
+{
+  "title": "What is RAG?",
+  "date": "2024-10-21T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Learn about retrieval-Augmented Generation (RAG) and how it uses search to increase LLM effectiveness",
+  "order": 5,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}
