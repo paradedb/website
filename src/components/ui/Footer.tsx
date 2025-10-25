@@ -14,6 +14,7 @@ import { DatabaseLogo } from "../../../public/DatabaseLogo";
 const navigation = {
   company: [
     { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
+    { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
     { name: "Documentation", href: documentation.BASE, external: true },
     { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
