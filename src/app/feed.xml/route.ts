@@ -20,7 +20,7 @@ export async function GET() {
     const slug = String(post.href).replace(/^\/+/, "");
     feed.item({
       title: post.name,
-      url: new URL(`/blog/${slug}`, siteConfig.url).toString(), // ✅ canonical post URLs
+      url: new URL(`/blog/${slug}`, siteConfig.url).toString(), // canonical
       date: post.date,
       author: post.author,
       description: post.description,
