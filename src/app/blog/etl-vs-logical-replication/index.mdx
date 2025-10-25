@@ -16,7 +16,7 @@ If your organization uses [Postgres](https://www.postgresql.org/) as its primary
 
 To support these kinds of workloads, most organizations introduce a dedicated system isolated from the primary. Typical examples include Elasticsearch for search; ClickHouse for analytics; Snowflake for data warehousing. These systems rely on ETL (Extract, Transform, Load) pipelines to receive data from Postgres.
 
-Interestingly, there are also use cases where these systems can be Postgres themselves. A common [example](https://www.notion.so/Syncing-with-Postgres-Logical-Replication-vs-ETL-247ea4ce9deb80aaa10fdb30bf9a0313?pvs=21) is for reporting, where a separate Postgres instance tuned for OLAP (online analytical processing) can be used. In such a world, you aren’t confined to using ETL. An alternative opportunity is to use logical replication — a feature native to Postgres — to directly mirror changes from the primary.
+Interestingly, there are also use cases where these systems can be Postgres themselves. A common example is for reporting, where a separate Postgres instance tuned for OLAP (online analytical processing) can be used. In such a world, you aren’t confined to using ETL. An alternative opportunity is to use logical replication — a feature native to Postgres — to directly mirror changes from the primary.
 
 When choosing a specialized system, the method of data ingestion is an often-overlooked factor that has long-term implications for maintainability, reliability, and performance. Over the past two years, we’ve interviewed and worked with dozens of companies who have dealt with ETL and logical replication. In this piece, we’ll explore the advantages and some non-obvious but common pitfalls of each approach.
 
