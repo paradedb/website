@@ -10,4 +10,3 @@ Sitemap: https://docs.paradedb.com/sitemap.xml
 
 # Robots
 Robots: https://www.paradedb.com/robots.txt
-
