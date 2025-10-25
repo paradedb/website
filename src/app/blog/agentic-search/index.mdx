@@ -1,0 +1,143 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.svg";
+import { Note } from "@mintlify/components"
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+
+
+Search systems were built for real people. For decades, they were tuned for short keyword queries, low latency, and a concise ranked list of results that a human could read and act on. 
+
+Agents are a newer consumer of search, and they do not behave this way. They iteratively issue structured queries, gather result sets, and read entire documents as part of longer reasoning loops. They can already make decisions; what they lack are interfaces that expose enough structure to make *good* ones.
+
+Most search APIs still treat agents like impatient humans: query in, ranked list out. There is no visibility into why a particular document ranked higher or how to modify that outcome. When an agent produces poor results, it has no insight into whether the query was underspecified, the weights were imbalanced, or the wrong signal dominated. Everything happens inside a black box.
+
+That opacity was once a design goal. Search for humans is meant to feel a little magical, an interface that hides its mechanics behind the screen delivering relevance as a service. But agents have no use for magic. They need transparency, determinism, and control. 
+
+<Note> 
+We aren’t selling agentic search, and we don’t have an agentic search product. We do firmly believe that however agentic search falls out the cornerstone will still be BM25, and that’s one of the reasons why we have built a better full-text search experience (including BM25) in PostgreSQL.
+</Note>
+
+## SQL: The Missing Interface Layer
+
+Agents don’t need a new retrieval algorithm, or even a catalog of tools which they can use; they need a way for retrieval to participate in their reasoning process. To analyze the data available, run queries, see scores, adjust weights, and combine evidence as they collect data-points to influence their next action.
+
+Crucially, they already speak the language for it. Large language models have absorbed SQL from the same public sources that taught humans for years: Stack Overflow, database documentation, open-source repositories, and Reddit discussions explaining joins and indexes. They have not only learned to *write* SQL but to *reason* about how it works; to understand schemas, constraints, and data relationships.
+
+That makes SQL a natural interface for search. It is not a new abstraction that agents must learn; it’s one they already understand, grounded in explicit semantics and predictable structure. Exposing search through SQL doesn’t feel new, it feels like meeting agents where they already are.
+
+Of course, some components of search will remain black boxes. The inner workings of a BM25 function or an embedding model are not easily interpretable. But the way these components are combined—the tuning, weighting, filtering, and metadata integration—can be transparent. SQL makes those relationships explicit. Query plans can be inspected, execution paths can be traced, and every stage of scoring or fusion can be seen and reasoned about.
+
+But agents also need to understand what the data means, not just its structure. A `popularity` column could represent view counts, user ratings, or algorithmic scores. This semantic gap is addressable through PostgreSQL's metadata features:
+
+```sql
+COMMENT ON COLUMN products.popularity IS 
+'User engagement score (0-100, higher=better, updated daily)';
+
+COMMENT ON COLUMN products.published_at IS 
+'Content publication timestamp, used for recency weighting';
+```
+
+With semantic metadata in place, agents can reason about data meaning, not just manipulate its values.
+
+## Composing Signals
+
+Once we start thinking about ranking in this way, we can easily show an agent how to start composing queries using SQL:
+
+```sql
+WITH
+-- Full-text search, using pg_search and BM25 for ranking
+fulltext AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
+  FROM mock_items
+  WHERE description @@@ 'keyboard'
+  LIMIT 20
+),
+
+-- Semantic search, using pgvector and cosine distance for ranking
+semantic AS (
+  SELECT
+    id,
+    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+  FROM mock_items
+  LIMIT 20
+),
+
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 1.0 / (60 + r) AS s FROM fulltext
+  UNION ALL
+  SELECT id, 0.7 / (60 + r) AS s FROM semantic
+)
+
+-- Sum the RRF scores, order by them, and join back the original data
+SELECT
+  m.id,
+  SUM(s) AS score,
+  m.description
+FROM rrf
+JOIN mock_items AS m USING (id)
+GROUP BY m.id, m.description
+ORDER BY score DESC
+LIMIT 5;
+
+```
+
+Here, lexical and semantic signals coexist inside a single query. Nothing is hard-coded, and every assumption is visible. An agent could adjust the weighting dynamically or drop a signal entirely if it learns that the additional complexity doesn’t improve precision. Ranking becomes a living composition of evidence rather than a fixed pipeline of calls.
+
+## Context as Data
+
+Not every signal comes from searching over text. Recency, popularity, authority, and user preference often shape what is relevant. In SQL, these attributes exist in the same reasoning space as lexical and semantic signals, allowing agents to make sophisticated ranking decisions based on business context.
+
+Consider an agent helping with technical research. It might determine that recent papers from authoritative venues should be weighted differently than older blog posts, even if the latter score higher on pure text similarity:
+
+```sql
+WITH base_search AS (
+  SELECT id, paradedb.score(id) AS text_score
+  FROM documents 
+  WHERE content @@@ 'vector databases'
+)
+SELECT 
+  d.id,
+  d.title,
+  -- Dynamic weighting based on document type and recency
+  CASE 
+    WHEN d.source_type = 'academic_paper' AND d.published_at > now() - interval '2 years'
+      THEN b.text_score * 1.5
+    WHEN d.source_type = 'documentation' 
+      THEN b.text_score * 1.2
+    ELSE b.text_score * 0.8
+  END AS final_score
+FROM base_search b
+JOIN documents d ON b.id = d.id
+JOIN authors a ON d.author_id = a.id
+WHERE a.h_index > 10  -- Only authoritative authors
+ORDER BY final_score DESC;
+```
+
+The agent can reason about document types, author authority, and publication recency as integral parts of its ranking logic, not as post-processing filters.
+
+## The Engineering Reality
+
+None of this is trivial to implement. Building BM25 efficiently into PostgreSQL, optimizing vector operations at scale, making complex multi-signal queries performant—these are hard systems problems that require deep database expertise.
+
+Query planning becomes crucial when agents start composing multiple ranking functions with joins across large datasets. Index strategies that work for simple searches may break down under the complexity of hybrid ranking. Memory management, parallel execution, and caching all need to be reconsidered when search becomes part of larger analytical workflows.
+
+But these are solvable engineering challenges, not fundamental limitations. The question is whether the capability—search that agents can reason with rather than just retrieve from—justifies the systems work required to build it.
+
+## What This Enables
+
+When search becomes queryable rather than callable, entirely new agent capabilities emerge. An agent can debug why its searches are failing by examining score distributions. It can A/B test different ranking strategies within the same reasoning loop. It can combine search with business logic, user context, and real-time data in ways that fixed APIs make impossible.
+
+Most importantly, it can learn. An agent that sees how ranking decisions are made can adjust its approach based on result quality, optimize parameters for specific domains, and develop search strategies that improve over time.
+
+This isn't just better search—it's search that participates in reasoning rather than standing outside it. The difference between calling an API and composing a query becomes the difference between retrieving information and thinking with data.
+
+That transformation may be essential as agents move from simple retrieval tasks to complex analytical workflows. The systems that give them the most reasoning leverage—transparent, composable, and grounded in familiar interfaces—will be the ones they can truly think with.
