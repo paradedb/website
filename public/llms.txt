@@ -1,0 +1,12 @@
+# ParadeDB llms.txt
+Allow: /
+
+# Host
+Host: https://www.paradedb.com
+
+# Sitemaps
+Sitemap: https://www.paradedb.com/sitemap.xml
+Sitemap: https://docs.paradedb.com/sitemap.xml
+
+# Robots
+Robots: https://www.paradedb.com/robots.txt
