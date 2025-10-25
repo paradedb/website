@@ -68,7 +68,7 @@ Unfortunately this approach is still very slow, and the tables (and their indexe
 
 A more scalable approach is using Postgres's index access method (IAM) to create a native BM25 index that is created on the source table.
 
-[ParadeDB](https://paradedb.com) uses this method to implement BM25 indexes in Rust, adding them to PostgreSQL though the open-source `pg_search` extension.
+[ParadeDB](https://www.paradedb.com) uses this method to implement BM25 indexes in Rust, adding them to PostgreSQL though the open-source `pg_search` extension.
 
 When an index is added to a table it can cover multiple columns, providing advanced full-text search DX, as well as fast columnar lookups and aggregations for non-text fields.
 

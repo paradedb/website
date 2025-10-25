@@ -9,16 +9,18 @@ export async function GET() {
     title: siteConfig.name,
     description: siteConfig.description,
     site_url: siteConfig.url,
-    feed_url: `${siteConfig.url}/feed.xml`,
+    feed_url: new URL("/feed.xml", siteConfig.url).toString(), // canonical
     copyright: `${new Date().getFullYear()} ParadeDB`,
     language: "en",
     pubDate: new Date(),
   });
 
-  blogLinks.map((post) => {
+  blogLinks.forEach((post) => {
+    // normalize any leading slashes
+    const slug = String(post.href).replace(/^\/+/, "");
     feed.item({
       title: post.name,
-      url: `${siteConfig.url}/blog/${post.href}`,
+      url: new URL(`/blog/${slug}`, siteConfig.url).toString(), // ✅ canonical post URLs
       date: post.date,
       author: post.author,
       description: post.description,
@@ -28,7 +30,8 @@ export async function GET() {
 
   return new Response(feed.xml({ indent: true }), {
     headers: {
-      "Content-Type": "application/atom+xml; charset=utf-8",
+      "Content-Type": "application/rss+xml; charset=utf-8",
+      "Cache-Control": "public, s-maxage=600, stale-while-revalidate=86400",
     },
   });
 }

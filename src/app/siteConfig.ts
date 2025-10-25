@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: "ParadeDB",
-  url: "https://paradedb.com",
+  url: "https://www.paradedb.com", // (canonical host)
   description: "The Transactional Elasticsearch Alternative Built on Postgres",
   baseLinks: {
     home: "/",
@@ -10,4 +10,4 @@ export const siteConfig = {
   },
 };
 
-export type siteConfig = typeof siteConfig;
+export type SiteConfig = typeof siteConfig;

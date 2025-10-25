@@ -18,13 +18,13 @@ const nextConfig = {
       {
         source: "/",
         has: [{ type: "host", value: "blog.paradedb.com" }],
-        destination: "https://paradedb.com/blog",
+        destination: "https://www.paradedb.com/blog",
         permanent: true,
       },
       {
         source: "/:path*",
         has: [{ type: "host", value: "blog.paradedb.com" }],
-        destination: "https://paradedb.com/blog/:path*",
+        destination: "https://www.paradedb.com/blog/:path*",
         permanent: true,
       },
       // --- specific post renames ---
