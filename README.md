@@ -1,6 +1,6 @@
 # ParadeDB Website
 
-Official repository for the [ParadeDB website](https://paradedb.com), hosted on Vercel.
+Official repository for the [ParadeDB website](https://www.paradedb.com), hosted on Vercel.
 
 ## Getting started
 

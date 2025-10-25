@@ -41,18 +41,19 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "ParadeDB",
-    description:
-      "ParadeDB: The Transactional Elasticsearch Alternative Built on Postgres",
+    title: siteConfig.name,
+    description: siteConfig.description,
     images: "/twitter-image.png",
   },
   icons: {
     icon: "/favicon.ico",
   },
 
-  // ✅ Default canonical for the homepage
+  // Canonical for the homepage (resolved against metadataBase)
   alternates: {
-    canonical: "/", // resolves to `${siteConfig.url}/`
+    canonical: "/", // → https://www.paradedb.com/
+    // also emit a proper RSS <link rel="alternate"> with canonical absolute URL
+    types: { "application/rss+xml": "/feed.xml" }, // → https://www.paradedb.com/feed.xml
   },
 };
 
