@@ -48,8 +48,6 @@ export default function Footer() {
             </Link>
             <p className="text-sm leading-6 text-gray-600">
               The Transactional Elasticsearch Alternative Built on Postgres.
-              <br />
-              Built in New York, made for the world.
             </p>
             <div></div>
           </div>
