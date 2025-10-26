@@ -60,7 +60,7 @@ export function Navigation() {
         <div className="relative top-0.5 text-left text-sm">
           Announcing our{" "}
           <Link
-            href={`${siteConfig.baseLinks.blog}/series_a_announcement`}
+            href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
             className="font-semibold underline"
           >
             $12M Series A
