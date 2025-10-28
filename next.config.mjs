@@ -30,12 +30,12 @@ const nextConfig = {
       // --- specific post renames ---
       {
         source: "/blog/introducing_lakehouse",
-        destination: "https://www.paradedb.com/blog/introducing_search",
+        destination: "https://www.paradedb.com/blog/introducing-search",
         permanent: true,
       },
       {
         source: "/blog/introducing_analytics",
-        destination: "https://www.paradedb.com/blog/introducing_search",
+        destination: "https://www.paradedb.com/blog/introducing-search",
         permanent: true,
       },
     ];
