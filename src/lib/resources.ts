@@ -170,7 +170,7 @@ export interface ResourceSection {
 const SECTION_ORDER: Record<string, number> = {
   "Search Concepts": 1,
   "Search In Postgresql": 2,
-  "Tantivy": 3,
+  Tantivy: 3,
 };
 
 export async function getResourcesBySection(): Promise<ResourceSection[]> {
@@ -203,11 +203,11 @@ export async function getResourcesBySection(): Promise<ResourceSection[]> {
     .sort((a, b) => {
       const orderA = SECTION_ORDER[a.name] ?? 999; // Non-listed sections get high number
       const orderB = SECTION_ORDER[b.name] ?? 999;
-      
+
       if (orderA !== orderB) {
         return orderA - orderB;
       }
-      
+
       // If both are non-listed (both have order 999), sort alphabetically
       return a.name.localeCompare(b.name);
     });
