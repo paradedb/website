@@ -1,0 +1,9 @@
+{
+  "title": "Introduction to Tantivy",
+  "date": "2025-10-22T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Introduction to Tantivy, a fast full-text search engine library written in Rust",
+  "order": 1,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}
