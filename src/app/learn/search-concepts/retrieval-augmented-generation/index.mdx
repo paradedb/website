@@ -1,0 +1,77 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+Retrieval-Augmented Generation (RAG) is an architecture that retrieves knowledge from external sources to improve the accuracy of responses from AI models. Without RAG, AI models only have access to training data. With RAG, prompts are appended with relevant context to assist the AI model’s output.
+
+Originally, RAG emerged as a strategy to tackle an LLM’s limited context window. Passing all available context (such as a company’s internal knowledge base or a customer database) would have surpassed an LLM’s input limit. Modern LLMs have significantly larger context windows; however, RAG remains as a technique to filter context that will assist, and not distract, an LLM’s reasoning.
+
+## How does RAG work?
+
+RAG consists of three steps that correspond to its name:
+
+1. **Retrieval**: Information is retrieved from external data sources. Usually the user query will be used, with the RAG pipeline employng vector search or full-text search to surface relevant information.
+2. **Augmentation**: Retrieved information is appended to the user’s query and demarcated as context.
+3. **Generation:** The AI model (e.g. GPT-5, Claude, etc.) generates an output from the augmented query.
+
+The final step of RAG is straightforward. However, you must decide on the optimal retrieval and augmentation strategies for your application.
+
+## Strategies for RAG retrieval
+
+RAG can work with any external data source. This includes an existing database, an API, or a document repository. However, the most common implementations of RAG are ones that are purpose-built around both storage and retrieval. If data is not efficiently indexed in storage, then it is difficult to find the correct data to retrieve.
+
+There are two common strategies (and a hybridized option) for efficiently storing and retrieving data: vector search and full-text search.
+
+### Vector Search
+
+[Vector search](/learn/search-concepts/vector-search) retrieves information based on semantic similarity using multi-dimensional vector embeddings. Vector search works best when users need conceptually related information, even if the exact words differ. It's particularly effective for multimodal applications and finding information that relates to the query's meaning rather than exact text matches.
+
+### Full-Text Search
+
+[Full-Text search](/learn/search-concepts/full-text-search) (FTS) retrieves information based on matching textual content, usually using an algorithm like [BM25](/learn/search-concepts/bm25). Full-text search works best when users know exactly what they’re looking for: like a product code, a filename, or a specific phrase. It’s precise, deterministic, and fast.
+
+### Hybrid Search
+
+Because vector search struggles to retrieve textually similar information (e.g. a shared book title) and full-text search struggles to retrieve semantically similar information (e.g. two books on the same topic), an alternative is hybrid search. [Hybrid search](/learn/search-concepts/hybrid-search) employs both vector search and full-text search to provide a cumulative approach.
+
+Using [reciprocal rank fusion](/learn/search-concepts/reciprocal-rank-fusion), hybrid search retrieves documents that highly rank on both search approaches.
+
+## Augmentation
+
+Once a RAG application retrieves relevant information, it must combine it with the user's original query before sending the final prompt to the AI model. This augmentation step determines how effectively the model can use the retrieved context.
+
+The most common approach is to append the retrieved documents to the original prompt with clear delimiters. For example:
+
+```
+Context:
+[Retrieved document 1]
+[Retrieved document 2]
+
+User Query: What is our return policy?
+
+Please answer the user's question based on the provided context.
+```
+
+You can improve augmentation by:
+
+- **Ranking and filtering**: Only include the most relevant retrieved documents to avoid overwhelming the model with excessive context
+- **Summarization**: Condense lengthy retrieved documents into key points before inclusion
+- **Structured formatting**: Organize retrieved information with headers, bullet points, or numbered lists for easier model comprehension
+- **Source attribution**: Include document titles or metadata so the model can reference specific sources in its response
+
+The goal is to provide enough relevant context for accurate responses while maintaining clarity and staying within the model's context window limits.
+
+## What are the benefits of RAG?
+
+RAG is a necessary architecture for most business applications of AI. AI models aren’t trained on private information, such as a company’s internal policies, product documentation, or customer data. Instead, they must be provided with that context at query time to effectively answer prompts.
+
+An alternative (or supplementary) strategy to RAG is fine-tuning, where AI models are further trained on contextual information before query time. This approach must happen ahead of time and is much more complex; but it can be ideal for applications where context is fixed and not dynamic, where queries are predictably centered around a specific domain, and where context isn’t excessively abundant.
+
+## Summary
+
+RAG is an architecture for retrieving relevant information to improve the performance of LLM model responses. Usually, the most challenging aspect of RAG is choosing the right retrieval strategy that optimizes for semantic similarity, textual similarity, or a combination of the two.
