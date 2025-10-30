@@ -166,6 +166,13 @@ export interface ResourceSection {
   resources: ResourceLink[];
 }
 
+// Section ordering configuration - sections not listed will appear after ordered ones
+const SECTION_ORDER: Record<string, number> = {
+  "Search Concepts": 1,
+  "Search In Postgresql": 2,
+  "Tantivy": 3,
+};
+
 export async function getResourcesBySection(): Promise<ResourceSection[]> {
   const resources = await getResourceLinks();
   const sectionMap = new Map<string, ResourceLink[]>();
@@ -178,18 +185,30 @@ export async function getResourcesBySection(): Promise<ResourceSection[]> {
     sectionMap.get(section)!.push(resource);
   });
 
-  return Array.from(sectionMap.entries()).map(([name, resources]) => ({
-    name,
-    resources: resources.sort((a, b) => {
-      // Sort by order field if both have it
-      if (a.order !== undefined && b.order !== undefined) {
-        return a.order - b.order;
+  return Array.from(sectionMap.entries())
+    .map(([name, resources]) => ({
+      name,
+      resources: resources.sort((a, b) => {
+        // Sort by order field if both have it
+        if (a.order !== undefined && b.order !== undefined) {
+          return a.order - b.order;
+        }
+        // If only one has order, it comes first
+        if (a.order !== undefined) return -1;
+        if (b.order !== undefined) return 1;
+        // Fall back to date sorting (newest first)
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      }),
+    }))
+    .sort((a, b) => {
+      const orderA = SECTION_ORDER[a.name] ?? 999; // Non-listed sections get high number
+      const orderB = SECTION_ORDER[b.name] ?? 999;
+      
+      if (orderA !== orderB) {
+        return orderA - orderB;
       }
-      // If only one has order, it comes first
-      if (a.order !== undefined) return -1;
-      if (b.order !== undefined) return 1;
-      // Fall back to date sorting (newest first)
-      return new Date(b.date).getTime() - new Date(a.date).getTime();
-    }),
-  }));
+      
+      // If both are non-listed (both have order 999), sort alphabetically
+      return a.name.localeCompare(b.name);
+    });
 }
