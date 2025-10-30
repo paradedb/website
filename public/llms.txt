@@ -1,0 +1,43 @@
+# ParadeDB
+
+> ParadeDB is a transactional alternative to Elasticsearch built on Postgres. It is a PostgreSQL-native search and analytics engine - a column tore index for OLAP and a BM25 inverted index for full-text search, all inside Postgres as an extension. ParadeDB makes Postgres fast for both analytics and search without ETL or external systems.
+
+## Website
+
+- [Homepage](https://www.paradedb.com)
+- [Blog](https://www.paradedb.com/blog)
+- [Learn](https://www.paradedb.com/learn)
+- [Sitemap](https://www.paradedb.com/sitemap.xml)
+- [RSS Feed](https://www.paradedb.com/feed.xml)
+
+## Blog
+
+- [Hybrid Search in PostgreSQL: The Missing Manual](https://www.paradedb.com/blog/hybrid-search-in-postgresql-the-missing-manual)
+- [From Text to Token: How Tokenization Pipelines Work](https://www.paradedb.com/blog/when-tokenization-becomes-token)
+- [The ACID Test: Why We Think Search Needs Transactions](https://www.paradedb.com/blog/elasticsearch-acid-test)
+- [Elasticsearch Was Never a Database](https://www.paradedb.com/blog/elasticsearch-was-never-a-database)
+- [Syncing with Postgres: Logical Replication vs. ETL](https://www.paradedb.com/blog/etl_vs_logical_replication)
+- [Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB](https://www.paradedb.com/blog/case_study_bilt)
+- [Announcing Our $12M Series A](https://www.paradedb.com/blog/series_a_announcement)
+- [We Made Postgres Writes Faster, but it Broke Replication](https://www.paradedb.com/blog/lsm_trees_in_postgres)
+- [A New Postgres Block Storage Layout for Full Text Search](https://www.paradedb.com/blog/block_storage_part_one)
+- [Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse](https://www.paradedb.com/blog/case-study-alibaba)
+- [A Data-Driven Approach to Writing Better Developer Documentation](https://www.paradedb.com/blog/improving_documentation)
+- [Similarity Search with SPLADE Inside Postgres](https://www.paradedb.com/blog/introducing_sparse)
+- [INSA Strasbourg Powers New Research Database with ParadeDB](https://www.paradedb.com/blog/case-study-insa)
+- [We've Rebranded](https://www.paradedb.com/blog/rebrand)
+- [Why We Picked AGPL](https://www.paradedb.com/blog/agpl)
+- [Full Text Search over Postgres: Elasticsearch vs. Alternatives](https://www.paradedb.com/blog/elasticsearch_vs_postgres)
+- [Sweetspot Unifies Hybrid Search on Postgres with ParadeDB](https://www.paradedb.com/blog/case_study_sweetspot)
+- [pg_search: Elastic-Quality Full Text Search Inside Postgres](https://www.paradedb.com/blog/introducing_search)
+- [Introducing ParadeDB](https://www.paradedb.com/blog/introducing_paradedb)
+
+## Learn
+
+- [Full-Text Search in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/full-text-search)
+- [Implementing BM25 in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/implementing-bm25-in-postgresql)
+- [What is Full-Text Search?](https://www.paradedb.com/learn/search-concepts/what-is-full-text-search)
+- [What is BM25?](https://www.paradedb.com/learn/search-concepts/bm25)
+- [What is Reciprocal Rank Fusion?](https://www.paradedb.com/learn/search-concepts/reciprocal-rank-fusion)
+- [What is Vector Search?](https://www.paradedb.com/learn/search-concepts/vector-search)
+- [What is Hybrid Search?](https://www.paradedb.com/learn/search-concepts/hybrid-search)

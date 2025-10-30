@@ -1,0 +1,265 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+PostgreSQL's search capabilities go much further than most developers realize. While many reach for external search engines like Elasticsearch or specialized vector databases like Pinecone, PostgreSQL can deliver the same functionality, you just need to know which extensions unlock its potential.
+
+[ParadeDB](https:/github.com/paradedb/paradedb) brings production-ready full text search with BM25 scoring for lexical relevance, while [pgvector](https://github.com/pgvector/pgvector) delivers vector similarity for semantic understanding. But how do you combine these into a hybrid system?
+
+**This is the missing manual for hybrid search in PostgreSQL**.
+
+We'll walk through building a complete solution that combines lexical precision with semantic understanding, using Reciprocal Rank Fusion (RRF) to create rankings that are both accurate and meaningful. By the end, you'll have a production-ready search strategy that lives entirely within your database, with no external dependencies or synchronization headaches.
+
+## Why Not PostgreSQL's Native Full-Text Search?
+
+Before diving into hybrid search, let's address the elephant in the room: PostgreSQL already has [full-text search](/learn/search-concepts/full-text-search) built-in. Why not just use that?
+
+PostgreSQL's native [full-text search](/learn/search-in-postgresql/full-text-search) with [`tsvector`](https://www.postgresql.org/docs/current/datatype-textsearch.html#DATATYPE-TSVECTOR) and [`tsquery`](https://www.postgresql.org/docs/current/datatype-textsearch.html#DATATYPE-TSQUERY) is functional for basic text matching, but it has a fundamental limitation that becomes apparent as soon as you order results. The ranking functions like [`ts_rank`](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING) only consider individual documents in isolation: they don't understand global corpus statistics.
+
+Here's what this means in practice. When `ts_rank` sees "PostgreSQL" appears three times in a document, it scores that document higher than one where it appears once. That makes sense locally. But it can't tell you whether "PostgreSQL" is a common term (appearing in 80% of your documents) or a rare, discriminating term (appearing in just 5%).
+
+It might seem simple, but this lack of global context is the fundamental difference between basic text search and modern relevance ranking.
+
+## Lexical Search with BM25
+
+This is where [BM25](/learn/search-concepts/bm25) enters the picture. BM25 was developed by information retrieval researchers to solve this global context problem. It's the algorithm that powers almost all modern search engines, including Elasticsearch and Solr.
+
+BM25 solves the ranking problem by combining three intelligent signals:
+
+- **Term Frequency:** Documents mentioning query terms more often are more relevant, but with diminishing returns. The difference between mentioning "PostgreSQL" once vs. twice is significant, but the difference between 20 times vs. 21 times is negligible.
+
+- **Inverse Document Frequency:** Rare terms matter more than common ones. Finding "pgvector" in a document is much more discriminating than finding "PostgreSQL", it tells you something specific about what this document covers.
+
+- **Document Length Normalization:** Shorter, concise documents are preferred over long ones that might mention terms incidentally. A focused paragraph about PostgreSQL performance is probably more relevant than a 50-page manual that mentions it in passing.
+
+While there are [a few ways](/learn/search-in-postgresql/bm25) to get BM25 into Postgres (and a few ways of using an external search engine from Postgres), the easiest and most performant approach is with the ParadeDB [pg_search extension](https://github.com/paradedb).
+
+ParadeDB brings production-ready BM25 directly into PostgreSQL as a native index type, with none of the operational complexity of external search systems.
+
+### BM25 With ParadeDB
+
+Getting started with ParadeDB is straightforward. Once you have the extension installed, you can create BM25 indexes just like any other PostgreSQL index type, then query them with a simple operator syntax.
+
+<Note>
+  To add `pg_search` to your PostgreSQL instance (or to spin up a new instance
+  with Docker) check out our [deployment
+  guides](https://docs.paradedb.com/deploy/overview).
+</Note>
+
+```sql
+
+CREATE EXTENSION pg_search IF NOT EXISTS;
+
+CREATE TABLE documents (
+    id SERIAL PRIMARY KEY,
+    title TEXT,
+    content TEXT
+);
+
+-- Create BM25 index using the english tokenizer with stemming enabled
+CREATE INDEX idx_documents_bm25 ON documents
+USING bm25 (
+  id,
+  title::pdb.simple('stemmer=english'),
+  content::pdb.simple('stemmer=english')
+)
+WITH (key_field=id);
+
+-- Rank relevance with BM25 across documents that mention "postgresql" or "search"
+-- in the title or content.
+-- Boost the title matches 2x (as they are more likely to be relevant)
+SELECT id, title, pdb.score(id) AS bm25_score
+FROM documents
+WHERE
+ title   ||| 'postgresql search'::boost(2) OR
+ content ||| 'postgresql search'
+ORDER BY bm25_score DESC;
+
+```
+
+The `|||` operator above is for match disjunction, but many other options are available. Conjunction, phrase matching, highlighting, more like this, regex queries and word proximity are all supported. ParadeDB is also smart about query optimization. It can push down `WHERE` clauses and faceting aggregations into the BM25 index where possible, making complex filtered searches much faster than traditional approaches.
+
+This kind of lexical search excels at exact or similar matches: it's perfect when users search for specific terms, product codes, or technical concepts they know by name (or at close, see our blog on [tokenization and stemming](/blog/when-tokenization-becomes-token) for a deep dive on how this works).
+
+But BM25 has a fundamental limitation. When someone searches for "database performance optimization," BM25 won't find documents that only mention "PostgreSQL tuning" or "query optimization", even though these documents might be exactly what the user needs. This is where we need the second piece of our hybrid search puzzle.
+
+## Vector Similarity Search
+
+[Vector search](/learn/search-concepts/vector-search) solves the semantic understanding problem by working with meaning instead of words. While BM25 sees "postgresql" and "database" as completely different terms, vector search understands they're conceptually related.
+
+The magic happens through embedding models, AI networks trained to convert text into high-dimensional vectors (typically 768, 1024, or 1536 dimensions). These vectors have a remarkable property: semantically similar concepts end up close together in vector space. "PostgreSQL" and "database" will have similar embeddings, as will "performance" and "optimization."
+
+<Note>
+  PostgreSQL doesn't generate embeddings automatically. You need to create
+  vectors using external embedding models (like OpenAI's text-embedding-ada-002
+  or open-source alternatives) and store them in your database. This can happen
+  at write time when inserting documents, or through batch updates of existing
+  content.
+</Note>
+
+This means vector search can find relevant documents even when they don't contain your exact search terms. Search for "database speed improvements" and you'll find documents about "PostgreSQL performance tuning" or "query optimization techniques", something lexical search would miss entirely.
+
+Getting vector search into PostgreSQL used to require external vector databases or complex custom solutions. But the [pgvector](https://github.com/pgvector/pgvector) extension changed this, bringing vector operations directly into PostgreSQL. Like ParadeDB for BM25, pgvector makes vector search a first-class PostgreSQL feature with optimized indexes and distance operators.
+
+### Vector Search With pgvector
+
+Adding vector search to our existing documents table requires installing pgvector, adding a vector column for embeddings, and creating an index for similarity queries.
+
+<Note>
+  To add pgvector to your Postgres instance check out their [installation
+  instructions](https://github.com/pgvector/pgvector?tab=readme-ov-file#installation).
+  If you're using the [ParadeDB Docker
+  image](https://docs.paradedb.com/deploy/self-hosted/docker) then pgvector will
+  be installed and ready to go.
+</Note>
+
+```sql
+-- Enable pgvector
+CREATE EXTENSION vector IF NOT EXISTS;
+
+-- Add embedding column
+ALTER TABLE documents ADD COLUMN embedding vector(1536);
+
+-- Create vector index
+CREATE INDEX idx_documents_vector ON documents
+USING hnsw (embedding vector_cosine_ops);
+
+-- Search by similarity
+-- The vector is the vector representation of your query text, which would be created in your app
+SELECT
+    id,
+    title,
+    1 - (embedding <=> '[0.1,0.2,...]'::vector) AS similarity
+FROM documents
+ORDER BY similarity DESC;
+```
+
+Vector search excels at semantic similarity, making conceptual connections that lexical search misses. But this strength is also its weakness. Vector search trades precision for understanding.
+
+When someone searches for a specific product code like "PG-15.4" or an exact technical term like "pg_stat_statements," vector search might return documents about related but different concepts. The embedding model doesn't distinguish between "PostgreSQL 15.4" and "PostgreSQL 14.2", they're all just "PostgreSQL versions" in vector space.
+
+This is the fundamental trade-off: BM25 gives you precision but misses semantics, while vector search gives you semantic understanding but can be fuzzy on exact matches. What if you could have both?
+
+## Hybrid Search: The Best of Both Worlds
+
+[Hybrid search](/learn/search-concepts/hybrid-search) combines lexical and semantic approaches to get the benefits of both: the precision of BM25 and the semantic understanding of vector search. But combining two different search approaches isn't trivial, you can't just add BM25 scores to vector similarity scores. They're measured on completely different scales.
+
+This is where [Reciprocal Rank Fusion (RRF)](/learn/search-concepts/reciprocal-rank-fusion) provides an elegant solution. Instead of trying to normalize and combine raw scores, RRF focuses on rankings. The insight is brilliant in its simplicity: if a document ranks highly in multiple different search systems, it's probably very relevant.
+
+## Reciprocal Rank Fusion
+
+RRF works by converting rankings into scores using a simple formula:
+
+$$RRF(document) = Σ 1 / (k + rank_i(document))$$
+
+Where `k` is a constant (typically 60) that controls how quickly scores decrease with rank, and `rank_i` is the document's rank in system `i`. Documents that rank highly in multiple systems get the highest combined scores.
+
+The beauty of RRF is that it's scale-independent. Whether your BM25 scores range from 0-10 or 0-1000, and whether your vector similarities are between 0-1 or -1 to 1, RRF only cares about the relative rankings. This makes it incredibly robust and easy to tune.
+
+### Basic RRF Implementation
+
+```sql
+WITH
+--- Full-text search, using pg_search and BM25 for ranking
+fulltext AS (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY pdb.score(id) DESC) AS r
+  FROM documents
+  WHERE content ||| 'keyboard'
+  LIMIT 20
+),
+
+--- Semantic search, using pgvector and cosine distance for ranking
+semantic AS (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+  FROM documents
+  LIMIT 20
+),
+
+-- Calculate RRF contributions from each ranker
+rrf AS (
+  SELECT id, 1.0 / (60 + r) AS s FROM fulltext
+  UNION ALL
+  SELECT id, 1.0 / (60 + r) AS s FROM semantic
+)
+
+-- Sum the RRF scores, order by them, and join back the original data
+SELECT
+  m.id,
+  SUM(s) AS score,
+  m.content
+FROM rrf
+JOIN documents AS m USING (id)
+GROUP BY m.id, m.content
+ORDER BY score DESC
+LIMIT 5;
+
+```
+
+<Note>
+  Notice the `LIMIT 20` in each ranking CTE. RRF works best with the top
+  candidates from each system rather than feeding entire result sets. This
+  focuses the fusion on the most promising documents while keeping computation
+  efficient.
+</Note>
+
+### Weighted RRF
+
+The basic RRF implementation treats both search systems equally, but in practice you might want to emphasize one approach over the other. Maybe your users tend to search for specific technical terms (favor BM25), or perhaps they use more conversational queries (favor vector search).
+
+Weighted RRF lets you balance lexical vs semantic influence by applying different weights to each system:
+
+```sql
+rrf AS (
+  SELECT id, 0.7 * 1.0 / (60 + r) AS s FROM fulltext -- 70% weight
+  UNION ALL
+  SELECT id, 0.3 * 1.0 / (60 + r) AS s FROM semantic -- 30% weight
+)
+```
+
+This configuration emphasizes lexical matching over semantic similarity, which works well for technical documentation where users often search for specific terms, function names, or error messages. Adjust the weights based on your use case and user behavior.
+
+## Beyond Search: Adding Signals
+
+One of the most powerful aspects of RRF is how naturally it extends beyond just search relevance. Real-world search systems need to balance relevance with business requirements like popularity, freshness, user preferences, or content quality.
+
+Traditional search engines solve this with complex scoring functions that are difficult to tune and debug. RRF takes a different approach: treat each business requirement as a separate ranking system, then fuse them all together.
+
+Want to boost popular content? Create a ranking based on view counts. Need to surface recent articles? Add a recency ranking. Want to promote high-quality content? Include editorial ratings. RRF lets you compose these signals naturally:
+
+```sql
+--- Popularity ranking based on view counts
+popularity AS (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY view_count DESC) AS r
+  FROM documents
+  LIMIT 1000
+),
+
+--- Recency ranking based on creation date
+recency AS (
+  SELECT id, ROW_NUMBER() OVER (ORDER BY created_at DESC) AS r
+  FROM documents
+  LIMIT 1000
+),
+```
+
+Notice the higher limits (1000) for non-search signals compared to search results (20). Non-search rankings like popularity and recency can afford larger candidate sets since they don't depend on query-specific relevance filtering.
+
+This multi-signal approach gives you incredible flexibility. You can adjust weights seasonally (boost recency during news events), by user type (emphasize popularity for new users, relevance for power users), or by content type (prioritize freshness for blog posts, authority for documentation).
+
+The key insight is that each signal is independent and interpretable. If your search results seem too focused on popular content, just reduce the popularity weight. If recent content isn't surfacing enough, increase the recency weight. No complex debugging of scoring functions, just intuitive weight adjustments.
+
+## Building Better Search
+
+Hybrid search in PostgreSQL combines BM25's lexical precision with vector embeddings' semantic understanding using RRF fusion. ParadeDB and pgvector make this possible without external dependencies, everything runs in your existing database with ACID guarantees and transactional consistency.
+
+The SQL-based approach means you can see exactly how rankings work, adjust weights intuitively, and add business logic as needed. No black-box algorithms or complex external systems to manage.
+
+Ready to get started? Install [ParadeDB](https://www.paradedb.com) for BM25 and pgvector for semantic search, then use RRF to combine them into hybrid search that actually works.
