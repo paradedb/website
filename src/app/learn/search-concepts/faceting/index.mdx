@@ -1,0 +1,108 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@mintlify/components";
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+**Faceting** is a [search technique](https://en.wikipedia.org/wiki/Faceted_search) that organizes [full-text search](/learn/search-concepts/full-text-search) results into filterable categories, known as _facets_. Each facet represents a property of the data (such as color, brand, or price range) and lets users narrow down large result sets by selecting multiple values simultaneously. It’s the foundation of interactive filtering in e-commerce, document search, and analytics platforms.
+
+Faceting is an interesting problem because while it can in theory be computed client-side or across multiple queries, search responses typically need to be fast. That means facets are usually calculated efficiently within the same query that produces the search results in a single index pass.
+
+## What is a Facet?
+
+Mathematically, a facet is one of the faces of a many-sided object. In computer science, facets describe how information about an object is organized and grouped by properties or attributes. A facet refers to a category or dimension of data (for example, color), while a facet value represents a specific option within that category (for example, brown or blue).
+
+Each facet value is adjoined with an integer denoting the number of filtered items that belong to that value. For example, a facet might be represented as the following:
+
+```jsx
+brown(10);
+blue(7);
+white(4);
+```
+
+Facets are additive: a user might check multiple facet values (e.g. `brown shoes` and `cheap shoes`) to cut down search results. Facets can categorize sets of values (e.g. `brown`, `blue`, `white` etc.) and also buckets of ranges (e.g. `$0 to $99`, `$100 to $999`, `+$1,000` etc.).
+
+In practice, facets travel with Top-N searches. Showing facet counts alongside the first N results lets users refine immediately, understand distribution at a glance, and avoid extra round-trips. Executing ranking and aggregation in the same pass keeps latency low and proportional to matches, not the total document set.
+
+## Faceted Search Implementations
+
+At a small scale, faceted search can be computed client-side or with simple SQL queries. For example, a web application could fetch all matching records and compute facet counts in JavaScript, or run a few GROUP BY queries in SQL. But both approaches fall apart as datasets grow.
+
+A **client-side implementation** requires transferring every matching record to the client so counts can be calculated locally. Even a modest search returning tens of thousands of results would quickly become hard to work with.
+
+A **naïve SQL implementation** would need multiple passes over the same data, first running the search query and then running the faceting on the full result set before returning the top N records.
+
+In production systems, faceting is usually performed in tandem with the search query itself. Rather than running separate aggregation queries, search engines compute facet counts during the same index scan that retrieves matching documents. Search databases and search engines such as Elasticsearch, Solr, and ParadeDB do this by maintaining auxiliary data structures (often columnar or bitmap-based) that allow category counts to be aggregated without rereading all documents. Each facet value is mapped to a compact integer ordinal or bitset, so counts can be computed in memory as part of the query execution path.
+
+Faceted search also operates over the entire result set even when the current query is limited. Even if only a handful of documents are displayed, facet counts must reflect all matching documents. Because it’s impossible to predict what combinations of filters users will apply, facets can’t be precomputed in advance. Instead, indexes are organized so that these aggregations can be calculated efficiently (often in logarithmic time) during a single index pass.
+
+## Faceted Search Examples
+
+In Elasticsearch users can perform faceting alongside a search query with the [aggregations API](https://www.elastic.co/docs/reference/aggregations):
+
+```json
+POST /products/_search
+{
+  "size": 10,
+  "query": {
+    "multi_match": {
+      "query": "wireless headphones",
+      "fields": ["title", "description"]
+    }
+  },
+  "aggs": {
+    "price_histogram": {
+      "histogram": {
+        "field": "price",
+        "interval": 50
+      }
+    }
+  }
+}
+```
+
+In ParadeDB the same thing can be accomplished using the `pdb.agg` function as a window.
+
+```sql
+SELECT
+  *,
+  pdb.score(id) AS bm25_score,
+  pdb.agg('{"histogram": { "field": price, "interval": 50 }}') OVER () AS facets
+FROM products
+WHERE
+  title       ||| 'wireless headphones' OR
+  description ||| 'wireless headphones'
+ORDER BY bm25_score
+LIMIT 10
+```
+
+## What are Common Use Cases for Faceting?
+
+Faceting becomes essential whenever users need to explore and filter large datasets while maintaining search relevance. The key scenarios fall into several categories:
+
+### E-commerce and Product Discovery
+
+E-commerce platforms like Amazon and Wayfair are the most visible examples, but the pattern extends beyond retail. Users searching through thousands of products need to quickly narrow results by brand, price range, customer ratings, and availability. Faceting allows exploratory browsing—users can start with a broad search like "laptop" and progressively refine by processor type, screen size, and budget without losing the relevance ranking of their original query.
+
+### Content and Knowledge Management
+
+Organizations with large content repositories face similar challenges. A support agent searching 50,000 help tickets needs to filter by product area, severity level, and date range while maintaining the relevance of their keyword search. Documentation platforms like Confluence allow users to find relevant articles while filtering by team ownership, document type, or last modified date. Without faceting, users would either get overwhelming result sets or lose important context by switching to pure categorical browsing.
+
+### Analytics and Data Exploration
+
+Analytics platforms like PostHog or Mixpanel enable users to search and filter event data across multiple dimensions simultaneously. A product manager investigating user behavior can search for specific actions while faceting by device type, geographic region, and session length. The combination of search relevance with dimensional filtering allows for both targeted investigation and serendipitous discovery.
+
+### Specialized Search Applications
+
+Recruiting platforms like LinkedIn demonstrate faceting in talent search, where recruiters need to find candidates matching job descriptions while filtering by location, experience level, and specific skills. Legal research platforms allow lawyers to search case law while filtering by jurisdiction, date range, and legal area. Real estate platforms let buyers search for properties while filtering by price, location, and amenities.
+
+In all these cases, faceting solves the fundamental problem of information overload: how to maintain the power of full-text search while giving users intuitive ways to navigate large result sets.
+
+## Summary
+
+Faceted search organizes search results into filterable categories called facets, allowing users to narrow down results by selecting specific attributes like color, price, or other characteristics.
+
+Faceted search is natively available in search-first solutions like ParadeDB or Elasticsearch.
