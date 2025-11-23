@@ -17,18 +17,26 @@ interface BlogMetadata {
  * Generate metadata for both /blog/* and /learn/* content.
  */
 export function generateBlogMetadata(dirPath: string): Metadata {
-  // Detect whether this is a blog or learn path based on the real directory path
-  const isLearnPath = dirPath.includes(`${sep}learn${sep}`);
-  const baseUrl = isLearnPath ? "/learn" : "/blog";
-
-  // Extract slug from directory path (the folder name(s) after /blog or /learn)
+  // Find the last occurrence of either /blog/ or /learn/ in the path
+  // This handles edge cases where the path might contain both patterns
+  const blogIndex = dirPath.lastIndexOf(`${sep}blog${sep}`);
+  const learnIndex = dirPath.lastIndexOf(`${sep}learn${sep}`);
+  
+  // Determine baseUrl and extract slug based on which pattern appears last
+  let baseUrl: string;
   let slug: string;
-  if (dirPath.includes(`${sep}blog${sep}`)) {
-    slug = dirPath.split(`${sep}blog${sep}`)[1];
-  } else if (dirPath.includes(`${sep}learn${sep}`)) {
-    slug = dirPath.split(`${sep}learn${sep}`)[1];
+  
+  if (learnIndex > blogIndex) {
+    // /learn/ appears later (or blog doesn't exist)
+    baseUrl = "/learn";
+    slug = dirPath.split(`${sep}learn${sep}`).slice(-1)[0];
+  } else if (blogIndex > learnIndex) {
+    // /blog/ appears later (or learn doesn't exist)
+    baseUrl = "/blog";
+    slug = dirPath.split(`${sep}blog${sep}`).slice(-1)[0];
   } else {
-    // Fallback: use the raw dirPath tail
+    // Neither pattern found, fallback to /blog
+    baseUrl = "/blog";
     slug = dirPath.split(sep).slice(-1)[0];
   }
 
