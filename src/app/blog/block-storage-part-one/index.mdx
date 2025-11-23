@@ -35,7 +35,7 @@ While it’s not uncommon<sup>2</sup> for Postgres extensions to do this, block 
 />
 <Image
   src={BlockStorageTps}
-  alt"Comparison of insert throughput in transactions per second before and after migrating pg_search to block storage"
+  alt="Comparison of insert throughput in transactions per second before and after migrating pg_search to block storage"
 />
 
 At first, we weren’t sure if reconciling the data access patterns and concurrency model of Postgres and [Tantivy](https://github.com/quickwit-oss/tantivy) — `pg_search`'s underlying search library — was possible without drastic changes to Tantivy<sup>3</sup>.
