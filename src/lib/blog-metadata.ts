@@ -21,11 +21,11 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   // This handles edge cases where the path might contain both patterns
   const blogIndex = dirPath.lastIndexOf(`${sep}blog${sep}`);
   const learnIndex = dirPath.lastIndexOf(`${sep}learn${sep}`);
-  
+
   // Determine baseUrl and extract slug based on which pattern appears last
   let baseUrl: string;
   let slug: string;
-  
+
   if (learnIndex > blogIndex) {
     // /learn/ appears later (or blog doesn't exist)
     baseUrl = "/learn";
@@ -85,18 +85,15 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   }
 
   return {
-    // 👇 Force the final, fully-branded title for posts
-    // This bypasses any weirdness with nested templates.
+    // Force the final, fully-branded title for posts
+    // This bypasses any weirdness with nested templates
     title: {
       absolute: `${metadata.title} | ${siteConfig.name}`,
     },
-
     description: metadata.description,
-
     alternates: {
       canonical: canonicalUrl,
     },
-
     openGraph: {
       title: metadata.title,
       description: metadata.description,
@@ -117,7 +114,6 @@ export function generateBlogMetadata(dirPath: string): Metadata {
           ]
         : undefined,
     },
-
     twitter: {
       card: "summary_large_image",
       title: metadata.title,
