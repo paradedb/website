@@ -2,14 +2,10 @@
 const fs = require("fs");
 const path = require("path");
 
-/** Helpers */
 const nowISO = () => new Date().toISOString();
 const ROOT_DIR = process.cwd();
 const SITE_URL = "https://www.paradedb.com";
 
-/**
- * Safely read JSON from a file path.
- */
 function safeReadJSON(filePath) {
   try {
     const raw = fs.readFileSync(filePath, "utf8");
@@ -19,10 +15,6 @@ function safeReadJSON(filePath) {
   }
 }
 
-/**
- * Map a URL path (/blog/foo, /learn/bar) to a metadata.json file
- * and return its updated/date field for lastmod.
- */
 function getContentLastMod(urlPath) {
   try {
     let contentPath;
@@ -46,10 +38,6 @@ function getContentLastMod(urlPath) {
   }
 }
 
-/**
- * Find the most recent updated/date value across all metadata.json
- * files under src/app/[contentType] (e.g. blog, learn).
- */
 function getMostRecentContentDate(contentType) {
   try {
     const contentDir = path.join(ROOT_DIR, "src/app", contentType);
@@ -86,9 +74,6 @@ function getMostRecentContentDate(contentType) {
   }
 }
 
-/**
- * Helper to build a standard sitemap entry.
- */
 function buildEntry(loc, { changefreq, priority }, lastmod) {
   return {
     loc,
@@ -169,7 +154,7 @@ module.exports = {
       };
     }
 
-    // Pricing - explicit rule (optional but nice to keep stable)
+    // Pricing
     if (path === "/pricing") {
       return {
         loc: path,

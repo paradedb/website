@@ -53,6 +53,7 @@ export const metadata: Metadata = {
   icons: {
     icon: "/favicon.ico",
   },
+
   // Canonical for the homepage (resolved against metadataBase)
   alternates: {
     canonical: "/",
