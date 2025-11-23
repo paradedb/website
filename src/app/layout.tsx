@@ -18,7 +18,13 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
-  title: siteConfig.name,
+
+  // ⭐ Homepage title & global template for all other pages
+  title: {
+    default: "ParadeDB — The Transactional Elasticsearch Alternative",
+    template: "%s | ParadeDB",
+  },
+
   description: siteConfig.description,
   keywords: [
     "Postgres",
@@ -30,30 +36,32 @@ export const metadata: Metadata = {
     "transactional",
     "ACID",
   ],
+
   openGraph: {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
-    title: siteConfig.name,
+    title: "ParadeDB — The Transactional Elasticsearch Alternative",
     description: siteConfig.description,
-    siteName: siteConfig.name,
+    siteName: "ParadeDB",
     images: "/opengraph-image.png",
   },
+
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
+    title: "ParadeDB — The Transactional Elasticsearch Alternative",
     description: siteConfig.description,
     images: "/twitter-image.png",
   },
+
   icons: {
     icon: "/favicon.ico",
   },
 
   // Canonical for the homepage (resolved against metadataBase)
   alternates: {
-    canonical: "/", // → https://www.paradedb.com/
-    // also emit a proper RSS <link rel="alternate"> with canonical absolute URL
-    types: { "application/rss+xml": "/feed.xml" }, // → https://www.paradedb.com/feed.xml
+    canonical: "/",
+    types: { "application/rss+xml": "/feed.xml" },
   },
 };
 

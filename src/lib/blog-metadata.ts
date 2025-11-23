@@ -40,7 +40,7 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   } catch (error) {
     // Fallback metadata if file doesn't exist
     metadata = {
-      title: "Blog Post - ParadeDB",
+      title: "Blog Post",
       date: new Date().toISOString(),
       author: "ParadeDB Team",
       description: "A blog post from ParadeDB",
@@ -77,7 +77,7 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   }
 
   return {
-    title: `${metadata.title} - ParadeDB`,
+    title: `${metadata.title}`,
     description: metadata.description,
     alternates: {
       canonical: canonicalUrl,
