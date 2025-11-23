@@ -19,12 +19,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
 
-  // ⭐ Homepage title & global template for all other pages
+  // Homepage title & global template for all other pages
   title: {
     default: "ParadeDB — The Transactional Elasticsearch Alternative",
     template: "%s | ParadeDB",
   },
-
   description: siteConfig.description,
   keywords: [
     "Postgres",
@@ -36,7 +35,6 @@ export const metadata: Metadata = {
     "transactional",
     "ACID",
   ],
-
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -46,18 +44,15 @@ export const metadata: Metadata = {
     siteName: "ParadeDB",
     images: "/opengraph-image.png",
   },
-
   twitter: {
     card: "summary_large_image",
     title: "ParadeDB — The Transactional Elasticsearch Alternative",
     description: siteConfig.description,
     images: "/twitter-image.png",
   },
-
   icons: {
     icon: "/favicon.ico",
   },
-
   // Canonical for the homepage (resolved against metadataBase)
   alternates: {
     canonical: "/",
