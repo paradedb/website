@@ -34,7 +34,7 @@ In this post, we'll do a deep dive into:
 
 <Image
   src={LsmTreeArchitectureImage}
-  alt="Diagram of an LSM tree showing memtable, flush to disk, and segment files organized into levels with compaction"
+  alt="Diagram of an LSM tree showing the segment hierarchy and compaction process"
   className="rounded-xl"
 />
 
@@ -114,7 +114,7 @@ To understand what information `hot_standby_feedback` actually relays, we must f
 
 <Image
   src={HotStandbyFeedbackImage}
-  alt="Diagram of hot_standby_feedback showing a standby reporting its oldest xmin to the primary to delay VACUUM cleanup"
+  alt="Diagram of a Postgres tuple showcasing the xmin and xmax columns"
   className="rounded-xl"
 />
 
