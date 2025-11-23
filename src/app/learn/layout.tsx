@@ -12,9 +12,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     // Use structured title so global template ("%s | ParadeDB") applies
     title: baseTitle,
-
     description,
-
     openGraph: {
       title: baseTitle,
       description,
@@ -22,14 +20,12 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: siteConfig.name,
       type: "website",
     },
-
     twitter: {
       card: "summary_large_image",
       title: baseTitle,
       description,
       creator: "@paradedb",
     },
-
     alternates: {
       canonical: url,
     },

@@ -6,11 +6,11 @@ import { siteConfig } from "../siteConfig";
 export const metadata: Metadata = {
   title: "Blog", // → becomes "Blog | ParadeDB" via global template
   description:
-    "Engineering deep dives, product announcements, and guides from the ParadeDB team.",
+    "Engineering deep dives, product and company announcements, and guides from the ParadeDB team.",
   openGraph: {
     title: "Blog",
     description:
-      "Engineering deep dives, product announcements, and guides from the ParadeDB team.",
+      "Engineering deep dives, product and company announcements, and guides from the ParadeDB team.",
     url: `${siteConfig.url}/blog`,
     siteName: siteConfig.name,
     type: "website",
@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Blog",
     description:
-      "Engineering deep dives, product announcements, and guides from the ParadeDB team.",
+      "Engineering deep dives, product and company announcements, and guides from the ParadeDB team.",
     creator: "@paradedb",
   },
   alternates: {
