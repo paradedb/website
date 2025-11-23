@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/app/siteConfig";
 import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { join, sep } from "path";
 
 interface BlogMetadata {
   title: string;
@@ -13,21 +13,24 @@ interface BlogMetadata {
   image?: string;
 }
 
+/**
+ * Generate metadata for both /blog/* and /learn/* content.
+ */
 export function generateBlogMetadata(dirPath: string): Metadata {
-  // Extract slug from directory path
-  let slug: string;
-  if (dirPath.includes("/blog/")) {
-    slug = dirPath.split("/blog/")[1];
-  } else if (dirPath.includes("/learn/")) {
-    slug = dirPath.split("/learn/")[1];
-  } else {
-    // For paths like "search-concepts/full-text-search", use the full path as slug
-    slug = dirPath;
-  }
-
-  // Determine if this is a blog or learn path
-  const isLearnPath = slug.includes("/");
+  // Detect whether this is a blog or learn path based on the real directory path
+  const isLearnPath = dirPath.includes(`${sep}learn${sep}`);
   const baseUrl = isLearnPath ? "/learn" : "/blog";
+
+  // Extract slug from directory path (the folder name(s) after /blog or /learn)
+  let slug: string;
+  if (dirPath.includes(`${sep}blog${sep}`)) {
+    slug = dirPath.split(`${sep}blog${sep}`)[1];
+  } else if (dirPath.includes(`${sep}learn${sep}`)) {
+    slug = dirPath.split(`${sep}learn${sep}`)[1];
+  } else {
+    // Fallback: use the raw dirPath tail
+    slug = dirPath.split(sep).slice(-1)[0];
+  }
 
   // Always read from source directory (available in both dev and production)
   const sourceDir = join(process.cwd(), "src", "app", baseUrl.slice(1), slug);
@@ -37,7 +40,7 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   try {
     const metadataContents = readFileSync(metadataPath, "utf8");
     metadata = JSON.parse(metadataContents);
-  } catch (error) {
+  } catch {
     // Fallback metadata if file doesn't exist
     metadata = {
       title: "Blog Post",
@@ -56,7 +59,6 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   let ogImageUrl: string | undefined;
   let twitterImageUrl: string | undefined;
 
-  // Check for Next.js special files in images directory (automatically served by Next.js)
   const opengraphImagePath = join(sourceDir, "images/opengraph-image.png");
   const twitterImagePath = join(sourceDir, "images/twitter-image.png");
 
@@ -64,7 +66,6 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   if (existsSync(opengraphImagePath)) {
     ogImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/opengraph-image.png`;
   } else {
-    // Fallback to site-wide OG image
     ogImageUrl = `${siteConfig.url}/opengraph-image.png`;
   }
 
@@ -72,16 +73,22 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   if (existsSync(twitterImagePath)) {
     twitterImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/twitter-image.png`;
   } else {
-    // Fallback to site-wide Twitter image or OG image
     twitterImageUrl = `${siteConfig.url}/twitter-image.png`;
   }
 
   return {
-    title: `${metadata.title}`,
+    // 👇 Force the final, fully-branded title for posts
+    // This bypasses any weirdness with nested templates.
+    title: {
+      absolute: `${metadata.title} | ${siteConfig.name}`,
+    },
+
     description: metadata.description,
+
     alternates: {
       canonical: canonicalUrl,
     },
+
     openGraph: {
       title: metadata.title,
       description: metadata.description,
@@ -102,6 +109,7 @@ export function generateBlogMetadata(dirPath: string): Metadata {
           ]
         : undefined,
     },
+
     twitter: {
       card: "summary_large_image",
       title: metadata.title,
