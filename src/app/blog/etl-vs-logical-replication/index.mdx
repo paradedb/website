@@ -28,7 +28,11 @@ ETL stands for Extract, Transform, and Load. When used as the interface between 
 2. **Transform** refers to reshaping that data to fit the schema or model of the destination (like Elasticsearch documents).
 3. **Load** is the final step: writing the transformed data into the sink system.
 
-<Image src={EtlExample} className="rounded-xl" />
+<Image
+  src={EtlExample}
+  alt="Diagram of an ETL pipeline moving data from a source database into a target database through extract, transform, and load stages"
+  className="rounded-xl"
+/>
 
 ## Where Does ETL Shine?
 
@@ -54,7 +58,11 @@ ETL is the right tool when flexibility and interoperability between Postgres and
 
 Logical replication is a built-in Postgres feature that streams row-level transactional changes from one Postgres instance to another. It works by decoding changes recorded in the Postgres write-ahead log (WAL) and sending them over a replication slot to replicas, where the changes are replayed in the order received.
 
-<Image src={LrExample} className="rounded-xl" />
+<Image
+  src={LrExample}
+  alt="Diagram of Postgres logical replication streaming row-level changes from a primary database to a replica over a replication slot"
+  className="rounded-xl"
+/>
 
 ## Where Does Logical Replication Shine?
 
