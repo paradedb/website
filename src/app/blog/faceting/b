@@ -1,0 +1,196 @@
+"use client";
+
+import { Card, Title } from "@tremor/react";
+import {
+  BarChart as RechartsBarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ReferenceLine,
+  ResponsiveContainer,
+} from "recharts";
+
+// Base data
+const chartData = [
+  {
+    query: "paradedb",
+    results: 1000,
+    manual: 15.558,
+    paradedb: 30.885,
+  },
+  {
+    query: "postgresql",
+    results: 57000,
+    manual: 57.792,
+    paradedb: 48.988,
+  },
+  {
+    query: "rust",
+    results: 8000,
+    manual: 124.811,
+    paradedb: 65.828,
+  },
+  {
+    query: "code",
+    results: 42000,
+    manual: 689.159,
+    paradedb: 118.505,
+  },
+  {
+    query: "we",
+    results: 60000,
+    manual: 1262.759,
+    paradedb: 181.984,
+  },
+  {
+    query: "the",
+    results: 250000,
+    manual: 7052.101,
+    paradedb: 723.723,
+  },
+  {
+    query: "*",
+    results: 500000,
+    manual: 11849.004,
+    paradedb: 1013.419,
+  },
+];
+
+const ms = (n: number) => `${Intl.NumberFormat("en-US").format(n)} ms`;
+const fmtResults = (n: number) =>
+  `${Intl.NumberFormat("en-US").format(n)} results`;
+
+// Custom Y-axis tick with two lines:
+// query
+// (xxx results)
+function YAxisTick(props: any) {
+  const { x, y, payload } = props;
+  const row = chartData[payload.index];
+  if (!row) return null;
+
+  return (
+    <text
+      x={x}
+      y={y}
+      textAnchor="end"
+      dominantBaseline="middle"
+      fontSize={12}
+    >
+      <tspan x={x} dy="-0.2em">
+        {row.query}
+      </tspan>
+      <tspan x={x} dy="1.1em" fill="#6b7280" fontSize={11}>
+        {fmtResults(row.results)}
+      </tspan>
+    </text>
+  );
+}
+
+// Tooltip with ratio line
+function FacetingTooltip({ active, payload, label }: any) {
+  if (!active || !payload || payload.length === 0) return null;
+
+  const paradedbPoint = payload.find((p: any) => p.dataKey === "paradedb");
+  const manualPoint = payload.find((p: any) => p.dataKey === "manual");
+
+  let ratioText: string | null = null;
+  if (
+    paradedbPoint &&
+    manualPoint &&
+    typeof paradedbPoint.value === "number" &&
+    typeof manualPoint.value === "number" &&
+    manualPoint.value > 0
+  ) {
+    // ParadeDB / manual
+    const ratio = paradedbPoint.value / manualPoint.value;
+    if (ratio < 1) {
+      ratioText = `ParadeDB is ${(1 / ratio).toFixed(1)}× faster`;
+    } else {
+      ratioText = `ParadeDB is ${ratio.toFixed(1)}× slower`;
+    }
+  }
+
+  return (
+    <div className="rounded-md border bg-white px-3 py-2 shadow-sm text-sm">
+      <div className="font-medium mb-1">{label}</div>
+      {payload.map((item: any) => (
+        <div key={item.dataKey} className="flex items-center gap-1">
+          <span
+            className="inline-block h-2 w-2 rounded-full"
+            style={{ backgroundColor: item.color }}
+          />
+          <span>{item.name}:</span>
+          <span className="font-medium">{ms(item.value)}</span>
+        </div>
+      ))}
+      {ratioText && (
+        <div className="mt-1 border-t pt-1 text-xs text-gray-600">
+          {ratioText}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function FacetingChart() {
+  return (
+    <Card>
+      <Title>Faceting comparison</Title>
+      <div className="h-[900px] mt-6">
+        <ResponsiveContainer width="100%" height="100%">
+          <RechartsBarChart
+            data={chartData}
+            layout="vertical" // horizontal bars
+            margin={{ top: 5, right: 40, bottom: 5, left: 200 }}
+          >
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis
+              type="number"
+              tickFormatter={(v: number) => ms(v)}
+            />
+            <YAxis
+              type="category"
+              dataKey="query"
+              width={220}
+              tick={<YAxisTick />}
+            />
+            <Tooltip content={<FacetingTooltip />} />
+            <Legend
+              formatter={(value: string) =>
+                value === "paradedb" ? "ParadeDB faceting" : "Manual faceting"
+              }
+            />
+            {/* Bars */}
+            <Bar
+              dataKey="paradedb"
+              name="ParadeDB faceting"
+              fill="#7c3aed"
+              barSize={18}
+            />
+            <Bar
+              dataKey="manual"
+              name="Manual faceting"
+              fill="#3b82f6"
+              barSize={18}
+            />
+            {/* Optional: dotted threshold at 1000 ms */}
+            <ReferenceLine
+              x={1000}
+              stroke="#9ca3af"
+              strokeDasharray="4 4"
+              label={{
+                value: "1000 ms",
+                position: "top",
+                fill: "#6b7280",
+                fontSize: 11,
+              }}
+            />
+          </RechartsBarChart>
+        </ResponsiveContainer>
+      </div>
+    </Card>
+  );
+}
