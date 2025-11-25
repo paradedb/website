@@ -17,23 +17,22 @@ ParadeDB `0.20.0` delivers on three fronts that matter for real applications: se
 
 ## Search Aggregations: Analytics Without the Architecture
 
-The pain comes when developers need to do more than just search: they need facets, counts, histograms, and other analytics on their search results. Traditional approaches force you into a corner: either sacrifice consistency by syncing to a separate analytics system, or accept slow performance by running expensive aggregations in your database.
+Modern applications often require more than just search: they need facets, counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice. 
 
-We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making search faceting a first-class citizen. By contrast to traditional approaches that treat search and analytics as separate problems, ParadeDB runs them together using the same indexes.
+We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen. 
 
-The new `pdb.agg()` function can be used in two ways:
+Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
 
 - as an aggregate function, running a search query and providing aggregate results
-- as a window function, running a search query and providing aggregate results **alongside** the result
+- as a window function, running a search query and providing aggregate results **alongside** the TopN search result
 
-Both variants work in the same way, taking control of parts of the planning and execution and pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, and manual aggregations. When performing faceting the results are returned in a new column that contains a `JSONB` resultset.
+Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations. Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method at around 42million records.
 
-`pdb.agg()` can be used with a JSON argument that closely mirrors the Elasticsearch aggregations API, and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
+`pdb.agg()` can be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`). 
 
 Let's have a look at some examples.
 
 The most basic call doesn't use `pdb.agg()` at all, it just uses a `COUNT(*)` which is caught and planned using a search aggregation.
-
 
 ```sql
 SELECT count(*)
@@ -63,7 +62,8 @@ LIMIT 2;
 (2 rows)
 ```
 
-A more complex example uses the JSON API to express a terms facet, which is then also added as an extra column using JSON.
+A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimzie this in the future).
+
 ```sql
 SELECT id, description, 
        pdb.agg('{"terms": {"field": "rating"}}') AS facets
@@ -83,13 +83,13 @@ LIMIT 2;
 (2 rows)
 ```
 
-Behind the scenes, these queries use our BM25 indexes for both full-text search and columnar analytics. You get sub-millisecond facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data.
+Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-millisecond facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data (or not, if you want another 4x performance).
 
-## API Evolution: Less Magic, More Clarity
+## v2 API: Less Magic, More Clarity
 
 None of these aggregation capabilities would matter if they were difficult to use. That's where the trouble begins with most search systems, powerful features hidden behind complex APIs that require deep domain knowledge to use effectively.
 
-0.20.0 promotes our V2 API to the default experience, and the difference is immediately apparent. This new API removes the abstraction layers and lets you express exactly what you want, when you want it.
+`0.20.0` promotes our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuative SQL UX.
 
 Index creation is now a lot cleaner, specifying the tokenizers and options inline:
 
@@ -102,7 +102,7 @@ USING bm25 (id,
 WITH (key_field='id');
 ```
 
-And search has got better too, with new conjuction (`&&&`) and disjunction (`|||`) operators, and simple ways of accessing common features like boosting.
+And search has improved too, with new conjuction (`&&&`) and disjunction (`|||`) operators, and simple ways of accessing common features like boosting.
 
 ```sql
 SELECT id, pdb.score(id), description, category
@@ -112,24 +112,22 @@ ORDER BY score DESC
 LIMIT 5;
 ```
 
-Keep an eye out for another post later this week showing off all the new v2 API features.
+Keep an eye out for another post later this week showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
 
 ## Write Performance: Updates That Scale With You
 
-The performance story in `0.20.0` reveals something fundamental about how search should work in transactional systems. Traditional search engines treat writes as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
+Our performance story from `0.19.0` to  `0.20.0` reveals something fundamental about how search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
 
-But that's exactly backwards for real applications. Most search workloads aren't bulk imports; they're streams of individual updates as users create content, modify records, and interact with your system. ParadeDB treats these small, frequent updates as first-class citizens that should perform as well as reads.
+But that's exactly backwards for real applications. Most search workloads aren't bulk imports; they're streams of individual updates as users create content, modify records, and interact with your system. ParadeDB treats these small, frequent updates as first-class citizens that should perform as well as inserts.
 
-Behind the scenes, we've enabled mutable segments and background merging by default in our LSM engine. These might sound like internal optimizations, but they represent a fundamental shift in how search indexes handle change. Instead of expensive rebuilds, you get incremental updates that maintain performance even under heavy write loads.
+Behind the scenes, we've enabled two features from `0.19.0`, mutable segments and background merging, by default in our [LSM engine](/blog/lsm-trees-in-postgres). These might sound like internal optimizations, but they represent a fundamental shift in how search indexes handle change. Instead of expensive rebuilds, you get incremental updates that maintain performance even under heavy write loads.
 
-The result speaks for itself: single update write throughput that scales with your application, not against it. We've increased single row update performance by more than two orders of magnitude; the kind of improvement that can change how you think about transactional search.
-
-[insert graph]
+The result speaks for itself: single update write throughput that scales with your application, not against it. We've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
 
 ## Why This Matters
 
-When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. ParadeDB `0.20.0` represents a rejection of those trade-offs.
+When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. ParadeDB `0.20.0` represents a rejection of some of those trade-offs.
 
 You shouldn't have to choose between ACID guarantees and full-text search. You shouldn't have to maintain separate systems for transactional data and search data. You shouldn't have to learn domain-specific query languages when you already know SQL.
 
