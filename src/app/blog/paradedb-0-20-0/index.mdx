@@ -94,7 +94,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future). This is useful when you want to display the TopN search results, but also show the distrubution of the whole search query, doing this in one efficent index pass is one of the niceties of the Elasticsearch API that we loved and made possible in SQL.
+A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future). This is useful when you want to display the TopN search results, but also show the distribution of the whole search query, doing this in one efficient index pass is one of the niceties of the Elasticsearch API that we loved and made possible in SQL.
 
 ```sql
 SELECT id, description,
