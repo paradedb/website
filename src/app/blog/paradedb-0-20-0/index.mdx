@@ -27,7 +27,7 @@ Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.co
 - as an aggregate function, running a search query and providing aggregate results
 - as a window function, running a search query and providing aggregate results **alongside** the TopN search result
 
-Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations. Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method at around 42million records (full details to come in a search aggregations blog).
+Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations. Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method over more than 40 million results (full details to come in a search aggregations blog).
 
 <Card className="text-center">
   <Subtitle>
@@ -113,13 +113,11 @@ LIMIT 2;
 (2 rows)
 ```
 
-Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-second facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data (or not, if you want another 4x performance).
+Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-second facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data.
 
 ## v2 API: Less Magic, More Clarity
 
-None of these aggregation capabilities would matter if they were difficult to use. That's where the trouble begins with most search systems, powerful features hidden behind complex APIs that require deep domain knowledge to use effectively.
-
-`0.20.0` promotes our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
+None of these aggregation capabilities would matter if they were difficult to use, so alongside the our performance work we've also promoted our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
 
 One of the most significant advantages of the v2 API is that it eliminates the schema duplication that is present in most other search systems. With Elasticsearch you must define your data structure twice: once in your application database and again in your Elasticsearch mapping:
 
@@ -138,7 +136,7 @@ One of the most significant advantages of the v2 API is that it eliminates the s
 
 Even our own v1 API required separate JSON configuration for the indexes. The v2 API leans into our definition of 'search database' and infers most of your index schema from your PostgreSQL table schema. You define text processing and search behavior directly in the index creation statement, eliminating the need to maintain parallel schema definitions.
 
-Index creation is now a lot cleaner, specifying the tokenizers and options inline:
+We've had many users see unexpected behaviors in their first few queries due to incorrectly configured tokenizers. In v0.20.0, we've revamped our tokenizer defaults and made them a first-party experience when creating indexes, removing any ambiguity. Index creation is now cleaner, specifying the tokenizers and options inline:
 
 ```sql
 CREATE INDEX search_idx ON mock_items
@@ -158,6 +156,15 @@ FROM mock_items
 WHERE description ||| 'shoes'::pdb.boost(2) OR category ||| 'footwear'
 ORDER BY score DESC
 LIMIT 5;
+
+ id |   score   |     description      | category
+----+-----------+----------------------+----------
+  5 |  7.660918 | Generic shoes        | Footwear
+  3 |  6.872712 | Sleek running shoes  | Footwear
+  4 |  6.872712 | White jogging shoes  | Footwear
+ 13 | 1.9362776 | Sturdy hiking boots  | Footwear
+ 23 | 1.9362776 | Comfortable slippers | Footwear
+(5 rows)
 ```
 
 Keep an eye out for another post showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
@@ -175,7 +182,7 @@ Our solution is based on two key optimizations from `0.19.0`, now enabled by def
 - **Mutable segments** introduce a small buffer optimized specifically for writes. Instead of immediately writing changes to immutable segments, we store a pointer to the new row in this buffer, eliminating the write amplification problem entirely. Once the buffer becomes full, background merging serializes it to an immutable structure without blocking ongoing write operations.
 - **Background merging** moves all merging (including mutable segment merging) to the background, and increases the number of workers which we dedicate to this task.
 
-The result speaks for itself: single update write throughput that scales with your application, not against it. Since we first introduced these features in `0.19.0` we've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
+Since we first introduced these features in `0.19.0` we've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
 <Card className="text-center">
   <Subtitle>
@@ -211,8 +218,6 @@ Again, you can expect a follow up post with all the gory data-structure details.
 
 ## Why This Matters
 
-When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. You shouldn't have to choose between ACID guarantees and full-text search, or maintain separate systems for transactional data and search data.
-
-ParadeDB `0.20.0` continues our work toward rejecting those trade-offs by bringing search aggregations, streamlined search APIs, and enhanced update performance directly into PostgreSQL.
+Version `0.20.0` strengthens ParadeDB as an alternative to Elasticsearch by adding fast search aggregations, a streamlined v2 API, and significantly improved write performance directly into PostgreSQL. For teams that value transactional consistency and operational simplicity, we provide a path to modern search capabilities without the complexity of managing separate systems.
 
 Ready to see search aggregations and the new API in action? [Try ParadeDB 0.20.0](https://docs.paradedb.com/quickstart) and experience what it's like when search, analytics, and transactions work together seamlessly.

@@ -1,6 +1,6 @@
 {
-  "title": "ParadeDB 0.20.0: Simpler, Better, Faster, Stronger (But Our Work Is Never Over)",
-  "date": "2025-11-23T00:00:00.000Z",
+  "title": "ParadeDB 0.20.0: Simpler, Faster",
+  "date": "2025-11-26T00:00:00.000Z",
   "author": "Philippe Noël",
   "description": "Introducing search aggregation, V2 API as default, and performance improvements that eliminate the complexity between search and analytics in a single Postgres-native system.",
   "categories": ["postgres", "search", "analytics", "release"]
