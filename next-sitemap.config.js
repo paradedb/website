@@ -1,86 +1,95 @@
+/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require("fs");
 const path = require("path");
 
+const nowISO = () => new Date().toISOString();
+const ROOT_DIR = process.cwd();
+const SITE_URL = "https://www.paradedb.com";
+
+function safeReadJSON(filePath) {
+  try {
+    const raw = fs.readFileSync(filePath, "utf8");
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
 function getContentLastMod(urlPath) {
   try {
-    // Convert URL path to filesystem path
     let contentPath;
+
     if (urlPath.startsWith("/blog/")) {
       const slug = urlPath.replace("/blog/", "");
-      contentPath = path.join(
-        process.cwd(),
-        "src/app/blog",
-        slug,
-        "metadata.json",
-      );
+      contentPath = path.join(ROOT_DIR, "src/app/blog", slug, "metadata.json");
     } else if (urlPath.startsWith("/learn/")) {
       const slug = urlPath.replace("/learn/", "");
-      contentPath = path.join(
-        process.cwd(),
-        "src/app/learn",
-        slug,
-        "metadata.json",
-      );
+      contentPath = path.join(ROOT_DIR, "src/app/learn", slug, "metadata.json");
     } else {
-      return new Date().toISOString();
+      return nowISO();
     }
 
-    const metadata = JSON.parse(fs.readFileSync(contentPath, "utf8"));
-    return metadata.updated || metadata.date || new Date().toISOString();
+    const metadata = safeReadJSON(contentPath);
+    if (!metadata) return nowISO();
+
+    return metadata.updated || metadata.date || nowISO();
   } catch {
-    return new Date().toISOString();
+    return nowISO();
   }
 }
 
 function getMostRecentContentDate(contentType) {
   try {
-    const contentDir = path.join(process.cwd(), "src/app", contentType);
+    const contentDir = path.join(ROOT_DIR, "src/app", contentType);
     let mostRecentDate = null;
 
-    // Recursively find all metadata.json files
-    function findMetadataFiles(dir) {
+    function walk(dir) {
       const items = fs.readdirSync(dir, { withFileTypes: true });
 
       for (const item of items) {
         const fullPath = path.join(dir, item.name);
 
         if (item.isDirectory()) {
-          // Recursively search subdirectories
-          findMetadataFiles(fullPath);
+          walk(fullPath);
         } else if (item.name === "metadata.json") {
-          // Found a metadata file
-          try {
-            const metadata = JSON.parse(fs.readFileSync(fullPath, "utf8"));
-            const itemDate = new Date(metadata.updated || metadata.date);
+          const metadata = safeReadJSON(fullPath);
+          if (!metadata) continue;
 
-            if (!mostRecentDate || itemDate > mostRecentDate) {
-              mostRecentDate = itemDate;
-            }
-          } catch {
-            // Skip invalid metadata files
-            continue;
+          const value = metadata.updated || metadata.date;
+          if (!value) continue;
+
+          const itemDate = new Date(value);
+          if (!mostRecentDate || itemDate > mostRecentDate) {
+            mostRecentDate = itemDate;
           }
         }
       }
     }
 
-    findMetadataFiles(contentDir);
+    walk(contentDir);
 
-    return mostRecentDate
-      ? mostRecentDate.toISOString()
-      : new Date().toISOString();
+    return mostRecentDate ? mostRecentDate.toISOString() : nowISO();
   } catch {
-    return new Date().toISOString();
+    return nowISO();
   }
+}
+
+function buildEntry(loc, { changefreq, priority }, lastmod) {
+  return {
+    loc,
+    changefreq,
+    priority,
+    lastmod: lastmod ?? nowISO(),
+  };
 }
 
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: "https://www.paradedb.com",
+  siteUrl: SITE_URL,
   generateRobotsTxt: true,
   sitemapSize: 7000,
   changefreq: "weekly",
-  priority: 0.6, // Set 0.6 as the default
+  priority: 0.6, // default for uncategorized routes
   exclude: [
     "/404",
     "/500",
@@ -91,6 +100,9 @@ module.exports = {
   robotsTxtOptions: {
     additionalSitemaps: ["https://docs.paradedb.com/sitemap.xml"],
   },
+  /**
+   * Per-path overrides for priority, changefreq, and lastmod.
+   */
   transform: async (config, path) => {
     // Homepage - highest priority
     if (path === "/") {
@@ -98,7 +110,7 @@ module.exports = {
         loc: path,
         changefreq: "daily",
         priority: 1.0,
-        lastmod: new Date().toISOString(),
+        lastmod: nowISO(),
       };
     }
 
@@ -142,12 +154,17 @@ module.exports = {
       };
     }
 
-    // Everything else uses default 0.6
-    return {
-      loc: path,
-      changefreq: config.changefreq,
-      priority: config.priority, // 0.6
-      lastmod: new Date().toISOString(),
-    };
+    // Pricing
+    if (path === "/pricing") {
+      return {
+        loc: path,
+        changefreq: "weekly",
+        priority: 0.6,
+        lastmod: nowISO(),
+      };
+    }
+
+    // Everything else uses config defaults
+    return buildEntry(path, config);
   },
 };

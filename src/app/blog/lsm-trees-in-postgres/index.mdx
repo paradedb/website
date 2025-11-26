@@ -32,7 +32,11 @@ In this post, we'll do a deep dive into:
 
 ## What is an LSM Tree?
 
-<Image src={LsmTreeArchitectureImage} className="rounded-xl" />
+<Image
+  src={LsmTreeArchitectureImage}
+  alt="Diagram of an LSM tree showing the segment hierarchy and compaction process"
+  className="rounded-xl"
+/>
 
 A Log-Structured Merge Tree (LSM tree) is a write-optimized data structure commonly used in systems like RocksDB and Cassandra.
 
@@ -54,7 +58,11 @@ Logical consistency is like waiting until the chapter is finished before copying
 
 ## WAL Shipping: How Postgres Guarantees Physical Consistency
 
-<Image src={PhysicalConsistencyImage} className="rounded-xl" />
+<Image
+  src={PhysicalConsistencyImage}
+  alt="Illustration of Postgres WAL shipping from a primary to a standby to maintain physical consistency between replicas"
+  className="rounded-xl"
+/>
 
 In a primary-standby physical replication setup, a primary server is paired with a standby server that acts as a read-only copy of its leader. The servers remain in sync by using a Write-Ahead Log (WAL) to record all binary-level changes to storage blocks on the primary server before they occur. Changes to this append-only WAL file are then streamed to the standby (a process called “log shipping”) and applied in the order received. This process enables near-realtime data synchronization between the two servers, hence the phrase “hot standby”.
 
@@ -70,7 +78,11 @@ But what happens when we want to edit multiple entries in the list “at once”
 
 Instead, for multi-node operations `pg_search` uses a Copy-on-Write (CoW) clone of the list, and atomically swaps in the head. More generally, atomic operations insulate you from danger by eliminating reliance on coarse-grained locks.
 
-<Image src={CopyOnWriteImage} className="rounded-xl" />
+<Image
+  src={CopyOnWriteImage}
+  alt="Diagram of a copy-on-write linked list where a new version is built and the head pointer is atomically swapped to preserve consistency"
+  className="rounded-xl"
+/>
 
 ## A Problem: Vacuums Undermine Logical Consistency
 
@@ -100,7 +112,11 @@ This is where an optional Postgres setting called `hot_standby_feedback` comes i
 
 To understand what information `hot_standby_feedback` actually relays, we must first understand how tuple versioning works in Postgres. Every tuple in Postgres has two key metadata attributes: `xmin` and `xmax`. `xmin` stores the Transaction ID (XID) of the transaction that *created* or *inserted* that specific tuple version, while `xmax` stores the XID of the transaction that either *updated* or *deleted* the tuple version, effectively marking it as obsolete. When a tuple is deleted, the `xmax` value is updated with the XID of the deleting transaction. Since XID are assigned sequentially, later transactions are assigned a larger number for their XID, so another way to think about `xmin` is as a proxy for the tuple’s “creation time” and `xmax` for its “last updated or deleted time”.
 
-<Image src={HotStandbyFeedbackImage} className="rounded-xl" />
+<Image
+  src={HotStandbyFeedbackImage}
+  alt="Diagram of a Postgres tuple showcasing the xmin and xmax columns"
+  className="rounded-xl"
+/>
 
 When `hot_standby_feedback` is enabled, the replica will periodically communicate the smallest `xmin` (oldest “creation time”) that any of its active queries is currently pinned to. This `xmin` identifies the oldest tuple still in use on the standby.
 
@@ -113,7 +129,7 @@ Even with the help of `hot_standby_feedback`, standby servers are fundamentally 
 To achieve both physical and logical consistency, `pg_search` implements an atomically logged LSM tree, and to achieve logical consistency, we rely on `hot_standby_feedback`.
 
 This challenge was worth tackling because it enables the fastest possible search performance, without sacrificing consistency.
-To see it in action, check out [our documentation](https://docs.paradedb.com/) or our [open source project](https://github.com/paradedb/paradedb)!
+To see it in action, check out [our documentation](https://docs.paradedb.com/welcome/introduction) or our [open source project](https://github.com/paradedb/paradedb)!
 
 <hr />
 

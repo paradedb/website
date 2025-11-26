@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { siteConfig } from "@/app/siteConfig";
 import { readFileSync, existsSync } from "fs";
-import { join } from "path";
+import { join, sep } from "path";
 
 interface BlogMetadata {
   title: string;
@@ -13,21 +13,32 @@ interface BlogMetadata {
   image?: string;
 }
 
+/**
+ * Generate metadata for both /blog/* and /learn/* content.
+ */
 export function generateBlogMetadata(dirPath: string): Metadata {
-  // Extract slug from directory path
-  let slug: string;
-  if (dirPath.includes("/blog/")) {
-    slug = dirPath.split("/blog/")[1];
-  } else if (dirPath.includes("/learn/")) {
-    slug = dirPath.split("/learn/")[1];
-  } else {
-    // For paths like "search-concepts/full-text-search", use the full path as slug
-    slug = dirPath;
-  }
+  // Find the last occurrence of either /blog/ or /learn/ in the path
+  // This handles edge cases where the path might contain both patterns
+  const blogIndex = dirPath.lastIndexOf(`${sep}blog${sep}`);
+  const learnIndex = dirPath.lastIndexOf(`${sep}learn${sep}`);
 
-  // Determine if this is a blog or learn path
-  const isLearnPath = slug.includes("/");
-  const baseUrl = isLearnPath ? "/learn" : "/blog";
+  // Determine baseUrl and extract slug based on which pattern appears last
+  let baseUrl: string;
+  let slug: string;
+
+  if (learnIndex > blogIndex) {
+    // /learn/ appears later (or blog doesn't exist)
+    baseUrl = "/learn";
+    slug = dirPath.split(`${sep}learn${sep}`).slice(-1)[0];
+  } else if (blogIndex > learnIndex) {
+    // /blog/ appears later (or learn doesn't exist)
+    baseUrl = "/blog";
+    slug = dirPath.split(`${sep}blog${sep}`).slice(-1)[0];
+  } else {
+    // Neither pattern found, fallback to /blog
+    baseUrl = "/blog";
+    slug = dirPath.split(sep).slice(-1)[0];
+  }
 
   // Always read from source directory (available in both dev and production)
   const sourceDir = join(process.cwd(), "src", "app", baseUrl.slice(1), slug);
@@ -37,10 +48,10 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   try {
     const metadataContents = readFileSync(metadataPath, "utf8");
     metadata = JSON.parse(metadataContents);
-  } catch (error) {
+  } catch {
     // Fallback metadata if file doesn't exist
     metadata = {
-      title: "Blog Post - ParadeDB",
+      title: "Blog Post",
       date: new Date().toISOString(),
       author: "ParadeDB Team",
       description: "A blog post from ParadeDB",
@@ -56,7 +67,6 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   let ogImageUrl: string | undefined;
   let twitterImageUrl: string | undefined;
 
-  // Check for Next.js special files in images directory (automatically served by Next.js)
   const opengraphImagePath = join(sourceDir, "images/opengraph-image.png");
   const twitterImagePath = join(sourceDir, "images/twitter-image.png");
 
@@ -64,7 +74,6 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   if (existsSync(opengraphImagePath)) {
     ogImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/opengraph-image.png`;
   } else {
-    // Fallback to site-wide OG image
     ogImageUrl = `${siteConfig.url}/opengraph-image.png`;
   }
 
@@ -72,12 +81,15 @@ export function generateBlogMetadata(dirPath: string): Metadata {
   if (existsSync(twitterImagePath)) {
     twitterImageUrl = `${siteConfig.url}${baseUrl}/${slug}/images/twitter-image.png`;
   } else {
-    // Fallback to site-wide Twitter image or OG image
     twitterImageUrl = `${siteConfig.url}/twitter-image.png`;
   }
 
   return {
-    title: `${metadata.title} - ParadeDB`,
+    // Force the final, fully-branded title for posts
+    // This bypasses any weirdness with nested templates
+    title: {
+      absolute: `${metadata.title} | ${siteConfig.name}`,
+    },
     description: metadata.description,
     alternates: {
       canonical: canonicalUrl,

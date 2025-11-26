@@ -4,9 +4,9 @@ export const company = {
 };
 
 export const documentation = {
-  BASE: "https://docs.paradedb.com",
+  BASE: "https://docs.paradedb.com/welcome/introduction",
   SEARCH: "https://docs.paradedb.com/documentation/full-text/overview",
-  ANALYTICS: "https://docs.paradedb.com/documentation/aggregates/overview/",
+  ANALYTICS: "https://docs.paradedb.com/documentation/aggregates/overview",
   REPLICATION:
     "https://docs.paradedb.com/deploy/self-hosted/logical-replication/getting-started",
   INGEST: "https://docs.paradedb.com/deploy/third-party-extensions",

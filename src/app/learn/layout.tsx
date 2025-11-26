@@ -4,16 +4,17 @@ import ResourcesLayoutClient from "./layout-client";
 import { siteConfig } from "../siteConfig";
 
 export async function generateMetadata(): Promise<Metadata> {
-  const title = "Learn Search Concepts - ParadeDB";
+  const baseTitle = "Learn Search Concepts";
   const description =
     "Deep dive into search concepts, and learn how to build powerful search features in Postgres.";
   const url = `${siteConfig.url}/learn`;
 
   return {
-    title,
+    // Use structured title so global template ("%s | ParadeDB") applies
+    title: baseTitle,
     description,
     openGraph: {
-      title,
+      title: baseTitle,
       description,
       url,
       siteName: siteConfig.name,
@@ -21,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title,
+      title: baseTitle,
       description,
       creator: "@paradedb",
     },
@@ -38,7 +39,6 @@ export default async function ResourcesLayout({
 }) {
   const resourceSections = await getResourcesBySection();
 
-  // If no resources, just render children without the layout sidebar
   if (resourceSections.length === 0) {
     return <div>{children}</div>;
   }
