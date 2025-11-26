@@ -83,7 +83,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-millisecond facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data (or not, if you want another 4x performance).
+Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-second facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data (or not, if you want another 4x performance).
 
 ## v2 API: Less Magic, More Clarity
 
@@ -91,11 +91,29 @@ None of these aggregation capabilities would matter if they were difficult to us
 
 `0.20.0` promotes our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuative SQL UX.
 
+One of the most significant advantages of the v2 API is that it eliminates the schema duplication that is present in most other search systems. With Elasticsearch you must define your data structure twice: once in your application database and again in your Elasticsearch mapping:
+
+```json
+// Elasticsearch mapping - separate from your database schema
+{
+  "mappings": {
+    "properties": {
+      "id": { "type": "integer" },
+      "description": { "type": "text", "analyzer": "english" },
+      "category": { "type": "keyword" }
+    }
+  }
+}
+```
+
+Even our own v1 API required separate JSON configuration for the indexes. The v2 API leans into our definition of 'search database' and infers your index schema on your PostgreSQL table schema. You define text processing and search behavior directly in the index creation statement, eliminating the need to maintain parallel schema definitions.
+
 Index creation is now a lot cleaner, specifying the tokenizers and options inline:
 
 ```sql
 CREATE INDEX search_idx ON mock_items
 USING bm25 (id, 
+           title,
            (description::pdb.simple('stemmer=english',
                                     'stopwords_language=english')), 
            category::pdb.literal) 
@@ -112,29 +130,34 @@ ORDER BY score DESC
 LIMIT 5;
 ```
 
-Keep an eye out for another post later this week showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
+Keep an eye out for another post later showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
 
 ## Write Performance: Updates That Scale With You
 
-Our performance story from `0.19.0` to  `0.20.0` reveals something fundamental about how search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
+Our performance story from `0.19.0` to  `0.20.0` reveals a truth about how we think search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
+
+The underlying issue stems from how search engines like Lucene and Tantivy handle data. These systems use immutable data structures for their segments, which means updating a single field in a document necessitates rewriting all other fields for that document. This creates massive write amplification: changing one field in a document with 10 fields results in rewriting 10x the actual changed data. For applications with frequent updates, this amplification becomes a performance bottleneck.
 
 But that's exactly backwards for real applications. Most search workloads aren't bulk imports; they're streams of individual updates as users create content, modify records, and interact with your system. ParadeDB treats these small, frequent updates as first-class citizens that should perform as well as inserts.
 
-Behind the scenes, we've enabled two features from `0.19.0`, mutable segments and background merging, by default in our [LSM engine](/blog/lsm-trees-in-postgres). These might sound like internal optimizations, but they represent a fundamental shift in how search indexes handle change. Instead of expensive rebuilds, you get incremental updates that maintain performance even under heavy write loads.
+Our solution implements two key optimizations from `0.19.0`, now enabled by default in our [LSM engine](/blog/lsm-trees-in-postgres): mutable segments and background merging. 
+
+- **Mutable segments** introduce a small buffer optimized specifically for writes. Instead of immediately writing changes to immutable segments, we store a pointer to the new row in this buffer, eliminating the write amplification problem entirely. Once the buffer becomes full, background merging serializes it to an immutable structure without blocking ongoing write operations.
+- **Background merging** moves all merging (including mutable segment merging) to the background, and increases the number of workers which we dedicate to this task.
+
+These might sound like internal optimizations, but they represent a fundamental shift in how search indexes handle change. Instead of expensive rebuilds, you get incremental updates that maintain performance even under heavy write loads.
 
 The result speaks for itself: single update write throughput that scales with your application, not against it. We've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
 
 ## Why This Matters
 
-When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. ParadeDB `0.20.0` represents a rejection of some of those trade-offs.
+When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. These trade-offs reflect genuine technical constraints in distributed systems.
 
-You shouldn't have to choose between ACID guarantees and full-text search. You shouldn't have to maintain separate systems for transactional data and search data. You shouldn't have to learn domain-specific query languages when you already know SQL.
+Traditional architectures require separate systems for transactional data and search indexes, each with their own query languages, operational requirements, and consistency models. Modern applications need faceted navigation, full-text search, and fast aggregations across large datasets—features that typically require specialized search engines alongside transactional databases.
 
-Most importantly, you shouldn't have to sacrifice the features your users expect because of architectural limitations. E-commerce sites need faceted navigation. Content platforms need full-text search. Search dashboards need fast aggregations. These aren't exotic requirements: they're table stakes in modern applications.
+ParadeDB addresses these challenges by implementing search capabilities directly within PostgreSQL. This approach maintains ACID guarantees while providing full-text search and analytics through a familiar SQL interface. The result is a system that handles transactional workloads and search operations with consistent data and reduced operational complexity.
 
-ParadeDB removes that complexity. By extending Postgres with native search capabilities, you get the safety of ACID transactions and the power of modern search in a single system. By running aggregations next to search, you get analytics performance that scales with your data, not against it. By embracing SQL as the primary interface, you get a learning curve measured in hours, not months.
-
-The database landscape has spent decades telling developers that they need different tools for different jobs. ParadeDB `0.20.0` suggests a different path: one tool, built right, that handles the jobs developers actually have.
+These improvements in `0.20.0` (faster aggregations, streamlined APIs, and enhanced write performance) represent steps toward reducing the architectural complexity that many applications face when implementing search functionality.
 
 Ready to see search aggregations and the new API in action? [Try ParadeDB 0.20.0](https://docs.paradedb.com/quickstart) and experience what it's like when search, analytics, and transactions work together seamlessly. 
