@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { BarChart, Card, Subtitle, Bold } from "@tremor/react";
 import blogMetadata from "./metadata.json";
 import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
@@ -17,18 +18,47 @@ ParadeDB `0.20.0` delivers on three fronts that matter for real applications: se
 
 ## Search Aggregations: Analytics Without the Architecture
 
-Modern applications often require more than just search: they need facets, counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice. 
+Modern applications often require more than just search: they need facets, counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice.
 
-We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen. 
+We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen.
 
 Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
 
 - as an aggregate function, running a search query and providing aggregate results
 - as a window function, running a search query and providing aggregate results **alongside** the TopN search result
 
-Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations. Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method at around 42million records.
+Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations. Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method at around 42million records (full details to come in a search aggregations blog).
 
-`pdb.agg()` can be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`). 
+<Card className="text-center">
+  <Subtitle>
+    <Bold>
+      Faceting (search and aggregation) query time for 42 million results
+    </Bold>
+  </Subtitle>
+  <BarChart
+    data={[
+      {
+        name: "ParadeDB Native",
+        Milliseconds: 1013,
+      },
+      {
+        name: "ParadeDB Manual",
+        Milliseconds: 11849,
+      },
+    ]}
+    index="name"
+    categories={["Milliseconds"]}
+    showLegend={false}
+    colors={["indigo"]}
+    layout="vertical"
+    yAxisWidth={100}
+    xAxisLabel="Milliseconds"
+    className="h-48"
+    renderLabel
+  />
+</Card>
+
+`pdb.agg()` can also be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
 
 Let's have a look at some examples.
 
@@ -36,10 +66,10 @@ The most basic call doesn't use `pdb.agg()` at all, it just uses a `COUNT(*)` wh
 
 ```sql
 SELECT count(*)
-FROM mock_items 
+FROM mock_items
 WHERE description ||| 'shoes';
 
- count 
+ count
 -------
      3
 (1 row)
@@ -48,37 +78,37 @@ WHERE description ||| 'shoes';
 This can also be done with a window function, which adds an extra column containing the count for the **whole result set** (not just the returned rows).
 
 ```sql
-SELECT id, description, 
+SELECT id, description,
        count(*) OVER (),
-FROM mock_items 
-WHERE description ||| 'shoes' 
+FROM mock_items
+WHERE description ||| 'shoes'
 ORDER BY rating DESC
 LIMIT 2;
 
- id |     description     | count 
+ id |     description     | count
 ----+---------------------+-------
   3 | Sleek running shoes |     3
   5 | Generic shoes       |     3
 (2 rows)
 ```
 
-A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimzie this in the future).
+A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future).
 
 ```sql
-SELECT id, description, 
+SELECT id, description,
        pdb.agg('{"terms": {"field": "rating"}}') AS facets
-FROM mock_items 
-WHERE description ||| 'shoes' 
+FROM mock_items
+WHERE description ||| 'shoes'
 ORDER BY rating DESC
 LIMIT 2;
 
- id |     description     |                   facets                                                                              
+ id |     description     |                   facets
 ----+---------------------+---------------------------------------------
-  3 | Sleek running shoes | {"buckets": [{"key": 4, "doc_count": 1}, 
-                                         {"key": 5, "doc_count": 1}, 
+  3 | Sleek running shoes | {"buckets": [{"key": 4, "doc_count": 1},
+                                         {"key": 5, "doc_count": 1},
                                          {"key": 3, "doc_count": 1} ]}
-  3 | Generic shoes       | {"buckets": [{"key": 4, "doc_count": 1}, 
-                                         {"key": 5, "doc_count": 1}, 
+  3 | Generic shoes       | {"buckets": [{"key": 4, "doc_count": 1},
+                                         {"key": 5, "doc_count": 1},
                                          {"key": 3, "doc_count": 1} ]}
 (2 rows)
 ```
@@ -89,7 +119,7 @@ Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/b
 
 None of these aggregation capabilities would matter if they were difficult to use. That's where the trouble begins with most search systems, powerful features hidden behind complex APIs that require deep domain knowledge to use effectively.
 
-`0.20.0` promotes our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuative SQL UX.
+`0.20.0` promotes our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
 
 One of the most significant advantages of the v2 API is that it eliminates the schema duplication that is present in most other search systems. With Elasticsearch you must define your data structure twice: once in your application database and again in your Elasticsearch mapping:
 
@@ -106,21 +136,21 @@ One of the most significant advantages of the v2 API is that it eliminates the s
 }
 ```
 
-Even our own v1 API required separate JSON configuration for the indexes. The v2 API leans into our definition of 'search database' and infers your index schema on your PostgreSQL table schema. You define text processing and search behavior directly in the index creation statement, eliminating the need to maintain parallel schema definitions.
+Even our own v1 API required separate JSON configuration for the indexes. The v2 API leans into our definition of 'search database' and infers most of your index schema from your PostgreSQL table schema. You define text processing and search behavior directly in the index creation statement, eliminating the need to maintain parallel schema definitions.
 
 Index creation is now a lot cleaner, specifying the tokenizers and options inline:
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (id, 
+USING bm25 (id,
            title,
            (description::pdb.simple('stemmer=english',
-                                    'stopwords_language=english')), 
-           category::pdb.literal) 
+                                    'stopwords_language=english')),
+           category::pdb.literal)
 WITH (key_field='id');
 ```
 
-And search has improved too, with new conjuction (`&&&`) and disjunction (`|||`) operators, and simple ways of accessing common features like boosting.
+And search has improved too, with new conjunction (`&&&`) and disjunction (`|||`) operators, and simple ways of accessing common features like boosting.
 
 ```sql
 SELECT id, pdb.score(id), description, category
@@ -130,34 +160,59 @@ ORDER BY score DESC
 LIMIT 5;
 ```
 
-Keep an eye out for another post later showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
+Keep an eye out for another post showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
 
 ## Write Performance: Updates That Scale With You
 
-Our performance story from `0.19.0` to  `0.20.0` reveals a truth about how we think search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
+Our performance story from `0.19.0` to `0.20.0` reveals a truth about how we think search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
 
-The underlying issue stems from how search engines like Lucene and Tantivy handle data. These systems use immutable data structures for their segments, which means updating a single field in a document necessitates rewriting all other fields for that document. This creates massive write amplification: changing one field in a document with 10 fields results in rewriting 10x the actual changed data. For applications with frequent updates, this amplification becomes a performance bottleneck.
+The underlying issue stems from how search engines like Lucene and Tantivy handle data. These systems use immutable data structures for their segments, which means updating a single field in a document necessitates rewriting all other fields in that segment, creating write amplification.
 
 But that's exactly backwards for real applications. Most search workloads aren't bulk imports; they're streams of individual updates as users create content, modify records, and interact with your system. ParadeDB treats these small, frequent updates as first-class citizens that should perform as well as inserts.
 
-Our solution implements two key optimizations from `0.19.0`, now enabled by default in our [LSM engine](/blog/lsm-trees-in-postgres): mutable segments and background merging. 
+Our solution is based on two key optimizations from `0.19.0`, now enabled by default in our [LSM engine](/blog/lsm-trees-in-postgres): mutable segments and background merging.
 
 - **Mutable segments** introduce a small buffer optimized specifically for writes. Instead of immediately writing changes to immutable segments, we store a pointer to the new row in this buffer, eliminating the write amplification problem entirely. Once the buffer becomes full, background merging serializes it to an immutable structure without blocking ongoing write operations.
 - **Background merging** moves all merging (including mutable segment merging) to the background, and increases the number of workers which we dedicate to this task.
 
-These might sound like internal optimizations, but they represent a fundamental shift in how search indexes handle change. Instead of expensive rebuilds, you get incremental updates that maintain performance even under heavy write loads.
+The result speaks for itself: single update write throughput that scales with your application, not against it. Since we first introduced these features in `0.19.0` we've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
-The result speaks for itself: single update write throughput that scales with your application, not against it. We've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
+<Card className="text-center">
+  <Subtitle>
+    <Bold>Updates Per Second on a Wide Table with a BM25 index</Bold>
+  </Subtitle>
+  <BarChart
+    data={[
+      {
+        name: "v0.20.0",
+        "Updates per second": 2016,
+      },
+      {
+        name: "v0.19.0",
+        "Updates per second": 1857,
+      },
+      {
+        name: "v0.18.0",
+        "Updates per second": 120,
+      },
+    ]}
+    index="name"
+    categories={["Updates per second"]}
+    showLegend={false}
+    colors={["indigo"]}
+    layout="vertical"
+    yAxisWidth={80}
+    xAxisLabel="Updates per second"
+    className="h-56"
+  />
+</Card>
 
+Again, you can expect a follow up post with all the gory data-structure details.
 
 ## Why This Matters
 
-When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. These trade-offs reflect genuine technical constraints in distributed systems.
+When developers talk about database choices, they often frame it as a set of trade-offs: consistency vs. performance, simplicity vs. features, SQL vs. search. You shouldn't have to choose between ACID guarantees and full-text search, or maintain separate systems for transactional data and search data.
 
-Traditional architectures require separate systems for transactional data and search indexes, each with their own query languages, operational requirements, and consistency models. Modern applications need faceted navigation, full-text search, and fast aggregations across large datasets—features that typically require specialized search engines alongside transactional databases.
+ParadeDB `0.20.0` continues our work toward rejecting those trade-offs by bringing search aggregations, streamlined search APIs, and enhanced update performance directly into PostgreSQL.
 
-ParadeDB addresses these challenges by implementing search capabilities directly within PostgreSQL. This approach maintains ACID guarantees while providing full-text search and analytics through a familiar SQL interface. The result is a system that handles transactional workloads and search operations with consistent data and reduced operational complexity.
-
-These improvements in `0.20.0` (faster aggregations, streamlined APIs, and enhanced write performance) represent steps toward reducing the architectural complexity that many applications face when implementing search functionality.
-
-Ready to see search aggregations and the new API in action? [Try ParadeDB 0.20.0](https://docs.paradedb.com/quickstart) and experience what it's like when search, analytics, and transactions work together seamlessly. 
+Ready to see search aggregations and the new API in action? [Try ParadeDB 0.20.0](https://docs.paradedb.com/quickstart) and experience what it's like when search, analytics, and transactions work together seamlessly.
