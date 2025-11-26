@@ -4,13 +4,13 @@ import blogMetadata from "./metadata.json";
 import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
-import heroImage from "./images/hero.svg";
+import heroImage from "./images/hero.png";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-Every developer building modern applications faces the same dilemma: your users want search that feels instant and analytics that update in real-time, but your database architecture forces you to choose between consistency and performance. The story often begins with "just a simple search box," but inevitably evolves into a complex distributed architecture with eventual consistency, operational overhead, and the constant fear that your search results aren't reflecting reality.
+Every developer building modern applications faces the same dilemma: your users want real-time search and analytics, but your database architecture forces you to choose between consistency and performance. The story often begins with "just a simple search box," but inevitably evolves into a complex distributed architecture with eventual consistency, operational overhead, and the constant fear that your search results aren't reflecting reality.
 
 When Ming and I started ParadeDB, we had a simple vision: developers shouldn't have to choose between the safety of ACID transactions and the power of modern search. Today, with ParadeDB `0.20.0` we are making that reality more performant and easier to use.
 
@@ -18,7 +18,7 @@ ParadeDB `0.20.0` delivers on three fronts that matter for real applications: se
 
 ## Search Aggregations: Analytics Without the Architecture
 
-Modern applications often require more than just search: they need facets, counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice.
+Modern applications often require more than just search: they need [facets](/learn/seach-concepts/faceting), counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice.
 
 We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen.
 
@@ -27,7 +27,9 @@ Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.co
 - as an aggregate function, running a search query and providing aggregate results
 - as a window function, running a search query and providing aggregate results **alongside** the TopN search result
 
-Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations. Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method over more than 40 million results (full details to come in a search aggregations blog).
+Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations.
+
+Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method (a ParadeDB search returning all results, feeding into a PostgreSQL aggregate) over more than 40 million results (full details to come in a search aggregations post).
 
 <Card className="text-center">
   <Subtitle>
@@ -38,11 +40,11 @@ Both variants take control of parts of query planning and execution, pushing as 
   <BarChart
     data={[
       {
-        name: "ParadeDB Native",
+        name: "ParadeDB Faceting",
         Milliseconds: 1013,
       },
       {
-        name: "ParadeDB Manual",
+        name: "Manual Faceting",
         Milliseconds: 11849,
       },
     ]}
@@ -51,7 +53,7 @@ Both variants take control of parts of query planning and execution, pushing as 
     showLegend={false}
     colors={["indigo"]}
     layout="vertical"
-    yAxisWidth={100}
+    yAxisWidth={80}
     xAxisLabel="Milliseconds"
     className="h-48"
     renderLabel
@@ -92,7 +94,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future).
+A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future). This is useful when you want to display the TopN search results, but also show the distrubution of the whole search query, doing this in one efficent index pass is one of the niceties of the Elasticsearch API that we loved and bought into SQL.
 
 ```sql
 SELECT id, description,
@@ -171,7 +173,7 @@ Keep an eye out for another post showing off all the new v2 API features. For no
 
 ## Write Performance: Updates That Scale With You
 
-Our performance story from `0.19.0` to `0.20.0` reveals a truth about how we think search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance it might seem reasonable, search indexes are complex data structures that need time to reorganize.
+Our performance story from `0.19.0` to `0.20.0` reveals a truth about how we think search should work in transactional systems. Traditional search engines treat updates as expensive operations that require careful batching and scheduled maintenance windows. At first glance this might seem reasonable, because search indexes are complex data structures that need time to reorganize.
 
 The underlying issue stems from how search engines like Lucene and Tantivy handle data. These systems use immutable data structures for their segments, which means updating a single field in a document necessitates rewriting all other fields in that segment, creating write amplification.
 
