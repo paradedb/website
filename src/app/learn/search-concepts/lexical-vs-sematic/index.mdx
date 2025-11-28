@@ -7,22 +7,22 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-Different search workloads have different relevancy requirements. For example, some search problems only depend on exact or approximate string matching, where the presence (or absence) of a substring determines relevance (e.g. `“cat”` and `“black cat”`). Others depend on semantic similarity, where meaning determines relevance (e.g. `“cat”` and `“feline”`). 
+Different search workloads have different relevancy requirements. For example, some search problems only depend on exact or approximate string matching, where the presence (or absence) of a substring determines relevance (e.g. `“cat”` and `“black cat”`). Others depend on semantic similarity, where meaning determines relevance (e.g. `“cat”` and `“feline”`).
 
-From an implementation perspective, these two patterns are orthogonal: 
+From an implementation perspective, these two patterns are orthogonal:
 
 - Lexical methods (including full-text search) match tokens precisely. They only succeed when the query and document share vocabulary.
 - Semantic methods capture intended meaning, but are poorly suited for exact identifiers (IDs, numbers, proper names) that lexical systems handle precisely.
 
-This difference is why no single retrieval method performs well across all workloads (however, using both together with hybrid search offers a compromise). 
+This difference is why no single retrieval method performs well across all workloads (however, using both together with hybrid search offers a compromise).
 
-Understanding when to use lexical, semantic, or hybrid search depends on your specific use case and the type of queries your users perform. 
+Understanding when to use lexical, semantic, or hybrid search depends on your specific use case and the type of queries your users perform.
 
 ## Lexical Search
 
-Lexical search has been part of information systems for decades. Early workloads depended on deterministic matching. Most queries issued by databases and other internal tools referenced exact terms like IDs or error codes. For example, a SQL query using `LIKE '%error%'` searches for any text containing the substring "error". 
+Lexical search has been part of information systems for decades. Early workloads depended on deterministic matching. Most queries issued by databases and other internal tools referenced exact terms like IDs or error codes. For example, a SQL query using `LIKE '%error%'` searches for any text containing the substring "error".
 
-Modern lexical search is much more advanced and determines relevance based on token presence and frequency. Documents are scored higher when query terms appear more frequently or are rarer across the entire corpus. 
+Modern lexical search is much more advanced and determines relevance based on token presence and frequency. Documents are scored higher when query terms appear more frequently or are rarer across the entire corpus.
 
 ### How does Lexical Search Work?
 
@@ -32,20 +32,19 @@ However, results also need to be ranked. [BM25](/learn/search-concepts/bm25) (Be
 
 Lexical search can be enhanced with techniques like stemming (reducing words to root forms) and synonym expansion (matching predefined word lists). However, these improvements still rely on exact token matching rather than understanding contextual meaning.
 
-
 ### What is Full-Text Search?
 
 [Full-text search](/learn/search-concepts/full-text-search) extends this model by adding structure to the query itself. Instead of treating tokens independently, full-text search lets developers configure how tokens should relate to one another.
 
 For example, phrase search requires tokens to appear in a specific sequence, which is useful whenever order might affect meaning (such as error messages or function signatures). Proximity search, on the other hand, allows tokens to appear near each other but not in an exact order; this better reflects how related terms appear in documentation or logs.
 
-Full-text search is still purely lexical. It uses an inverted index and extends the same token statistics. However, full-text search provides a more expressive query toolkit. 
+Full-text search is still purely lexical. It uses an inverted index and extends the same token statistics. However, full-text search provides a more expressive query toolkit.
 
 ## Semantic Search
 
-Semantic search (also known as [vector search](/learn/search-concepts/vector-search)) addresses a fundamental limitation of lexical search. Two pieces of text can describe the same idea without overlapping words. However, lexical methods depend on token overlap. If a query uses different phrasing than the sought-after document, search results might not be relevant. 
+Semantic search (also known as [vector search](/learn/search-concepts/vector-search)) addresses a fundamental limitation of lexical search. Two pieces of text can describe the same idea without overlapping words. However, lexical methods depend on token overlap. If a query uses different phrasing than the sought-after document, search results might not be relevant.
 
-Dense vector retrieval closes this gap by approximating meaning instead of relying on matching terms. Embedding models (like text-embedding-ada-002, sentence-transformers, or E5) learn relationships between concepts from large datasets; these concepts are then mapped into a continuous vector space. 
+Dense vector retrieval closes this gap by approximating meaning instead of relying on matching terms. Embedding models (like text-embedding-ada-002, sentence-transformers, or E5) learn relationships between concepts from large datasets; these concepts are then mapped into a continuous vector space.
 
 ### How does Semantic Search Work?
 
@@ -53,14 +52,13 @@ When indexing, an embedding model converts each document into a dense vector. Th
 
 Searching across all vectors directly would be very expensive, so databases use approximate nearest neighbor (ANN) indexes like HNSW or IVF. These structures organize vectors into partitions, making it possible to retrieve a small candidate set. ANN indexes trade a small amount of recall for significant gains in throughput and latency.
 
-At query time, the system embeds the query into the same vector space. It then evaluates how close the query vector is to each candidate vector using similarity metrics such as cosine similarity, the dot product, or the L2 distance. 
-
+At query time, the system embeds the query into the same vector space. It then evaluates how close the query vector is to each candidate vector using similarity metrics such as cosine similarity, the dot product, or the L2 distance.
 
 ## Hybrid Search
 
 [Hybrid search](/learn/search-concepts/hybrid-search) does not replace lexical or semantic search. Instead, it coordinates them. Lexical methods are reliable when queries contain structured tokens. Semantic methods are reliable when the query expresses intent in natural language. Hybrid search combines these strengths.
 
-In hybrid search, both lexical and semantic methods retrieve their own set of candidates. Each list reflects a different assumption about what the user meant: one grounded in exact terms, the other grounded in contextual meaning. Documents surfaced by either method may be relevant. Merging these lists into a single ranking creates a more stable relevance signal across query types that may change. 
+In hybrid search, both lexical and semantic methods retrieve their own set of candidates. Each list reflects a different assumption about what the user meant: one grounded in exact terms, the other grounded in contextual meaning. Documents surfaced by either method may be relevant. Merging these lists into a single ranking creates a more stable relevance signal across query types that may change.
 
 ### How does Hybrid Search Work?
 
@@ -70,7 +68,7 @@ At query time, these lists need to be merged into a single final ranking. The sc
 
 ## Summary
 
-Lexical, semantic, and hybrid search methods exist because users express intent in different ways. Some queries rely on exact tokens, while others rely on context. Each retrieval method optimizes for a different type of relevance. 
+Lexical, semantic, and hybrid search methods exist because users express intent in different ways. Some queries rely on exact tokens, while others rely on context. Each retrieval method optimizes for a different type of relevance.
 
 Beyond choosing retrieval methods, query rewriting (expanding or modifying queries before search) and reranking (adjusting results after retrieval) are equally important for improving search quality. These techniques can significantly enhance any underlying search approach. Modern applications like [Retrieval-Augmented Generation (RAG)](/learn/search-concepts/retrieval-augmented-generation) rely heavily on these search fundamentals to provide relevant context to language models.
 
