@@ -1,0 +1,299 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+When we introduced ParadeDB 0.20.0, we highlighted how the v2 API was becoming the default experience — eliminating schema duplication, providing transparent search operators, and making ParadeDB more ORM-friendly than ever. Since then, developers have been exploring the new interface, and the response has confirmed what we believed: search should feel like natural SQL, not a foreign language bolted onto your database.
+
+The v2 API represents more than incremental improvements. It's a fundamental rethink of how search databases should work, built around three core principles that matter for real applications: **declarative schema configuration** that eliminates JSON complexity, **transparent search operators** that make query behavior immediately understandable, and **ORM-friendly query builders** that reduce runtime errors and improve tooling compatibility.
+
+Today, we're taking a comprehensive look at the v2 API — from indexing and tokenization through advanced query functions and aggregations. This isn't just about what's different; it's about understanding how each component works together to create a search experience that finally feels like part of your database instead of something you have to learn alongside it.
+
+## Indexing: Schema Inference That Actually Works
+
+The foundation of any search system is how data gets indexed, and this is where the v2 API's philosophy becomes immediately apparent. Instead of maintaining parallel schema definitions between your PostgreSQL tables and search configuration, v2 infers most of your index schema directly from your table structure.
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, description, category, rating, created_at)
+WITH (key_field='id');
+```
+
+Behind this simple syntax is intelligent schema inference. Text columns automatically get the [unicode tokenizer](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/unicode), which splits text according to Unicode Standard Annex #29 rules. Numeric columns become fast fields for filtering and aggregations. Timestamps, JSON, arrays, and ranges are handled appropriately without manual configuration.
+
+When you need customization, the v2 API makes it declarative rather than buried in JSON strings. Want n-gram tokenization for partial matching? Cast the column:
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, (description::pdb.ngram(3,3)), category)
+WITH (key_field='id');
+```
+
+Need language-specific processing? Add token filters inline:
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, 
+           (description::pdb.simple('stemmer=english', 
+                                    'stopwords_language=english')),
+           (category::pdb.literal))
+WITH (key_field='id');
+```
+
+This approach eliminates the schema duplication that plagues most search systems. With Elasticsearch, you define your data structure twice: once in your application database and again in your mapping configuration. The v2 API recognizes that your PostgreSQL schema is already the authoritative source of truth.
+
+## Tokenizers: From Text to Searchable Tokens
+
+Tokenization is where search systems often become opaque, but the v2 API makes the process transparent and testable. Before text can be searched, it must be split into discrete units called tokens. The choice of tokenizer fundamentally affects what kinds of searches are possible.
+
+The [simple tokenizer](/documentation/tokenizers/available-tokenizers/simple) splits on any non-alphanumeric character and lowercases everything:
+
+```sql
+SELECT 'Hello world!'::pdb.simple::text[];
+-- Result: {hello,world}
+```
+
+The [n-grams tokenizer](/documentation/tokenizers/available-tokenizers/ngrams) creates overlapping character sequences, enabling partial matching:
+
+```sql
+SELECT 'Hello world!'::pdb.ngram(3,3)::text[];
+-- Result: {hel,ell,llo,"lo ","o w"," wo",wor,orl,rld,ld!}
+```
+
+The [literal tokenizer](/documentation/tokenizers/available-tokenizers/literal) preserves text exactly as-is, perfect for exact matching on categories or IDs:
+
+```sql
+SELECT 'Electronics'::pdb.literal::text[];
+-- Result: {Electronics}
+```
+
+Being able to visualize tokenization before committing to an index is crucial for getting search behavior right. The v2 API's cast syntax makes this experimentation natural and immediate.
+
+## Token Filters: Refining the Search Experience
+
+After tokenization, [token filters](/documentation/token-filters/overview) apply additional processing to improve search quality. The v2 API makes filter configuration explicit and chainable:
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, 
+           (description::pdb.simple('stemmer=english', 
+                                    'ascii_folding=true',
+                                    'lowercase=true')))
+WITH (key_field='id');
+```
+
+[Stemming](/documentation/token-filters/stemming) reduces words to their root forms, so "running," "runs," and "runner" all match searches for "run." [ASCII folding](/documentation/token-filters/ascii-folding) removes diacritical marks, ensuring "café" matches "cafe." [Stopword removal](/documentation/token-filters/stopwords) filters out common words like "the" and "and" that rarely add search value.
+
+The key insight is that these filters work at index time and query time. When you search for "running café," the same tokenizer and filters process your query, ensuring consistent matching behavior.
+
+## Full-Text Search: Beyond Simple String Matching
+
+Full-text search in ParadeDB centers around **token matching**, not substring searching. This distinction enables relevance scoring, language-specific analysis, and sophisticated query types that go far beyond looking for character sequences.
+
+The v2 API introduces intuitive search operators that make query behavior immediately clear:
+
+```sql
+-- Match any of the tokens
+SELECT id, description FROM mock_items 
+WHERE description ||| 'running shoes';
+
+-- Match all tokens (conjunction)
+SELECT id, description FROM mock_items 
+WHERE description &&& 'comfortable running shoes';
+```
+
+[BM25 scoring](/documentation/sorting/score) provides relevance ranking that considers both term frequency and document frequency:
+
+```sql
+SELECT id, pdb.score(id), description
+FROM mock_items
+WHERE description ||| 'running shoes'
+ORDER BY pdb.score(id) DESC
+LIMIT 5;
+```
+
+[Phrase queries](/documentation/full-text/phrase) find tokens in specific order:
+
+```sql
+SELECT id, description FROM mock_items 
+WHERE description @@@ pdb.phrase('running shoes');
+```
+
+[Fuzzy matching](/documentation/full-text/fuzzy) handles typos and variations:
+
+```sql
+SELECT id, description FROM mock_items 
+WHERE description @@@ pdb.fuzzy('sheos', 1); -- matches "shoes"
+```
+
+Each query type serves specific use cases, and the v2 API's transparent operators make it clear which behavior you're getting.
+
+## Advanced Query Functions: Power User Features
+
+Beyond basic text matching, the v2 API exposes sophisticated query types through [query builder functions](/documentation/query-builder/overview). These use the `@@@` operator with function syntax:
+
+[Regex queries](/documentation/query-builder/term/regex) for pattern matching:
+
+```sql
+SELECT description, category FROM mock_items
+WHERE description @@@ pdb.regex('key.*rd');
+-- Matches "keyboard", "keycard", etc.
+```
+
+[Range queries](/documentation/query-builder/term/range) for numeric and date ranges:
+
+```sql
+SELECT description, rating FROM mock_items
+WHERE rating @@@ pdb.int4_range('[3,5)');
+-- Ratings from 3 to 4 (inclusive of 3, exclusive of 5)
+```
+
+[More Like This](/documentation/query-builder/specialized/more-like-this) for similarity searches:
+
+```sql
+SELECT id, description FROM mock_items
+WHERE description @@@ pdb.more_like_this(
+    'Comfortable wireless headphones with noise cancellation'
+);
+```
+
+[Term set queries](/documentation/query-builder/term/term-set) for matching against multiple exact terms:
+
+```sql
+SELECT description, category FROM mock_items
+WHERE category @@@ pdb.term_set(['Electronics', 'Footwear']);
+```
+
+The function syntax makes complex query logic readable and debuggable. Instead of parsing JSON query DSLs, you can understand exactly what each query does by reading the SQL.
+
+## Sorting and Boosting: Controlling Relevance
+
+Search isn't just about finding documents; it's about ranking them appropriately. The v2 API provides [transparent control over relevance scoring](/documentation/sorting/score):
+
+```sql
+-- Basic relevance sorting
+SELECT id, pdb.score(id), description 
+FROM mock_items
+WHERE description ||| 'running shoes'
+ORDER BY pdb.score(id) DESC;
+```
+
+[Boosting](/documentation/sorting/boost) allows you to increase the importance of specific terms or fields:
+
+```sql
+-- Boost matches in description field
+SELECT id, pdb.score(id), description, category
+FROM mock_items  
+WHERE description ||| 'shoes'::pdb.boost(2.0) OR category ||| 'footwear'
+ORDER BY pdb.score(id) DESC;
+```
+
+You can combine BM25 scores across joined tables for complex relevance calculations:
+
+```sql
+SELECT o.order_id, o.customer_name, m.description, 
+       pdb.score(o.order_id) + pdb.score(m.id) as combined_score
+FROM orders o
+JOIN mock_items m ON o.product_id = m.id  
+WHERE o.customer_name ||| 'Johnson' AND m.description ||| 'running shoes'
+ORDER BY combined_score DESC;
+```
+
+## Filtering: Accelerated Metadata Constraints
+
+[Filtering in the v2 API](/documentation/filtering) builds on PostgreSQL's native WHERE clauses but with intelligent index acceleration. When filter fields are included in the BM25 index, constraints can be pushed down into the index scan itself:
+
+```sql
+-- Include frequently filtered fields in the index
+CREATE INDEX search_idx ON mock_items
+USING bm25(id, description, rating, category, created_at)
+WITH (key_field = 'id');
+
+-- Filters on indexed fields get accelerated
+SELECT description, rating, category
+FROM mock_items  
+WHERE description ||| 'running shoes' 
+  AND rating > 3
+  AND category = 'Footwear'
+  AND created_at > '2023-01-01';
+```
+
+The v2 API supports pushdown for comprehensive type coverage: numeric comparisons, date ranges, boolean logic, array membership, null checks, and exact text matching (with the literal tokenizer).
+
+## Aggregations: Analytics Without the Complexity
+
+Search aggregations have always been powerful in systems like Elasticsearch, but they typically required learning a separate JSON DSL. The [v2 API's aggregation system](/documentation/aggregates/overview) brings this power to SQL with `pdb.agg()`:
+
+```sql
+-- Count results
+SELECT pdb.agg('{"value_count": {"field": "id"}}')
+FROM mock_items
+WHERE category === 'electronics';
+```
+
+```sql
+-- Multiple aggregations
+SELECT
+  pdb.agg('{"avg": {"field": "rating"}}') AS avg_rating,
+  pdb.agg('{"terms": {"field": "category"}}') AS category_counts
+FROM mock_items
+WHERE description ||| 'wireless';
+```
+
+[Faceted queries](/documentation/aggregates/facets) combine search results with aggregations in a single query, eliminating the multiple round-trips typically required for search interfaces:
+
+```sql
+-- Top search results with total count
+SELECT 
+  id, description, rating,
+  pdb.agg('{"value_count": {"field": "id"}}') OVER () as total_results
+FROM mock_items
+WHERE category === 'electronics'
+ORDER BY rating DESC
+LIMIT 10;
+```
+
+The aggregation system leverages ParadeDB's [columnar index architecture](/welcome/architecture#columnar-index), providing the same performance benefits as dedicated analytics engines while maintaining ACID compliance and read-after-write consistency.
+
+## Why Schema Inference Matters
+
+The v2 API's approach to schema inference addresses a fundamental problem in search system design: maintaining consistency between your application data model and your search configuration. Traditional search engines require you to define field types, analyzers, and mappings separately from your database schema.
+
+This duplication creates multiple problems:
+
+- **Configuration drift**: Search mappings can become out of sync with database schema changes
+- **Development friction**: Changes require updates in multiple places
+- **Cognitive overhead**: Developers must learn and maintain parallel type systems
+
+The v2 API eliminates this by treating your PostgreSQL schema as the authoritative source of truth. Index creation becomes declarative configuration rather than imperative mapping definition.
+
+## ORM Integration and Developer Experience  
+
+Modern applications are built with ORMs and query builders that generate SQL dynamically. The v2 API's design prioritizes compatibility with these tools through structured syntax rather than string literals:
+
+```sql
+-- ORM-friendly: uses column references and typed functions
+WHERE products.description @@@ pdb.phrase(?, 1)
+  AND products.category @@@ pdb.term_set(?)
+
+-- Less ORM-friendly: embedded JSON strings  
+WHERE products.description @@@ '{"phrase": {"field": "description", "query": "..."}}'
+```
+
+The cast syntax for tokenizers integrates naturally with database migration tools, making index configuration part of your schema definition rather than external configuration management.
+
+## The Path Forward
+
+The v2 API represents ParadeDB's vision for how search databases should integrate with existing development workflows. By building on SQL primitives instead of replacing them, it provides the power of modern search engines without the operational complexity of distributed systems.
+
+Every component we've covered — from declarative indexing through transparent operators to integrated aggregations — serves a common goal: making search feel like a natural extension of your database rather than a separate system to learn and maintain.
+
+The v2 API is currently in active development, with full coverage of the v1 API targeted for completion by October 2025. Developers can explore these features today and provide feedback as we refine the interface.
+
+Ready to experience search that finally feels like SQL? [Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/quickstart) and discover what happens when search becomes a native part of your database instead of a complex external dependency.
