@@ -9,472 +9,325 @@ import heroImage from "./images/hero.png";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-When we introduced ParadeDB 0.20.0, we highlighted how the v2 API was becoming the default experience — eliminating schema duplication, providing transparent search operators, and making ParadeDB more ORM-friendly than ever. Since then, developers have been exploring the new interface, and the response has confirmed what we believed: search should feel like natural SQL, not a foreign language bolted onto your database.
+When Sarah first tried to add search to her e-commerce platform, she thought it would be straightforward. "Just index the product descriptions," she figured. Six months later, she was managing a complex pipeline between PostgreSQL, Elasticsearch, and a custom synchronization service that broke every other week. The search worked, but maintaining it felt like a full-time job.
 
-The v2 API represents more than incremental improvements. It's a fundamental rethink of how search databases should work, built around three core principles: **declarative schema configuration** that eliminates JSON complexity, **transparent search operators** that make query behavior immediately understandable, and **ORM-friendly syntax** that reduces runtime errors and improves tooling compatibility.
+Sound familiar? If you've ever built search functionality, you've probably lived this story. You start with simple requirements, then discover you need relevance tuning, then filtering, then analytics, then... suddenly you're an accidental search infrastructure expert.
 
-Today, we're taking a comprehensive tour through the v2 API — not just individual features, but how they work together to create a search experience that finally feels like part of your database instead of something you have to learn alongside it.
+ParadeDB's v2 API changes this narrative entirely. Instead of bolting search onto your database, it makes search feel like it was always part of PostgreSQL. Let's walk through building that same e-commerce search — but this time, we'll do it the v2 way.
 
-## The Foundation: Intelligent Index Creation
+## Starting Simple: Your First Search Index
 
-Everything in ParadeDB starts with creating an index, and the v2 API transforms this from configuration management into declarative schema definition. Instead of maintaining parallel type systems between your PostgreSQL tables and search configuration, v2 infers your index schema directly from your table structure.
+Let's say we have a typical products table:
 
 ```sql
-CREATE INDEX search_idx ON mock_items
-USING bm25 (id, description, category, rating, created_at)
+CREATE TABLE products (
+    id SERIAL PRIMARY KEY,
+    name TEXT,
+    description TEXT,
+    category TEXT,
+    price DECIMAL(10,2),
+    rating DECIMAL(2,1),
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+In the old world, you'd export this data to Elasticsearch, define a mapping, set up a sync pipeline, and hope nothing breaks. With ParadeDB's v2 API, you simply create an index:
+
+```sql
+CREATE INDEX products_search ON products
+USING bm25 (id, name, description, category, price, rating, created_at)
 WITH (key_field='id');
 ```
 
-Behind this simple syntax is intelligent inference: text columns automatically get the [unicode tokenizer](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/unicode), numeric columns become fast fields for filtering and aggregations, and timestamps, JSON, arrays, and ranges are handled appropriately without manual configuration.
+That's it. ParadeDB looks at your table schema and makes intelligent decisions: text columns get tokenized for search, numeric columns become filterable, timestamps work for date ranges. No configuration files, no mapping definitions, no external services.
 
-When you need customization, the v2 API makes it declarative through cast syntax. The tokenizer choice affects how your text gets split into searchable units, and you can test this immediately:
+But here's where it gets interesting. Let's see how this data actually gets tokenized:
 
 ```sql
--- Simple tokenizer splits on non-alphanumeric characters
-SELECT 'Hello world!'::pdb.simple::text[];
--- Result: {hello,world}
-
--- N-grams tokenizer creates overlapping character sequences for partial matching
-SELECT 'Hello world!'::pdb.ngram(3,3)::text[];
--- Result: {hel,ell,llo,"lo ","o w"," wo",wor,orl,rld,ld!}
-
--- Literal tokenizer preserves text exactly for exact matching
-SELECT 'Electronics'::pdb.literal::text[];
--- Result: {Electronics}
-
--- ICU tokenizer handles international text properly
-SELECT 'Hello world! 你好!'::pdb.icu::text[];
--- Result: {hello,world,你好}
-
--- Chinese compatible tokenizer treats each CJK character as a token
-SELECT 'Hello world! 你好!'::pdb.chinese_compatible::text[];
--- Result: {hello,world,你,好}
+SELECT 'Wireless noise-cancelling headphones'::pdb.simple::text[];
+-- Result: {wireless,noise,cancelling,headphones}
 ```
 
-These tokenization choices directly connect to how you'll search your data, which is why the v2 API makes them testable before you commit to an index. When you're ready to apply this to your index:
+The v2 API lets you test tokenization directly in SQL. Want to see what n-grams look like?
 
 ```sql
-CREATE INDEX search_idx ON mock_items
-USING bm25 (id, 
-           (description::pdb.ngram(3,3)),      -- Partial matching
-           (category::pdb.literal),             -- Exact matching
-           rating, created_at)
-WITH (key_field='id');
+SELECT 'iPhone'::pdb.ngram(3,3)::text[];
+-- Result: {iph,pho,hon,one}
 ```
 
-### Advanced Indexing Scenarios
+This transparency is crucial. You can understand exactly how your text will be searchable before you commit to an index.
 
-The v2 API handles complex indexing scenarios that real applications require:
+## The Real World: Multiple Ways to Search the Same Data
 
-**Multiple tokenizers per field** for different use cases:
+Real applications need flexibility. Users might search for exact product codes, browse by category, or hunt for partial matches. Sarah's customers did all three.
+
+Here's where v2's multi-tokenizer approach shines:
 
 ```sql
-CREATE INDEX search_idx ON mock_items
+CREATE INDEX products_search ON products
 USING bm25 (
-  id,
-  (description::pdb.literal),                    -- For exact sorting  
-  (description::pdb.simple('alias=desc_search')) -- For text search
+    id,
+    (name::pdb.literal),                        -- Exact matching for sorting
+    (name::pdb.simple('alias=name_search')),    -- Tokenized for search
+    (description::pdb.ngram(3,3)),              -- Partial matching
+    category, price, rating, created_at
 ) WITH (key_field='id');
-
--- Query the aliased field
-SELECT description FROM mock_items
-WHERE description::pdb.alias('desc_search') ||| 'running shoes';
 ```
 
-**Expression indexing** for complex text combinations:
+Now we can search the same `name` field in different ways:
 
 ```sql
-CREATE INDEX search_idx ON mock_items
-USING bm25 (id, 
-           ((description || ' ' || category)::pdb.simple('alias=combined')))
-WITH (key_field='id');
+-- Fuzzy text search
+SELECT name, description FROM products
+WHERE name::pdb.alias('name_search') ||| 'wireless headphones';
 
--- Search across combined fields  
-SELECT description, category FROM mock_items
-WHERE (description || ' ' || category) &&& 'running footwear';
-```
-
-**Array indexing** where any array element can match:
-
-```sql
-CREATE TABLE products (id SERIAL PRIMARY KEY, tags TEXT[]);
-CREATE INDEX ON products USING bm25 (id, (tags::pdb.literal)) 
-WITH (key_field = 'id');
-
--- Matches if any tag equals 'electronics'
-SELECT * FROM products WHERE tags === 'electronics';
-```
-
-**JSON field indexing** with automatic sub-field detection:
-
-```sql
--- Index entire JSON object (all sub-fields auto-detected)
-CREATE INDEX search_idx ON mock_items
-USING bm25 (id, metadata) WITH (key_field='id');
-
--- Or index specific JSON properties with custom tokenizers
-CREATE INDEX search_idx ON mock_items  
-USING bm25 (id, ((metadata->>'color')::pdb.ngram(2,3)))
-WITH (key_field='id');
-
--- Query JSON sub-fields with dot notation
-SELECT pdb.agg('{"terms": {"field": "metadata.color"}}')
-FROM mock_items WHERE id @@@ pdb.all();
-```
-
-### Token Filters: Refining Search Quality
-
-After tokenization, [token filters](/documentation/token-filters/overview) apply additional processing to improve search quality. The v2 API chains these filters as configuration parameters:
-
-```sql
-CREATE INDEX search_idx ON mock_items
-USING bm25 (id, 
-           (description::pdb.simple('stemmer=english',      -- "running" matches "runs"
-                                    'ascii_folding=true',   -- "café" matches "cafe"
-                                    'stopwords_language=english')), -- Remove "the", "and", etc.
-           (category::pdb.literal))
-WITH (key_field='id');
-```
-
-The key insight is that these filters work at both index time and query time. When you search for "running café," the same tokenizer and filters process your query, ensuring consistent matching behavior throughout your search system.
-
-## Search Operators: Making Query Intent Clear
-
-With your index configured, the v2 API introduces search operators that make query behavior immediately transparent. Traditional search systems hide query logic behind JSON DSLs, but v2 uses SQL operators that clearly communicate what's happening:
-
-### Basic Text Search
-
-```sql
--- Match any of the tokens (OR behavior)
-SELECT id, description FROM mock_items 
-WHERE description ||| 'running shoes';
-
--- Match all tokens (AND behavior)  
-SELECT id, description FROM mock_items 
-WHERE description &&& 'comfortable running shoes';
-
--- Exact phrase matching (order matters)
-SELECT id, description FROM mock_items 
-WHERE description @@@ pdb.phrase('running shoes');
-```
-
-### Proximity and Fuzzy Matching
-
-[Proximity queries](/documentation/full-text/proximity) find tokens within a specified distance, perfect for flexible phrase matching:
-
-```sql
--- Find "sleek" within 1 token of "shoes" (order doesn't matter)
-SELECT description FROM mock_items
-WHERE description @@@ ('sleek' ## 1 ## 'shoes');
-
--- Find "sleek" before "shoes" within 1 token
-SELECT description FROM mock_items  
-WHERE description @@@ ('sleek' ##> 1 ##> 'shoes');
-
--- Proximity with regex: any token matching "sl.*" near "shoes"
-SELECT description FROM mock_items
-WHERE description @@@ (pdb.prox_regex('sl.*') ## 1 ## 'shoes');
-```
-
-[Fuzzy matching](/documentation/full-text/fuzzy) handles typos and variations:
-
-```sql
-SELECT id, description FROM mock_items 
-WHERE description @@@ pdb.fuzzy('sheos', 1); -- matches "shoes" with 1 edit
-```
-
-### Advanced Query Functions
-
-The v2 API exposes sophisticated query types through the `@@@` operator with function syntax:
-
-```sql
--- Regex pattern matching
-SELECT description FROM mock_items
-WHERE description @@@ pdb.regex('key.*rd');  -- "keyboard", "keycard"
-
--- Range queries for numeric and date fields  
-SELECT description, rating FROM mock_items
-WHERE rating @@@ pdb.int4_range('[3,5)');    -- 3 <= rating < 5
-
--- More Like This for similarity searches
-SELECT id, description FROM mock_items
-WHERE description @@@ pdb.more_like_this('Wireless noise-cancelling headphones');
-
--- Term set matching for multiple exact values
-SELECT description FROM mock_items
-WHERE category @@@ pdb.term_set(['Electronics', 'Audio']);
-
--- Phrase prefix matching (phrase + prefix completion)
-SELECT description FROM mock_items
-WHERE description @@@ pdb.phrase_prefix(ARRAY['running', 'sh']);  -- "running shoes"
-
--- Regex phrase matching with positional requirements
-SELECT description FROM mock_items 
-WHERE description @@@ pdb.regex_phrase(ARRAY['ru.*', 'shoes']);  -- "running shoes"
-
--- Field existence checking
-SELECT description FROM mock_items
-WHERE rating @@@ pdb.exists();  -- Non-null ratings
-
--- Fuzzy term matching with edit distance control
-SELECT description FROM mock_items
-WHERE description @@@ pdb.fuzzy_term('shoez', distance => 1);
-
--- Query parser for complex user-provided queries
-SELECT description FROM mock_items  
-WHERE id @@@ pdb.parse('description:(wireless headphones) AND rating:>3');
-
--- JSON query syntax for programmatic generation  
-SELECT description FROM mock_items
-WHERE description @@@ '{"regex": {"pattern": "key.*"}}'::pdb.query;
-```
-
-### Highlighting: Visual Search Feedback
-
-[Search highlighting](/documentation/full-text/highlight) generates snippets showing where matches occur:
-
-```sql
--- Single best snippet
-SELECT id, pdb.snippet(description) FROM mock_items
-WHERE description ||| 'wireless headphones'
-LIMIT 5;
-
--- Multiple snippets with custom tags
-SELECT id, pdb.snippets(description, start_tag => '<mark>', end_tag => '</mark>') 
-FROM mock_items
-WHERE description ||| 'wireless headphones'
-LIMIT 5;
-
--- Get byte positions for custom highlighting
-SELECT id, pdb.snippet(description), pdb.snippet_positions(description)
-FROM mock_items  
-WHERE description ||| 'wireless'
-LIMIT 5;
-```
-
-## Relevance and Sorting: Controlling Search Results
-
-Search isn't just about finding documents; it's about ranking them appropriately. The v2 API provides transparent control over relevance through [BM25 scoring](/documentation/sorting/score):
-
-```sql
--- Basic relevance sorting
-SELECT id, pdb.score(id), description 
-FROM mock_items
-WHERE description ||| 'running shoes'
-ORDER BY pdb.score(id) DESC
-LIMIT 5;
-```
-
-[Boosting](/documentation/sorting/boost) allows fine-tuning relevance by increasing the importance of specific terms or fields:
-
-```sql
--- Boost description matches over category matches
-SELECT id, pdb.score(id), description, category
-FROM mock_items  
-WHERE description ||| 'shoes'::pdb.boost(2.0) OR category ||| 'footwear'
-ORDER BY pdb.score(id) DESC;
-```
-
-### Top-N Optimization
-
-ParadeDB is [highly optimized for Top-N queries](/documentation/sorting/topn) — the common pattern of finding the best few results from large datasets:
-
-```sql
--- Efficiently executed by ParadeDB's Top-N optimization
-SELECT description, rating, category
-FROM mock_items
-WHERE description ||| 'running shoes'
-ORDER BY rating DESC, id  -- Tiebreaker for stable sorting
+-- Exact sorting (uses the literal tokenizer)
+SELECT name FROM products 
+WHERE name::pdb.alias('name_search') ||| 'headphones'
+ORDER BY name
 LIMIT 10;
+
+-- Partial matching on description
+SELECT name FROM products
+WHERE description ||| 'phone';  -- Matches "iPhone", "smartphone", etc.
 ```
 
-For this optimization to work, all `ORDER BY` fields must be indexed, and text fields must use the literal tokenizer for sorting.
+## Search That Actually Feels Like Search
 
-## Filtering: Accelerated Metadata Constraints
-
-[Filtering](/documentation/filtering) in the v2 API builds on PostgreSQL's native WHERE clauses but with intelligent index acceleration. When filter fields are included in the BM25 index, constraints get pushed down into the index scan:
+Now we get to the fun part. v2's search operators make query intent crystal clear:
 
 ```sql
--- Include frequently filtered fields in the index
-CREATE INDEX search_idx ON mock_items
-USING bm25(id, description, rating, category, created_at, in_stock)
-WITH (key_field = 'id');
+-- Match any word (OR behavior)
+SELECT name FROM products WHERE description ||| 'wireless bluetooth';
 
--- Filters on indexed fields get accelerated
-SELECT description, rating, category
-FROM mock_items  
-WHERE description ||| 'running shoes' 
-  AND rating > 3
-  AND category = 'Footwear'  -- Requires literal tokenizer for text pushdown
-  AND created_at > '2023-01-01'
-  AND in_stock = true;
+-- Match all words (AND behavior) 
+SELECT name FROM products WHERE description &&& 'wireless bluetooth headphones';
+
+-- Exact phrase
+SELECT name FROM products WHERE description @@@ pdb.phrase('noise cancelling');
+
+-- Fuzzy for typos
+SELECT name FROM products WHERE name @@@ pdb.fuzzy('aplle', 1);  -- Finds "apple"
 ```
 
-The v2 API supports pushdown for comprehensive type coverage: numeric comparisons, date ranges, boolean logic, array membership, null checks, and exact text matching (with the literal tokenizer).
-
-## Aggregations: Analytics Without the Complexity
-
-Search aggregations bring the power of analytics engines to SQL through the [`pdb.agg()`](/documentation/aggregates/overview) function. This leverages ParadeDB's [columnar index architecture](/welcome/architecture#columnar-index) for sub-second analytics over millions of documents:
-
-### Basic Aggregations
+But what about when users want "Apple" products but type "apple phone"? Proximity search handles this beautifully:
 
 ```sql
--- Count total results
-SELECT pdb.agg('{"value_count": {"field": "id"}}')
-FROM mock_items
-WHERE category === 'electronics';
+-- Find "apple" within 2 words of "phone"
+SELECT name FROM products 
+WHERE description @@@ ('apple' ## 2 ## 'phone');
 
--- Multiple aggregations in one query
-SELECT
-  pdb.agg('{"avg": {"field": "rating"}}') AS avg_rating,
-  pdb.agg('{"terms": {"field": "category"}}') AS category_distribution,
-  pdb.agg('{"histogram": {"field": "rating", "interval": 1}}') AS rating_histogram
-FROM mock_items
-WHERE description ||| 'wireless';
+-- Same thing but order matters: "apple" must come before "phone"  
+SELECT name FROM products
+WHERE description @@@ ('apple' ##> 2 ##> 'phone');
 ```
 
-### Faceted Search: Results + Analytics
+## When Users Get Creative
 
-[Faceted queries](/documentation/aggregates/facets) combine search results with aggregations in a single query, eliminating multiple round-trips typically required for search interfaces:
+Real users don't just search for product names. They search for "red bluetooth under $50" or "5-star wireless earbuds from this month." This is where traditional search systems start requiring custom code.
+
+v2 handles this naturally through PostgreSQL syntax:
 
 ```sql
--- Top search results with comprehensive analytics
+-- Complex filtering with search
+SELECT name, price, rating FROM products
+WHERE description ||| 'wireless earbuds'
+  AND price < 50
+  AND rating >= 4.5
+  AND created_at > '2024-01-01';
+
+-- Range queries for numbers
+SELECT name, price FROM products  
+WHERE price @@@ pdb.int4_range('[50,200)');  -- $50-199
+
+-- Smart highlighting shows users what matched
+SELECT name, pdb.snippet(description) FROM products
+WHERE description ||| 'wireless bluetooth'
+LIMIT 5;
+-- Result includes: "Compact <b>wireless</b> <b>Bluetooth</b> speaker"
+```
+
+## The Analytics That Actually Matter
+
+Here's where Sarah's original setup really struggled. She needed search results, but also facets for the sidebar: "Show me wireless headphones, but also tell me the price distribution and top brands."
+
+Traditional systems require separate queries. v2 does it in one shot:
+
+```sql
 SELECT 
-  id, description, rating,
-  pdb.agg('{"value_count": {"field": "id"}}') OVER () AS total_results,
-  pdb.agg('{"terms": {"field": "category"}}') OVER () AS category_facets,
-  pdb.agg('{"avg": {"field": "rating"}}') OVER () AS avg_rating
-FROM mock_items
+    name, price, rating,
+    pdb.agg('{"value_count": {"field": "id"}}') OVER () AS total_results,
+    pdb.agg('{"terms": {"field": "category"}}') OVER () AS categories,
+    pdb.agg('{"avg": {"field": "rating"}}') OVER () AS avg_rating
+FROM products
 WHERE description ||| 'wireless'
 ORDER BY rating DESC
 LIMIT 10;
 ```
 
-### Advanced Aggregation Types
+One query returns the top 10 products plus comprehensive analytics. No multiple round-trips, no complex caching strategies.
 
-The aggregation system supports sophisticated analytics patterns:
+Want more sophisticated analytics? v2 delivers:
 
 ```sql
--- Date histogram for time-series analysis
-SELECT pdb.agg('{"date_histogram": {"field": "created_at", "interval": "month"}}')
-FROM mock_items
-WHERE created_at > '2023-01-01';
-
--- Range aggregations for bucketing
+-- Price distribution in buckets
 SELECT pdb.agg('{"range": {"field": "price", "ranges": [
-  {"to": 50}, 
-  {"from": 50, "to": 100}, 
-  {"from": 100}
-]}}')
-FROM mock_items
-WHERE description ||| 'electronics';
+    {"to": 25}, 
+    {"from": 25, "to": 100}, 
+    {"from": 100}
+]}}') FROM products WHERE description ||| 'headphones';
 
--- Percentiles for distribution analysis
-SELECT pdb.agg('{"percentiles": {"field": "rating", "percents": [50, 95, 99]}}')
-FROM mock_items
-WHERE category === 'electronics';
-
--- Cardinality (distinct count) aggregations
-SELECT pdb.agg('{"cardinality": {"field": "category"}}')
-FROM mock_items
-WHERE created_at > '2023-01-01';
-
--- Top hits within each group
+-- Top 3 products in each rating category
 SELECT rating, pdb.agg('{"top_hits": {
-  "size": 3, 
-  "sort": [{"created_at": "desc"}], 
-  "docvalue_fields": ["id", "description"]
-}}')
-FROM mock_items
-WHERE id @@@ pdb.all()
+    "size": 3,
+    "sort": [{"created_at": "desc"}],
+    "docvalue_fields": ["name", "price"]
+}}') FROM products
+WHERE description ||| 'wireless'
 GROUP BY rating;
-
--- Nested aggregations for drill-down analytics
-SELECT pdb.agg('{"terms": {"field": "category", "aggs": {
-  "avg_rating": {"avg": {"field": "rating"}},
-  "price_stats": {"stats": {"field": "price"}},
-  "rating_percentiles": {"percentiles": {"field": "rating", "percents": [25, 75]}}
-}}}')
-FROM mock_items  
-WHERE in_stock = true;
 ```
 
-### JSON Field Aggregation
+## Handling the Edge Cases
 
-For JSON fields, use dot notation to access nested properties:
+Every real application hits edge cases. International customers with accented characters. Product descriptions in multiple languages. Complex JSON metadata.
+
+v2 anticipates these scenarios:
 
 ```sql
--- Aggregate on JSON field properties (requires literal tokenizer)
-SELECT pdb.agg('{"terms": {"field": "metadata.color"}}')
-FROM mock_items
-WHERE id @@@ pdb.all();
+-- International text with the ICU tokenizer
+CREATE INDEX products_intl ON products
+USING bm25 (id, (description::pdb.icu))
+WITH (key_field='id');
+
+SELECT 'Café München'::pdb.icu::text[];
+-- Result: {café,münchen}
+
+-- JSON metadata that gets automatically indexed
+ALTER TABLE products ADD COLUMN specs JSONB;
+CREATE INDEX products_specs ON products  
+USING bm25 (id, specs) WITH (key_field='id');
+
+-- Query nested JSON properties
+SELECT name FROM products 
+WHERE specs @@@ pdb.term_set(['USB-C', 'Lightning']);
+
+-- Aggregate on JSON properties
+SELECT pdb.agg('{"terms": {"field": "specs.color"}}')
+FROM products WHERE id @@@ pdb.all();
 ```
 
-## Index Management and Operations
+## When Search Meets Real Users
 
-The v2 API provides production-ready tools for managing indexes throughout their lifecycle:
+The moment of truth: real users doing real searches on real data. Sarah's customers search for everything from specific model numbers to vague descriptions like "good headphones."
 
-### Reindexing for Schema Changes
-
-When you need to modify an index's schema — adding fields, changing tokenizers, or updating filters — reindexing rebuilds the index with the new configuration:
+v2's query parser handles the complexity:
 
 ```sql
--- Standard reindex (blocks writes during rebuild)
-REINDEX INDEX search_idx;
+-- Let users search like they would in Google
+SELECT name, rating FROM products
+WHERE id @@@ pdb.parse('description:(wireless OR bluetooth) AND rating:>4', 
+                       lenient => true);
 
--- Concurrent reindex (allows writes, takes longer)
-REINDEX INDEX CONCURRENTLY search_idx;
+-- Handle typos gracefully  
+SELECT name FROM products
+WHERE description @@@ pdb.fuzzy('wirless hedphones', 2);
+
+-- Power users can use regex
+SELECT name FROM products
+WHERE name @@@ pdb.regex('iPhone.*Pro');
 ```
 
-Concurrent reindexing is essential for production systems that cannot tolerate write downtime, though it requires maintaining the database session throughout the operation.
+The beauty is that these aren't different systems. It's all SQL, all in your database, all ACID-compliant.
 
-### Index Progress Monitoring
+## Performance That Actually Scales
 
-For large tables, index creation can take significant time. Monitor progress with PostgreSQL's built-in views:
+As Sarah's catalog grew from thousands to millions of products, her original search setup started creaking. Full-text scans were slow, and the Elasticsearch cluster was expensive to scale.
+
+v2's Top-N optimization changes the game:
 
 ```sql
-SELECT pid, phase, blocks_done, blocks_total,
-       round((blocks_done::float / blocks_total::float) * 100, 2) as pct_complete
-FROM pg_stat_progress_create_index;
+-- Efficiently finds the best 20 results from millions of products
+SELECT name, rating, price FROM products
+WHERE description ||| 'smartphone'
+ORDER BY rating DESC, price ASC  -- Tiebreaker for stable sorting
+LIMIT 20;
 ```
 
-## Why This Architecture Matters
+Under the hood, ParadeDB doesn't scan millions of results then sort them. It uses the index to find the top 20 directly. For large catalogs, this is the difference between sub-second and multi-second queries.
 
-The v2 API's design addresses fundamental problems in search system architecture that have plagued developers for years:
+## Growing Beyond Simple Search
 
-**Schema Synchronization**: Traditional search engines require maintaining parallel type systems between your database and search configuration. The v2 API eliminates this by treating PostgreSQL schema as the authoritative source of truth.
-
-**Operational Complexity**: Most search architectures require managing multiple systems with eventual consistency and complex synchronization pipelines. The v2 API provides search power while maintaining ACID compliance and read-after-write consistency.
-
-**Developer Ergonomics**: Modern applications use ORMs and query builders that generate SQL dynamically. The v2 API's structured syntax integrates naturally with these tools:
+Six months into using v2, Sarah's team started getting creative. They wanted "More Like This" recommendations:
 
 ```sql
--- ORM-friendly: structured parameters and type safety
-WHERE products.description @@@ pdb.phrase(?, 1)
-  AND products.rating @@@ pdb.int4_range(?)
-
--- Less ORM-friendly: embedded JSON strings  
-WHERE products.description @@@ '{"phrase": {"field": "description", "query": "..."}}'
+SELECT name FROM products
+WHERE description @@@ pdb.more_like_this('
+    Wireless noise-cancelling over-ear headphones with premium drivers
+');
 ```
 
-**Query Transparency**: Instead of learning separate JSON DSLs, the v2 API makes search behavior explicit through SQL operators. You can understand exactly what any query does by reading the SQL.
+They needed complex boolean queries for advanced filters:
 
-## The Complete Picture
+```sql
+SELECT name FROM products
+WHERE id @@@ pdb.parse('
+    (category:headphones OR category:earbuds) AND 
+    (specs.wireless:true) AND 
+    (rating:>4) AND NOT (name:beats)
+');
+```
 
-When you step back and look at the v2 API comprehensively, you see how each component reinforces the others:
+They wanted to highlight search terms in multiple languages:
 
-1. **Intelligent index creation** with schema inference, expression support, and multi-tokenizer configurations
-2. **International tokenization** supporting Unicode, ICU, and CJK languages with transparent testing
-3. **Comprehensive search operators** from basic matching to proximity, fuzzy, and regex queries
-4. **Advanced query functions** including phrase prefix, regex phrases, field existence, and programmatic JSON syntax
-5. **Rich highlighting and snippets** for building search interfaces with visual feedback
-6. **Production-ready sorting** with Top-N optimization, relevance boosting, and tiebreaker support
-7. **Accelerated filtering** with comprehensive type support and intelligent pushdown
-8. **Enterprise-grade aggregations** including percentiles, cardinality, top hits, and nested analytics
-9. **Operational tooling** for reindexing, progress monitoring, and production management
+```sql
+SELECT name, pdb.snippets(description, 
+    start_tag => '<mark>', 
+    end_tag => '</mark>',
+    max_num_chars => 100
+) FROM products
+WHERE description @@@ pdb.phrase('noise cancelling')
+LIMIT 5;
+```
 
-This isn't just a collection of features — it's a cohesive ecosystem designed around the principle that search should feel like natural SQL rather than a separate technology stack. Every component from tokenization to aggregation works together to eliminate the complexity traditionally associated with search systems.
+Every new requirement was just more SQL. No new services, no data pipelines, no operational complexity.
 
-The v2 API is currently in active development, with full coverage of the v1 API targeted for completion by October 2025. Developers can explore these features today and help shape the final interface through feedback.
+## The Moment It Clicks
 
-Ready to experience search that finally feels like it belongs in your database? [Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/quickstart) and discover what happens when search becomes a native part of PostgreSQL instead of a complex external dependency.
+The real "aha" moment came when Sarah's team needed to update their search configuration. In the old world, this meant:
+1. Update Elasticsearch mappings
+2. Reindex everything (hours of downtime)  
+3. Update the sync pipeline
+4. Deploy application changes
+5. Hope nothing broke
+
+With v2, it's just:
+
+```sql
+-- Change tokenization strategy
+ALTER INDEX products_search SET (description::pdb.simple('stemmer=english'));
+
+-- Reindex concurrently (no downtime)
+REINDEX INDEX CONCURRENTLY products_search;
+```
+
+The search configuration lives with your schema. Database migrations handle search changes. Everything stays in sync automatically.
+
+## Why This Changes Everything
+
+After using v2 for a year, Sarah reflected on what made the difference. It wasn't any single feature — it was the philosophy. Instead of treating search as a separate concern requiring separate tools, v2 made search feel like a natural extension of SQL.
+
+Her team could:
+- **Prototype rapidly** by testing tokenization in SQL
+- **Deploy confidently** because search behavior was explicit and testable  
+- **Scale efficiently** with Top-N optimization and columnar aggregations
+- **Maintain easily** because everything was just PostgreSQL
+
+No more late-night pages about Elasticsearch cluster issues. No more data sync bugs. No more choosing between search functionality and operational simplicity.
+
+The v2 API doesn't just provide search features — it provides a fundamentally different way of thinking about search. One where search feels like it belongs in your database because it actually does.
+
+## Try It Yourself
+
+Ready to experience this for yourself? [Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/quickstart) and discover what happens when search stops being a separate system and becomes a natural part of PostgreSQL.
+
+The v2 API is actively evolving, with new features shipping regularly. Your feedback helps shape how search should work in the SQL world. Join the conversation and help us build the future of search databases.
