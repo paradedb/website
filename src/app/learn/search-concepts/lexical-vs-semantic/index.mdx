@@ -42,7 +42,7 @@ Full-text search is still purely lexical. It uses an inverted index and extends 
 
 ## Semantic Search
 
-Semantic search (also known as [vector search](/learn/search-concepts/vector-search)) addresses a fundamental limitation of lexical search. Two pieces of text can describe the same idea without overlapping words. However, lexical methods depend on token overlap. If a query uses different phrasing than the sought-after document, search results might not be relevant.
+Semantic search (also known as [vector search](/learn/search-concepts/vector-search)) addresses a fundamental limitation of lexical search. Two pieces of text can describe the same idea without overlapping words. If a query uses different phrasing than the sought-after document, search results might not be relevant (although lexical with synonyms can help, it still can't index concepts).
 
 Dense vector retrieval closes this gap by approximating meaning instead of relying on matching terms. Embedding models (like text-embedding-ada-002, sentence-transformers, or E5) learn relationships between concepts from large datasets; these concepts are then mapped into a continuous vector space.
 
