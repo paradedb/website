@@ -18,7 +18,7 @@ ParadeDB `0.20.0` delivers on three fronts that matter for real applications: se
 
 ## Search Aggregations: Analytics Without the Architecture
 
-Modern applications often require more than just search: they need [facets](/learn/seach-concepts/faceting), counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice.
+Modern applications often require more than just search: they need [facets](/learn/search-concepts/faceting), counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice.
 
 We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen.
 
