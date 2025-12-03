@@ -111,42 +111,42 @@ The effect is simple but powerful: RRF still rewards agreement across rankers, b
 A variety of databases and search engines have pre-implemented RRF, but it's a very simple formula and can be easily demonstrated in SQL as follows:
 
 ```sql
-WITH
---- Full-text search, using pg_search and BM25 for ranking
-fulltext AS
-  SELECT
-    id,
-    ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
-  FROM mock_items
-  WHERE description @@@ 'keyboard'
-  LIMIT 20
+WITH fulltext AS (
+  SELECT id, RANK() OVER (ORDER BY score DESC) AS rank
+  FROM (
+    SELECT id, pdb.score(id) AS score
+    FROM mock_items
+    WHERE description @@@ 'keyboard'
+    ORDER BY pdb.score(id) DESC
+    LIMIT 20
+  )
 ),
-
 --- Semantic search, using pgvector and cosine distance for ranking
 semantic AS (
   SELECT
     id,
-    ROW_NUMBER() OVER (ORDER BY embedding <=> '[1,2,3]') AS r
+    RANK() OVER (ORDER BY embedding <=> '[1,2,3]') AS rank
   FROM mock_items
+  ORDER BY embedding <=> '[1,2,3]'
   LIMIT 20
 ),
 
 -- Calculate RRF contributions from each ranker
 rrf AS (
-  SELECT id, 1.0 / (60 + r) AS s FROM fulltext, params
+  SELECT id, 1.0 / (60 + rank) AS s FROM fulltext
   UNION ALL
-  SELECT id, 1.0 / (60 + r) AS s FROM semantic,  params
+  SELECT id, 1.0 / (60 + rank) AS s FROM semantic
 )
 
 -- Sum the RRF scores, order by them, and join back the original data
 SELECT
   m.id,
-  SUM(s) AS score,
+  sum(s),
   m.description
 FROM rrf
 JOIN mock_items AS m USING (id)
 GROUP BY m.id, m.description
-ORDER BY score DESC
+ORDER BY sum(s) DESC
 LIMIT 5;
 ```
 
