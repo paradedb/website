@@ -7,7 +7,7 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-**Faceting** is a [search technique](https://en.wikipedia.org/wiki/Faceted_search) that organizes [full-text search](/learn/search-concepts/full-text-search) results into filterable categories, known as _facets_. Each facet represents a property of the data (such as color, brand, or price range) and lets users narrow down large result sets by selecting multiple values simultaneously. It’s the foundation of interactive filtering in e-commerce, document search, and analytics platforms.
+**Faceted search**, also known as faceting, is a [search technique](https://en.wikipedia.org/wiki/Faceted_search) that organizes [full-text search](/learn/search-concepts/full-text-search) results into filterable categories, known as _facets_. Each facet represents a property of the data (such as color, brand, or price range) and lets users narrow down large result sets by selecting multiple values simultaneously. It’s the foundation of interactive filtering in e-commerce, document search, and analytics platforms.
 
 Faceting is an interesting problem because while it can in theory be computed client-side or across multiple queries, search responses typically need to be fast. That means facets are usually calculated efficiently within the same query that produces the search results in a single index pass.
 
