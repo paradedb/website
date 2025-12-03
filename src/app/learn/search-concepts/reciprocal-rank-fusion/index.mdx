@@ -113,7 +113,7 @@ A variety of databases and search engines have pre-implemented RRF, but it's a v
 ```sql
 WITH
 --- Full-text search, using pg_search and BM25 for ranking
-fulltext AS
+fulltext AS (
   SELECT
     id,
     ROW_NUMBER() OVER (ORDER BY paradedb.score(id) DESC) AS r
