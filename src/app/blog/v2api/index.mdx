@@ -29,11 +29,11 @@ In this post, we’ll walk through what’s new, and how the v2 API brings Parad
 
 ## Starting with Schema
 
-The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have."
+The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have.
 
 All the code examples in this post will be using the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/quickstart).
 
-```sql
+```ini
 Table "public.mock_items"
         Column         |            Type
 -----------------------+-----------------------------
@@ -110,7 +110,7 @@ SELECT 'iPhone 16'::pdb.literal::text[];
 
  literal
 ---------
- {iphone 16}
+ {iPhone 16}
 (1 row)
 
 -- ICU for international text
@@ -399,11 +399,11 @@ We'll have a full post coming up on how we built this search aggregations system
 For applications with sophisticated search requirements, the v2 API includes several advanced query capabilities that address complex use cases without requiring external systems or custom development. These features integrate seamlessly with the core search functionality, allowing you to build powerful search experiences using familiar SQL syntax."
 
 ```sql
--- "More Like This" for recommendations
-SELECT description FROM mock_items
-WHERE description @@@ pdb.more_like_this('
-    Sleek running shoes with comfortable sole and premium materials
-');
+-- "More Like This" for recommendations like document with an ID of 3
+SELECT id, description, rating, category
+FROM mock_items
+WHERE id @@@ pdb.more_like_this(3)
+ORDER BY id;
 
 -- Regex matching
 SELECT description FROM mock_items
