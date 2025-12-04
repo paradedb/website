@@ -273,7 +273,7 @@ Fuzzy search transforms failed searches into successful ones. A user searching f
 
 Search without relevance ranking is simply filtered data. The v2 API provides comprehensive relevance [scoring capabilities](https://docs.paradedb.com/documentation/sorting/score) that allow you to understand and control how search results are ranked. This transparency is crucial for building search applications where result ordering significantly impacts user experience.
 
-ParadeDB uses the industry standard [BM25 algorithm](https://docs.paradedb.com/learn/search-concepts/bm25) for relevance scoring, which [outperforms the Postgres built-in `tsvector`](/learn/search-in-postgresql/bm25) method. BM25 considers both term frequency within documents and term frequency across the entire corpus, ensuring that common terms have less impact on relevance than rare, distinctive terms.
+ParadeDB uses the industry standard [BM25 algorithm](/learn/search-concepts/bm25) for relevance scoring, which [outperforms the Postgres built-in `tsvector`](/learn/search-in-postgresql/bm25) method. BM25 considers both term frequency within documents and term frequency across the entire corpus, ensuring that common terms have less impact on relevance than rare, distinctive terms.
 
 ```sql
 -- View relevance scores
@@ -332,7 +332,7 @@ The `pdb.snippets` function provides additional control over snippet generation,
 
 ## Search Analytics and Faceting
 
-Modern search applications require more than just returning matching documents. Users expect [faceted navigation](https://paradedb.com/learn/search-concepts/faceting), result counts, statistical summaries, and other analytical insights that help them understand and refine their searches. The v2 API integrates analytics capabilities directly into the search infrastructure, allowing you to compute these insights efficiently in a single index pass.
+Modern search applications require more than just returning matching documents. Users expect [faceted navigation](/learn/search-concepts/faceting), result counts, statistical summaries, and other analytical insights that help them understand and refine their searches. The v2 API integrates analytics capabilities directly into the search infrastructure, allowing you to compute these insights efficiently in a single index pass.
 
 The [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
 
