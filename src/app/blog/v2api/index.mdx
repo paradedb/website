@@ -1,0 +1,435 @@
+import Image from "next/image";
+import { Note } from "@mintlify/components";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+import compare from "./images/compare.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+When you build a search engine inside PostgreSQL, you start with the fundamentals: storage integration, transaction safety, write-ahead logging, crash recovery, and index consistency. None of it is glamorous, but all of it is required. If the engine isn't solid, everything above it is wasted effort. That's where we've focused for the last year.
+
+Our API, meanwhile, evolved as the engine took shape. It worked, but it wasn't the API we wanted to give developers long-term.
+
+With the core now stable and fast, we can finally fix the surface.
+
+The v2 API gives ParadeDB a clearer, more predictable model for defining indexes and writing search queries. Field definitions, tokenization, and ranking live in SQL. We have different operators to do different things. Aggregations stay familiar thanks to a light touch of Elasticsearch’s DSL where it helps.
+
+In this post, we’ll walk through what’s new, and how the v2 API brings ParadeDB’s developer experience up to the standard of its engine, but before we start here's a side by side comparison our legacy and v2 APIs for a non-trivial `CREATE INDEX` statement.
+
+<Image
+  src={compare}
+  alt="Diagram of an LSM tree showing the segment hierarchy and compaction process"
+  className="rounded-xl"
+/>
+
+## Starting with Schema
+
+The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have.
+
+All the code examples in this post will be using the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/quickstart).
+
+```ini
+Table "public.mock_items"
+        Column         |            Type
+-----------------------+-----------------------------
+ id                    | integer (Primary Key)
+ description           | text
+ rating                | integer
+ category              | character varying(255)
+ in_stock              | boolean
+ metadata              | jsonb
+ created_at            | timestamp without time zone
+ weight_range          | int4range
+```
+
+With the v2 API, creating a BM25 search index is straightforward:
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, description, category, rating, in_stock,
+            created_at, metadata, weight_range)
+WITH (key_field='id');
+```
+
+This single statement creates a comprehensive search index without requiring you to specify how each field should be processed. ParadeDB understands the semantics of different PostgreSQL data types and configures search behavior accordingly, with all text fields becoming available for full-text search and all non-text fields becoming available for use in search aggregates.
+
+<Note>
+  We know that the `WITH (key_field=...)` parameter is annoying, especially as
+  it must be the first column in the index definition, and must have a unique
+  index configured (or be the primary key). We've got a [PR open to remove
+  it](https://github.com/paradedb/paradedb/pull/3643), instead validating it
+  automatically.
+</Note>
+
+## Understanding Tokenization
+
+One of the features we're most excited about in the v2 API is making tokenization transparent and testable. We believe [understanding how text gets processed](/blog/when-tokenization-becomes-token) is crucial for building effective search experiences. The v2 API allows you to cast text to a tokenizer, then to a text array (`text[]`) to see exactly it be processed before you commit to an index configuration.
+
+```sql
+SELECT 'Wireless noise-cancelling headphones'::pdb.unicode_words::text[];
+
+                    unicode_words
+------------------------------------------------------
+ {wireless,noise,cancelling,headphones}
+(1 row)
+```
+
+This transparency extends to different tokenization strategies, each optimized for specific use cases. Our default tokenizer is now `unicode_words`, but we have a many other options for slightly different use cases:
+
+- [**Unicode Words**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/unicode): The unicode tokenizer splits text according to word boundaries defined by the [Unicode Standard Annex #29](https://www.unicode.org/reports/tr29/) rules.
+- [**Literal**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/literal): indexes the text in its raw form, without any splitting or processing (and allows the field to be used for analytics)
+- [**Literal Normalized**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/literal-normalized): like the literal tokenizer, but allows for token filters
+- [**Whitespace**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/whitespace): splits on whitespace
+- [**Ngram**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/ngrams): splits text into small chunks called grams, useful for partial matching
+- [**Simple**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/simple): splits on any non-alphanumeric character
+- [**Regex Patterns**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/regex): tokenizes text using a regular expression
+- [**Chinese Compatible**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/chinese-compatible): a simple tokenizer for Chinese, Japanese, and Korean characters
+- [**Lindera**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/lindera): uses prebuilt dictionaries to tokenize Chinese, Japanese, and Korean text
+- [**ICU**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/icu): splits text according to the Unicode standard (often with more accuracy for Chinese, Japanese, and Korean text than `unicode_words`)
+- [**Jieba**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/jieba): the most advanced Chinese tokenizer that uses both a dictionary and statistical models
+- [**Source Code**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/source-code): tokenizes text that is actually code
+
+You can test out other tokenizers using the same approach:
+
+```sql
+-- N-grams for partial matching
+SELECT 'iPhone'::pdb.ngram(3,3)::text[];
+
+      ngram
+------------------
+ {iph,pho,hon,one}
+(1 row)
+
+-- Literal for exact matching
+SELECT 'iPhone 16'::pdb.literal::text[];
+
+ literal
+---------
+ {iPhone 16}
+(1 row)
+
+-- ICU for international text
+SELECT 'Café München'::pdb.icu::text[];
+
+       icu
+-------------------
+ {café,münchen}
+(1 row)
+```
+
+Being able to test tokenization strategies in SQL means you can experiment with different approaches and understand their implications before making decisions that affect your production search experience. We think this experimentation capability is essential for building search experiences that work the way you expect.
+
+## Configuring Search Behavior
+
+The v2 API's approach to index configuration combines automation with flexibility. While the system makes intelligent defaults based on your schema, you retain full control over how each field is processed. This balance allows you to start quickly with sensible defaults while providing the customization options needed for sophisticated search applications. Once you've selected your tokenization strategy you can apply these customisations with token filters.
+
+One feature we really like is the ability to tokenize the same column multiple ways:
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (
+    id,
+    description,                                        -- Standard word tokenization
+    (description::pdb.ngram(3,3, 'alias=desc_ngram'))   -- Partial matching
+) WITH (key_field='id');
+```
+
+This example shows how you can apply different tokenization strategies to the same field for different search patterns. The description field is tokenized both for standard word matching and partial matching (using an alias). This multi-tokenizer approach allows a single field to support multiple search behaviors without data duplication in the base table.
+
+Token filters provide another layer of search quality improvement. These filters process tokens after initial tokenization to improve search accuracy and relevance. The v2 API makes these filters configurable through declarative parameters inside the index column list rather than using JSON in an external blob.
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (
+    id,
+    (description::pdb.simple(
+        'stemmer=english',              -- "running" matches "runs"
+        'ascii_folding=true',           -- "café" matches "cafe"
+        'stopwords_language=english'    -- Filter common words
+    )),
+    category
+) WITH (key_field='id');
+```
+
+The stemming filter reduces tokens to their root forms, allowing searches for "running" to match documents containing "runs" or "runner." ASCII folding removes diacritical marks, ensuring that searches work consistently across different character encodings. Stopword filtering removes common tokens that rarely contribute to search relevance. These filters work consistently at both index time and search time, ensuring that query processing matches the indexed data. We have [seven token filters](https://docs.paradedb.com/documentation/token-filters/overview) available today, with some others like synonyms on the way.
+
+## Handling JSON Data
+
+Modern applications increasingly rely on semi-structured data stored in JSON (or JSONB) fields, along with other complex PostgreSQL data types like arrays and ranges. The v2 API handles these data types naturally, automatically indexing nested structures and making them searchable without requiring manual schema mapping.
+
+```sql
+-- All JSON fields are automatically indexed
+CREATE INDEX search_idx ON mock_items
+USING bm25 (id, metadata) WITH (key_field='id');
+
+-- Query nested properties directly
+SELECT description FROM mock_items
+WHERE metadata->'color' ||| 'blue'
+```
+
+When you index a JSON field, ParadeDB automatically analyzes the nested structure and creates searchable fields for each property. This automatic indexing extends to arbitrarily nested JSON structures, allowing you to search deep into complex documents without manual configuration. The system handles type detection for JSON values (including values in arrays), applying appropriate tokenization to text properties while making numeric and boolean values filterable.
+
+You can also index only specific parts of a JSON schema:
+
+```sql
+CREATE INDEX search_idx ON mock_items
+USING bm25 (
+    id,
+    description,
+    ((metadata->'color')::pdb.literal('alias=json_color'))
+) WITH (key_field='id');
+```
+
+We designed this automatic handling because we believe complex data types should just work without manual configuration (we handle ranges and arrays as well). With the v2 API, adding new properties to your JSON documents immediately makes them searchable without index rebuilds or configuration changes.
+
+## Search Operators
+
+The v2 API introduces a set of SQL operators that make search query intent immediately clear. Instead of learning JSON query syntax or domain-specific languages, you use operators that communicate the type of matching you want to perform.
+
+```sql
+-- Match disjunction: match any of these words (OR behavior)
+SELECT description FROM mock_items
+WHERE description ||| 'wireless bluetooth';
+
+-- Match conjunction: match all of these words (AND behavior)
+SELECT description FROM mock_items
+WHERE description &&& 'wireless bluetooth headphones';
+
+-- Exact phrase matching, respects order and position of tokens
+SELECT description FROM mock_items
+WHERE description ### 'wireless bluetooth';
+
+-- Exact token matching for categorical fields
+SELECT description FROM mock_items
+WHERE category === 'Electronics';
+
+-- Complex query expressions (proximity, regex, parsing, etc.)
+SELECT description FROM mock_items
+WHERE description @@@ ('wireless' ## 2 ## 'headphones');
+```
+
+Each operator has a specific semantic meaning:
+
+- `|||`: performs disjunctive matching, finding documents that contain any of the query terms
+- `&&&`: requires all terms to be present (conjunction)
+- `###`: enforces both term presence and positional requirements, perfect for phrase matching
+- `===`: performs exact token matching, ideal for categorical fields or identifier lookups
+- `@@@`: evaluates complex query expressions like proximity searches, regex patterns, and parsed queries
+
+## Proximity Search
+
+Proximity search is about finding terms that occur near each other, even when they aren't adjacent. This matters in domains like legal or compliance text, where meaning depends on concepts appearing together. For example, contract and obligation appearing within a few words of each other is very different from those words appearing in unrelated parts of a long document.
+
+A simple OR search (`contract ||| obligation`) is too broad here — it returns documents where the terms appear anywhere, not necessarily together."
+
+The example below uses sleek shoes, which is a lighter example than legal text but illustrates the mechanics:
+
+```sql
+-- "sleek" within 2 words of "shoes"
+SELECT description FROM mock_items
+WHERE description @@@ ('sleek' ## 2 ## 'shoes');
+
+-- Require "sleek" before "shoes"
+SELECT description FROM mock_items
+WHERE description @@@ ('sleek' ##> 1 ##> 'shoes');
+```
+
+Proximity uses the `@@@` operator with one of two proximity operators to indicate distance and order:
+
+- `##` — matches terms within a given token distance, in any order.
+- `##>` — matches terms within a given distance and enforces order (left term must appear first).
+- The number between the two represents the token distance to search over.
+
+Proximity gives you a more meaningful match than OR (`|||`) but also a more flexible than an exact phrase (`###`). It's especially useful in legal text, long-form descriptions, and any content where related ideas span multiple words.
+
+## Fuzzy Search
+
+Fuzzy search handles the reality that users make typos. Rather than returning no results for misspelled queries, fuzzy matching finds terms that are similar to what the user typed. This is essential for real-world search applications where perfect spelling can't be assumed.
+
+Fuzzy search works by measuring edit distance — the number of single-character operations needed to transform one word into another. These operations include insertions ("shoe" → "shoes"), deletions ("running" → "running"), and transpositions ("shose" → "shoes").
+
+```sql
+-- Basic fuzzy matching with edit distance of 1
+SELECT description FROM mock_items
+WHERE description ||| 'sheos'::pdb.fuzzy(1);  -- Finds "shoes"
+
+-- Handle multiple typos with higher edit distance
+SELECT description FROM mock_items
+WHERE description ||| 'runing shose'::pdb.fuzzy(2);  -- Finds "running shoes"
+
+-- Fuzzy matching works with conjunction too
+SELECT description FROM mock_items
+WHERE description &&& 'wireles bluetoth'::pdb.fuzzy(2);  -- Finds "wireless bluetooth"
+```
+
+Fuzzy search transforms failed searches into successful ones. A user searching for "headfones" with `fuzzy(2)` will find documents containing "headphones," even though the exact spelling doesn't match. This capability dramatically improves search usability without requiring users to learn specialized syntax or retry their searches with different spellings.
+
+## Relevance and Scoring
+
+Search without relevance ranking is simply filtered data. The v2 API provides comprehensive relevance scoring capabilities that allow you to understand and control how search results are ranked. This transparency is crucial for building search applications where result ordering significantly impacts user experience.
+
+ParadeDB uses the industry standard [BM25 algorithm](learn/search-concepts/bm25) for relevance scoring, which [outperforms the Postgres built-in `tsvector`](/learn/search-in-postgresql/bm25) method. BM25 considers both term frequency within documents and term frequency across the entire corpus, ensuring that common terms have less impact on relevance than rare, distinctive terms.
+
+```sql
+-- View relevance scores
+SELECT description, pdb.score(id)
+FROM mock_items
+WHERE description ||| 'wireless headphones'
+ORDER BY pdb.score(id) DESC
+LIMIT 5;
+```
+
+The `pdb.score()` function (which takes the index `key_field` as its first argument) lets you see the actual relevance scores that determine result ordering. This visibility allows you to understand why results are ranked in a particular order and debug relevance issues when building search experiences.
+
+For more sophisticated relevance tuning, the v2 API supports query-time boosting:
+
+```sql
+SELECT description, pdb.score(id) FROM mock_items
+WHERE description ||| 'shoes'::pdb.boost(2.0) OR category ||| 'footwear'
+ORDER BY pdb.score(id) DESC;
+```
+
+Boosting allows you to emphasize certain terms or fields in relevance calculations. In this example, matches in the description field receive twice the weight of matches in the category field. This capability enables you to implement business logic directly in your search queries, prioritizing results based on factors beyond simple text matching.
+
+## Search Highlighting
+
+Building effective search interfaces often requires showing users which parts of documents match their queries. Highlighting in ParadeDB is as simple as including the `pdb.snippet()` function call:
+
+```sql
+-- Basic highlighting
+SELECT pdb.snippet(description) FROM mock_items
+WHERE description ||| 'wireless bluetooth'
+LIMIT 5;
+
+                    snippet
+-----------------------------------------------
+ "Compact <b>wireless</b> <b>bluetooth</b> speaker"
+(1 row)
+
+-- Custom highlighting tags
+SELECT pdb.snippets(description,
+    start_tag => '<mark>',
+    end_tag => '</mark>',
+    max_num_chars => 100
+) FROM mock_items
+WHERE description ||| 'running'
+LIMIT 5;
+
+                         snippets
+----------------------------------------------------------
+ "Sleek <mark>running</mark> shoes with premium materials"
+(1 row)
+```
+
+The highlighting system generates contextual snippets that show matching terms within their surrounding text. This approach provides users with enough context to understand why a particular document matched their query. The ability to customize highlighting tags allows you to integrate highlighting with your application's styling requirements.
+
+The `pdb.snippets` function provides additional control over snippet generation, allowing you to specify the maximum number of characters, custom highlighting tags, and other parameters that affect snippet quality and appearance.
+
+## Search Analytics and Faceting
+
+Modern search applications require more than just returning matching documents. Users expect faceted navigation, result counts, statistical summaries, and other analytical insights that help them understand and refine their searches. The v2 API integrates analytics capabilities directly into the search infrastructure, allowing you to compute these insights efficiently in a single index pass.
+
+The [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
+
+- As an aggregate function, running a search query and providing aggregate results
+- As a window function, running a search query and providing aggregate results **alongside** the TopN search results
+
+Both variants push as much work as possible down into the ParadeDB index, eliminating the need for multiple queries, CTEs, or manual aggregations.
+
+```sql
+SELECT count(*)
+FROM mock_items
+WHERE description ||| 'shoes';
+
+ count
+-------
+     3
+(1 row)
+```
+
+Window functions add analytical data alongside search results:
+
+```sql
+SELECT id, description,
+       count(*) OVER (),
+FROM mock_items
+WHERE description ||| 'shoes'
+ORDER BY rating DESC
+LIMIT 2;
+
+ id |     description     | count
+----+---------------------+-------
+  3 | Sleek running shoes |     3
+  5 | Generic shoes       |     3
+(2 rows)
+```
+
+These examples demonstrate faceted search using window functions — returning TopN search results while providing analytics for the entire result set:
+
+```sql
+SELECT id, description,
+       pdb.agg('{"terms": {"field": "rating"}}') AS facets
+FROM mock_items
+WHERE description ||| 'shoes'
+ORDER BY rating DESC
+LIMIT 2;
+
+ id |     description     |                   facets
+----+---------------------+---------------------------------------------
+  3 | Sleek running shoes | {"buckets": [{"key": 4, "doc_count": 1},
+                                         {"key": 5, "doc_count": 1},
+                                         {"key": 3, "doc_count": 1} ]}
+  3 | Generic shoes       | {"buckets": [{"key": 4, "doc_count": 1},
+                                         {"key": 5, "doc_count": 1},
+                                         {"key": 3, "doc_count": 1} ]}
+(2 rows)
+```
+
+Both queries use window functions (`OVER` clauses) to return only the top 2 results while computing analytics over all matching documents. This eliminates the need for separate queries and makes it possible to build rich search interfaces with a single efficient operation using ParadeDB's BM25 indexes.
+
+We'll have a full post coming up on how we built this search aggregations system and its performance characteristics.
+
+## Advanced Query Types
+
+For applications with sophisticated search requirements, the v2 API includes several advanced query capabilities that address complex use cases without requiring external systems or custom development. These features integrate seamlessly with the core search functionality, allowing you to build powerful search experiences using familiar SQL syntax."
+
+```sql
+-- "More Like This" for recommendations like document with an ID of 3
+SELECT id, description, rating, category
+FROM mock_items
+WHERE id @@@ pdb.more_like_this(3)
+ORDER BY id;
+
+-- Regex matching
+SELECT description FROM mock_items
+WHERE description @@@ pdb.regex('.*shoes.*');
+
+-- Query parsing for complex search strings
+SELECT description, rating, category FROM mock_items
+WHERE id @@@ pdb.parse('
+    description:(running OR jogging) AND
+    rating:>3 AND
+    category:footwear
+', lenient => true);
+```
+
+The v2 API provides three advanced capabilities for sophisticated search requirements:
+
+- **More Like This**: finds documents similar to a given document by analyzing term patterns and frequencies, creating representative terms and matching documents that contain those terms
+- **Regex matching**: provides power users with precise control over search patterns, enabling complex text matching that goes beyond simple term searching
+- **Query parsing**: accepts raw user-provided query strings using [Tantivy's query language](https://docs.rs/tantivy/latest/tantivy/query/struct.QueryParser.html), supporting field-specific searches, boolean operators, and range queries with optional lenient mode for best-effort parsing
+
+## Trying the v2 API
+
+This post covers the core features of the v2 API, but there's much more to explore. For the complete feature set, including advanced ranking options, custom analyzers, and specialized query types, check out the [full documentation](https://docs.paradedb.com/).
+
+All the examples in this post use ParadeDB's `mock_items` table, which you can install and try yourself following the getting started guide. Every query shown here works with the demo data, allowing you to explore the v2 API's capabilities hands-on.
+
+The v2 API represents our vision for how search should work in SQL databases: powerful, flexible, and integrated rather than separate and complex. Because ParadeDB runs inside PostgreSQL, you get all the PostgreSQL guarantees you rely on: ACID transactions, backup and recovery, security, and the entire ecosystem of extensions and tools.
+
+[Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/quickstart) to explore these features yourself and see how the v2 API can simplify your search architecture while expanding your search capabilities.
