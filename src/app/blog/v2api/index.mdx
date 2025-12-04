@@ -10,9 +10,9 @@ import heroImage from "./images/hero.png";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-When you build a search engine inside PostgreSQL, you start with the fundamentals: storage integration, MVCC, WAL durability, crash recovery, index consistency. None of it is glamorous, but all of it is required. If the engine isn’t solid, everything above it is wasted effort. That’s where we’ve focused for the last year.
+When you build a search engine inside PostgreSQL, you start with the fundamentals: storage integration, transaction safety, write-ahead logging, crash recovery, and index consistency. None of it is glamorous, but all of it is required. If the engine isn't solid, everything above it is wasted effort. That's where we've focused for the last year.
 
-Our API, meanwhile, evolved as the engine took shape. A single search operator which gradually became more overloaded, BM25 index definitions which lived in JSON, and query syntax that picked up complexity as features accumulated. It worked, but it wasn’t the API we wanted to give developers long-term.
+Our API, meanwhile, evolved as the engine took shape. It worked, but it wasn't the API we wanted to give developers long-term.
 
 With the core now stable and fast, we can finally fix the surface.
 
@@ -22,7 +22,7 @@ In this post, we’ll walk through what’s new, and how the v2 API brings Parad
 
 ## Starting with Schema
 
-The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have.
+The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have."
 
 All the code examples in this post will be using the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/quickstart).
 
@@ -74,18 +74,18 @@ SELECT 'Wireless noise-cancelling headphones'::pdb.unicode_words::text[];
 
 This transparency extends to different tokenization strategies, each optimized for specific use cases. Our default tokenizer is now `unicode_words`, but we have a many other options for slightly different use cases:
 
-- [**Unicode Words**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/unicode); The unicode tokenizer splits text according to word boundaries defined by the [Unicode Standard Annex #29](https://www.unicode.org/reports/tr29/) rules.
-- [**Literal**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/literal); indexes the text in its raw form, without any splitting or processing (and allows the field to be used for analytics)
-- [**Literal Normalized**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/literal-normalized); like the literal tokenizer, but allows for token filters
-- [**Whitespace**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/whitespace); splits on whitespace
-- [**Ngram**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/ngrams); splits text into small chunks called grams, useful for partial matching
-- [**Simple**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/simple); splits on any non-alphanumeric character
-- [**Regex Patterns**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/regex); tokenizes text using a regular expression
-- [**Chinese Compatible**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/chinese-compatible); a simple tokenizer for Chinese, Japanese, and Korean characters
-- [**Lindera**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/lindera); uses prebuilt dictionaries to tokenize Chinese, Japanese, and Korean text
-- [**ICU**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/icu); splits text according to the Unicode standard (often with more accuracy for Chinese, Japanese, and Korean text than `unicode_words`)
-- [**Jieba**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/jieba); the most advanced Chinese tokenizer that uses both a dictionary and statistical models
-- [**Source Code**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/source-code); tokenizes text that is actually code
+- [**Unicode Words**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/unicode): The unicode tokenizer splits text according to word boundaries defined by the [Unicode Standard Annex #29](https://www.unicode.org/reports/tr29/) rules.
+- [**Literal**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/literal): indexes the text in its raw form, without any splitting or processing (and allows the field to be used for analytics)
+- [**Literal Normalized**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/literal-normalized): like the literal tokenizer, but allows for token filters
+- [**Whitespace**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/whitespace): splits on whitespace
+- [**Ngram**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/ngrams): splits text into small chunks called grams, useful for partial matching
+- [**Simple**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/simple): splits on any non-alphanumeric character
+- [**Regex Patterns**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/regex): tokenizes text using a regular expression
+- [**Chinese Compatible**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/chinese-compatible): a simple tokenizer for Chinese, Japanese, and Korean characters
+- [**Lindera**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/lindera): uses prebuilt dictionaries to tokenize Chinese, Japanese, and Korean text
+- [**ICU**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/icu): splits text according to the Unicode standard (often with more accuracy for Chinese, Japanese, and Korean text than `unicode_words`)
+- [**Jieba**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/jieba): the most advanced Chinese tokenizer that uses both a dictionary and statistical models
+- [**Source Code**](https://docs.paradedb.com/documentation/tokenizers/available-tokenizers/source-code): tokenizes text that is actually code
 
 You can test out other tokenizers using the same approach:
 
@@ -218,7 +218,7 @@ Each operator has a specific semantic meaning:
 
 Proximity search is about finding terms that occur near each other, even when they aren't adjacent. This matters in domains like legal or compliance text, where meaning depends on concepts appearing together. For example, contract and obligation appearing within a few words of each other is very different from those words appearing in unrelated parts of a long document.
 
-A simple OR search (contract ||| obligation) is too broad here — it returns documents where the terms appear anywhere, not necessarily together.
+A simple OR search (`contract ||| obligation`) is too broad here — it returns documents where the terms appear anywhere, not necessarily together."
 
 The example below uses sleek shoes, which is a lighter example than legal text but illustrates the mechanics:
 
@@ -387,9 +387,9 @@ Both queries use window functions (`OVER` clauses) to return only the top 2 resu
 
 We'll have a full post coming up on how we built this search aggregations system and its performance characteristics.
 
-## Advanced Features
+## Advanced Query Types
 
-For applications with sophisticated search requirements, the v2 API includes several advanced capabilities that address complex use cases without requiring external systems or custom development. These features integrate seamlessly with the core search functionality, allowing you to build powerful search experiences using familiar SQL syntax.
+For applications with sophisticated search requirements, the v2 API includes several advanced query capabilities that address complex use cases without requiring external systems or custom development. These features integrate seamlessly with the core search functionality, allowing you to build powerful search experiences using familiar SQL syntax."
 
 ```sql
 -- "More Like This" for recommendations
