@@ -20,7 +20,7 @@ If you're thinking, "I'll just run a few extra COUNT queries, how hard can it be
 
 The thing is, faceting *looks* simple: it's just grouping and counting. But try to make it fast in a traditional row-based database, and you'll run into serious performance challenges. Want to show search results *and* category counts from a single query? That's either two index scans or a full index scan and a lot of data transferred. Want it to be responsive? That becomes increasingly difficult as the number of results increases.
  
-In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we solved this using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (it can be up to an order of magnitude faster).
+In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we structured the SQL API using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (spoiler alert: over an order of magnitude faster for large result sets).
 
 <Note>
 If you aren’t familiar with [ParadeDB](https://paradedb.com), we bring the performance and developer experience of Elasticsearch into Postgres.
@@ -28,7 +28,7 @@ If you aren’t familiar with [ParadeDB](https://paradedb.com), we bring the per
 
 ## How Search Engines Count
 
-Faceting is a way of summarizing the contents of a search result. When you type a query like “laptop,” you’re not just asking for a list of matching documents, you’re also asking, *what kinds of laptops exist in this result set?* Maybe there are 1,200 Dell laptops, 800 Lenovo, and 600 Apple. Each item in that breakdown, the counts of results grouped by attribute, is a **facet**.
+Faceting is a way of summarizing the contents of a search result. When you type a query like “laptop,” you’re not just asking for a list of matching documents, you’re also thinking, *what kinds of laptops exist in this result set?* Maybe there are 1,200 Dell laptops, 800 Lenovo, and 600 Apple. Each item in that breakdown, the counts of results grouped by attribute, is a **facet**.
 
 Facets turn search from a one-dimensional list into something that can help visualize navigation. They set the stage to let you explore results by filtering on structured fields (like *brand* or *price range*) while still searching free text (like *developer laptop*). In other words, faceting is where structured data meets unstructured search.
 
@@ -51,7 +51,7 @@ When we set out to design the syntax for faceting, we had three goals:
 
 We experimented with a few approaches: full `JSONB` result sets, `LATERAL` subqueries, and a behind-the-scenes `UNION`. The one we kept coming back to was a bit of a hack, but a good one. We decided to (ab)use PostgreSQL’s window functions to express faceting instructions, using a JSON DSL that mirrors the [Elasticsearch aggregation API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations).
 
-That led us to a new function, `pdb.agg()`, which accepts  `JSONB` configuration that enables a range of aggregations (docs link here), but most notably for faceting it supports terms (counting unique values), histograms (bucketing unique values), and date_histogram (bucketing timestamps).
+That led us to a [new function, `pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview), which accepts  `JSONB` configuration that enables a range of aggregations, but most notably for faceting it supports terms (counting unique values), histograms (bucketing unique values), and date_histogram (bucketing timestamps).
 
 Let's say you have a logs table like this:
 
@@ -125,7 +125,7 @@ categories    | {
 
 ```
 
-The faceting information is added alongside the search query using a JSONB column. JSON perfect wrapper for the faceting information: it’s structured, self-contained, and easy to parse on the client. Today we attach this to all rows, but in the future, we may optimize this further by returning the facet JSON only on the first row instead of duplicating it across all rows.
+The faceting information is added alongside the search query using a JSONB column. JSON is the perfect wrapper for the faceting information: it’s structured, self-contained, and easy to parse on the client. Today we attach this to all rows, but in the future, we may optimize this further by returning the facet JSON only on the first row instead of duplicating it.
 
 ## **How Faceting Hooks Into the PostgreSQL Planner**
 
@@ -167,7 +167,7 @@ The Aggregation collector is where the actual faceting magic happens. While To
 
 For every matching document, the facet collector fetches and aggregates only the fields you asked for (category, price, rating etc.) directly from Tantivy’s columnstore. This matters because we never need to reconstruct full rows like PostgreSQL would, we can pull just the specific column values needed for aggregation, reducing the amount of buffers we need to read into memory.
 
-Tantivy’s columnstore is designed for exactly this pattern: fast, per-document, single-column lookups keyed by docid. It’s not a general-purpose analytics columnstore; it’s optimized for “give me field X for docid Y”, millions of times per second.
+Tantivy’s columnstore is designed for exactly this pattern: fast per-document, single-column lookups by offset. It’s not a general-purpose analytics columnstore; it’s optimized for “give me field X for docid Y”, millions of times per second.
 
 Here's where things get interesting from a correctness perspective: this same collector also checks and applies **MVCC filtering** to maintain full ACID guarantees, only aggregating values that are visible to your current transaction.
 

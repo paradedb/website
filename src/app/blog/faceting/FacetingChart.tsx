@@ -6,45 +6,52 @@ import { Card, Title, BarChart } from "@tremor/react";
 const rawData = [
   {
     query: "paradedb",
-    results: 170,
-    "Manual faceting": 15.558,
-    "ParadeDB faceting": 30.885,
+    results: 187,
+    "Manual faceting": 34.048,
+    "ParadeDB faceting": 43.931,
+    "ParadeDB faceting (MVCC off)": 38.381,
   },
   {
     query: "postgresql",
-    results: 37877,
-    "Manual faceting": 57.792,
-    "ParadeDB faceting": 48.988,
+    results: 40555,
+    "Manual faceting": 96.441,
+    "ParadeDB faceting": 83.700,
+    "ParadeDB faceting (MVCC off)": 56.054,
   },
   {
     query: "rust",
-    results: 224974,
-    "Manual faceting": 124.811,
-    "ParadeDB faceting": 65.828,
+    results: 227782,
+    "Manual faceting": 189.307,
+    "ParadeDB faceting": 106.681,
+    "ParadeDB faceting (MVCC off)": 68.976,
   },
   {
     query: "code",
-    results: 1761136,
-    "Manual faceting": 689.159,
-    "ParadeDB faceting": 118.505,
+    results: 1774202,
+    "Manual faceting": 846.589,
+    "ParadeDB faceting": 158.421,
+    "ParadeDB faceting (MVCC off)": 84.897,
   },
   {
     query: "we",
-    results: 4597587,
-    "Manual faceting": 1262.759,
-    "ParadeDB faceting": 181.984,
+    results: 4741006,
+    "Manual faceting": 1743.676,
+    "ParadeDB faceting": 227.372,
+    "ParadeDB faceting (MVCC off)": 108.334,
   },
   {
     query: "the",
-    results: 27733167,
-    "Manual faceting": 7052.101,
-    "ParadeDB faceting": 723.723,
+    results: 27747459,
+    "Manual faceting": 9694.884,
+    "ParadeDB faceting": 798.913,
+    "ParadeDB faceting (MVCC off)": 362.079,
   },
   {
     query: "<all results>",
-    results: 45890978,
-    "Manual faceting": 11849.004,
-    "ParadeDB faceting": 1013.419,
+    results: 45890979,
+    "Manual faceting": 15494.610,
+    "ParadeDB faceting": 1053.589,
+    "ParadeDB faceting (MVCC off)": 363.436,
   },
 ];
 
@@ -86,20 +93,23 @@ export default function FacetingChart() {
       <BarChart
         data={chartData}
         index="queryLabel" 
-        categories={["ParadeDB faceting", "Manual faceting"]}
-        colors={["purple", "blue"]}
+        categories={["ParadeDB faceting (MVCC off)", "ParadeDB faceting", "Manual faceting"]}
+        colors={["orange", "purple", "blue"]}
         valueFormatter={(n: number) =>
           `${Intl.NumberFormat("us").format(n)} ms`
         }
-        marginTop="mt-6"
         layout="vertical"
         yAxisWidth={200}
-        className="h-[500px]"
+        className="h-[500px] mt-6"
         customTooltip={CompactTooltip}
         showLegend={false} 
       />
 
       <div className="flex gap-6 justify-center mt-4 text-sm">
+        <div className="flex items-center gap-2">
+          <span className="inline-block h-3 w-3 rounded-sm bg-orange-500" />
+          ParadeDB faceting (MVCC off)
+        </div>
         <div className="flex items-center gap-2">
           <span className="inline-block h-3 w-3 rounded-sm bg-purple-500" />
           ParadeDB faceting
