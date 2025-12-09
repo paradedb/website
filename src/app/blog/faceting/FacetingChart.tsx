@@ -56,6 +56,7 @@ const rawData = [
 ];
 
 // Compact tooltip shown on hover
+/*
 function CompactTooltip({ active, payload, label }: any) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -77,6 +78,7 @@ function CompactTooltip({ active, payload, label }: any) {
     </div>
   );
 }
+*/
 
 const chartData = rawData.map((d) => ({
   ...d,
@@ -110,7 +112,7 @@ export default function FacetingChart() {
         
         {/* Numbers displayed to the right of each bar */}
         <div className="w-32 flex flex-col justify-around pt-5 pb-7 text-xs">
-          {chartData.map((data, index) => (
+          {chartData.map((data) => (
             <div key={data.query} className="flex flex-col gap-0.5 text-left">
               <div className="text-orange-600 font-medium">
                 <span>
