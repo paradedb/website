@@ -15,7 +15,7 @@ import faceting from "./images/demandsciencesmall.png";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-Picture this: you've built a perfectly reasonable search app. Users type "dinosaur," get results, everybody's happy. Then someone asks, "but how many of these are carnivores?" So you add filters. Then they want to know how many results each filter would give them *before* they click it. Welcome to ~Jurrasic park~ faceted search.
+Picture this: you've built a perfectly reasonable search app. Users type "dinosaur," get results, everybody's happy. Then someone asks, "but how many of these are carnivores?" So you add filters. Then they want to know how many results each filter would give them *before* they click it. Welcome to ~Jurassic park~ faceted search.
 
 In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we structured the SQL API using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (spoiler alert: [over an order of magnitude faster](#performance-why-this-matters) for large result sets).
 
