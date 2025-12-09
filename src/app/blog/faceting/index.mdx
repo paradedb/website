@@ -29,9 +29,9 @@ In this post, we'll break down how we brought **Elasticsearch-style faceting di
 
 ## How Search Engines Count
 
-Faceting is a way of summarizing the contents of a search result. When you type a query like "laptop", you’re not just asking for a list of matching documents, you’re also thinking, _what kinds of laptops exist in this result set?_ Maybe there are 1,200 Dell laptops, 800 Lenovo, and 600 Apple. Each item in that breakdown, the counts of results grouped by attribute, is a **facet**.
+Faceting is a way of summarizing the contents of a search result. When you type a query like "dinosaur", you’re not just asking for a list of matching documents, you’re also thinking, _what kinds of dinosaurs exist in this result set?_ Maybe there are 87 carnivores, 112 herbivores, and 41 omnivores. Each item in that breakdown, the counts of results grouped by attribute, is a **facet**.
 
-Facets turn search from a one-dimensional list into something that can help visualize navigation. They set the stage to let you explore results by filtering on structured fields (like _brand_ or _price range_) while still searching free text (like _developer laptop_). In other words, faceting is where structured data meets unstructured search.
+Facets turn search from a one-dimensional list into something that can help visualize navigation. They set the stage to let you explore results by filtering on structured fields (like _era_, _habitat_, or _height range_) while still searching free text (like _large dinosaur_). In other words, faceting is where structured data meets unstructured search.
 
 <figure className="flex flex-col items-center">
   <Image
@@ -41,7 +41,7 @@ Facets turn search from a one-dimensional list into something that can help visu
   />
   <figcaption className="mt-2 text-sm text-gray-500">
     Faceted search powering real-world insights: an example from our customer,
-    DemandScience.
+    [DemandScience](https://demandscience.com/).
   </figcaption>
 </figure>
 
@@ -77,9 +77,9 @@ When we set out to design the syntax for faceting, we had three goals:
 2. Return both the search results and the facet counts in the same payload as fast as possible
 3. Integrate cleanly into PostgreSQL's planner and executor.
 
-We experimented with a few approaches: full JSONB result sets, LATERAL subqueries, and a behind-the-scenes UNION. The one we kept coming back to was a bit of a hack, but a good one. We decided to (ab)use PostgreSQL's window functions to express faceting instructions, using a JSON DSL that mirrors the Elasticsearch aggregation API.
+We experimented with a few approaches: full JSONB result sets, LATERAL subqueries, and a behind-the-scenes UNION. The one we kept coming back to was using PostgreSQL's window functions to express faceting instructions, passing JSON DSL that mirrors the Elasticsearch aggregation API.
 
-That led us to a new function, `pdb.agg()`, which accepts JSONB that enables a range of aggregations, but most notably for faceting it supports [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
+That led us to a new function, `pdb.agg()` (which can also be used in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregations, but most notably for faceting it supports [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
 
 Instead of complex CTEs and multiple queries, you get both search results and facet counts in a single, clean query:
 
