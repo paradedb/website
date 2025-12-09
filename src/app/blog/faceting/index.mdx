@@ -110,7 +110,7 @@ pdb.agg('{"terms": {"field": "category"}}') OVER ()
 pdb.agg('{"terms": {"field": "category"}}', false) OVER ()
 ```
 
-When MVCC is disabled, the aggregation operates directly on the search index without visibility checks. This is useful for analytics workloads on large datasets where some lag in reflecting the latest updates (bounded by the last VACUUM) is acceptable. We're still focused on being the transactional Elasticsearch, but this optional optimization can be great when you need maximum performance or have immutable INSERT only data.
+When MVCC is disabled, the aggregation operates directly on the search index without visibility checks. This is useful for analytics workloads on large datasets where some lag in reflecting the latest updates (bounded by the number of dead tuples since the last VACUUM) is acceptable. But this optional optimization can be great when you need maximum performance or have immutable INSERT only data.
 
 ### A Complete Example
 
