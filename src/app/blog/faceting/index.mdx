@@ -148,8 +148,7 @@ When you see `OVER ()` alongside an `ORDER` and `LIMIT` (TopN query), it signals
 
 This design intentionally bridges two paradigms. It is designed to be familiar to both Elasticsearch (making use of the Elasticsearch DSL) and SQL (with the WINDOW syntax) users. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
 
-
-Ths design intentionally bridges two paradigms, with the structure of SQL and the flexibility of search engines. It combines the expressiveness of Elasticsearch’s JSON DSL, which allows rich and composable aggregations, with the familiar simplicity of SQL’s WINDOW syntax, which makes it easy to use and reason about. PostgreSQL’s parser treats `pdb.agg()` as a standard window function call, letting ParadeDB implement custom aggregation logic directly within PostgreSQL’s query execution framework. The result is an interface that feels natural to both SQL and Elasticsearch users.
+This design intentionally bridges two paradigms, with the structure of SQL and the flexibility of search engines. It combines the expressiveness of Elasticsearch’s JSON DSL, which allows rich and composable aggregations, with the familiar simplicity of SQL’s WINDOW syntax, which makes it easy to use and reason about. PostgreSQL’s parser treats `pdb.agg()` as a standard window function call, letting ParadeDB implement custom aggregation logic directly within PostgreSQL’s query execution framework. The result is an interface that feels natural to both SQL and Elasticsearch users.
 
 The first row of the output looks like this:
 
