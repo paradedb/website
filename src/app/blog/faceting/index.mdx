@@ -45,7 +45,7 @@ Facets turn search from a one-dimensional list into something that can help visu
   </figcaption>
 </figure>
 
-Behind the scenes, each facet corresponds to a column or field in your dataset. A search engine computes how many matching documents belong to each unique value or bucket of that field, then returns both the top results and these aggregate counts in a single response. Because a search result usually returns results that are spread across our dataset the database needs a quick way to look up values for each document.
+Behind the scenes, each facet corresponds to a column or field in your dataset. Modern search engines use columnar stores to computes how many matching documents belong to each unique value or bucket of that field, then returns both the top results and these aggregate counts in a single response. Because a search result usually returns results that are spread across our dataset the database needs a quick way to look up values for each document.
 
 That duality, returning ranked search hits _and_ category counts, is what makes faceting so powerful. It's also what makes it tricky to implement efficiently in a database built for rows, not documents.
 
@@ -245,9 +245,9 @@ Once PostgreSQL hands off the plan, the real work begins inside ParadeDB's searc
 
 ### **1. Searching and Collecting**
 
-Every faceting query starts by traversing the search index using the search criteria from the query. We walk through the index entries for matching terms, answering the search part of the query and producing a stream of matching document IDs. This stream forms an iterator representing the candidate documents.
+Every faceting query starts by traversing the search index using the search criteria from the query. We walk through the index entries for matching terms, answering the search part of the query and producing a stream of matching document IDs. This stream forms an ordered iterator representing the candidate documents.
 
-This document stream is then passed into a **compound collector**, which coordinates all work done over the same stream of documents. This collector runs multiple sub-collectors in parallel, so we can compute different kinds of results (like ranked hits and aggregations) without ever rereading the index.
+This candidate document stream is then passed into a **compound collector**, which coordinates all work done over the same stream of documents. This collector runs multiple sub-collectors in parallel, so we can compute different kinds of results (like ranked hits and aggregations) without ever rereading the index.
 
 ### **2. TopDocs Collector (ORDER and LIMIT)**
 
