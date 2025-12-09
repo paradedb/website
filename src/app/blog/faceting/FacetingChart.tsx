@@ -90,20 +90,51 @@ export default function FacetingChart() {
     <Card>
       <Title>ParadeDB Faceting vs Manual Faceting Query Time in Milliseconds</Title>
 
-      <BarChart
-        data={chartData}
-        index="queryLabel" 
-        categories={["ParadeDB faceting (MVCC off)", "ParadeDB faceting", "Manual faceting"]}
-        colors={["orange", "purple", "blue"]}
-        valueFormatter={(n: number) =>
-          `${Intl.NumberFormat("us").format(n)} ms`
-        }
-        layout="vertical"
-        yAxisWidth={200}
-        className="h-[500px] mt-6"
-        customTooltip={CompactTooltip}
-        showLegend={false} 
-      />
+      <div className="flex">
+        <div className="flex-1">
+          <BarChart
+            data={chartData}
+            index="queryLabel" 
+            categories={["ParadeDB faceting (MVCC off)", "ParadeDB faceting", "Manual faceting"]}
+            colors={["orange", "purple", "blue"]}
+            valueFormatter={(n: number) =>
+              `${Intl.NumberFormat("us").format(n)} ms`
+            }
+            layout="vertical"
+            yAxisWidth={200}
+            className="h-[500px] mt-6"
+    showTooltip={false}
+            showLegend={false}
+          />
+        </div>
+        
+        {/* Numbers displayed to the right of each bar */}
+        <div className="w-32 flex flex-col justify-around pt-5 pb-7 text-xs">
+          {chartData.map((data, index) => (
+            <div key={data.query} className="flex flex-col gap-0.5 text-left">
+              <div className="text-orange-600 font-medium">
+                <span>
+                  {data["ParadeDB faceting (MVCC off)"].toFixed(0)} ms
+                  {(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]) >= 1 && 
+                    ` (${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`
+                  }
+                </span>
+              </div>
+              <div className="text-purple-600 font-medium">
+                <span>
+                  {data["ParadeDB faceting"].toFixed(0)} ms
+                  {(data["Manual faceting"] / data["ParadeDB faceting"]) >= 1 && 
+                    ` (${(data["Manual faceting"] / data["ParadeDB faceting"]).toFixed(1)}x faster)`
+                  }
+                </span>
+              </div>
+              <div className="text-blue-600 font-medium">
+                <span>{data["Manual faceting"].toFixed(0)} ms</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
 
       <div className="flex gap-6 justify-center mt-4 text-sm">
         <div className="flex items-center gap-2">
