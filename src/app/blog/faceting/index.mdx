@@ -94,7 +94,7 @@ ORDER BY rank DESC
 LIMIT 5;
 ```
 
-The magic in the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT", whether you're using ParadeDB, Snowflake, or any SQL-compliant database. This window syntax computes both results in a single pass through the data.
+The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT", whether you're using ParadeDB, Snowflake, or any SQL-compliant database. This window syntax computes both results in a single pass through the data.
 
 We use a JSON DSL that mirrors the [Elasticsearch aggregation API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), with our [`pdb.agg()` function](https://docs.paradedb.com/documentation/aggregates/overview) supporting [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
 
