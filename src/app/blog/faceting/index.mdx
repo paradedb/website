@@ -55,11 +55,11 @@ If you're thinking, "I'll just run a few extra COUNT queries, how hard can it be
 
 The thing is, faceting _looks_ simple: it's just grouping and counting. But try to make it fast in a traditional row-based database, and you'll run into serious performance challenges. Want to show search results _and_ category counts from a single query? That's either two index scans or a full index scan and a lot of data transferred. Want it to be responsive? That becomes increasingly difficult as the number of results increases.
 
-Let's take a look at **how** much faster our approach is, and also **how** we make this possible (by pipelining the search query and faceting into a single index scan, and making use of a columnar format for value lookups).
+Let's take a look at how much faster our approach is, and also how we make this possible (by pipelining the search query and faceting into a single index scan, and making use of a columnar format for value lookups).
 
 ## Performance: Our Benchmarking Results
 
-To understand the scope of this problem, we benchmarked traditional PostgreSQL faceting against ParadeDB's integrated approach using a dataset of 46 million Hacker News posts and comments (details on the queries and schema can be found [later in the post](#comparing-the-approaches)).
+To demonstrate the performance benefit of our new faceting, we benchmarked traditional PostgreSQL faceting against ParadeDB's integrated approach using a dataset of 46 million Hacker News posts and comments (details on the queries and schema can be found [later in the post](#comparing-the-approaches)).
 
 Both approaches use ParadeDB's BM25 search (PostgreSQL's built-in tsvector simply doesn't cut it, already being 27x slower at 200,000 results), but they differ in how faceting is implemented. The results show just how significant the performance difference can be:
 
@@ -79,7 +79,7 @@ When we set out to design the syntax for faceting, we had three goals:
 
 We experimented with a few approaches: full JSONB result sets, LATERAL subqueries, and a behind-the-scenes UNION. The one we kept coming back to was using PostgreSQL's window functions to express faceting instructions, passing JSON DSL that mirrors the Elasticsearch aggregation API.
 
-That led us to a new function, `pdb.agg()` (which can also be used in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregations, but most notably for faceting it supports [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
+That led us to a [new window function, `pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) (also usable in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregation. Most notably for faceting it supports [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
 
 Instead of complex CTEs and multiple queries, you get both search results and facet counts in a single, clean query:
 
@@ -94,11 +94,9 @@ ORDER BY rank DESC
 LIMIT 5;
 ```
 
-The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT", whether you're using ParadeDB, Snowflake, or any SQL-compliant database. This window syntax computes both results in a single pass through the data.
+The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT". This window syntax computes both the search query results and the facet results in a single pass through the data.
 
-We use a JSON DSL that mirrors the [Elasticsearch aggregation API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), with our [`pdb.agg()` function](https://docs.paradedb.com/documentation/aggregates/overview) supporting [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
-
-The result includes both your search hits and the faceting data as a JSONB column. The faceting information appears alongside each row, giving you structured, self-contained aggregation results that are easy to parse on the client side.
+The result includes both your search hits alongside the faceting data in a JSONB column (effectively overloading this column to contain all the facets). This approach gives you structured, self-contained aggregation results that are easy to parse on the client side.
 
 ### MVCC and Performance Tradeoffs
 
@@ -112,7 +110,7 @@ pdb.agg('{"terms": {"field": "category"}}') OVER ()
 pdb.agg('{"terms": {"field": "category"}}', false) OVER ()
 ```
 
-When MVCC is disabled, the aggregation operates directly on the search index without visibility checks. This is useful for analytics workloads on large datasets where some lag in reflecting the latest updates is acceptable. We're still the transactional Elasticsearch, this is just an optional optimization when you need maximum performance.
+When MVCC is disabled, the aggregation operates directly on the search index without visibility checks. This is useful for analytics workloads on large datasets where some lag in reflecting the latest updates (bounded by the last VACUUM) is acceptable. We're still focused on being the transactional Elasticsearch, but this optional optimization can be great when you need maximum performance or have immutable INSERT only data.
 
 ### A Complete Example
 
@@ -151,8 +149,6 @@ When you see `OVER ()` alongside an `ORDER` and `LIMIT` (TopN query), it signals
 
 This design intentionally bridges two paradigms. Elasticsearch users recognize the JSON configuration format, while SQL users see familiar window function syntax. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
 
-This approach strikes a balance between the expressiveness of Elasticsearch's aggregation API and the readability of SQL window functions.
-
 The first row of the output looks like this:
 
 ```sql
@@ -172,7 +168,7 @@ The faceting information is added alongside the search query using a JSONB colum
 
 ## Comparing the Approaches
 
-Let's see how this compares to more traditional PostgreSQL approaches. When you need faceted search in traditional PostgreSQL, you end up writing complex queries with CTEs and manual aggregations. Both approaches below use ParadeDB for BM25 search, with the difference is in how the faceting is handled. Here's what a very optimized version of "manual faceting" looks like:
+Let's see how this compares to a more traditional PostgreSQL approach with the same output, but using complex queries with CTEs and manual aggregations. Both approaches below use ParadeDB for BM25 search, with the difference is in how the faceting is handled. Here's what a very optimized version of "manual faceting" for a histogram of post ratings looks like:
 
 ```sql
 WITH
@@ -234,7 +230,7 @@ Now we have our syntax, but it isn’t as simple as just writing the `pdb.agg()`
 
 PostgreSQL provides a custom scan API that allows extensions to implement their own execution nodes. However, to fully integrate faceting with window functions, we also need to use planner hooks to intercept the planning process before PostgreSQL creates standard window aggregation nodes.
 
-We inject our custom execution node at plan time, intercepting the planning process when we detect a `pdb.agg()` function used as a window. We do this using a combination of planner hooks and the custom scan API in three stages:
+We inject a custom execution node at plan time, intercepting the planning process when we detect a `pdb.agg()` function used as a window. We do this using a combination of planner hooks and the custom scan API in three stages:
 
 1. **Query Interception.** The planner hook scans the query tree for `WindowFunc` nodes using `pdb.agg()`. It replaces them with ParadeDB placeholders _before_ PostgreSQL’s `grouping_planner()` runs. This prevents Postgres from creating real `WindowAgg` nodes we’d later need to undo.
 2. **Custom Scan Injection.** When queries combine full-text search, `ORDER BY`, `LIMIT`, and our placeholder `WindowAgg` node we take over planning. This is the entry point for Top-N faceting queries. The planner swaps in a `PdbScan` node capable of executing both the search and the aggregation in one pass, making sure that the parts of the query that aren’t handled by ParadeDB (non-search WHERE clauses, outer clauses / CTEs, FILTERS) are delegated back to PostgreSQL as normal.
@@ -254,7 +250,7 @@ This document stream is then passed into a **compound collector**, which coordin
 
 ### **2. TopDocs Collector (ORDER and LIMIT)**
 
-The **TopDocs collector** is responsible for ranking and limiting the result set. The ranking could be by BM25 score (`pdb.score(id`), or it could be by a column value (which gets looked up from the column storage).
+The **TopDocs collector** is responsible for ranking and limiting the result set. The ranking could be by BM25 score (`pdb.score(id`), or it could be by a column value (which gets looked up from the columnar storage).
 
 Tantivy uses a quickselect buffer to maintain only the top-N highest ordered documents, traversing the document stream and only keeping N records at any one time using a very small amount of memory.
 
@@ -262,11 +258,11 @@ Tantivy uses a quickselect buffer to maintain only the top-N highest ordered doc
 
 The Aggregation collector is where the actual faceting magic happens. While TopDocs is busy ordering documents, this collector is busy counting things.
 
-For every matching document, the facet collector fetches and aggregates only the fields you asked for (category, price, rating etc.) directly from Tantivy's column storage. This matters because we never need to reconstruct full rows like PostgreSQL would, we can pull just the specific column values needed for aggregation, reducing the amount of data we need to read into memory.
+For every matching document, the facet collector fetches and aggregates only the fields you asked for (category, price, rating etc.) directly from Tantivy's columnar storage. This matters because we never need to reconstruct full rows like PostgreSQL would, we can pull just the specific column values needed for aggregation, reducing the amount of data we need to read into memory.
 
-Tantivy's column storage is designed for exactly this pattern: fast per-document, single-column lookups. For string fields, it uses dictionary encoding, so the entire aggregation happens on integers rather than strings, which are only converted back to strings at the very end. This makes the aggregation process extremely efficient - we're counting integer IDs rather than comparing and hashing string values millions of times per second.
+Tantivy's columnaarr storage is designed for exactly this pattern: fast per-document, single-column lookups. For string fields, it uses dictionary encoding, so the entire aggregation happens on integers rather than strings, which are only converted back to strings at the very end. This makes the aggregation process extremely efficient, we're counting integer IDs rather than comparing string values millions of times per second.
 
-Here's where things get interesting from a correctness perspective: this same collector also checks and applies **MVCC filtering** to maintain full ACID guarantees, only aggregating values that are visible to your current transaction. When the MVCC flag is set to `false`, we skip these visibility checks entirely for maximum performance—useful for analytics workloads where approximate counts are acceptable.
+Here's where things get interesting from a correctness perspective: this same collector also checks and applies **MVCC filtering** to maintain full ACID guarantees, only aggregating values that are visible to your current transaction. When the MVCC flag is set to `false`, we skip these visibility checks entirely for maximum performance, which is useful for analytics workloads where approximate counts are acceptable.
 
 ### **5. Materializing the Final Result**
 
@@ -275,7 +271,7 @@ Once collection finishes, ParadeDB has two outputs:
 - The **ranked hits** from the TopDocs collector.
 - The **facet aggregation result** from the Aggregation collector.
 
-The Aggregation collector serializes its in-memory facet map into JSON and attaches it as a single facets column next to the search the query output.
+The Aggregation collector serializes its in-memory facet map into JSON and attaches it as a single facets column next to the search the query output. This will be mapped back to the value for the `pdb.agg() OVER ()` window.
 
 ## Conclusion
 
@@ -289,4 +285,4 @@ Ready to try faceted search in your PostgreSQL database? [Get started with Parad
 
 ---
 
-[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);` Full documentation on index creation can be found [here](https://docs.paradedb.com/documentation/indexing/create-index).
+[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found [here](https://docs.paradedb.com/documentation/indexing/create-index).
