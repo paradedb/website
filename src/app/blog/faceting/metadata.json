@@ -1,5 +1,5 @@
 {
-  "title": "Fast Faceted Search in PostgreSQL with ParadeDB",
+  "title": "14x Faster Faceted Search in PostgreSQL with ParadeDB",
   "date": "2025-11-04T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
   "description": "Introducing faceted search in ParadeDB - bringing the power of search engine faceting to PostgreSQL with single-query aggregations.",

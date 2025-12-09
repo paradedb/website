@@ -1,14 +1,14 @@
 import Image from "next/image";
 import { ReferenceLine } from "recharts";
-import { BarChart, Card, Subtitle, Bold } from "@tremor/react"
-import FacetingChart from "./FacetingChart"
-import heroImage from "./images/hero.png"
+import { BarChart, Card, Subtitle, Bold } from "@tremor/react";
+import FacetingChart from "./FacetingChart";
+import heroImage from "./images/hero.png";
 
 import blogMetadata from "./metadata.json";
 import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
-import { Note } from "@mintlify/components"
+import { Note } from "@mintlify/components";
 import faceting from "./images/demandsciencesmall.png";
 
 <Title metadata={blogMetadata} />
@@ -20,14 +20,18 @@ Picture this: you've built a perfectly reasonable search app. Users type "dinosa
 In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we structured the SQL API using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (spoiler alert: [over an order of magnitude faster](#performance-why-this-matters) for large result sets).
 
 <Note>
-If you aren't familiar with [ParadeDB](https://paradedb.com), we're a Postgres extension that brings modern search capabilities directly into your database. Instead of managing separate search infrastructure, you get BM25 full-text search, vector search, and real-time analytics while keeping all your data in Postgres with full ACID guarantees.
+  If you aren't familiar with [ParadeDB](https://paradedb.com), we're a Postgres
+  extension that brings modern search capabilities directly into your database.
+  Instead of managing separate search infrastructure, you get BM25 full-text
+  search, vector search, and real-time analytics while keeping all your data in
+  Postgres with full ACID guarantees.
 </Note>
 
 ## How Search Engines Count
 
-Faceting is a way of summarizing the contents of a search result. When you type a query like "laptop", you’re not just asking for a list of matching documents, you’re also thinking, *what kinds of laptops exist in this result set?* Maybe there are 1,200 Dell laptops, 800 Lenovo, and 600 Apple. Each item in that breakdown, the counts of results grouped by attribute, is a **facet**.
+Faceting is a way of summarizing the contents of a search result. When you type a query like "laptop", you’re not just asking for a list of matching documents, you’re also thinking, _what kinds of laptops exist in this result set?_ Maybe there are 1,200 Dell laptops, 800 Lenovo, and 600 Apple. Each item in that breakdown, the counts of results grouped by attribute, is a **facet**.
 
-Facets turn search from a one-dimensional list into something that can help visualize navigation. They set the stage to let you explore results by filtering on structured fields (like *brand* or *price range*) while still searching free text (like *developer laptop*). In other words, faceting is where structured data meets unstructured search.
+Facets turn search from a one-dimensional list into something that can help visualize navigation. They set the stage to let you explore results by filtering on structured fields (like _brand_ or _price range_) while still searching free text (like _developer laptop_). In other words, faceting is where structured data meets unstructured search.
 
 <figure className="flex flex-col items-center">
   <Image
@@ -36,31 +40,34 @@ Facets turn search from a one-dimensional list into something that can help visu
     className="rounded-xl"
   />
   <figcaption className="mt-2 text-sm text-gray-500">
-    Faceted search powering real-world insights: an example from our customer, DemandScience.
+    Faceted search powering real-world insights: an example from our customer,
+    DemandScience.
   </figcaption>
 </figure>
 
 Behind the scenes, each facet corresponds to a column or field in your dataset. A search engine computes how many matching documents belong to each unique value or bucket of that field, then returns both the top results and these aggregate counts in a single response. Because a search result usually returns results that are spread across our dataset the database needs a quick way to look up values for each document.
 
-That duality, returning ranked search hits *and* category counts, is what makes faceting so powerful. It's also what makes it tricky to implement efficiently in a database built for rows, not documents.
+That duality, returning ranked search hits _and_ category counts, is what makes faceting so powerful. It's also what makes it tricky to implement efficiently in a database built for rows, not documents.
 
 ## The Problem with Traditional Approaches
 
 If you're thinking, "I'll just run a few extra COUNT queries, how hard can it be?", you're about to discover why search engines exist in the first place.
 
-The thing is, faceting *looks* simple: it's just grouping and counting. But try to make it fast in a traditional row-based database, and you'll run into serious performance challenges. Want to show search results *and* category counts from a single query? That's either two index scans or a full index scan and a lot of data transferred. Want it to be responsive? That becomes increasingly difficult as the number of results increases.
+The thing is, faceting _looks_ simple: it's just grouping and counting. But try to make it fast in a traditional row-based database, and you'll run into serious performance challenges. Want to show search results _and_ category counts from a single query? That's either two index scans or a full index scan and a lot of data transferred. Want it to be responsive? That becomes increasingly difficult as the number of results increases.
+
+Let's take a look at **how** much faster our approach is, and also **how** we make this possible (by pipelining the search query and faceting into a single index scan, and making use of a columnar format for value lookups).
 
 ## Performance: Our Benchmarking Results
 
-To understand the scope of this problem, we benchmarked traditional PostgreSQL faceting against ParadeDB's integrated approach using a dataset of 46 million Hacker News posts and comments.
+To understand the scope of this problem, we benchmarked traditional PostgreSQL faceting against ParadeDB's integrated approach using a dataset of 46 million Hacker News posts and comments (details on the queries and schema can be found [later in the post](#comparing-the-approaches)).
 
 Both approaches use ParadeDB's BM25 search (PostgreSQL's built-in tsvector simply doesn't cut it, already being 27x slower at 200,000 results), but they differ in how faceting is implemented. The results show just how significant the performance difference can be:
 
 <FacetingChart />
 
-As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's faceting maintains consistent performance by executing both search and aggregation in a single pass through the index. The orange line shows ParadeDB with MVCC disabled, demonstrating additional performance gains when strict transactional consistency isn't required. At scale, this represents over an order of magnitude improvement.
+As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's faceting maintains consistent performance by executing both search and aggregation in a single pass through the index. At scale, this represents well over an order of magnitude improvement. The orange bar shows ParadeDB with MVCC disabled, demonstrating that an additional 3x performance gain is possible when strict transactional consistency isn't required.
 
-So how does ParadeDB achieve these results?
+So how does ParadeDB achieve these results? Before we jump into planning and execution let's take a look at our syntax.
 
 ## Faceting in a Row-Based World
 
@@ -79,7 +86,7 @@ Instead of complex CTEs and multiple queries, you get both search results and fa
 ```sql
 SELECT
   id, title, score, pdb.score(id) AS rank,
-  pdb.agg('{"histogram": {"field": "score", "interval": 50}}') 
+  pdb.agg('{"histogram": {"field": "score", "interval": 50}}')
     OVER () as facets
 FROM hn_items
 WHERE (text ||| 'postgresql')
@@ -91,7 +98,7 @@ The magic in the `OVER ()` syntax: this means "over the entire result set, ignor
 
 We use a JSON DSL that mirrors the [Elasticsearch aggregation API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), with our [`pdb.agg()` function](https://docs.paradedb.com/documentation/aggregates/overview) supporting [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
 
-The result includes both your search hits and the faceting data as a JSONB column. The faceting information appears alongside each row, giving you structured, self-contained aggregation results that are easy to parse on the client side. 
+The result includes both your search hits and the faceting data as a JSONB column. The faceting information appears alongside each row, giving you structured, self-contained aggregation results that are easy to parse on the client side.
 
 ### MVCC and Performance Tradeoffs
 
@@ -105,7 +112,7 @@ pdb.agg('{"terms": {"field": "category"}}') OVER ()
 pdb.agg('{"terms": {"field": "category"}}', false) OVER ()
 ```
 
-When MVCC is disabled, the aggregation operates directly on the search index without visibility checks. This is useful for analytics workloads on large datasets where some lag in reflecting the latest udpates is acceptable. We're still the transactional Elasticsearch, this is just an optional optimization when you need maximum performance.
+When MVCC is disabled, the aggregation operates directly on the search index without visibility checks. This is useful for analytics workloads on large datasets where some lag in reflecting the latest updates is acceptable. We're still the transactional Elasticsearch, this is just an optional optimization when you need maximum performance.
 
 ### A Complete Example
 
@@ -130,17 +137,17 @@ CREATE TABLE hn_items (
 After creating a ParadeDB search index[^1], you can run faceted search queries that return both ranked results and category counts:
 
 ```sql
-SELECT                  
-  id, title, score, 
-  jsonb_pretty(pdb.agg('{"terms": {"field": "type"}}', true)  
+SELECT
+  id, title, score,
+  jsonb_pretty(pdb.agg('{"terms": {"field": "type"}}', true)
     OVER ()) as facets
-FROM hn_items    
+FROM hn_items
 WHERE (text @@@ 'paradedb')
-ORDER BY score DESC                             
+ORDER BY score DESC
 LIMIT 10;
 ```
 
-When you see `OVER ()` alongside an `ORDER` and `LIMIT` (TopN query), it signals: *"compute this aggregation once per search window."*
+When you see `OVER ()` alongside an `ORDER` and `LIMIT` (TopN query), it signals: _"compute this aggregation once per search window."_
 
 This design intentionally bridges two paradigms. Elasticsearch users recognize the JSON configuration format, while SQL users see familiar window function syntax. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
 
@@ -152,9 +159,9 @@ The first row of the output looks like this:
 id     | 41178808
 title  | The future of F/OSS continues to be AGPL
 score  | 34
-facets | {   
-       |     "buckets": [            
-       |         { "key": "comment", "doc_count": 185 },                
+facets | {
+       |     "buckets": [
+       |         { "key": "comment", "doc_count": 185 },
        |         { "key": "story",   "doc_count": 2   }
        |     ],
        | }
@@ -165,17 +172,17 @@ The faceting information is added alongside the search query using a JSONB colum
 
 ## Comparing the Approaches
 
-Let's see how this compares to traditional PostgreSQL approaches. When you need faceted search in traditional PostgreSQL, you end up writing complex queries with CTEs and manual aggregations. Both approaches below use ParadeDB for BM25 search, with the difference is in how the faceting is handled. Here's what a very optimized version of "manual faceting" looks like:
+Let's see how this compares to more traditional PostgreSQL approaches. When you need faceted search in traditional PostgreSQL, you end up writing complex queries with CTEs and manual aggregations. Both approaches below use ParadeDB for BM25 search, with the difference is in how the faceting is handled. Here's what a very optimized version of "manual faceting" looks like:
 
 ```sql
-WITH 
+WITH
 -- get the id, score and bm25 rank for the search query
 hits AS  (
-  SELECT         
+  SELECT
     id,
-    pdb.score(id) AS rank,                                                 
+    pdb.score(id) AS rank,
     score
-  FROM hn_items              
+  FROM hn_items
   WHERE (text ||| 'postgresql')
 ),
 -- do our faceting on the full result-set and build up a JSON object
@@ -211,7 +218,7 @@ Here's what **ParadeDB faceting** looks like for the same result:
 ```sql
 SELECT
   id, title, score, pdb.score(id) AS rank,
-  pdb.agg('{"histogram": {"field": "score", "interval": 50}}') 
+  pdb.agg('{"histogram": {"field": "score", "interval": 50}}')
     OVER () as facets
 FROM hn_items
 WHERE (text ||| 'postgresql')
@@ -219,17 +226,17 @@ ORDER BY rank DESC
 LIMIT 5;
 ```
 
-Same result, simpler syntax, and dramatically better performance.
+Same result, simpler syntax, and as we've already seen [dramatically better performance](#performance-our-benchmarking-results).
 
 ## **How Faceting Hooks Into the PostgreSQL Planner**
 
-Now we have our syntax, but it isn’t as simple as just writing the `pdb.agg()` function and calling it a day. Because PostgreSQL aggregates (including those in window functions) usually run **after** the data is fetched from indexes and loaded to shared buffers we have a problem. We want to do our search and our faceting in a single pass, but they are executed in fundamentally different places during query execution. 
+Now we have our syntax, but it isn’t as simple as just writing the `pdb.agg()` function and calling it a day. Because PostgreSQL aggregates (including those in window functions) usually run **after** the data is fetched from indexes and loaded to shared buffers we have a problem. We want to do our search and our faceting in a single pass, but they are executed in fundamentally different places during query execution.
 
 PostgreSQL provides a custom scan API that allows extensions to implement their own execution nodes. However, to fully integrate faceting with window functions, we also need to use planner hooks to intercept the planning process before PostgreSQL creates standard window aggregation nodes.
 
 We inject our custom execution node at plan time, intercepting the planning process when we detect a `pdb.agg()` function used as a window. We do this using a combination of planner hooks and the custom scan API in three stages:
 
-1. **Query Interception.** The planner hook scans the query tree for `WindowFunc` nodes using `pdb.agg()`. It replaces them with ParadeDB placeholders *before* PostgreSQL’s `grouping_planner()` runs. This prevents Postgres from creating real `WindowAgg` nodes we’d later need to undo.
+1. **Query Interception.** The planner hook scans the query tree for `WindowFunc` nodes using `pdb.agg()`. It replaces them with ParadeDB placeholders _before_ PostgreSQL’s `grouping_planner()` runs. This prevents Postgres from creating real `WindowAgg` nodes we’d later need to undo.
 2. **Custom Scan Injection.** When queries combine full-text search, `ORDER BY`, `LIMIT`, and our placeholder `WindowAgg` node we take over planning. This is the entry point for Top-N faceting queries. The planner swaps in a `PdbScan` node capable of executing both the search and the aggregation in one pass, making sure that the parts of the query that aren’t handled by ParadeDB (non-search WHERE clauses, outer clauses / CTEs, FILTERS) are delegated back to PostgreSQL as normal.
 3. **WindowAgg Extraction**. Extracts and converts the `pdb.agg()` placeholder into a form Tantivy (our underlying search library) understands, adding the information to the custom `PdbScan`. This is where we parse the JSONB definition and build the aggregation tree (terms, range, etc.) to run inside the search engine.
 
@@ -237,7 +244,7 @@ The key insight is timing, this integration happens *before* PostgreSQL attemp
 
 ## **How Faceting Executes Inside ParadeDB**
 
-Once PostgreSQL hands off the plan, the real work begins inside ParadeDB's search layer. At this point, we're no longer working with rows, we're working with **search indexes** and **column data** inside Tantivy. The key idea is that ParadeDB executes both **ranking** and **aggregation** in the *same pass* through the index.
+Once PostgreSQL hands off the plan, the real work begins inside ParadeDB's search layer. At this point, we're no longer working with rows, we're working with **search indexes** and **column data** inside Tantivy. The key idea is that ParadeDB executes both **ranking** and **aggregation** in the _same pass_ through the index.
 
 ### **1. Searching and Collecting**
 
@@ -270,7 +277,6 @@ Once collection finishes, ParadeDB has two outputs:
 
 The Aggregation collector serializes its in-memory facet map into JSON and attaches it as a single facets column next to the search the query output.
 
-
 ## Conclusion
 
 Faceting is one of those features that looks simple on the surface but gets complex fast when you try to implement it efficiently in a traditional row-based database. The performance overhead of manual faceting approaches scales poorly with result set size, forcing developers to choose between feature richness and performance.
@@ -281,6 +287,6 @@ The result is a simple SQL interface that gives you the best of both worlds: Pos
 
 Ready to try faceted search in your PostgreSQL database? [Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started) and see how faceting can transform your search experience.
 
-----
+---
 
 [^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);` Full documentation on index creation can be found [here](https://docs.paradedb.com/documentation/indexing/create-index).
