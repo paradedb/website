@@ -79,7 +79,7 @@ When we set out to design the syntax for faceting, we had three goals:
 
 We experimented with a few approaches: full JSONB result sets, LATERAL subqueries, and a behind-the-scenes UNION. The one we kept coming back to was using PostgreSQL's window functions to express faceting instructions, passing a JSON DSL that mirrors the Elasticsearch aggregation API.
 
-That led us to a [new window function, `pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) (also usable in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregation. Most notably for faceting it supports [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
+That led us to a [new window function, `pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) (also usable in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregations. Most notably for faceting it supports [terms](https://docs.paradedb.com/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://docs.paradedb.com/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://docs.paradedb.com/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
 
 Instead of complex CTEs and multiple queries, you get both search results and facet counts in a single, clean query:
 
