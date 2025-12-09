@@ -137,8 +137,7 @@ After creating a ParadeDB search index[^1], you can run faceted search queries t
 ```sql
 SELECT
   id, title, score,
-  jsonb_pretty(pdb.agg('{"terms": {"field": "type"}}', true)
-    OVER ()) as facets
+  pdb.agg('{"terms": {"field": "type"}}') OVER () as facets
 FROM hn_items
 WHERE (text @@@ 'paradedb')
 ORDER BY score DESC
@@ -147,7 +146,10 @@ LIMIT 10;
 
 When you see `OVER ()` alongside an `ORDER` and `LIMIT` (TopN query), it signals: _"compute this aggregation once per search window."_
 
-This design intentionally bridges two paradigms. Elasticsearch users recognize the JSON configuration format, while SQL users see familiar window function syntax. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
+This design intentionally bridges two paradigms. It is designed to be familiar to both Elasticsearch (making use of the Elasticsearch DSL) and SQL (with the WINDOW syntax) users. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
+
+
+Ths design intentionally bridges two paradigms, with the structure of SQL and the flexibility of search engines. It combines the expressiveness of Elasticsearch’s JSON DSL, which allows rich and composable aggregations, with the familiar simplicity of SQL’s WINDOW syntax, which makes it easy to use and reason about. PostgreSQL’s parser treats `pdb.agg()` as a standard window function call, letting ParadeDB implement custom aggregation logic directly within PostgreSQL’s query execution framework. The result is an interface that feels natural to both SQL and Elasticsearch users.
 
 The first row of the output looks like this:
 
@@ -168,7 +170,7 @@ The faceting information is added alongside the search query using a JSONB colum
 
 ## Comparing the Approaches
 
-Let's see how this compares to a more traditional PostgreSQL approach with the same output, but using complex queries with CTEs and manual aggregations. Both approaches below use ParadeDB for BM25 search, with the difference is in how the faceting is handled. Here's what a very optimized version of "manual faceting" for a histogram of post ratings looks like:
+Let's see how this compares to a more traditional PostgreSQL approach with the same output, but using complex queries with CTEs and manual aggregations. Both approaches below use ParadeDB for BM25 search, differing in how the faceting is handled. Here's what a very optimized version of "manual faceting" for a histogram of post ratings looks like:
 
 ```sql
 WITH
@@ -275,9 +277,7 @@ The Aggregation collector serializes its in-memory facet map into JSON and attac
 
 ## Conclusion
 
-Faceting is one of those features that looks simple on the surface but gets complex fast when you try to implement it efficiently in a traditional row-based database. The performance overhead of manual faceting approaches scales poorly with result set size, forcing developers to choose between feature richness and performance.
-
-ParadeDB's approach removes that complexity by bringing Elasticsearch-style faceting directly into PostgreSQL. By integrating faceting at the search engine level, we can execute both ranking and aggregation in a single pass through the index, delivering order-of-magnitude performance improvements without forcing you to manage a separate search infrastructure.
+Faceting is one of those features that looks simple on the surface, but is surprisingly hard to make both easy for developers to use and efficient under the hood. ParadeDB's approach solves this, bringing Elasticsearch-style faceting directly into PostgreSQL. By integrating faceting at the search engine level, we can execute both ranking and aggregation in a single pass through the index, delivering order-of-magnitude performance improvements without forcing you to manage separate search infrastructure.
 
 The result is a simple SQL interface that gives you the best of both worlds: PostgreSQL's ACID guarantees and transactional semantics, combined with the performance and developer experience of modern search engines.
 
