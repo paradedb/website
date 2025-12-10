@@ -716,14 +716,16 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
                     }))
                   : [];
 
+                const labelString = String(label ?? "");
+                
                 if (
                   tooltipCallback &&
                   (active !== prevActiveRef.current ||
                     label !== prevLabelRef.current)
                 ) {
-                  tooltipCallback({ active, payload: cleanPayload, label });
+                  tooltipCallback({ active, payload: cleanPayload, label: labelString });
                   prevActiveRef.current = active;
-                  prevLabelRef.current = label;
+                  prevLabelRef.current = labelString;
                 }
 
                 return showTooltip && active ? (
@@ -731,13 +733,13 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
                     <CustomTooltip
                       active={active}
                       payload={cleanPayload}
-                      label={label}
+                      label={labelString}
                     />
                   ) : (
                     <ChartTooltip
                       active={active}
                       payload={cleanPayload}
-                      label={label}
+                      label={labelString}
                       valueFormatter={valueFormatter}
                     />
                   )

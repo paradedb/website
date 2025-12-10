@@ -10,8 +10,7 @@ import { siteConfig } from "./siteConfig";
 import "@mintlify/components";
 
 // Mintlify MDX + other global styles
-import "@mintlify/components/dist/styles.css";
-import "@mintlify/mdx/dist/styles.css";
+import "@mintlify/components/styles.css";
 import "highlight.js/styles/github-dark.css";
 import "./globals.css";
 
@@ -75,7 +74,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <GoogleTagManager gtmId="GTM-KMGRG564" />
       <body
-        className={`${inter.className} min-h-screen scroll-auto antialiased selection:bg-indigo-100 selection:text-indigo-700`}
+        className={`${inter.className} min-h-screen scroll-auto antialiased bg-white selection:bg-indigo-100 selection:text-indigo-700`}
       >
         <ThemeProvider defaultTheme="light" attribute="class">
           <Navigation />

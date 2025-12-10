@@ -16,13 +16,13 @@ export default function BlogListImage({ slug, title }: BlogListImageProps) {
     const loadHeroImage = async () => {
       try {
         // Try to import the PNG first
-        const pngImage = await import(`/src/app/blog/${slug}/images/hero.png`);
+        const pngImage = await import(`./${slug}/images/hero.png`);
         setHeroImage(pngImage.default);
       } catch {
         try {
           // Fallback to SVG
           const svgImage = await import(
-            `/src/app/blog/${slug}/images/hero.svg`
+            `./${slug}/images/hero.svg`
           );
           setHeroImage(svgImage.default);
         } catch {

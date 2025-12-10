@@ -54,7 +54,7 @@ export function Navigation() {
   return (
     <div>
       <div className="flex w-screen justify-center space-x-4 bg-indigo-600 px-2 py-4 text-center text-white">
-        <div className="hidden rounded bg-white bg-opacity-20 px-2 py-1 text-xs font-medium md:block">
+        <div className="hidden rounded  bg-opacity-20 px-2 py-1 bg-[#786EEA] text-xs font-medium md:block">
           News
         </div>
         <div className="relative top-0.5 text-left text-sm">

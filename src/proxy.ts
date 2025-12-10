@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
   const userAgent = request.headers.get("user-agent") || "";
 
-  // If the user agent is curl, return the deploy script
   if (userAgent.startsWith("curl/")) {
     const response = await fetch(
       "https://raw.githubusercontent.com/paradedb/paradedb/refs/heads/main/install.sh",

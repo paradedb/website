@@ -1,10 +1,5 @@
 /** @type {import('next').NextConfig} */
 import createMDX from "@next/mdx";
-import rehypeHighlight from "rehype-highlight";
-import rehypeSlug from "rehype-slug";
-import rehypeKatex from "rehype-katex";
-import remarkMath from "remark-math";
-import remarkGfm from "remark-gfm";
 import path from "path";
 
 /** @type {import('next').NextConfig} */
@@ -12,18 +7,6 @@ const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
-  // Mintlify CSS alias so we can `import "@mintlify/components/dist/styles.css"`
-  webpack: (config) => {
-    config.resolve = config.resolve || {};
-    config.resolve.alias = {
-      ...(config.resolve.alias || {}),
-      "@mintlify/components/dist/styles.css": path.resolve(
-        process.cwd(),
-        "node_modules/@mintlify/components/dist/styles.css",
-      ),
-    };
-    return config;
-  },
 
   async redirects() {
     return [
@@ -116,21 +99,20 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
-  extension: /\.mdx?$/,
   options: {
     providerImportSource: "@mdx-js/react",
     remarkPlugins: [
       [
-        remarkMath,
+        "remark-math",
         {
           singleDollarTextMath: false,
           inlineMathDouble: true,
           blockMathDouble: true,
         },
       ],
-      remarkGfm,
+      "remark-gfm",
     ],
-    rehypePlugins: [rehypeSlug, rehypeHighlight, rehypeKatex],
+    rehypePlugins: ["rehype-slug", "rehype-highlight", "rehype-katex"],
   },
 });
 
