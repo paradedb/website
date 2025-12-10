@@ -1,3 +1,4 @@
+// src/components/mdx/Callouts.tsx
 import type { ReactNode } from "react";
 import { Callout } from "@mintlify/components";
 
@@ -6,11 +7,9 @@ type CalloutProps = {
 };
 
 const baseClasses =
-  // rounded pill + nice padding
+  // shape + spacing
   "!rounded-2xl !border !px-4 !py-3 " +
-  // Mintlify-ish colors
-  "!bg-[#F9FAFB] !border-[#E5E7EB] " +
-  // compact typography
+  // typography
   "text-[15px] leading-tight";
 
 export function Info({ children }: CalloutProps) {

@@ -87,11 +87,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/blog/improving_documentation",
-        destination: "https://www.paradedb.com/blog/improving-documentation",
-        permanent: true,
-      },
-      {
         source: "/blog/introducing_paradedb",
         destination: "https://www.paradedb.com/blog/introducing-paradedb",
         permanent: true,
