@@ -35,7 +35,7 @@ export default async function Blog() {
                     })}
                   </time>
                   {post.categories && post.categories.length > 0 && (
-                    <span className="text-sm text-indigo-500">
+                    <span className="text-xs text-indigo-500 rounded-lg bg-indigo-50 py-1 px-2 capitalize">
                       {post.categories[0]}
                     </span>
                   )}
@@ -47,8 +47,8 @@ export default async function Blog() {
                   {post.description}
                 </p>
                 <div className="mt-4">
-                  <span className="text-sm md:text-xs text-gray-500">
-                    {Array.isArray(post.author)
+                  <span className="text-sm md:text-xs text-gray-700">
+                    By {Array.isArray(post.author)
                       ? post.author.join(", ")
                       : post.author}
                   </span>
