@@ -48,7 +48,8 @@ export default async function Blog() {
                 </p>
                 <div className="mt-4">
                   <span className="text-sm md:text-xs text-gray-700">
-                    By {Array.isArray(post.author)
+                    By{" "}
+                    {Array.isArray(post.author)
                       ? post.author.join(", ")
                       : post.author}
                   </span>
