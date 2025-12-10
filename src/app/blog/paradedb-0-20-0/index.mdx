@@ -5,6 +5,7 @@ import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
+import graph from "./images/graph.png";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
@@ -31,34 +32,11 @@ Both variants take control of parts of query planning and execution, pushing as 
 
 Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method (a ParadeDB search returning all results, feeding into a PostgreSQL aggregate) over more than 40 million results (full details to come in a search aggregations post).
 
-<Card className="text-center">
-  <Subtitle>
-    <Bold>
-      Faceting (search and aggregation) query time for 42 million results
-    </Bold>
-  </Subtitle>
-  <BarChart
-    data={[
-      {
-        name: "ParadeDB Faceting",
-        Milliseconds: 1013,
-      },
-      {
-        name: "Manual Faceting",
-        Milliseconds: 11849,
-      },
-    ]}
-    index="name"
-    categories={["Milliseconds"]}
-    showLegend={false}
-    colors={["indigo"]}
-    layout="vertical"
-    yAxisWidth={80}
-    xAxisLabel="Milliseconds"
-    className="h-48"
-    renderLabel
-  />
-</Card>
+<Image
+  src={graph}
+  alt="Faceting (search and aggregation) query time for 42 million results"
+  className="rounded-xl"
+/>
 
 `pdb.agg()` can also be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
 
