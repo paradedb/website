@@ -15,18 +15,21 @@ export default function BlogListImage({ slug, title }: BlogListImageProps) {
   useEffect(() => {
     const loadHeroImage = async () => {
       try {
-        // Try to import the PNG first
-        const pngImage = await import(`/src/app/blog/${slug}/images/hero.png`);
+        const pngImage = await import(`./${slug}/images/hero.png`);
         setHeroImage(pngImage.default);
       } catch {
         try {
-          // Fallback to SVG
-          const svgImage = await import(
-            `/src/app/blog/${slug}/images/hero.svg`
-          );
+          const svgImage = await import(`./${slug}/images/hero.svg`);
           setHeroImage(svgImage.default);
         } catch {
-          console.error(`Could not load hero image for ${slug}`);
+          try {
+            const ogImage = await import(
+              `./${slug}/images/opengraph-image.png`
+            );
+            setHeroImage(ogImage.default);
+          } catch {
+            setHeroImage(null);
+          }
         }
       }
       setLoading(false);

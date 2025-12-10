@@ -62,7 +62,6 @@ export default function Hero() {
             <Code
               code={code}
               lang="bash"
-              copy={true}
               className="rounded-xl bg-slate-100 text-left"
               theme="github-dark-dimmed"
             />
