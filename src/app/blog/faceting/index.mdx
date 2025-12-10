@@ -68,7 +68,7 @@ Both approaches use ParadeDB's BM25 search (PostgreSQL's built-in tsvector simpl
   className="rounded-xl"
 />
 
-As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's TopN faceting maintains consistent performance by executing both search ranking and aggregation in a single pass through the index. This efficiency comes from making use of ParadeDB’s columnar index, which allows fast per-document value lookups during aggregation. At scale, this represents well over an order of magnitude improvement. The orange bar shows ParadeDB with MVCC disabled, demonstrating that an additional 3× performance gain is possible when strict transactional consistency isn’t required for the facets.
+As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's TopN faceting maintains consistent performance by executing both search ranking and aggregation in a single pass through the index. This efficiency comes from making use of ParadeDB's columnar index, which allows fast per-document value lookups during aggregation. At scale, this represents well over an order of magnitude improvement. The orange bar shows ParadeDB with MVCC[^2] disabled, demonstrating that an additional 3× performance gain is possible when strict transactional consistency isn't required for the facets.
 
 So how does ParadeDB achieve these results? Before we jump into planning and execution let's take a look at our syntax.
 
@@ -288,3 +288,5 @@ Ready to try faceted search in your PostgreSQL database? [Get started with Parad
 ---
 
 [^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found [here](https://docs.paradedb.com/documentation/indexing/create-index).
+
+[^2]: [MVCC (Multi-Version Concurrency Control)](https://www.postgresql.org/docs/current/mvcc.html) is PostgreSQL's mechanism for handling concurrent transactions by maintaining multiple versions of data when rows are modified. The built in [VACUUM](https://www.postgresql.org/docs/current/routine-vacuuming.html) asynchronously cleans up these old versions. Accessing rows includes visibility checks in both tables and indexes to ensure each transaction sees the correct version of data.
