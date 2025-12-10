@@ -23,7 +23,9 @@ export default function BlogListImage({ slug, title }: BlogListImageProps) {
           setHeroImage(svgImage.default);
         } catch {
           try {
-            const ogImage = await import(`./${slug}/images/opengraph-image.png`);
+            const ogImage = await import(
+              `./${slug}/images/opengraph-image.png`
+            );
             setHeroImage(ogImage.default);
           } catch {
             setHeroImage(null);
