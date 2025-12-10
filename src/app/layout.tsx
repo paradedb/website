@@ -6,6 +6,11 @@ import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 import { siteConfig } from "./siteConfig";
 
+// Mintlify components JS entry (which pulls in its own CSS)
+import "@mintlify/components";
+
+// Mintlify MDX + other global styles
+import "@mintlify/components/dist/styles.css";
 import "@mintlify/mdx/dist/styles.css";
 import "highlight.js/styles/github-dark.css";
 import "./globals.css";

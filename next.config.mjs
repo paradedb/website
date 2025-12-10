@@ -5,12 +5,25 @@ import rehypeSlug from "rehype-slug";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import remarkGfm from "remark-gfm";
+import path from "path";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
-  // Optionally, add any other Next.js config below
+
+  // Mintlify CSS alias so we can `import "@mintlify/components/dist/styles.css"`
+  webpack: (config) => {
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "@mintlify/components/dist/styles.css": path.resolve(
+        process.cwd(),
+        "node_modules/@mintlify/components/dist/styles.css",
+      ),
+    };
+    return config;
+  },
 
   async redirects() {
     return [
@@ -74,11 +87,6 @@ const nextConfig = {
         permanent: true,
       },
       {
-        source: "/blog/improving_documentation",
-        destination: "https://www.paradedb.com/blog/improving-documentation",
-        permanent: true,
-      },
-      {
         source: "/blog/introducing_paradedb",
         destination: "https://www.paradedb.com/blog/introducing-paradedb",
         permanent: true,
@@ -108,10 +116,8 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
-  // Add any MDX-specific options or plugins here, if needed
   extension: /\.mdx?$/,
   options: {
-    // You can add rehype/remark plugins here if desired
     providerImportSource: "@mdx-js/react",
     remarkPlugins: [
       [

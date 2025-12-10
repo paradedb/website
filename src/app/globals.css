@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "@mintlify/components";
 @import "katex/dist/katex.min.css";
 
 @font-face {
@@ -74,4 +73,14 @@ a {
   .border-t-gradient {
     border-top: none;
   }
+}
+
+/* Mintlify Callout icon vertical alignment to first text line */
+.mt-callout-icon-wrapper {
+  align-items: flex-start !important;
+  padding-top: 18px; /* nudges icon down to align with text baseline */
+}
+
+.mt-callout-icon {
+  transform: translateY(1px); /* subtle optical adjustment */
 }
