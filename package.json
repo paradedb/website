@@ -36,6 +36,7 @@
     "gray-matter": "^4.0.3",
     "highlight.js": "^11.10.0",
     "katex": "^0.16.22",
+    "lucide-react": "^0.556.0",
     "next": "^15.0.0",
     "next-mdx-remote": "^5.0.0",
     "next-sitemap": "^4.2.3",
