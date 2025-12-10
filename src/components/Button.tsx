@@ -89,8 +89,7 @@ const buttonVariants = tv({
 });
 
 interface ButtonProps
-  extends
-    React.ComponentPropsWithoutRef<"button">,
+  extends React.ComponentPropsWithoutRef<"button">,
     VariantProps<typeof buttonVariants> {
   asChild?: boolean;
   isLoading?: boolean;
