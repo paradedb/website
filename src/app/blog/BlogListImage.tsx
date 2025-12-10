@@ -21,9 +21,7 @@ export default function BlogListImage({ slug, title }: BlogListImageProps) {
       } catch {
         try {
           // Fallback to SVG
-          const svgImage = await import(
-            `./${slug}/images/hero.svg`
-          );
+          const svgImage = await import(`./${slug}/images/hero.svg`);
           setHeroImage(svgImage.default);
         } catch {
           console.error(`Could not load hero image for ${slug}`);

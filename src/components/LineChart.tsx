@@ -717,13 +717,17 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
                   : [];
 
                 const labelString = String(label ?? "");
-                
+
                 if (
                   tooltipCallback &&
                   (active !== prevActiveRef.current ||
                     label !== prevLabelRef.current)
                 ) {
-                  tooltipCallback({ active, payload: cleanPayload, label: labelString });
+                  tooltipCallback({
+                    active,
+                    payload: cleanPayload,
+                    label: labelString,
+                  });
                   prevActiveRef.current = active;
                   prevLabelRef.current = labelString;
                 }
