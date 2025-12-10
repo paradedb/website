@@ -10,6 +10,7 @@ import { siteConfig } from "./siteConfig";
 import "@mintlify/components";
 
 // Mintlify MDX + other global styles
+import "@mintlify/components/dist/styles.css";
 import "@mintlify/mdx/dist/styles.css";
 import "highlight.js/styles/github-dark.css";
 import "./globals.css";
