@@ -163,35 +163,11 @@ Our solution is based on two key optimizations from `0.19.0`, now enabled by def
 
 Since we first introduced these features in `0.19.0` we've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
-<Card className="text-center">
-  <Subtitle>
-    <Bold>Updates Per Second on a Wide Table with a BM25 index</Bold>
-  </Subtitle>
-  <BarChart
-    data={[
-      {
-        name: "v0.20.0",
-        "Updates per second": 2016,
-      },
-      {
-        name: "v0.19.0",
-        "Updates per second": 1857,
-      },
-      {
-        name: "v0.18.0",
-        "Updates per second": 120,
-      },
-    ]}
-    index="name"
-    categories={["Updates per second"]}
-    showLegend={false}
-    colors={["indigo"]}
-    layout="vertical"
-    yAxisWidth={80}
-    xAxisLabel="Updates per second"
-    className="h-56"
-  />
-</Card>
+<Image
+  src={graph}
+  alt="Updates Per Second on a Wide Table with a BM25 index"
+  className="rounded-xl"
+/>
 
 Again, you can expect a follow up post with all the gory data-structure details.
 
