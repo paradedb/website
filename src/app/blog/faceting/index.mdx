@@ -264,7 +264,7 @@ The Aggregation collector is where the actual faceting magic happens. While To
 
 For every matching document, the facet collector fetches and aggregates only the fields you asked for (category, price, rating etc.) directly from Tantivy's columnar storage. This matters because we never need to reconstruct full rows like PostgreSQL would, we can pull just the specific column values needed for aggregation, reducing the amount of data we need to read into memory.
 
-Tantivy's columnaarr storage is designed for exactly this pattern: fast per-document, single-column lookups. For string fields, it uses dictionary encoding, so the entire aggregation happens on integers rather than strings, which are only converted back to strings at the very end. This makes the aggregation process extremely efficient, we're counting integer IDs rather than comparing string values millions of times per second.
+Tantivy's columnar storage is designed for exactly this pattern: fast per-document, single-column lookups. For string fields, it uses dictionary encoding, so the entire aggregation happens on integers rather than strings, which are only converted back to strings at the very end. This makes the aggregation process extremely efficient, we're counting integer IDs rather than comparing string values millions of times per second.
 
 Here's where things get interesting from a correctness perspective: this same collector also checks and applies **MVCC filtering** to maintain full ACID guarantees, only aggregating values that are visible to your current transaction. When the MVCC flag is set to `false`, we skip these visibility checks entirely for maximum performance, which is useful for analytics workloads where approximate counts are acceptable.
 
