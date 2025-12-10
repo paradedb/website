@@ -15,7 +15,7 @@ const rawData = [
     query: "postgresql",
     results: 40555,
     "Manual faceting": 96.441,
-    "ParadeDB faceting": 83.700,
+    "ParadeDB faceting": 83.7,
     "ParadeDB faceting (MVCC off)": 56.054,
   },
   {
@@ -49,7 +49,7 @@ const rawData = [
   {
     query: "<all results>",
     results: 45890979,
-    "Manual faceting": 15494.610,
+    "Manual faceting": 15494.61,
     "ParadeDB faceting": 1053.589,
     "ParadeDB faceting (MVCC off)": 363.436,
   },
@@ -90,14 +90,20 @@ const chartData = rawData.map((d) => ({
 export default function FacetingChart() {
   return (
     <Card>
-      <Title>ParadeDB Faceting vs Manual Faceting Query Time in Milliseconds</Title>
+      <Title>
+        ParadeDB Faceting vs Manual Faceting Query Time in Milliseconds
+      </Title>
 
       <div className="flex">
         <div className="flex-1">
           <BarChart
             data={chartData}
-            index="queryLabel" 
-            categories={["ParadeDB faceting (MVCC off)", "ParadeDB faceting", "Manual faceting"]}
+            index="queryLabel"
+            categories={[
+              "ParadeDB faceting (MVCC off)",
+              "ParadeDB faceting",
+              "Manual faceting",
+            ]}
             colors={["orange", "purple", "blue"]}
             valueFormatter={(n: number) =>
               `${Intl.NumberFormat("us").format(n)} ms`
@@ -105,11 +111,11 @@ export default function FacetingChart() {
             layout="vertical"
             yAxisWidth={200}
             className="h-[500px] mt-6"
-    showTooltip={false}
+            showTooltip={false}
             showLegend={false}
           />
         </div>
-        
+
         {/* Numbers displayed to the right of each bar */}
         <div className="w-32 flex flex-col justify-around pt-5 pb-7 text-xs">
           {chartData.map((data) => (
@@ -117,17 +123,17 @@ export default function FacetingChart() {
               <div className="text-orange-600 font-medium">
                 <span>
                   {data["ParadeDB faceting (MVCC off)"].toFixed(0)} ms
-                  {(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]) >= 1 && 
-                    ` (${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`
-                  }
+                  {data["Manual faceting"] /
+                    data["ParadeDB faceting (MVCC off)"] >=
+                    1 &&
+                    ` (${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`}
                 </span>
               </div>
               <div className="text-purple-600 font-medium">
                 <span>
                   {data["ParadeDB faceting"].toFixed(0)} ms
-                  {(data["Manual faceting"] / data["ParadeDB faceting"]) >= 1 && 
-                    ` (${(data["Manual faceting"] / data["ParadeDB faceting"]).toFixed(1)}x faster)`
-                  }
+                  {data["Manual faceting"] / data["ParadeDB faceting"] >= 1 &&
+                    ` (${(data["Manual faceting"] / data["ParadeDB faceting"]).toFixed(1)}x faster)`}
                 </span>
               </div>
               <div className="text-blue-600 font-medium">
