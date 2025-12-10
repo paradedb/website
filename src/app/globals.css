@@ -2,7 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import "@mintlify/components";
 @import "katex/dist/katex.min.css";
 
 @font-face {
