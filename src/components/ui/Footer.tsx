@@ -46,7 +46,7 @@ export default function Footer() {
             <Link href={siteConfig.baseLinks.home}>
               <DatabaseLogo className="w-28" />
             </Link>
-            <p className="text-sm leading-6 text-gray-600">
+            <p className="mt-8 text-sm leading-6 text-gray-600">
               The Transactional Elasticsearch Alternative Built on Postgres.
             </p>
             <div></div>

@@ -1,6 +1,11 @@
 /** @type {import('next').NextConfig} */
 import createMDX from "@next/mdx";
 import path from "path";
+import rehypeHighlight from "rehype-highlight";
+import rehypeSlug from "rehype-slug";
+import rehypeKatex from "rehype-katex";
+import remarkMath from "remark-math";
+import remarkGfm from "remark-gfm";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -99,20 +104,21 @@ const nextConfig = {
 };
 
 const withMDX = createMDX({
+  extension: /\.(md|mdx)$/,
   options: {
     providerImportSource: "@mdx-js/react",
     remarkPlugins: [
       [
-        "remark-math",
+        remarkMath,
         {
           singleDollarTextMath: false,
           inlineMathDouble: true,
           blockMathDouble: true,
         },
       ],
-      "remark-gfm",
+      remarkGfm,
     ],
-    rehypePlugins: ["rehype-slug", "rehype-highlight", "rehype-katex"],
+    rehypePlugins: [rehypeSlug, rehypeHighlight, rehypeKatex],
   },
 });
 

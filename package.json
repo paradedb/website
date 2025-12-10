@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build && next-sitemap",
+    "dev": "next dev --webpack",
+    "build": "next build --webpack && next-sitemap",
     "start": "next start",
     "lint": "next lint"
   },

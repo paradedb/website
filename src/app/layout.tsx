@@ -74,7 +74,7 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <GoogleTagManager gtmId="GTM-KMGRG564" />
       <body
-        className={`${inter.className} min-h-screen scroll-auto antialiased bg-white selection:bg-indigo-100 selection:text-indigo-700`}
+        className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-white selection:bg-indigo-100 selection:text-indigo-700`}
       >
         <ThemeProvider defaultTheme="light" attribute="class">
           <Navigation />

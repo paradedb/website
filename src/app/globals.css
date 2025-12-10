@@ -205,6 +205,32 @@
   }
 }
 
+@layer base {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: #e5e7eb #ffffff;
+  }
+
+  *::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #ffffff;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #e5e7eb;
+    border-radius: 6px;
+    border: 2px solid #ffffff;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #d1d5db;
+  }
+}
+
 @import "katex/dist/katex.min.css";
 
 @font-face {
@@ -234,6 +260,45 @@ code .line::before {
   content: counter(step);
   counter-increment: step;
   @apply mr-8 inline-block w-4 text-right text-gray-600;
+}
+
+pre {
+  background-color: #212933 !important;
+  border: none !important;
+  border-radius: 0.5rem;
+  overflow: hidden !important;
+}
+
+pre code {
+  background-color: transparent !important;
+  color: inherit !important;
+}
+
+pre.shiki,
+pre[class*="shiki"] {
+  background-color: #212933 !important;
+  border: none !important;
+  overflow: hidden !important;
+}
+
+pre.shiki code,
+pre[class*="shiki"] code {
+  background-color: transparent !important;
+}
+
+.copy-button-wrapper,
+[class*="copy-button"],
+[class*="copy-btn"] {
+  display: none !important;
+}
+
+pre::-webkit-scrollbar {
+  display: none !important;
+}
+
+pre {
+  -ms-overflow-style: none !important;
+  scrollbar-width: none !important;
 }
 .mask {
   mask-image: radial-gradient(rgba(0, 0, 0, 1) 0%, transparent 60%);
@@ -286,4 +351,43 @@ a {
 
 .mt-callout-icon {
   transform: translateY(1px); /* subtle optical adjustment */
+}
+
+.mt-callout,
+.mt-callout-info,
+.mt-callout-note,
+.mt-callout-warning,
+.mt-callout-success,
+.mt-callout-danger,
+.mt-callout-tip {
+  --callout-bg: #f8fcff !important;
+  --callout-border: #e5e7eb !important;
+  --callout-text: #0b4a6e !important;
+  background-color: #f8fcff !important;
+  border-color: #e5e7eb !important;
+  color: #0b4a6e !important;
+}
+
+.mt-callout-body,
+.mt-callout-content,
+.mt-callout p,
+.mt-callout span,
+.mt-callout div,
+.mt-callout li {
+  color: #0b4a6e !important;
+}
+
+.mt-callout a {
+  color: #111827 !important;
+  text-decoration: underline;
+}
+
+.mt-callout a:hover {
+  color: #000000 !important;
+}
+
+.mt-callout strong,
+.mt-callout b {
+  color: #0b4a6e !important;
+  font-weight: 600;
 }

@@ -10,7 +10,7 @@ const baseClasses =
   // shape + spacing
   "!rounded-2xl !border !px-4 !py-3 " +
   // typography
-  "text-[15px] leading-tight";
+  "text-[15px] leading-tight !text-gray-700";
 
 export function Info({ children }: CalloutProps) {
   return (
