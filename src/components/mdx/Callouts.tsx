@@ -1,6 +1,6 @@
 // src/components/mdx/Callouts.tsx
 import type { ReactNode } from "react";
-import { Callout } from "@mintlify/components";
+import { Callout } from "@/components/mintlify/Callout";
 
 type CalloutProps = {
   children: ReactNode;
