@@ -1,6 +1,5 @@
 "use client";
 
-// Removed dynamic blog import
 import Link from "next/link";
 import { Badge } from "../Badge";
 import { Button } from "../Button";
