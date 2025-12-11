@@ -53,7 +53,10 @@ export function Callout({ variant, className, children }: CalloutProps) {
       className={cx("mt-callout", `mt-callout-${variant}`, "flex", className)}
     >
       <div className="mt-callout-icon-wrapper">
-        <Icon className="mt-callout-icon mt-icon" style={{ width: "16px", height: "16px" }} />
+        <Icon
+          className="mt-callout-icon mt-icon"
+          style={{ width: "16px", height: "16px" }}
+        />
       </div>
       <div data-slot="callout-content" className="mt-callout-content">
         <div data-slot="callout-content-body" className="mt-callout-body">
