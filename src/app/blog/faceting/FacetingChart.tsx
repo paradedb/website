@@ -104,7 +104,7 @@ export default function FacetingChart() {
               "ParadeDB faceting",
               "Manual faceting",
             ]}
-            colors={["orange", "purple", "blue"]}
+            colors={["amber", "violet", "blue"]}
             valueFormatter={(n: number) =>
               `${Intl.NumberFormat("us").format(n)} ms`
             }
@@ -120,7 +120,7 @@ export default function FacetingChart() {
         <div className="w-32 flex flex-col justify-around pt-5 pb-7 text-xs">
           {chartData.map((data) => (
             <div key={data.query} className="flex flex-col gap-0.5 text-left">
-              <div className="text-orange-600 font-medium">
+              <div className="text-amber-600 font-medium">
                 <span>
                   {data["ParadeDB faceting (MVCC off)"].toFixed(0)} ms
                   {data["Manual faceting"] /
@@ -129,7 +129,7 @@ export default function FacetingChart() {
                     ` (${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`}
                 </span>
               </div>
-              <div className="text-purple-600 font-medium">
+              <div className="text-violet-600 font-medium">
                 <span>
                   {data["ParadeDB faceting"].toFixed(0)} ms
                   {data["Manual faceting"] / data["ParadeDB faceting"] >= 1 &&
@@ -146,11 +146,11 @@ export default function FacetingChart() {
 
       <div className="flex gap-6 justify-center mt-4 text-sm">
         <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-orange-500" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-amber-500" />
           ParadeDB faceting (MVCC off)
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-purple-500" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-violet-500" />
           ParadeDB faceting
         </div>
         <div className="flex items-center gap-2">
