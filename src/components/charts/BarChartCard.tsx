@@ -30,8 +30,11 @@ export function BarChartCard({
   xAxisLabel,
   className,
 }: BarChartCardProps) {
-  const cardClassName = className || "text-center";
   const hasHeight = className?.includes("h-");
+  const heightClass = hasHeight && className ? className.match(/h-\d+/)?.[0] : undefined;
+  const cardClassName = hasHeight && className
+    ? className.replace(/h-\d+/, "").trim() || "text-center"
+    : className || "text-center";
 
   useEffect(() => {
     if (!tooltipStyleAdded) {
@@ -59,6 +62,13 @@ export function BarChartCard({
         .recharts-yAxis .recharts-cartesian-axis-tick-value {
           text-overflow: clip !important;
           overflow: visible !important;
+          max-width: none !important;
+        }
+        .recharts-wrapper {
+          overflow: visible !important;
+        }
+        .recharts-cartesian-axis {
+          overflow: visible !important;
         }
       `;
       document.head.appendChild(style);
@@ -71,7 +81,7 @@ export function BarChartCard({
       <Subtitle>
         <Bold>{title}</Bold>
       </Subtitle>
-      <div className="overflow-visible">
+      <div className="overflow-visible pl-1">
         <BarChart
           data={data}
           index={index}
@@ -81,7 +91,7 @@ export function BarChartCard({
           layout={layout}
           yAxisWidth={yAxisWidth}
           xAxisLabel={xAxisLabel}
-          className={hasHeight ? undefined : "h-64"}
+          className={heightClass || "h-64"}
         />
       </div>
     </Card>

@@ -4,8 +4,8 @@ import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
-import graph1 from "./images/graph1.png";
-import graph2 from "./images/graph2.png";
+import {BarChartCard} from "@/components/charts/BarChartCard";
+import { Card, Subtitle, Bold, BarChart } from "@tremor/react";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
@@ -32,10 +32,25 @@ Both variants take control of parts of query planning and execution, pushing as 
 
 Our aggregations excel for large search result sets (millions of records), with search faceting performing **an order of magnitude faster** than the next best method (a ParadeDB search returning all results, feeding into a PostgreSQL aggregate) over more than 40 million results (full details to come in a search aggregations post).
 
-<Image
-  src={graph1}
-  alt="Faceting (search and aggregation) query time for 42 million results"
-  className="w-full"
+<BarChartCard 
+  title="Faceting (search and aggregation) query time for 42 million results"
+  data={[
+    {
+      name: "ParadeDB Faceting",
+      Milliseconds: 1013,
+    },
+    {
+      name: "Manual Faceting",
+      Milliseconds: 11849,
+    },
+  ]}
+  index="name"
+  categories={["Milliseconds"]}
+  showLegend={false}
+  colors={["blue"]}
+  layout="vertical"
+  yAxisWidth={140}
+  xAxisLabel="Milliseconds"
 />
 
 `pdb.agg()` can also be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
@@ -164,10 +179,30 @@ Our solution is based on two key optimizations from `0.19.0`, now enabled by def
 
 Since we first introduced these features in `0.19.0` we've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
-<Image
-  src={graph2}
-  alt="Updates Per Second on a Wide Table with a BM25 index"
-  className="w-full"
+<BarChartCard
+  title="Updates Per Second on a Wide Table with a BM25 index"
+  data={[
+      {
+        name: "v0.20.0",
+        "Updates per second": 2016,
+      },
+      {
+        name: "v0.19.0",
+        "Updates per second": 1857,
+      },
+      {
+        name: "v0.18.0",
+        "Updates per second": 120,
+      },
+    ]}
+  index="name"
+  categories={["Updates per second"]}
+  showLegend={false}
+  colors={["blue"]}
+  layout="vertical"
+  yAxisWidth={80}
+  xAxisLabel="Updates per second"
+  className="h-56"
 />
 
 Again, you can expect a follow up post with all the gory data-structure details.
