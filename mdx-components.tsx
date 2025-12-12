@@ -12,6 +12,8 @@ import {
 } from "@/components/mdx";
 
 import { ChangelogImage } from "@/components/mdx";
+import { BarChartCard } from "@/components/charts/BarChartCard";
+import { LineChartCard } from "@/components/charts/LineChartCard";
 
 let customComponents = {
   h1: H1,
@@ -23,6 +25,8 @@ let customComponents = {
   a: CustomLink,
   ChangelogEntry: ChangelogEntry,
   ChangelogImage: ChangelogImage,
+  BarChartCard: BarChartCard,
+  LineChartCard: LineChartCard,
 };
 
 export function useMDXComponents(components: MDXComponents) {
