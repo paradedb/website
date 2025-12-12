@@ -31,10 +31,12 @@ export function BarChartCard({
   className,
 }: BarChartCardProps) {
   const hasHeight = className?.includes("h-");
-  const heightClass = hasHeight && className ? className.match(/h-\d+/)?.[0] : undefined;
-  const cardClassName = hasHeight && className
-    ? className.replace(/h-\d+/, "").trim() || "text-center"
-    : className || "text-center";
+  const heightClass =
+    hasHeight && className ? className.match(/h-\d+/)?.[0] : undefined;
+  const cardClassName =
+    hasHeight && className
+      ? className.replace(/h-\d+/, "").trim() || "text-center"
+      : className || "text-center";
 
   useEffect(() => {
     if (!tooltipStyleAdded) {
