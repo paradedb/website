@@ -1,7 +1,7 @@
 {
   "title": "Similarity Search with SPLADE Inside Postgres",
   "date": "2024-09-05T00:00:00.000Z",
-  "author": "Stu Hood",
+  "author": "Ming Ying",
   "description": "Introducing sparse vector support in ParadeDB for efficient vector search.",
   "categories": ["vectors", "search", "performance"]
 }
