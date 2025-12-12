@@ -345,11 +345,18 @@ a {
 
 /* Mintlify Callout icon vertical alignment to first text line */
 .mt-callout-icon-wrapper {
+  display: flex;
   align-items: flex-start !important;
   padding-top: 18px; /* nudges icon down to align with text baseline */
+  flex-shrink: 0;
+}
+
+.mt-icon {
+  flex-shrink: 0;
 }
 
 .mt-callout-icon {
+  color: var(--callout-icon-color) !important;
   transform: translateY(1px); /* subtle optical adjustment */
 }
 
@@ -363,13 +370,21 @@ a {
   --callout-bg: #f8fcff !important;
   --callout-border: #e5e7eb !important;
   --callout-text: #0b4a6e !important;
+  --callout-icon-color: #0EA5E9 !important;
   background-color: #f8fcff !important;
   border-color: #e5e7eb !important;
   color: #0b4a6e !important;
+  gap: 0.75rem;
+}
+
+.mt-callout-content {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.875rem;
+  line-height: 1.5;
 }
 
 .mt-callout-body,
-.mt-callout-content,
 .mt-callout p,
 .mt-callout span,
 .mt-callout div,
