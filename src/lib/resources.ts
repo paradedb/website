@@ -169,7 +169,7 @@ export interface ResourceSection {
 // Section ordering configuration - sections not listed will appear after ordered ones
 const SECTION_ORDER: Record<string, number> = {
   "Search Concepts": 1,
-  "Search In Postgresql": 2,
+  "Search In PostgreSQL": 2,
   Tantivy: 3,
 };
 
