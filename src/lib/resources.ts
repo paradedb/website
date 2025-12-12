@@ -63,7 +63,12 @@ export async function getAllResources(): Promise<ResourceMetadata[]> {
           // Convert section directory name to readable format
           const sectionDisplay = sectionName
             .split("-")
-            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .map((word) => {
+              if (word.toLowerCase() === "postgresql") {
+                return "PostgreSQL";
+              }
+              return word.charAt(0).toUpperCase() + word.slice(1);
+            })
             .join(" ");
 
           resources.push({
@@ -110,7 +115,12 @@ export async function getResourceBySlug(
   const sectionName = slug.split("/")[0];
   const sectionDisplay = sectionName
     .split("-")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .map((word) => {
+      if (word.toLowerCase() === "postgresql") {
+        return "PostgreSQL";
+      }
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    })
     .join(" ");
 
   return {
