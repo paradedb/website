@@ -1,7 +1,7 @@
 "use client";
 
 import { BarChart, Card, Subtitle, Bold } from "@tremor/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 interface BarChartCardProps {
   title: string;
@@ -14,6 +14,8 @@ interface BarChartCardProps {
   yAxisWidth?: number;
   xAxisLabel?: string;
   className?: string;
+  alt: string;
+  fallbackSrc?: string;
 }
 
 let tooltipStyleAdded = false;
@@ -29,7 +31,10 @@ export function BarChartCard({
   yAxisWidth = 100,
   xAxisLabel,
   className,
+  alt,
+  fallbackSrc,
 }: BarChartCardProps) {
+  const [isMounted, setIsMounted] = useState(false);
   const hasHeight = className?.includes("h-");
   const heightClass =
     hasHeight && className ? className.match(/h-\d+/)?.[0] : undefined;
@@ -37,6 +42,10 @@ export function BarChartCard({
     hasHeight && className
       ? className.replace(/h-\d+/, "").trim() || "text-center"
       : className || "text-center";
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!tooltipStyleAdded) {
@@ -78,23 +87,44 @@ export function BarChartCard({
     }
   }, []);
 
+  const chartHeight = heightClass || "h-64";
+  const imageSrc =
+    fallbackSrc ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect width='800' height='400' fill='%23f9fafb'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='16' fill='%236b7280'%3E" +
+      encodeURIComponent(title) +
+      "%3C/text%3E%3C/svg%3E";
+
   return (
-    <Card className={cardClassName}>
+    <Card className={cardClassName} suppressHydrationWarning>
       <Subtitle>
         <Bold>{title}</Bold>
       </Subtitle>
-      <div className="overflow-visible pl-1">
-        <BarChart
-          data={data}
-          index={index}
-          categories={categories}
-          showLegend={showLegend}
-          colors={colors}
-          layout={layout}
-          yAxisWidth={yAxisWidth}
-          xAxisLabel={xAxisLabel}
-          className={heightClass || "h-64"}
-        />
+      <div
+        className={`overflow-visible pl-1 ${chartHeight}`}
+        style={{ position: "relative" }}
+      >
+        {!isMounted ? (
+          <img
+            src={imageSrc}
+            alt={alt}
+            className={`w-full ${chartHeight} object-contain`}
+            style={{ display: "block", width: "100%" }}
+            aria-hidden="false"
+            role="img"
+          />
+        ) : (
+          <BarChart
+            data={data}
+            index={index}
+            categories={categories}
+            showLegend={showLegend}
+            colors={colors}
+            layout={layout}
+            yAxisWidth={yAxisWidth}
+            xAxisLabel={xAxisLabel}
+            className={chartHeight}
+          />
+        )}
       </div>
     </Card>
   );

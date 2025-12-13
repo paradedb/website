@@ -51,6 +51,7 @@ Our aggregations excel for large search result sets (millions of records), with 
   layout="vertical"
   yAxisWidth={140}
   xAxisLabel="Milliseconds"
+  alt="Bar chart comparing faceting query time: ParadeDB Faceting takes 1013 milliseconds while Manual Faceting takes 11849 milliseconds, showing ParadeDB is over 11 times faster for search aggregations on 42 million results"
 />
 
 `pdb.agg()` can also be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
@@ -203,6 +204,7 @@ Since we first introduced these features in `0.19.0` we've increased single row 
   yAxisWidth={80}
   xAxisLabel="Updates per second"
   className="h-56"
+  alt="Bar chart showing write performance improvements across ParadeDB versions: v0.20.0 achieves 2016 updates per second, v0.19.0 achieves 1857 updates per second, and v0.18.0 achieves 120 updates per second, demonstrating over 16x improvement from v0.18.0 to v0.20.0"
 />
 
 Again, you can expect a follow up post with all the gory data-structure details.
