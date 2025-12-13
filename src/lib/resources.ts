@@ -32,6 +32,30 @@ export interface ResourceMetadata {
   canonical?: string;
 }
 
+const SECTION_DISPLAY_NAMES: Record<string, string> = {
+  "search-concepts": "Search Concepts",
+  "search-in-postgresql": "Search In PostgreSQL",
+  "tantivy": "Tantivy",
+};
+
+function formatSectionName(sectionName: string): string {
+  if (sectionName in SECTION_DISPLAY_NAMES) {
+    return SECTION_DISPLAY_NAMES[sectionName];
+  }
+
+  const specialCases: Record<string, string> = {
+    postgresql: "PostgreSQL",
+  };
+
+  return sectionName
+    .split("-")
+    .map((word) => {
+      const lowerWord = word.toLowerCase();
+      return specialCases[lowerWord] ?? word.charAt(0).toUpperCase() + word.slice(1);
+    })
+    .join(" ");
+}
+
 export async function getAllResources(): Promise<ResourceMetadata[]> {
   const resources: ResourceMetadata[] = [];
 
@@ -60,16 +84,7 @@ export async function getAllResources(): Promise<ResourceMetadata[]> {
           const metadataContents = fs.readFileSync(metadataPath, "utf8");
           const metadata = JSON.parse(metadataContents);
 
-          // Convert section directory name to readable format
-          const sectionDisplay = sectionName
-            .split("-")
-            .map((word) => {
-              if (word.toLowerCase() === "postgresql") {
-                return "PostgreSQL";
-              }
-              return word.charAt(0).toUpperCase() + word.slice(1);
-            })
-            .join(" ");
+          const sectionDisplay = formatSectionName(sectionName);
 
           resources.push({
             slug: `${sectionName}/${resourceSlug}`, // Include section in slug for unique identification
@@ -111,17 +126,8 @@ export async function getResourceBySlug(
   const metadata = JSON.parse(metadataContents);
   const content = fs.readFileSync(mdxPath, "utf8");
 
-  // Extract section name from slug
   const sectionName = slug.split("/")[0];
-  const sectionDisplay = sectionName
-    .split("-")
-    .map((word) => {
-      if (word.toLowerCase() === "postgresql") {
-        return "PostgreSQL";
-      }
-      return word.charAt(0).toUpperCase() + word.slice(1);
-    })
-    .join(" ");
+  const sectionDisplay = formatSectionName(sectionName);
 
   return {
     slug,
