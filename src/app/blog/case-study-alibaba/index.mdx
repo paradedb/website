@@ -88,6 +88,7 @@ ParadeDB indexed 100 million documents over than twice as quickly as Lucene.
   layout="vertical"
   yAxisWidth={100}
   xAxisLabel="Minutes"
+  alt="Bar chart comparing index build time: Lucene took 215 minutes while ParadeDB took 75 minutes, showing ParadeDB is nearly 3 times faster"
 />
 
 ### Index Size
@@ -113,6 +114,7 @@ Lucene and ParadeDB indexes consumed a similar amount of disk space.
   layout="vertical"
   yAxisWidth={100}
   xAxisLabel="GB"
+  alt="Bar chart comparing index size on disk: Lucene uses 169 GB while ParadeDB uses 187 GB, showing similar disk space consumption"
 />
 
 ### Throughput
@@ -161,6 +163,7 @@ With 40 concurrent readers, ParadeDB was able to process 5X queries per second c
   xAxisLabel="Number of Concurrent Connections"
   yAxisLabel="Queries per Second (QPS)"
   showXAxis={true}
+  alt="Line chart showing queries per second performance comparison between Lucene and ParadeDB across different concurrency levels. ParadeDB consistently outperforms Lucene, reaching 838 QPS at 40 concurrent connections compared to Lucene's 169 QPS, demonstrating approximately 5x better throughput"
 />
 
 ### Latency
@@ -209,6 +212,7 @@ With 40 concurrent readers, ParadeDB's round trip query times were 5X faster tha
   xAxisLabel="Number of Concurrent Connections"
   yAxisLabel="Round Trip Time (ms)"
   showXAxis={true}
+  alt="Line chart comparing round trip time latency between Lucene and ParadeDB across different concurrency levels. ParadeDB shows significantly lower latency, with 47.96ms at 40 concurrent connections compared to Lucene's 249.67ms, demonstrating approximately 5x faster response times"
 />
 
 This means that, with ParadeDB, Alibaba is able to meet the business-critical workloads of its most demanding customers.

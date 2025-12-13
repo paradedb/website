@@ -63,7 +63,7 @@ To demonstrate the performance benefit of our new faceting, we benchmarked tradi
 
 Both approaches use ParadeDB's BM25 search (PostgreSQL's built-in tsvector simply doesn't cut it, already being 27x slower at 200,000 results), but they differ in how faceting is implemented. The results show just how significant the performance difference can be:
 
-<FacetingChart />
+<FacetingChart alt="Bar chart comparing faceting query performance: ParadeDB faceting with MVCC off (orange), ParadeDB faceting (violet), and Manual faceting (blue) across different query result sizes. ParadeDB maintains consistent performance while manual faceting degrades dramatically with larger result sets, showing over an order of magnitude improvement at scale" />
 
 As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's TopN faceting maintains consistent performance by executing both search ranking and aggregation in a single pass through the index. This efficiency comes from making use of ParadeDB's columnar index, which allows fast per-document value lookups during aggregation. At scale, this represents well over an order of magnitude improvement. The orange bar shows ParadeDB with MVCC[^2] disabled, demonstrating that an additional 3× performance gain is possible when strict transactional consistency isn't required for the facets.
 
