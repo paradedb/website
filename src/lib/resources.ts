@@ -35,7 +35,7 @@ export interface ResourceMetadata {
 const SECTION_DISPLAY_NAMES: Record<string, string> = {
   "search-concepts": "Search Concepts",
   "search-in-postgresql": "Search In PostgreSQL",
-  "tantivy": "Tantivy",
+  tantivy: "Tantivy",
 };
 
 function formatSectionName(sectionName: string): string {
@@ -51,7 +51,9 @@ function formatSectionName(sectionName: string): string {
     .split("-")
     .map((word) => {
       const lowerWord = word.toLowerCase();
-      return specialCases[lowerWord] ?? word.charAt(0).toUpperCase() + word.slice(1);
+      return (
+        specialCases[lowerWord] ?? word.charAt(0).toUpperCase() + word.slice(1)
+      );
     })
     .join(" ");
 }
