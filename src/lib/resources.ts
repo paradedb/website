@@ -39,7 +39,7 @@ const SECTION_DISPLAY_NAMES: Record<string, string> = {
 };
 
 function formatSectionName(sectionName: string): string {
-  if (sectionName in SECTION_DISPLAY_NAMES) {
+  if (Object.hasOwn(SECTION_DISPLAY_NAMES, sectionName)) {
     return SECTION_DISPLAY_NAMES[sectionName];
   }
 
