@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, Title, BarChart } from "@tremor/react";
+import { useState, useEffect } from "react";
 
 // Your faceting data
 const rawData = [
@@ -87,7 +88,27 @@ const chartData = rawData.map((d) => ({
   )} results)`,
 }));
 
-export default function FacetingChart() {
+interface FacetingChartProps {
+  alt?: string;
+  fallbackSrc?: string;
+}
+
+export default function FacetingChart({
+  alt = "ParadeDB Faceting vs Manual Faceting Query Time in Milliseconds",
+  fallbackSrc,
+}: FacetingChartProps) {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  const imageSrc =
+    fallbackSrc ||
+    "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='600'%3E%3Crect width='800' height='600' fill='%23f9fafb'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='16' fill='%236b7280'%3E" +
+      encodeURIComponent(alt) +
+      "%3C/text%3E%3C/svg%3E";
+
   return (
     <Card>
       <Title>
@@ -96,31 +117,42 @@ export default function FacetingChart() {
 
       <div className="flex">
         <div className="flex-1">
-          <BarChart
-            data={chartData}
-            index="queryLabel"
-            categories={[
-              "ParadeDB faceting (MVCC off)",
-              "ParadeDB faceting",
-              "Manual faceting",
-            ]}
-            colors={["orange", "purple", "blue"]}
-            valueFormatter={(n: number) =>
-              `${Intl.NumberFormat("us").format(n)} ms`
-            }
-            layout="vertical"
-            yAxisWidth={200}
-            className="h-[500px] mt-6"
-            showTooltip={false}
-            showLegend={false}
-          />
+          {!isMounted ? (
+            <img
+              src={imageSrc}
+              alt={alt}
+              className="w-full h-[500px] mt-6 object-contain"
+              style={{ display: "block", width: "100%" }}
+              aria-hidden="false"
+              role="img"
+            />
+          ) : (
+            <BarChart
+              data={chartData}
+              index="queryLabel"
+              categories={[
+                "ParadeDB faceting (MVCC off)",
+                "ParadeDB faceting",
+                "Manual faceting",
+              ]}
+              colors={["amber", "violet", "blue"]}
+              valueFormatter={(n: number) =>
+                `${Intl.NumberFormat("us").format(n)} ms`
+              }
+              layout="vertical"
+              yAxisWidth={200}
+              className="h-[500px] mt-6"
+              showTooltip={false}
+              showLegend={false}
+            />
+          )}
         </div>
 
         {/* Numbers displayed to the right of each bar */}
         <div className="w-32 flex flex-col justify-around pt-5 pb-7 text-xs">
           {chartData.map((data) => (
             <div key={data.query} className="flex flex-col gap-0.5 text-left">
-              <div className="text-orange-600 font-medium">
+              <div className="text-amber-600 font-medium">
                 <span>
                   {data["ParadeDB faceting (MVCC off)"].toFixed(0)} ms
                   {data["Manual faceting"] /
@@ -129,7 +161,7 @@ export default function FacetingChart() {
                     ` (${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`}
                 </span>
               </div>
-              <div className="text-purple-600 font-medium">
+              <div className="text-violet-600 font-medium">
                 <span>
                   {data["ParadeDB faceting"].toFixed(0)} ms
                   {data["Manual faceting"] / data["ParadeDB faceting"] >= 1 &&
@@ -146,11 +178,11 @@ export default function FacetingChart() {
 
       <div className="flex gap-6 justify-center mt-4 text-sm">
         <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-orange-500" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-amber-500" />
           ParadeDB faceting (MVCC off)
         </div>
         <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-purple-500" />
+          <span className="inline-block h-3 w-3 rounded-sm bg-violet-500" />
           ParadeDB faceting
         </div>
         <div className="flex items-center gap-2">
