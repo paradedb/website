@@ -98,9 +98,16 @@ export default function FacetingChart({
   fallbackSrc,
 }: FacetingChartProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   const imageSrc =
@@ -115,13 +122,13 @@ export default function FacetingChart({
         ParadeDB Faceting vs Manual Faceting Query Time in Milliseconds
       </Title>
 
-      <div className="flex">
-        <div className="flex-1">
+      <div className="flex flex-col md:flex-row">
+        <div className="flex-1 min-w-0">
           {!isMounted ? (
             <img
               src={imageSrc}
               alt={alt}
-              className="w-full h-[500px] mt-6 object-contain"
+              className="w-full h-[400px] md:h-[500px] mt-6 object-contain"
               style={{ display: "block", width: "100%" }}
               aria-hidden="false"
               role="img"
@@ -140,54 +147,59 @@ export default function FacetingChart({
                 `${Intl.NumberFormat("us").format(n)} ms`
               }
               layout="vertical"
-              yAxisWidth={200}
-              className="h-[500px] mt-6"
+              yAxisWidth={isMobile ? 120 : 200}
+              className="h-[400px] md:h-[500px] mt-6"
               showTooltip={false}
               showLegend={false}
             />
           )}
         </div>
 
-        {/* Numbers displayed to the right of each bar */}
-        <div className="w-32 flex flex-col justify-around pt-5 pb-7 text-xs">
+        <div className="w-full md:w-32 flex flex-row md:flex-col justify-start md:justify-around pt-3 md:pt-5 pb-3 md:pb-7 text-[10px] md:text-xs overflow-x-auto md:overflow-visible gap-3 md:gap-0 md:ml-4">
           {chartData.map((data) => (
-            <div key={data.query} className="flex flex-col gap-0.5 text-left">
-              <div className="text-amber-600 font-medium">
-                <span>
+            <div key={data.query} className="flex flex-col gap-0.5 md:gap-0.5 text-left min-w-[110px] md:min-w-0 shrink-0 md:shrink leading-tight">
+              <div className="text-amber-600 font-medium md:font-medium">
+                <span className="whitespace-nowrap">
                   {data["ParadeDB faceting (MVCC off)"].toFixed(0)} ms
                   {data["Manual faceting"] /
                     data["ParadeDB faceting (MVCC off)"] >=
-                    1 &&
-                    ` (${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`}
+                    1 && (
+                    <span className="block md:inline md:ml-1">
+                      {`(${(data["Manual faceting"] / data["ParadeDB faceting (MVCC off)"]).toFixed(1)}x faster)`}
+                    </span>
+                  )}
                 </span>
               </div>
-              <div className="text-violet-600 font-medium">
-                <span>
+              <div className="text-violet-600 font-medium md:font-medium">
+                <span className="whitespace-nowrap">
                   {data["ParadeDB faceting"].toFixed(0)} ms
-                  {data["Manual faceting"] / data["ParadeDB faceting"] >= 1 &&
-                    ` (${(data["Manual faceting"] / data["ParadeDB faceting"]).toFixed(1)}x faster)`}
+                  {data["Manual faceting"] / data["ParadeDB faceting"] >= 1 && (
+                    <span className="block md:inline md:ml-1">
+                      {`(${(data["Manual faceting"] / data["ParadeDB faceting"]).toFixed(1)}x faster)`}
+                    </span>
+                  )}
                 </span>
               </div>
-              <div className="text-blue-600 font-medium">
-                <span>{data["Manual faceting"].toFixed(0)} ms</span>
+              <div className="text-blue-600 font-medium md:font-medium">
+                <span className="whitespace-nowrap">{data["Manual faceting"].toFixed(0)} ms</span>
               </div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="flex gap-6 justify-center mt-4 text-sm">
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-amber-500" />
-          ParadeDB faceting (MVCC off)
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center mt-4 text-xs sm:text-sm">
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm bg-amber-500 shrink-0" />
+          <span className="text-[11px] sm:text-sm">ParadeDB faceting (MVCC off)</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-violet-500" />
-          ParadeDB faceting
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm bg-violet-500 shrink-0" />
+          <span className="text-[11px] sm:text-sm">ParadeDB faceting</span>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="inline-block h-3 w-3 rounded-sm bg-blue-500" />
-          Manual faceting
+        <div className="flex items-center gap-1.5 sm:gap-2">
+          <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm bg-blue-500 shrink-0" />
+          <span className="text-[11px] sm:text-sm">Manual faceting</span>
         </div>
       </div>
     </Card>
