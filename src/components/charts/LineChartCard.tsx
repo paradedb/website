@@ -112,7 +112,10 @@ export function LineChartCard({
       <Subtitle>
         <Bold>{title}</Bold>
       </Subtitle>
-      <div className="overflow-visible pb-4" style={{ minHeight: responsiveMinHeight }}>
+      <div
+        className="overflow-visible pb-4"
+        style={{ minHeight: responsiveMinHeight }}
+      >
         {!isMounted ? (
           <img
             src={imageSrc}

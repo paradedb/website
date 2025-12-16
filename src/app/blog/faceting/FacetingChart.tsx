@@ -157,7 +157,10 @@ export default function FacetingChart({
 
         <div className="w-full md:w-32 flex flex-row md:flex-col justify-start md:justify-around pt-3 md:pt-5 pb-3 md:pb-7 text-[10px] md:text-xs overflow-x-auto md:overflow-visible gap-3 md:gap-0 md:ml-4">
           {chartData.map((data) => (
-            <div key={data.query} className="flex flex-col gap-0.5 md:gap-0.5 text-left min-w-[110px] md:min-w-0 shrink-0 md:shrink leading-tight">
+            <div
+              key={data.query}
+              className="flex flex-col gap-0.5 md:gap-0.5 text-left min-w-[110px] md:min-w-0 shrink-0 md:shrink leading-tight"
+            >
               <div className="text-amber-600 font-medium md:font-medium">
                 <span className="whitespace-nowrap">
                   {data["ParadeDB faceting (MVCC off)"].toFixed(0)} ms
@@ -181,7 +184,9 @@ export default function FacetingChart({
                 </span>
               </div>
               <div className="text-blue-600 font-medium md:font-medium">
-                <span className="whitespace-nowrap">{data["Manual faceting"].toFixed(0)} ms</span>
+                <span className="whitespace-nowrap">
+                  {data["Manual faceting"].toFixed(0)} ms
+                </span>
               </div>
             </div>
           ))}
@@ -191,7 +196,9 @@ export default function FacetingChart({
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 justify-center mt-4 text-xs sm:text-sm">
         <div className="flex items-center gap-1.5 sm:gap-2">
           <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm bg-amber-500 shrink-0" />
-          <span className="text-[11px] sm:text-sm">ParadeDB faceting (MVCC off)</span>
+          <span className="text-[11px] sm:text-sm">
+            ParadeDB faceting (MVCC off)
+          </span>
         </div>
         <div className="flex items-center gap-1.5 sm:gap-2">
           <span className="inline-block h-2.5 w-2.5 sm:h-3 sm:w-3 rounded-sm bg-violet-500 shrink-0" />
