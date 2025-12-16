@@ -39,9 +39,16 @@ export function LineChartCard({
   fallbackSrc,
 }: LineChartCardProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -67,6 +74,21 @@ export function LineChartCard({
           overflow: visible !important;
           white-space: nowrap !important;
         }
+        @media (max-width: 768px) {
+          .recharts-cartesian-axis-tick-value {
+            font-size: 10px !important;
+          }
+          .recharts-xAxis .recharts-cartesian-axis-tick-value {
+            font-size: 9px !important;
+          }
+          .recharts-yAxis .recharts-cartesian-axis-tick-value {
+            font-size: 10px !important;
+          }
+          .recharts-legend-wrapper {
+            padding-top: 0.5rem !important;
+            margin-top: 0.25rem !important;
+          }
+        }
       `;
       document.head.appendChild(style);
       lineChartStyleAdded = true;
@@ -79,6 +101,9 @@ export function LineChartCard({
       encodeURIComponent(title) +
       "%3C/text%3E%3C/svg%3E";
 
+  const responsiveYAxisWidth = isMobile ? Math.min(yAxisWidth, 50) : yAxisWidth;
+  const responsiveMinHeight = isMobile ? "280px" : "384px";
+
   return (
     <Card
       className={className || "relative text-center"}
@@ -87,7 +112,7 @@ export function LineChartCard({
       <Subtitle>
         <Bold>{title}</Bold>
       </Subtitle>
-      <div className="overflow-visible pb-4" style={{ minHeight: "384px" }}>
+      <div className="overflow-visible pb-4" style={{ minHeight: responsiveMinHeight }}>
         {!isMounted ? (
           <img
             src={imageSrc}
@@ -104,7 +129,7 @@ export function LineChartCard({
             categories={categories}
             showLegend={showLegend}
             colors={colors}
-            yAxisWidth={yAxisWidth}
+            yAxisWidth={responsiveYAxisWidth}
             xAxisLabel={xAxisLabel}
             yAxisLabel={yAxisLabel}
             showXAxis={showXAxis}

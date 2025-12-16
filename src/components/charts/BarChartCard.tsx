@@ -35,6 +35,7 @@ export function BarChartCard({
   fallbackSrc,
 }: BarChartCardProps) {
   const [isMounted, setIsMounted] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const hasHeight = className?.includes("h-");
   const heightClass =
     hasHeight && className ? className.match(/h-\d+/)?.[0] : undefined;
@@ -45,6 +46,12 @@ export function BarChartCard({
 
   useEffect(() => {
     setIsMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   useEffect(() => {
@@ -81,6 +88,17 @@ export function BarChartCard({
         .recharts-cartesian-axis {
           overflow: visible !important;
         }
+        @media (max-width: 768px) {
+          .recharts-cartesian-axis-tick-value {
+            font-size: 10px !important;
+          }
+          .recharts-xAxis .recharts-cartesian-axis-tick-value {
+            font-size: 9px !important;
+          }
+          .recharts-yAxis .recharts-cartesian-axis-tick-value {
+            font-size: 10px !important;
+          }
+        }
       `;
       document.head.appendChild(style);
       tooltipStyleAdded = true;
@@ -88,6 +106,7 @@ export function BarChartCard({
   }, []);
 
   const chartHeight = heightClass || "h-64";
+  const responsiveYAxisWidth = isMobile ? Math.min(yAxisWidth, 60) : yAxisWidth;
   const imageSrc =
     fallbackSrc ||
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='400'%3E%3Crect width='800' height='400' fill='%23f9fafb'/%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='16' fill='%236b7280'%3E" +
@@ -100,7 +119,7 @@ export function BarChartCard({
         <Bold>{title}</Bold>
       </Subtitle>
       <div
-        className={`overflow-visible pl-1 ${chartHeight}`}
+        className={`overflow-visible pl-1 md:pl-1 ${chartHeight}`}
         style={{ position: "relative" }}
       >
         {!isMounted ? (
@@ -120,7 +139,7 @@ export function BarChartCard({
             showLegend={showLegend}
             colors={colors}
             layout={layout}
-            yAxisWidth={yAxisWidth}
+            yAxisWidth={responsiveYAxisWidth}
             xAxisLabel={xAxisLabel}
             className={chartHeight}
           />
