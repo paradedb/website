@@ -6,7 +6,6 @@ import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 import { siteConfig } from "./siteConfig";
 
-import "highlight.js/styles/github-dark.css";
 import "./globals.css";
 
 const inter = Inter({

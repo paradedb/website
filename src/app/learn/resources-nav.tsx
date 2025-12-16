@@ -1,6 +1,6 @@
 "use client";
 
-import { ResourceSection } from "@/lib/resources";
+import { ContentSection } from "@/lib/content";
 import classNames from "classnames";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -8,7 +8,7 @@ import { siteConfig } from "../siteConfig";
 import Link from "next/link";
 
 interface ResourcesNavProps {
-  resourceSections: ResourceSection[];
+  resourceSections: ContentSection[];
 }
 
 export function ResourcesNav({ resourceSections }: ResourcesNavProps) {
@@ -56,7 +56,7 @@ export function ResourcesNav({ resourceSections }: ResourcesNavProps) {
             </button>
             {!collapsedSections.has(section.name) && (
               <ul role="list" className="mt-2 space-y-1 pl-4">
-                {section.resources.map((item) => (
+                {section.items.map((item) => (
                   <li key={item.href}>
                     <Link
                       href={`${siteConfig.baseLinks.resources}/${item.href}`}

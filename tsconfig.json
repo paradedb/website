@@ -19,6 +19,7 @@
     "allowUnusedLabels": false,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "tsBuildInfoFile": ".next/cache/.tsbuildinfo",
     "plugins": [
       {
         "name": "next"

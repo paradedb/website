@@ -1,6 +1,6 @@
 "use client";
 
-import TableOfContents from "@/components/TableOfContents";
+import ContentWrapper from "@/components/ContentWrapper";
 
 // Import the MDX content directly
 import ResourceContent from "./index.mdx";
@@ -8,10 +8,9 @@ import ResourceContent from "./index.mdx";
 export default function Resource() {
   return (
     <>
-      <article className="prose w-full max-w-3xl">
+      <ContentWrapper>
         <ResourceContent />
-      </article>
-      <TableOfContents />
+      </ContentWrapper>
     </>
   );
 }

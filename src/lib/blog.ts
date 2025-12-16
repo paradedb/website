@@ -1,13 +1,21 @@
-import fs from "fs";
-import path from "path";
+import {
+  getAllContent,
+  getContentBySlug,
+  ContentLink,
+  ContentConfig,
+} from "./content";
 
-const contentDirectory = path.join(process.cwd(), "src/app/blog");
+const blogConfig: ContentConfig = {
+  type: "blog",
+  basePath: "src/app/blog",
+  baseUrl: "/blog",
+};
 
 export interface BlogPost {
   slug: string;
   title: string;
   date: string;
-  author: string;
+  author: string | string[];
   description: string;
   categories?: string[];
   image?: string;
@@ -19,7 +27,7 @@ export interface BlogPostMetadata {
   slug: string;
   title: string;
   date: string;
-  author: string;
+  author: string | string[];
   description: string;
   categories?: string[];
   image?: string;
@@ -27,90 +35,41 @@ export interface BlogPostMetadata {
 }
 
 export async function getAllPosts(): Promise<BlogPostMetadata[]> {
-  const posts: BlogPostMetadata[] = [];
-
-  // Get all posts from content directory
-  if (fs.existsSync(contentDirectory)) {
-    const postDirectories = fs
-      .readdirSync(contentDirectory, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-
-    for (const slug of postDirectories) {
-      const metadataPath = path.join(contentDirectory, slug, "metadata.json");
-      const mdxPath = path.join(contentDirectory, slug, "index.mdx");
-
-      if (fs.existsSync(metadataPath) && fs.existsSync(mdxPath)) {
-        const metadataContents = fs.readFileSync(metadataPath, "utf8");
-        const metadata = JSON.parse(metadataContents);
-
-        posts.push({
-          slug,
-          title: metadata.title,
-          date: metadata.date,
-          author: metadata.author,
-          description: metadata.description,
-          categories: metadata.categories,
-          image: metadata.image,
-          canonical: metadata.canonical,
-        });
-      }
-    }
-  }
-
-  // Sort posts by date (newest first)
-  return posts.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  const items = await getAllContent(blogConfig);
+  return items.map((item) => ({
+    slug: item.href,
+    title: item.name,
+    date: item.date,
+    author: item.author,
+    description: item.description,
+    categories: item.categories,
+  }));
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
-  const metadataPath = path.join(contentDirectory, slug, "metadata.json");
-  const mdxPath = path.join(contentDirectory, slug, "index.mdx");
-
-  if (!fs.existsSync(metadataPath) || !fs.existsSync(mdxPath)) {
-    return null;
-  }
-
-  const metadataContents = fs.readFileSync(metadataPath, "utf8");
-  const metadata = JSON.parse(metadataContents);
-  const content = fs.readFileSync(mdxPath, "utf8");
+  const content = await getContentBySlug(slug, blogConfig);
+  if (!content) return null;
 
   return {
-    slug,
-    title: metadata.title,
-    date: metadata.date,
-    author: metadata.author,
-    description: metadata.description,
-    categories: metadata.categories,
-    image: metadata.image,
-    canonical: metadata.canonical,
-    content,
+    slug: content.slug,
+    title: content.metadata.title,
+    date: content.metadata.date,
+    author: content.metadata.author,
+    description: content.metadata.description,
+    categories: content.metadata.categories,
+    image: content.metadata.image,
+    canonical: content.metadata.canonical,
+    content: content.content,
   };
 }
 
 export async function getAllSlugs(): Promise<string[]> {
-  const posts = await getAllPosts();
-  return posts.map((post) => post.slug);
+  const items = await getAllContent(blogConfig);
+  return items.map((item) => item.href);
 }
 
-export interface BlogLink {
-  name: string;
-  href: string;
-  date: string;
-  author: string;
-  description: string;
-  categories?: string[];
-}
+export type { ContentLink as BlogLink };
 
-export async function getBlogLinks(): Promise<BlogLink[]> {
-  const posts = await getAllPosts();
-  return posts.map((post) => ({
-    name: post.title,
-    href: post.slug,
-    date: post.date,
-    author: post.author,
-    description: post.description,
-    categories: post.categories,
-  }));
+export async function getBlogLinks(): Promise<ContentLink[]> {
+  return getAllContent(blogConfig);
 }

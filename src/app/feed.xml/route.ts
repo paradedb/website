@@ -22,7 +22,7 @@ export async function GET() {
       title: post.name,
       url: new URL(`/blog/${slug}`, siteConfig.url).toString(), // canonical
       date: post.date,
-      author: post.author,
+      author: Array.isArray(post.author) ? post.author.join(", ") : post.author,
       description: post.description,
       categories: post.categories || [],
     });

@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 import createMDX from "@next/mdx";
 import path from "path";
-import rehypeHighlight from "rehype-highlight";
+import rehypePrettyCode from "rehype-pretty-code";
 import rehypeSlug from "rehype-slug";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
@@ -9,9 +9,28 @@ import remarkGfm from "remark-gfm";
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
+  experimental: {
+    optimizePackageImports: [
+      "@radix-ui/react-accordion",
+      "@radix-ui/react-dialog",
+      "@radix-ui/react-tabs",
+      "@radix-ui/react-tooltip",
+      "lucide-react",
+      "recharts",
+    ],
+  },
+
+  webpack: (config, { dev, isServer }) => {
+    if (!dev && !isServer) {
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: "deterministic",
+      };
+    }
+    return config;
+  },
 
   async redirects() {
     return [
@@ -118,7 +137,19 @@ const withMDX = createMDX({
       ],
       remarkGfm,
     ],
-    rehypePlugins: [rehypeSlug, rehypeHighlight, rehypeKatex],
+    rehypePlugins: [
+      rehypeSlug,
+      [
+        rehypePrettyCode,
+        {
+          theme: "catppuccin-macchiato",
+          keepBackground: true,
+          defaultLang: "plaintext",
+          filterMetaString: (string) => string.replace(/filename="[^"]*"/, ""),
+        },
+      ],
+      rehypeKatex,
+    ],
   },
 });
 

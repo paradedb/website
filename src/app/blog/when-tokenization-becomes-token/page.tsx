@@ -1,17 +1,12 @@
 "use client";
 
-import TableOfContents from "@/components/TableOfContents";
-
-// Import the MDX content directly
 import BlogContent from "./index.mdx";
+import ContentWrapper from "@/components/ContentWrapper";
 
 export default function BlogPost() {
   return (
-    <>
-      <article className="prose w-full max-w-3xl">
-        <BlogContent />
-      </article>
-      <TableOfContents />
-    </>
+    <ContentWrapper>
+      <BlogContent />
+    </ContentWrapper>
   );
 }

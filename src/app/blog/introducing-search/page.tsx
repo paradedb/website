@@ -1,12 +1,12 @@
 "use client";
 
-import BlogPostWrapper from "../BlogPostWrapper";
+import ContentWrapper from "@/components/ContentWrapper";
 import BlogContent from "./index.mdx";
 
 export default function BlogPost() {
   return (
-    <BlogPostWrapper>
+    <ContentWrapper>
       <BlogContent />
-    </BlogPostWrapper>
+    </ContentWrapper>
   );
 }

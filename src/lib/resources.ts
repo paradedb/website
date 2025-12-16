@@ -1,36 +1,11 @@
-import fs from "fs";
-import path from "path";
-
-const contentDirectory = path.join(process.cwd(), "src/app/learn");
-
-export interface Resource {
-  slug: string;
-  title: string;
-  date: string;
-  author: string;
-  description: string;
-  categories?: string[];
-  type: string; // e.g., "guide", "tutorial", "documentation", "video"
-  section: string; // Inferred from directory structure
-  order?: number; // Optional ordering within section
-  image?: string;
-  canonical?: string;
-  content: string;
-}
-
-export interface ResourceMetadata {
-  slug: string;
-  title: string;
-  date: string;
-  author: string;
-  description: string;
-  categories?: string[];
-  type: string;
-  section: string; // Inferred from directory structure
-  order?: number; // Optional ordering within section
-  image?: string;
-  canonical?: string;
-}
+import {
+  getAllContent,
+  getContentBySlug,
+  getContentBySection,
+  ContentLink,
+  ContentSection,
+  ContentConfig,
+} from "./content";
 
 const SECTION_DISPLAY_NAMES: Record<string, string> = {
   "search-concepts": "Search Concepts",
@@ -58,175 +33,103 @@ function formatSectionName(sectionName: string): string {
     .join(" ");
 }
 
+const learnConfig: ContentConfig = {
+  type: "learn",
+  basePath: "src/app/learn",
+  baseUrl: "/learn",
+  sectionDisplayNames: SECTION_DISPLAY_NAMES,
+  sectionOrder: {
+    "Search Concepts": 1,
+    "Search In PostgreSQL": 2,
+    Tantivy: 3,
+  },
+  formatSectionName,
+};
+
+export interface Resource {
+  slug: string;
+  title: string;
+  date: string;
+  author: string | string[];
+  description: string;
+  categories?: string[];
+  type: string;
+  section: string;
+  order?: number;
+  image?: string;
+  canonical?: string;
+  content: string;
+}
+
+export interface ResourceMetadata {
+  slug: string;
+  title: string;
+  date: string;
+  author: string | string[];
+  description: string;
+  categories?: string[];
+  type: string;
+  section: string;
+  order?: number;
+  image?: string;
+  canonical?: string;
+}
+
 export async function getAllResources(): Promise<ResourceMetadata[]> {
-  const resources: ResourceMetadata[] = [];
-
-  // Get all section directories from content directory
-  if (fs.existsSync(contentDirectory)) {
-    const sectionDirectories = fs
-      .readdirSync(contentDirectory, { withFileTypes: true })
-      .filter((dirent) => dirent.isDirectory())
-      .map((dirent) => dirent.name);
-
-    for (const sectionName of sectionDirectories) {
-      const sectionPath = path.join(contentDirectory, sectionName);
-
-      // Get all resource directories within this section
-      const resourceDirectories = fs
-        .readdirSync(sectionPath, { withFileTypes: true })
-        .filter((dirent) => dirent.isDirectory())
-        .map((dirent) => dirent.name);
-
-      for (const resourceSlug of resourceDirectories) {
-        const resourcePath = path.join(sectionPath, resourceSlug);
-        const metadataPath = path.join(resourcePath, "metadata.json");
-        const mdxPath = path.join(resourcePath, "index.mdx");
-
-        if (fs.existsSync(metadataPath) && fs.existsSync(mdxPath)) {
-          const metadataContents = fs.readFileSync(metadataPath, "utf8");
-          const metadata = JSON.parse(metadataContents);
-
-          const sectionDisplay = formatSectionName(sectionName);
-
-          resources.push({
-            slug: `${sectionName}/${resourceSlug}`, // Include section in slug for unique identification
-            title: metadata.title,
-            date: metadata.date,
-            author: metadata.author,
-            description: metadata.description,
-            categories: metadata.categories,
-            type: metadata.type,
-            section: sectionDisplay,
-            order: metadata.order,
-            image: metadata.image,
-            canonical: metadata.canonical,
-          });
-        }
-      }
-    }
-  }
-
-  // Sort resources by date (newest first)
-  return resources.sort(
-    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
-  );
+  const items = await getAllContent(learnConfig);
+  return items.map((item) => ({
+    slug: item.href,
+    title: item.name,
+    date: item.date,
+    author: item.author,
+    description: item.description,
+    categories: item.categories,
+    type: item.type || "guide",
+    section: item.section || "",
+    order: item.order,
+    image: undefined,
+    canonical: undefined,
+  }));
 }
 
 export async function getResourceBySlug(
   slug: string,
 ): Promise<Resource | null> {
-  // slug is now in format "section-name/resource-name"
-  const resourcePath = path.join(contentDirectory, slug);
-  const metadataPath = path.join(resourcePath, "metadata.json");
-  const mdxPath = path.join(resourcePath, "index.mdx");
+  const content = await getContentBySlug(slug, learnConfig);
+  if (!content) return null;
 
-  if (!fs.existsSync(metadataPath) || !fs.existsSync(mdxPath)) {
-    return null;
-  }
+  const metadata = content.metadata as any;
 
-  const metadataContents = fs.readFileSync(metadataPath, "utf8");
-  const metadata = JSON.parse(metadataContents);
-  const content = fs.readFileSync(mdxPath, "utf8");
-
-  const sectionName = slug.split("/")[0];
-  const sectionDisplay = formatSectionName(sectionName);
-
+  const learnMetadata = metadata as any;
   return {
-    slug,
-    title: metadata.title,
-    date: metadata.date,
-    author: metadata.author,
-    description: metadata.description,
-    categories: metadata.categories,
-    type: metadata.type,
-    section: sectionDisplay,
-    order: metadata.order,
-    image: metadata.image,
-    canonical: metadata.canonical,
-    content,
+    slug: content.slug,
+    title: learnMetadata.title,
+    date: learnMetadata.date,
+    author: learnMetadata.author,
+    description: learnMetadata.description,
+    categories: learnMetadata.categories,
+    type: learnMetadata.type || "guide",
+    section: learnMetadata.section || "",
+    order: learnMetadata.order,
+    image: learnMetadata.image,
+    canonical: learnMetadata.canonical,
+    content: content.content,
   };
 }
 
 export async function getAllResourceSlugs(): Promise<string[]> {
-  const resources = await getAllResources();
-  return resources.map((resource) => resource.slug);
+  const items = await getAllContent(learnConfig);
+  return items.map((item) => item.href);
 }
 
-export interface ResourceLink {
-  name: string;
-  href: string;
-  date: string;
-  author: string;
-  description: string;
-  type: string;
-  section: string;
-  order?: number;
-  categories?: string[];
+export type { ContentLink as ResourceLink };
+
+export async function getResourceLinks(): Promise<ContentLink[]> {
+  return getAllContent(learnConfig);
 }
 
-export async function getResourceLinks(): Promise<ResourceLink[]> {
-  const resources = await getAllResources();
-  return resources.map((resource) => ({
-    name: resource.title,
-    href: resource.slug,
-    date: resource.date,
-    author: resource.author,
-    description: resource.description,
-    type: resource.type,
-    section: resource.section,
-    order: resource.order,
-    categories: resource.categories,
-  }));
-}
+export type { ContentSection as ResourceSection };
 
-export interface ResourceSection {
-  name: string;
-  resources: ResourceLink[];
-}
-
-// Section ordering configuration - sections not listed will appear after ordered ones
-const SECTION_ORDER: Record<string, number> = {
-  "Search Concepts": 1,
-  "Search In PostgreSQL": 2,
-  Tantivy: 3,
-};
-
-export async function getResourcesBySection(): Promise<ResourceSection[]> {
-  const resources = await getResourceLinks();
-  const sectionMap = new Map<string, ResourceLink[]>();
-
-  resources.forEach((resource) => {
-    const section = resource.section;
-    if (!sectionMap.has(section)) {
-      sectionMap.set(section, []);
-    }
-    sectionMap.get(section)!.push(resource);
-  });
-
-  return Array.from(sectionMap.entries())
-    .map(([name, resources]) => ({
-      name,
-      resources: resources.sort((a, b) => {
-        // Sort by order field if both have it
-        if (a.order !== undefined && b.order !== undefined) {
-          return a.order - b.order;
-        }
-        // If only one has order, it comes first
-        if (a.order !== undefined) return -1;
-        if (b.order !== undefined) return 1;
-        // Fall back to date sorting (newest first)
-        return new Date(b.date).getTime() - new Date(a.date).getTime();
-      }),
-    }))
-    .sort((a, b) => {
-      const orderA = SECTION_ORDER[a.name] ?? 999; // Non-listed sections get high number
-      const orderB = SECTION_ORDER[b.name] ?? 999;
-
-      if (orderA !== orderB) {
-        return orderA - orderB;
-      }
-
-      // If both are non-listed (both have order 999), sort alphabetically
-      return a.name.localeCompare(b.name);
-    });
+export async function getResourcesBySection(): Promise<ContentSection[]> {
+  return getContentBySection(learnConfig);
 }
