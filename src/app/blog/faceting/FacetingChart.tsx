@@ -183,8 +183,8 @@ export default function FacetingChart({
     (activeBar?.label as string | undefined);
   const mobileSelectedValue =
     typeof mobileSelectedCategory === "string"
-      ? (activeBar?.[mobileSelectedCategory] as number | undefined) ??
-        (activeBar?.value as number | undefined)
+      ? ((activeBar?.[mobileSelectedCategory] as number | undefined) ??
+        (activeBar?.value as number | undefined))
       : (activeBar?.value as number | undefined);
 
   const mobileCategoryColorClass =
@@ -218,7 +218,9 @@ export default function FacetingChart({
                         <span
                           className={`inline-block h-2 w-2 rounded-full ${mobileCategoryColorClass}`}
                         />
-                        <span className="font-medium">{mobileSelectedCategory}</span>
+                        <span className="font-medium">
+                          {mobileSelectedCategory}
+                        </span>
                       </span>
                     )}
                     {typeof mobileSelectedValue === "number" && (
@@ -262,7 +264,9 @@ export default function FacetingChart({
               ]}
               colors={["amber", "violet", "blue"]}
               valueFormatter={(n: number) =>
-                isMobile ? formatDuration(n) : `${Intl.NumberFormat("us").format(n)} ms`
+                isMobile
+                  ? formatDuration(n)
+                  : `${Intl.NumberFormat("us").format(n)} ms`
               }
               layout="vertical"
               yAxisWidth={isMobile ? 56 : 200}
@@ -311,7 +315,8 @@ export default function FacetingChart({
                 <div className="text-violet-600 font-medium md:font-medium">
                   <span className="whitespace-nowrap">
                     {data["ParadeDB faceting"].toFixed(0)} ms
-                    {data["Manual faceting"] / data["ParadeDB faceting"] >= 1 && (
+                    {data["Manual faceting"] / data["ParadeDB faceting"] >=
+                      1 && (
                       <span className="block md:inline md:ml-1">
                         {`(${(data["Manual faceting"] / data["ParadeDB faceting"]).toFixed(1)}x faster)`}
                       </span>
