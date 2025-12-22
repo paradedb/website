@@ -64,6 +64,7 @@ export default function Hero() {
               lang="bash"
               className="rounded-xl bg-slate-100 text-left"
               theme="github-dark-dimmed"
+              copy={true}
             />
           </div>
         </div>
