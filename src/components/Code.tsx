@@ -15,7 +15,7 @@ type Props = {
 export default async function Code({
   code,
   lang = "typescript",
-    copy = false,
+  copy = false,
 
   // tokyo-night
   // catppuccin-macchiato
@@ -31,7 +31,7 @@ export default async function Code({
 
   return (
     <div className={cx("relative w-full", className)}>
-       {copy && (
+      {copy && (
         <div className="absolute right-0 h-full">
           <div className="absolute right-3 top-3">
             <CopyToClipboard code={code} />
