@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
+import CodeBlockEnhancer from "@/components/CodeBlockEnhancer";
 import { BlogLink } from "@/lib/blog";
 import classNames from "classnames";
 import Link from "next/link";
@@ -57,50 +58,53 @@ export default function BlogLayoutClient({
     : "";
 
   return (
-    <div className="mx-auto flex max-w-6xl md:mt-12">
-      {!isBlogIndex && (
-        <div className="hidden lg:flex lg:w-96 lg:flex-col">
-          {/* Sidebar component */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
-            <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="-mx-2 space-y-1">
-                    {blogLinks.map((item) => (
-                      <li key={item.href}>
-                        <a
-                          href={`${siteConfig.baseLinks.blog}/${item.href}`}
-                          className={classNames(
-                            pathname.endsWith(item.href)
-                              ? "bg-gray-50 text-indigo-600"
-                              : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
-                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
-                          )}
-                        >
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              </ul>
-            </nav>
+    <>
+      <CodeBlockEnhancer />
+      <div className="mx-auto flex max-w-6xl md:mt-12">
+        {!isBlogIndex && (
+          <div className="hidden lg:flex lg:w-96 lg:flex-col">
+            {/* Sidebar component */}
+            <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
+              <nav className="flex flex-1 flex-col">
+                <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                  <li>
+                    <ul role="list" className="-mx-2 space-y-1">
+                      {blogLinks.map((item) => (
+                        <li key={item.href}>
+                          <a
+                            href={`${siteConfig.baseLinks.blog}/${item.href}`}
+                            className={classNames(
+                              pathname.endsWith(item.href)
+                                ? "bg-gray-50 text-indigo-600"
+                                : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                              "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
+                            )}
+                          >
+                            {item.name}
+                          </a>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                </ul>
+              </nav>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Blog content */}
-      <main className="w-full px-6 py-4 md:py-0">
-        <div className="mx-auto flex justify-between">
-          <div>{canGoBackward && <BackButton href={previousHref} />}</div>
-          <div>{canGoForward && <NextButton href={nextHref} />}</div>
-        </div>
-        <div className="w-full py-4">{children}</div>
-        <div className="mx-auto flex justify-between">
-          <div>{canGoBackward && <BackButton href={previousHref} />}</div>
-          <div>{canGoForward && <NextButton href={nextHref} />}</div>
-        </div>
-      </main>
-    </div>
+        {/* Blog content */}
+        <main className="w-full px-6 py-4 md:py-0">
+          <div className="mx-auto flex justify-between">
+            <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+            <div>{canGoForward && <NextButton href={nextHref} />}</div>
+          </div>
+          <div className="w-full py-4">{children}</div>
+          <div className="mx-auto flex justify-between">
+            <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+            <div>{canGoForward && <NextButton href={nextHref} />}</div>
+          </div>
+        </main>
+      </div>
+    </>
   );
 }

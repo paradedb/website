@@ -266,7 +266,9 @@ pre {
   background-color: #212933 !important;
   border: none !important;
   border-radius: 0.5rem;
-  overflow: hidden !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  position: relative !important;
 }
 
 pre code {
@@ -278,18 +280,14 @@ pre.shiki,
 pre[class*="shiki"] {
   background-color: #212933 !important;
   border: none !important;
-  overflow: hidden !important;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  position: relative !important;
 }
 
 pre.shiki code,
 pre[class*="shiki"] code {
   background-color: transparent !important;
-}
-
-.copy-button-wrapper,
-[class*="copy-button"],
-[class*="copy-btn"] {
-  display: none !important;
 }
 
 pre::-webkit-scrollbar {
@@ -370,7 +368,7 @@ a {
   --callout-bg: #f8fcff !important;
   --callout-border: #e5e7eb !important;
   --callout-text: #0b4a6e !important;
-  --callout-icon-color: #0EA5E9 !important;
+  --callout-icon-color: #0ea5e9 !important;
   background-color: #f8fcff !important;
   border-color: #e5e7eb !important;
   color: #0b4a6e !important;

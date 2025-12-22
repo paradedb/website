@@ -5,42 +5,44 @@ import CopyToClipboard from "./CopyToClipboard";
 
 export default function CodeBlockEnhancer() {
   useEffect(() => {
-    // Find all pre elements that contain code
-    const preElements = document.querySelectorAll("pre code");
+    const addCopyButtons = () => {
+      const preElements = document.querySelectorAll("pre code");
 
-    preElements.forEach((codeElement) => {
-      const preElement = codeElement.parentElement;
-      if (!preElement || preElement.querySelector(".copy-button-wrapper")) {
-        return; // Skip if already processed
-      }
+      preElements.forEach((codeElement) => {
+        const preElement = codeElement.parentElement;
+        if (!preElement || preElement.querySelector(".copy-button-wrapper")) {
+          return;
+        }
 
-      // Get the text content of the code
-      const code = codeElement.textContent || "";
+        const code = codeElement.textContent || "";
 
-      if (code.trim()) {
-        // Create wrapper for copy button
-        const wrapper = document.createElement("div");
-        wrapper.className = "copy-button-wrapper absolute right-0 h-full";
-        wrapper.style.cssText =
-          "position: absolute; right: 0; height: 100%; z-index: 10;";
+        if (code.trim()) {
+          const wrapper = document.createElement("div");
+          wrapper.className = "copy-button-wrapper";
+          wrapper.style.cssText =
+            "position: absolute; right: 0; top: 0; z-index: 10; pointer-events: none;";
 
-        const buttonContainer = document.createElement("div");
-        buttonContainer.className = "absolute right-3 top-3";
-        buttonContainer.id = `copy-btn-${Math.random().toString(36).substr(2, 9)}`;
+          const buttonContainer = document.createElement("div");
+          buttonContainer.className = "absolute right-3 top-3";
+          buttonContainer.style.cssText = "pointer-events: auto;";
+          buttonContainer.id = `copy-btn-${Math.random().toString(36).substr(2, 9)}`;
 
-        wrapper.appendChild(buttonContainer);
+          wrapper.appendChild(buttonContainer);
+          preElement.appendChild(wrapper);
 
-        // Make pre element relative positioned
-        preElement.style.position = "relative";
-        preElement.appendChild(wrapper);
+          import("react-dom/client").then(({ createRoot }) => {
+            const root = createRoot(buttonContainer);
+            root.render(<CopyToClipboard code={code} />);
+          });
+        }
+      });
+    };
 
-        // Render React component into the container
-        import("react-dom/client").then(({ createRoot }) => {
-          const root = createRoot(buttonContainer);
-          root.render(<CopyToClipboard code={code} />);
-        });
-      }
-    });
+    addCopyButtons();
+
+    const timer = setTimeout(addCopyButtons, 500);
+
+    return () => clearTimeout(timer);
   }, []);
 
   return null;
