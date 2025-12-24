@@ -7,7 +7,7 @@ import { HeroDemo } from "./HeroDemo";
 import LogoCloud from "./LogoCloud";
 
 const code = `SELECT *, pdb.score(id) FROM animals
-WHERE name &&& 'elephant'
+WHERE name &&& 'elephant' AND weight >= 4000
 ORDER BY pdb.score(id) DESC;`;
 
 export default async function Hero() {
@@ -17,13 +17,13 @@ export default async function Hero() {
   });
 
   return (
-    <div className="px-12">
+    <div className="px-2 md:px-12">
       <section
         aria-labelledby="hero-title"
         className="rounded-xl ring-1 ring-indigo-100 border-3 border-indigo-50 mt-4 overflow-hidden flex flex-col"
       >
         <div
-          className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4 pt-20 sm:pb-20 text-center"
+          className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4 sm:py-20 py-8 text-center"
           style={{
             backgroundImage:
               "linear-gradient(rgba(238, 242, 255, 0.6), rgba(238, 242, 255, 0.0)), url('/splash_color.png')",
@@ -39,11 +39,11 @@ export default async function Hero() {
               <span className="text-indigo-600">Postgres</span> Stack
             </h1>
             <p
-              className="text-md mt-2 max-w-xl animate-slide-up-fade text-indigo-950 md:mt-6 md:text-lg"
+              className="text-md mt-2 max-w-2xl animate-slide-up-fade text-indigo-950 md:mt-6 md:text-lg"
               style={{ animationDuration: "900ms" }}
             >
-              Add Elastic-quality search to your Postgres today, not next quarter.<br/>
-              Zero ETL, zero Elastic clusters, zero headache.
+              You don't need the complexity of Elasticsearch, you just need search. ParadeDB brings
+              the power of Elastic to Postgres without the headache.
             </p>
             <div
               className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
@@ -70,20 +70,21 @@ export default async function Hero() {
               </Button>
             </div>
             <div
-              className="relative mx-auto ml-3 mt-16 hidden h-fit w-[40rem] max-w-3xl animate-slide-up-fade sm:ml-auto sm:w-full sm:px-2 md:block"
+              className="relative mx-auto mt-8 sm:mt-16 flex w-full max-w-[40rem] animate-slide-up-fade justify-center px-2"
               style={{ animationDuration: "1400ms" }}
             >
-              <HeroDemo tokens={tokens} />
+              <div className="relative w-full h-[12.2rem] sm:h-auto overflow-hidden sm:overflow-visible rounded-xl flex justify-center">
+                <div className="min-w-[35rem] sm:min-w-0 scale-[0.55] origin-top sm:w-full sm:scale-100 sm:transform-none">
+                  <HeroDemo tokens={tokens} />
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#4f46e5] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-b from-transparent to-[#4f46e5] pointer-events-none z-10" />
         </div>
 
-        <div className="bg-[#4f46e5] z-20 relative pt-4">
-          <div className="text-md mx-auto font-medium text-indigo-200 mb-8 animate-slide-up-fade text-center" style={{ animationDuration: "1500ms" }}>
-            Trusted by enterprises, loved by developers
-          </div>
+        <div className="bg-[#4f46e5] z-20 relative">
           <LogoCloud />
         </div>
       </section>
