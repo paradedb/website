@@ -1,12 +1,12 @@
 "use client";
 
-import BlogPostWrapper from "../BlogPostWrapper";
+import MarkdownWrapper from "@/components/MarkdownWrapper";
 import BlogContent from "./index.mdx";
 
 export default function BlogPost() {
   return (
-    <BlogPostWrapper>
+    <MarkdownWrapper>
       <BlogContent />
-    </BlogPostWrapper>
+    </MarkdownWrapper>
   );
 }

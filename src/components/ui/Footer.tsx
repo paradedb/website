@@ -7,9 +7,11 @@ import {
   legal,
   social,
 } from "@/lib/links";
-import { RiArrowRightUpLine } from "@remixicon/react";
+import { RiArrowRightUpLine, RiMailLine } from "@remixicon/react";
 import Link from "next/link";
-import { DatabaseLogo } from "../../../public/DatabaseLogo";
+import { DatabaseLogo } from "./DatabaseLogo";
+import { Button } from "../Button";
+import { ThemeToggle } from "./ThemeToggle";
 
 const navigation = {
   company: [
@@ -39,164 +41,157 @@ const navigation = {
 
 export default function Footer() {
   return (
-    <footer id="footer">
-      <div className="mx-auto max-w-6xl px-6 pb-8 pt-16 sm:pt-24 md:px-3 lg:pt-32">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-20">
-          <div className="space-y-8">
-            <Link href={siteConfig.baseLinks.home}>
-              <DatabaseLogo className="w-28" />
-            </Link>
-            <p className="mt-8 text-sm leading-6 text-gray-600">
-              The Transactional Elasticsearch Alternative Built on Postgres.
-            </p>
-            <div></div>
-          </div>
-          <div className="mt-16 grid grid-cols-1 gap-14 sm:gap-8 md:grid-cols-2 xl:col-span-2 xl:mt-0">
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Company
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Product"
-                >
-                  {navigation.company.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Connect
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Resources"
-                >
-                  {navigation.connect.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-0.5 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+    <footer id="footer" className="relative w-full overflow-hidden bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+      <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+      <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+
+      {/* Horizontal Line constrained to vertical lines */}
+      <div className="absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px bg-slate-200 dark:bg-slate-900 z-30" />
+
+      <div className="px-4 md:px-12 w-full flex flex-col relative pb-4">
+        <div className="relative w-full pt-16 md:pt-24 pb-0 px-6 md:px-12">
+          <div className="xl:grid xl:grid-cols-3 xl:gap-20">
+            <div className="space-y-8">
+              <Link href={siteConfig.baseLinks.home}>
+                <DatabaseLogo className="w-32 dark:brightness-0 dark:invert" />
+              </Link>
+              <p className="mt-4 md:mt-8 text-sm leading-6 text-gray-600 dark:text-slate-400 max-w-xs">
+                Simple, Elastic-Quality Search for Postgres.
+              </p>
+              <div className="md:pt-4">
+                <Button asChild className="h-10 rounded-none bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white font-semibold shadow-none">
+                  <Link href={email.SALES}>
+                    <RiMailLine className="mr-2 size-4" />
+                    Contact Us
+                  </Link>
+                </Button>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Resources
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Company"
-                >
-                  {navigation.resources.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+            <div className="mt-16 grid grid-cols-1 gap-14 sm:gap-8 md:grid-cols-2 xl:col-span-2 xl:mt-0">
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-slate-100">
+                    Company
+                  </h3>
+                  <ul role="list" className="mt-6 space-y-4">
+                    {navigation.company.map((item) => (
+                      <li key={item.name} className="w-fit">
+                        <Link
+                          className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
+                          href={item.href}
+                          target={item.external ? "_blank" : undefined}
+                          rel={item.external ? "noopener noreferrer" : undefined}
+                        >
+                          <span>{item.name}</span>
+                          {item.external && (
+                            <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 dark:bg-slate-800 p-px">
+                              <RiArrowRightUpLine
+                                aria-hidden="true"
+                                className="size-full shrink-0 text-gray-900 dark:text-slate-100"
+                              />
+                            </div>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-slate-100">
+                    Connect
+                  </h3>
+                  <ul role="list" className="mt-6 space-y-4">
+                    {navigation.connect.map((item) => (
+                      <li key={item.name} className="w-fit">
+                        <Link
+                          className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
+                          href={item.href}
+                          target={item.external ? "_blank" : undefined}
+                          rel={item.external ? "noopener noreferrer" : undefined}
+                        >
+                          <span>{item.name}</span>
+                          {item.external && (
+                            <div className="ml-0.5 aspect-square size-3 rounded-full bg-gray-100 dark:bg-slate-800 p-px">
+                              <RiArrowRightUpLine
+                                aria-hidden="true"
+                                className="size-full shrink-0 text-gray-900 dark:text-slate-100"
+                              />
+                            </div>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Legal
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Legal"
-                >
-                  {navigation.legal.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-slate-100">
+                    Resources
+                  </h3>
+                  <ul role="list" className="mt-6 space-y-4">
+                    {navigation.resources.map((item) => (
+                      <li key={item.name} className="w-fit">
+                        <Link
+                          className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
+                          href={item.href}
+                          target={item.external ? "_blank" : undefined}
+                          rel={item.external ? "noopener noreferrer" : undefined}
+                        >
+                          <span>{item.name}</span>
+                          {item.external && (
+                            <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 dark:bg-slate-800 p-px">
+                              <RiArrowRightUpLine
+                                aria-hidden="true"
+                                className="size-full shrink-0 text-gray-900 dark:text-slate-100"
+                              />
+                            </div>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold leading-6 text-gray-900 dark:text-slate-100">
+                    Legal
+                  </h3>
+                  <ul role="list" className="mt-6 space-y-4">
+                    {navigation.legal.map((item) => (
+                      <li key={item.name} className="w-fit">
+                        <Link
+                          className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
+                          href={item.href}
+                          target={item.external ? "_blank" : undefined}
+                          rel={item.external ? "noopener noreferrer" : undefined}
+                        >
+                          <span>{item.name}</span>
+                          {item.external && (
+                            <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 dark:bg-slate-800 p-px">
+                              <RiArrowRightUpLine
+                                aria-hidden="true"
+                                className="size-full shrink-0 text-gray-900 dark:text-slate-100"
+                              />
+                            </div>
+                          )}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:mt-20 sm:flex-row lg:mt-24">
-          <p className="text-sm leading-5 text-gray-500">
-            &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
-            reserved.
-          </p>
-          <div className="rounded-full border border-gray-200 py-1 pl-1 pr-2">
-            <div className="flex items-center gap-1.5">
-              <div className="relative size-4 shrink-0">
-                <div className="absolute inset-[1px] rounded-full bg-emerald-500/20" />
-                <div className="absolute inset-1 rounded-full bg-emerald-600" />
-              </div>
-              <span className="text-xs text-gray-700">
-                All systems operational
-              </span>
-            </div>
+
+        <div className="relative mt-16 md:mt-24">
+          <div className="absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px bg-slate-200 dark:bg-slate-900 z-30" />
+          <div className="w-full px-6 md:px-12 pt-8 sm:pt-4 pb-8 flex flex-col items-center justify-between gap-6 sm:flex-row">
+            <p className="text-sm leading-5 text-gray-500 dark:text-slate-400">
+              &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
+              reserved.
+            </p>
+            <ThemeToggle />
           </div>
         </div>
       </div>

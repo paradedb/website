@@ -52,6 +52,9 @@
   --font-size-tremor-title: 1.125rem / 1.75rem;
   --font-size-tremor-metric: 1.875rem / 2.25rem;
 
+  --font-size-md: 1rem;
+  --font-size-md--line-height: 1.5rem;
+
   --animate-hide: hide 150ms cubic-bezier(0.16, 1, 0.3, 1);
   --animate-slide-down-and-fade: slideDownAndFade 150ms
     cubic-bezier(0.16, 1, 0.3, 1);
@@ -69,7 +72,14 @@
     cubic-bezier(0.16, 1, 0.3, 1);
   --animate-slide-down-fade: slide-down-fade ease-in-out;
   --animate-slide-up-fade: slide-up-fade ease-in-out;
+  --animate-blink: blink 1s step-end infinite;
+
+  --color-background: #ffffff;
+  --color-foreground: #020617;
+  --color-border: #e2e8f0;
 }
+
+@variant dark (&:where(.dark, .dark *));
 
 @keyframes hide {
   from {
@@ -184,6 +194,32 @@
   }
 }
 
+@keyframes flow-down {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.animate-flow-down {
+  animation: flow-down 2s linear infinite;
+}
+
 @layer base {
   .prose blockquote {
     border-left-color: #4f46e5;
@@ -229,6 +265,32 @@
   *::-webkit-scrollbar-thumb:hover {
     background-color: #d1d5db;
   }
+
+  .custom-scrollbar::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #e2e8f0;
+    border-radius: 10px;
+    border: none;
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #cbd5e1;
+  }
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #334155;
 }
 
 @import "katex/dist/katex.min.css";
@@ -259,7 +321,7 @@ code {
 code .line::before {
   content: counter(step);
   counter-increment: step;
-  @apply mr-8 inline-block w-4 text-right text-gray-600;
+  @apply mr-4 inline-block w-4 text-right text-gray-600;
 }
 
 pre {
@@ -403,4 +465,127 @@ a {
 .mt-callout b {
   color: #0b4a6e !important;
   font-weight: 600;
+}
+
+.text-scanlines {
+  --scan-color: #4f46e5;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--scan-color) 0px,
+    var(--scan-color) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.text-scanlines-dark {
+  --scan-color: #1e1b4b;
+  background: repeating-linear-gradient(
+    to bottom,
+    var(--scan-color) 0px,
+    var(--scan-color) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@keyframes grid-pulse {
+  0% { opacity: 0; }
+  50% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.text-highlight-blink {
+  position: relative;
+  display: inline;
+  color: #4f46e5;
+  padding: 0 2px;
+}
+
+.text-highlight-blink::before {
+  content: '';
+  position: absolute;
+  left: -2px;
+  top: 0.1em;
+  bottom: 0.1em;
+  width: 2px;
+  background-color: currentColor;
+  animation: blink 1s step-end infinite;
+}
+
+.text-highlight-blink::after {
+  content: '';
+  position: absolute;
+  inset: 0.1em -4px;
+  background: linear-gradient(to right, rgba(224, 231, 255, 0.5), transparent);
+  pointer-events: none;
+  z-index: -10;
+  border-radius: 2px;
+}
+
+.bg-grid-pattern {
+  background-image: linear-gradient(to right, #64748b19 1px, transparent 1px),
+    linear-gradient(to bottom, #64748b19 1px, transparent 1px);
+}
+
+.bg-diagonal-hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    #e2e8f0 4px,
+    #e2e8f0 5px
+  );
+}
+
+.dark {
+  --color-background: #020617;
+  --color-foreground: #f8fafc;
+  --color-border: #1e293b;
+
+  .bg-grid-pattern {
+    background-image: linear-gradient(to right, #ffffff15 1px, transparent 1px),
+      linear-gradient(to bottom, #ffffff15 1px, transparent 1px);
+  }
+
+  .bg-diagonal-hatch {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 4px,
+      #1e293b 4px,
+      #1e293b 5px
+    );
+  }
+
+  .text-highlight-blink {
+    color: #818cf8;
+  }
+
+  .text-highlight-blink::after {
+    background: linear-gradient(to right, rgba(129, 140, 248, 0.2), transparent);
+  }
+
+  * {
+    scrollbar-color: #1e293b #020617;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #020617;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #1e293b;
+    border: 2px solid #020617;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #334155;
+  }
 }
