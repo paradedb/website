@@ -355,7 +355,7 @@ export default function HowItWorks() {
                     <div>
                         <h3 className="font-semibold text-gray-900">No data loss</h3>
                         <p className="mt-2 text-gray-600">
-                            ParadeDB uses native Postgres replication to stay in sync so you'll never lose data.
+                            ParadeDB uses native Postgres replication so you'll never lose data.
                         </p>
                     </div>
                 </div>
