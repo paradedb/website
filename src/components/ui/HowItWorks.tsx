@@ -1,20 +1,21 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import classNames from "classnames";
 import Image from "next/image";
 import { Badge } from "../Badge";
-import { RiStackLine, RiShieldCheckLine, RiDatabase2Line } from "@remixicon/react";
+import { RiStackLine, RiShieldCheckLine, RiPuzzle2Line } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
 import AwsLogo from "./logos/AwsLogo";
 import SupabaseLogo from "./logos/SupabaseLogo";
 
 const ParadeDBIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
-    viewBox="0 0 256 256"
+    viewBox="60 70 160 120"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
+    className={classNames(props.className, "scale-75")}
   >
     <path fillRule="evenodd" clipRule="evenodd" d="M158.322 75H130.387V180.211H158.322V75Z" fill="#4F46E5"/>
     <path fillRule="evenodd" clipRule="evenodd" d="M126.13 75H98.1938V180.211H126.13V75Z" fill="#4F46E5"/>
@@ -23,177 +24,210 @@ const ParadeDBIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-const ReplicationPill = ({ active }: { active: boolean }) => {
+const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: boolean }) => {
+  const [display, setDisplay] = useState<{ curr: string; prev: string | null }>({
+    curr: text,
+    prev: null,
+  });
+
+  if (text !== display.curr) {
+    setDisplay({ curr: text, prev: display.curr });
+  }
+
+  useEffect(() => {
+    if (display.prev) {
+      const timer = setTimeout(() => {
+        setDisplay((d) => ({ ...d, prev: null }));
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+  }, [display.prev]);
+
   return (
-    <div className={classNames("h-full flex flex-col items-center justify-center transition-all duration-500", active ? "opacity-100" : "grayscale")}>
-       <style jsx>{`
-        @keyframes flowGradient {
-            from { stroke-dashoffset: 30; }
-            to { stroke-dashoffset: -370; }
-        }
-        .animate-flow-line {
-            animation: flowGradient 3s linear infinite;
-        }
-      `}</style>
+    <div className="relative w-full h-full overflow-hidden">
+      <style>{`
+          @keyframes slideOutTop {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-100%); opacity: 0; }
+          }
+          @keyframes slideInBottom {
+            0% { transform: translateY(100%); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+          }
+        `}</style>
 
-      {/* Top Line */}
-      <div className="flex-1 w-[2px] relative overflow-visible">
-         <svg className="w-full h-full absolute inset-0 overflow-visible">
-             {/* Background gray line */}
-            <line
-                x1="1" y1="0" x2="1" y2="100%"
-                stroke="#cbd5e1"
-                strokeWidth="2"
-                className={classNames("transition-opacity duration-500", active ? "opacity-100" : "opacity-0")}
-            />
-            {/* Flowing green segment */}
-             <line
-                x1="1" y1="0" x2="1" y2="100%"
-                stroke="#4ade80"
-                strokeWidth="2"
-                strokeDasharray="30 370"
-                strokeDashoffset="30"
-                className={classNames(active ? "opacity-100 animate-flow-line" : "opacity-0")}
-                strokeLinecap="round"
-                pathLength="100"
-                style={{ animationDelay: '1.5s' }}
-            />
-         </svg>
-      </div>
+      {display.prev && (
+        <div
+          className={classNames(
+            "absolute inset-0 flex items-center",
+            "text-green-400 font-medium"
+          )}
+          style={{ animation: "slideOutTop 500ms ease-in-out forwards" }}
+        >
+          <span className="text-xs truncate w-full">{display.prev}</span>
+        </div>
+      )}
 
-      {/* Badge with animated border effect */}
-      <div className="relative z-10 my-2">
-         {/* Moving glow behind/border */}
-         <div className={classNames(
-             "absolute inset-0 bg-green-400 blur-sm transition-opacity duration-300",
-             active ? "opacity-40 animate-pulse" : "opacity-0"
-         )} />
-
-         <div className={classNames(
-            "relative px-4 py-1.5 text-xs font-semibold border backdrop-blur-sm transition-all duration-500 whitespace-nowrap overflow-hidden",
-            active
-              ? "bg-white/80 border-green-400 text-green-700 shadow-sm scale-110"
-              : "bg-white border-slate-200 text-slate-400 scale-100"
-         )}>
-             {/* Shine effect passing through */}
-             <div className={classNames(
-                 "absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-green-100/50 to-transparent",
-                 active && "animate-[shimmer_3s_infinite]"
-             )} style={{ animationDelay: '2.3s' }} />
-            Logical Replication
-         </div>
-      </div>
-
-      {/* Bottom Line */}
-      <div className="flex-1 w-[2px] relative overflow-visible">
-         <svg className="w-full h-full absolute inset-0 overflow-visible">
-             {/* Background gray line */}
-             <line
-                x1="1" y1="0" x2="1" y2="100%"
-                stroke="#cbd5e1"
-                strokeWidth="2"
-                className={classNames("transition-opacity duration-500", active ? "opacity-100" : "opacity-0")}
-            />
-            {/* Flowing green segment */}
-             <line
-                x1="1" y1="0" x2="1" y2="100%"
-                stroke="#4F46E5"
-                strokeWidth="2"
-                strokeDasharray="30 370"
-                strokeDashoffset="30"
-                className={classNames(active ? "opacity-100 animate-flow-line" : "opacity-0")}
-                strokeLinecap="round"
-                pathLength="100"
-                style={{ animationDelay: '2.7s' }}
-            />
-         </svg>
+      <div
+        className={classNames(
+          "absolute inset-0 flex items-center",
+          isHighlighted ? "text-green-400 font-medium" : "text-slate-300"
+        )}
+        style={{
+          animation: display.prev
+            ? "slideInBottom 500ms ease-in-out forwards"
+            : "none",
+        }}
+      >
+        <span className="text-xs truncate w-full">{display.curr}</span>
       </div>
     </div>
-  )
-}
+  );
+};
+
+const Table = ({
+  title,
+  rows,
+  highlightIdx,
+  icon: Icon,
+}: {
+  title: string;
+  rows: { id: number; name: string; weight: string }[];
+  highlightIdx: number;
+  icon?: React.ElementType;
+}) => (
+  <div className="w-full bg-slate-900 shadow-xl border border-slate-800 rounded-lg overflow-hidden text-sm z-10 relative">
+    <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800 font-medium text-slate-400 flex justify-between items-center">
+      <div className="flex items-center gap-2">
+        {Icon && <Icon className="h-4 w-auto text-slate-400" />}
+        <span className="text-xs uppercase tracking-wide">{title}</span>
+      </div>
+    </div>
+    <div className="divide-y divide-slate-800">
+      <div className="grid grid-cols-[30px_1fr_60px] bg-slate-900/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
+        <div>id</div>
+        <div>name</div>
+        <div>weight</div>
+      </div>
+      {rows.map((row, i) => (
+        <div
+          key={row.id}
+          className={classNames(
+            "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center",
+            highlightIdx === i ? "bg-slate-800/60" : "bg-transparent"
+          )}
+        >
+          <div className="font-mono text-xs text-indigo-400">{row.id}</div>
+          <div className="relative h-4 overflow-hidden w-full">
+            <AnimatedCell text={row.name} isHighlighted={highlightIdx === i} />
+          </div>
+          <div className="relative h-4 overflow-hidden w-full">
+            <AnimatedCell text={row.weight} isHighlighted={highlightIdx === i} />
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 function AnimationDemo() {
-  const [step, setStep] = useState(0);
-  const [pubText, setPubText] = useState("");
-  const [subText, setSubText] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
-  const [hasStarted, setHasStarted] = useState(false);
+  const ELEPHANT_DATA = [
+    { name: "Asian Elephant", weight: "4000" },
+    { name: "African Bush Elephant", weight: "6000" },
+    { name: "Forest Elephant", weight: "2700" },
+    { name: "Savanna Elephant", weight: "7500" },
+    { name: "Indian Elephant", weight: "3500" },
+    { name: "Sri Lankan Elephant", weight: "4500" },
+    { name: "Sumatran Elephant", weight: "2000" },
+    { name: "Borneo Elephant", weight: "1900" },
+    { name: "Pygmy Elephant", weight: "1800" },
+    { name: "Mammoth (Extinct)", weight: "8000" },
+  ];
 
-  const PUB_CMD = "CREATE PUBLICATION";
-  const SUB_CMD = "CREATE SUBSCRIPTION";
+  const INITIAL_ROWS = [
+    { id: 1, name: "Asian Elephant", weight: "4000" },
+    { id: 2, name: "African Bush Elephant", weight: "6000" },
+    { id: 3, name: "Forest Elephant", weight: "2700" },
+  ];
+
+  const [primaryRows, setPrimaryRows] = useState(INITIAL_ROWS);
+  const [replicaRows, setReplicaRows] = useState(INITIAL_ROWS);
+  const [highlightPrimary, setHighlightPrimary] = useState(-1);
+  const [highlightReplica, setHighlightReplica] = useState(-1);
+  const [packetState, setPacketState] = useState<"idle" | "moving" | "received">("idle");
 
   useEffect(() => {
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && !hasStarted) {
-          setHasStarted(true);
-        }
-      },
-      { threshold: 0.4 } // Trigger when 40% visible
-    );
-
-    if (containerRef.current) {
-      observer.observe(containerRef.current);
-    }
-
-    return () => observer.disconnect();
-  }, [hasStarted]);
-
-  useEffect(() => {
-    if (!hasStarted) return;
-
     let mounted = true;
 
     const runAnimation = async () => {
-      // Loop forever
+      let cycleCount = 0;
+      let nameIndex = 3;
+      let rowUpdateIndex = 0;
+
       while (mounted) {
-        // Reset
-        setStep(0);
-        setPubText("");
-        setSubText("");
+        // Reset Highlight
+        setHighlightPrimary(-1);
+        setHighlightReplica(-1);
+        setPacketState("idle");
 
         if (!mounted) break;
-        await new Promise((r) => setTimeout(r, 500));
+        await new Promise((r) => setTimeout(r, 1500));
 
-        // Step 1: Supabase expands
+        // 1. Prepare Update
         if (!mounted) break;
-        setStep(1);
 
-        for (let i = 0; i <= PUB_CMD.length; i++) {
-          if (!mounted) break;
-          await new Promise((r) => setTimeout(r, 50));
-          setPubText(PUB_CMD.slice(0, i));
-        }
+        // Cycle through rows sequentially (0 -> 1 -> 2 -> 0...)
+        const rowToUpdateIdx = rowUpdateIndex % 3;
+        rowUpdateIndex++;
 
+        // Cycle through names sequentially
+        const newData = ELEPHANT_DATA[nameIndex % ELEPHANT_DATA.length];
+        nameIndex++;
+
+        // 1b. Show Highlight First
+        setHighlightPrimary(rowToUpdateIdx);
+        await new Promise((r) => setTimeout(r, 300));
+
+        // Update Primary State
+        setPrimaryRows(prev => {
+            const newRows = [...prev];
+            newRows[rowToUpdateIdx] = {
+              ...newRows[rowToUpdateIdx],
+              name: newData.name,
+              weight: newData.weight
+            };
+            return newRows;
+        });
+
+        // 2. Start Packet Travel
+        await new Promise((r) => setTimeout(r, 200));
         if (!mounted) break;
-        await new Promise((r) => setTimeout(r, 500));
+        setPacketState("moving");
 
-        // Step 2: ParadeDB expands
-        setStep(2);
-
-        for (let i = 0; i <= SUB_CMD.length; i++) {
-          if (!mounted) break;
-          await new Promise((r) => setTimeout(r, 50));
-          setSubText(SUB_CMD.slice(0, i));
-        }
-
+        // 3. Update Replica (Packet Received)
+        await new Promise((r) => setTimeout(r, 800)); // Travel time
         if (!mounted) break;
-        await new Promise((r) => setTimeout(r, 1000));
+        setPacketState("received"); // Hide packet
 
-        // Step 3: Text Fades / Collapse
-        setStep(3);
+        // Show highlight on Replica first
+        setHighlightReplica(rowToUpdateIdx);
+        await new Promise((r) => setTimeout(r, 300));
 
-        if (!mounted) break;
-        await new Promise((r) => setTimeout(r, 1000));
+        // Apply update to Replica
+        setReplicaRows(prev => {
+            const newRows = [...prev];
+            newRows[rowToUpdateIdx] = {
+              ...newRows[rowToUpdateIdx],
+              name: newData.name,
+              weight: newData.weight
+            };
+            return newRows;
+        });
 
-        // Step 4: Replication Live
-        setStep(4);
+        // 4. Hold
+        await new Promise((r) => setTimeout(r, 1700));
 
-        // Hold result for 10 animation cycles (10 * 3s = 30s)
-        for (let k = 0; k < 6; k++) {
-          if (!mounted) break;
-          await new Promise((r) => setTimeout(r, 3000));
-        }
+        cycleCount++;
       }
     };
 
@@ -202,117 +236,77 @@ function AnimationDemo() {
     return () => {
       mounted = false;
     };
-  }, [hasStarted]);
+  }, []);
 
   return (
-    <div ref={containerRef} className="w-full relative overflow-hidden p-8 bg-indigo-100">
-
-      <style jsx>{`
-        @keyframes doublePulse {
-          0%, 100% { transform: scale(1); }
-          12% { transform: scale(1.03); }
-          24% { transform: scale(1); }
-          36% { transform: scale(1.03); }
-          48% { transform: scale(1); }
-        }
-        .animate-double-pulse {
-            animation: doublePulse 3s ease-in-out infinite;
+    <div className="w-full h-full relative overflow-hidden py-4 px-4 bg-indigo-50/50 border border-indigo-100/50 flex flex-col justify-center">
+      <style>{`
+        @keyframes scan {
+          0% { mask-position: 0 -100%; -webkit-mask-position: 0 -100%; }
+          100% { mask-position: 0 300%; -webkit-mask-position: 0 300%; }
         }
       `}</style>
-
-      {/* Mesh Background Border Effect */}
-      <div className="absolute inset-0 z-0">
+      {/* Background Mesh/Effect */}
+      <div className="absolute inset-0 z-0 opacity-75">
         <Image
           src="/mesh_1.svg"
           alt="Background Gradient"
           fill
-          className="object-cover opacity-80"
-          priority
+          className="object-cover opacity-100"
         />
-        {/* Soft white overlay to improve text contrast if needed */}
-        <div className="absolute inset-0 bg-white/10 backdrop-blur-[2px]" />
       </div>
 
-      {/* Inner Content Container - Clean Slate Background */}
-      <div className="relative z-10 w-full h-[360px] sm:h-[560px] flex flex-col items-center justify-between py-12 px-4 bg-white/50 backdrop-blur-md shadow-sm border border-white/50">
+      <div className="flex flex-col items-center w-full max-w-[420px] mx-auto relative z-10">
+        {/* Primary Table */}
+        <Table
+          title="Primary (Postgres)"
+          rows={primaryRows}
+          highlightIdx={highlightPrimary}
+          icon={PostgresLogo}
+        />
 
-        {/* Horizontal Dotted Line */}
-        <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 z-0 px-8">
-            <div className="w-full border-t-2 border-dashed border-[#cbd5e1]" />
-        </div>
+        {/* Connector */}
+        <div className="h-28 lg:flex-1 w-full relative flex justify-center items-center min-h-[7rem]">
+          {/* Base Dashed Line */}
+          <div className="h-full w-px border-l-2 border-dashed border-slate-700" />
 
-        {/* Supabase Side (Top) */}
-        <div className="relative flex flex-col items-center justify-center gap-4 z-10 w-full h-1/3">
+          {/* Active Dashed Line (Lighting up) */}
           <div
             className={classNames(
-                "flex items-center justify-center transition-all duration-700 ease-out p-4 shadow-sm border",
-                step >= 1 && step < 3 ? "shadow-xl pr-8 border-slate-200" : "border-transparent",
-                step >= 4 ? "shadow-xl bg-[#3ECF8E]/10 animate-double-pulse" : "bg-white grayscale border border-transparent"
+              "absolute top-0 h-full w-px border-l-2 border-dashed border-indigo-400 drop-shadow-[0_0_3px_#818cf8] transition-opacity",
+              packetState === "moving" ? "opacity-100 duration-75" : "opacity-0 duration-200"
             )}
-          >
-             {/* Inline Supabase Logo */}
-             <svg width="40" height="40" viewBox="0 0 109 113" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-8 h-8 md:w-10 md:h-10 shrink-0">
-                <path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#supabase_paint0_linear)"/>
-                <path d="M63.7076 110.284C60.8481 113.885 55.0502 111.912 54.9813 107.314L53.9738 40.0627L99.1935 40.0627C107.384 40.0627 111.952 49.5228 106.859 55.9374L63.7076 110.284Z" fill="url(#supabase_paint1_linear)" fillOpacity="0.2"/>
-                <path d="M45.317 2.07103C48.1765 -1.53037 53.9745 0.442937 54.0434 5.041L54.4849 72.2922H9.83113C1.64038 72.2922 -2.92775 62.8321 2.1655 56.4175L45.317 2.07103Z" fill="#3ECF8E"/>
-                <defs>
-                <linearGradient id="supabase_paint0_linear" x1="53.9738" y1="54.974" x2="94.1635" y2="71.8295" gradientUnits="userSpaceOnUse">
-                <stop stopColor="#249361"/>
-                <stop offset="1" stopColor="#3ECF8E"/>
-                </linearGradient>
-                <linearGradient id="supabase_paint1_linear" x1="36.1558" y1="30.578" x2="54.4844" y2="65.0806" gradientUnits="userSpaceOnUse">
-                <stop/>
-                <stop offset="1" stopOpacity="0"/>
-                </linearGradient>
-                </defs>
-            </svg>
+            style={{
+              maskImage:
+                "linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%)",
+              maskSize: "100% 40%",
+              WebkitMaskSize: "100% 40%",
+              maskRepeat: "no-repeat",
+              WebkitMaskRepeat: "no-repeat",
+              animation:
+                packetState === "moving" || packetState === "received"
+                  ? "scan 0.8s linear forwards"
+                  : "none",
+            }}
+          />
 
-            {/* Typewriter Text */}
-            <div className={classNames(
-                "overflow-hidden transition-all duration-500 ease-in-out font-mono text-[10px] sm:text-base flex items-center",
-                step >= 1 && step < 3 ? "w-auto ml-2 sm:ml-4 opacity-100" : "w-0 opacity-0"
-            )}>
-                <span className="whitespace-nowrap text-slate-700">
-                    <span className="text-green-400 mr-2">$</span>
-                    {pubText}
-                    <span className="animate-pulse">_</span>
-                </span>
-            </div>
+          {/* Label Pill */}
+          <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-100 px-4 py-1.5 rounded-full shadow-xl z-30">
+            <span className="text-[10px] font-mono text-indigo-800 font-semibold tracking-wide">
+              LOGICAL REPLICATION
+            </span>
           </div>
         </div>
 
-        {/* Connection Space - Centered Pill */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-[35%] flex flex-col items-center justify-center z-20">
-             <ReplicationPill active={step >= 4} />
-        </div>
-
-        {/* ParadeDB Side (Bottom) */}
-        <div className="relative flex flex-col items-center justify-center gap-4 z-10 w-full h-1/3">
-           <div
-            className={classNames(
-                "relative z-10 flex items-center justify-center transition-all duration-700 ease-out p-4 shadow-sm border",
-                 step >= 2 && step < 3 ? "shadow-xl pr-8 border-slate-200" : "border-transparent",
-                 step >= 4 ? "shadow-xl bg-indigo-100 animate-double-pulse" : "bg-white grayscale border border-transparent"
-            )}
-            style={step >= 4 ? { animationDelay: '3.45s' } : {}}
-           >
-             {/* ParadeDB Icon */}
-             <ParadeDBIcon className="w-8 h-8 md:w-10 md:h-10 shrink-0 scale-125 relative z-20" />
-
-             {/* Typewriter Text */}
-            <div className={classNames(
-                "overflow-hidden transition-all duration-500 ease-in-out font-mono text-[10px] sm:text-base flex items-center relative z-20",
-                step >= 2 && step < 3 ? "w-auto ml-2 sm:ml-4 opacity-100" : "w-0 opacity-0"
-            )}>
-                <span className="whitespace-nowrap text-slate-700">
-                    <span className="text-indigo-400 mr-2">$</span>
-                    {subText}
-                    <span className="animate-pulse">_</span>
-                </span>
-            </div>
-           </div>
-        </div>
-
+        {/* Replica Table */}
+        <Table
+          title="Replica (ParadeDB)"
+          rows={replicaRows}
+          highlightIdx={highlightReplica}
+          icon={ParadeDBIcon}
+        />
       </div>
     </div>
   );
@@ -321,12 +315,12 @@ function AnimationDemo() {
 export default function HowItWorks() {
   return (
     <div className="px-2 md:px-12">
-      <section className="ring-1 ring-indigo-100 border-3 border-indigo-50 mt-12 overflow-hidden flex flex-col">
+      <section className="mt-12 overflow-hidden flex flex-col border-3 border-transparent">
         <div
-          className="relative flex flex-col items-center justify-center bg-indigo-50/50 px-6 sm:px-16 sm:py-20 py-8"
+          className="relative flex flex-col items-center justify-center px-4 sm:py-20 py-8"
         >
-          <div className="flex flex-col lg:grid lg:grid-cols-5 gap-8 lg:gap-12 items-start">
-            <div className="flex flex-col justify-start h-full py-0 lg:py-8 lg:col-span-3 w-full">
+          <div className="w-full flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
+            <div className="flex flex-col justify-start h-full py-0 lg:py-8 w-full">
               <div className="w-fit">
                 <Badge>How It Works</Badge>
               </div>
@@ -334,7 +328,7 @@ export default function HowItWorks() {
                 <span className="text-indigo-600">Zero ETL</span> means <br/>zero headache
               </h2>
               <p className="mt-6 text-lg text-gray-600">
-                ParadeDB is a Postgres extension, which means it can run as a logical replica of any primary Postgres.
+                ParadeDB is built on Postgres, which means it can run as a logical replica of any primary Postgres.
               </p>
 
               {/* Graphic - Mobile Only (Hidden on Desktop) */}
@@ -351,7 +345,7 @@ export default function HowItWorks() {
                     <div>
                         <h3 className="font-semibold text-gray-900">No sync overhead</h3>
                         <p className="mt-2 text-gray-600">
-                            No complex third-party tools like ETL, Kafka, or Debezium.
+                            Eliminate complex third-party tools like ETL, Kafka, or Debezium.
                         </p>
                     </div>
                 </div>
@@ -359,9 +353,9 @@ export default function HowItWorks() {
                 <div className="flex gap-4 items-start">
                     <RiShieldCheckLine className="size-5 text-indigo-600 shrink-0 mt-1" />
                     <div>
-                        <h3 className="font-semibold text-gray-900">Zero data loss</h3>
+                        <h3 className="font-semibold text-gray-900">No data loss</h3>
                         <p className="mt-2 text-gray-600">
-                            Never lose data again because of a broken sync with Elastic. ParadeDB always stays in sync.
+                            ParadeDB uses native Postgres replication to stay in sync so you'll never lose data.
                         </p>
                     </div>
                 </div>
@@ -369,21 +363,21 @@ export default function HowItWorks() {
 
               <div className="border-t border-gray-200 mt-6 pt-6">
                 <div className="flex items-center gap-4">
-                   <RiDatabase2Line className="text-indigo-600 size-5 shrink-0" />
+                   <RiPuzzle2Line className="text-indigo-600 size-5 shrink-0" />
                    <div className="flex items-center gap-4">
-                     <span className="font-semibold text-gray-900">Compatible with</span>
+                     <span className="font-semibold text-gray-900">Compatible with any Postgres</span>
                      <div className="flex items-center gap-4">
                         <PostgresLogo className="h-6 w-auto transition-all duration-300" />
                         <AwsLogo className="h-6 w-auto transition-all duration-300" />
-                        <SupabaseLogo className="h-6 w-auto transition-all duration-300" />
+                        <SupabaseLogo className="h-6 w-auto shrink-0 transition-all duration-300" />
                      </div>
                    </div>
                 </div>
               </div>
             </div>
             {/* Graphic - Desktop Only (Hidden on Mobile) */}
-            <div className="hidden lg:flex justify-center lg:justify-end w-full lg:col-span-2">
-              <div className="w-full max-w-md">
+            <div className="hidden lg:flex justify-center lg:justify-end w-full h-full">
+              <div className="w-full max-w-xl h-full">
                 <AnimationDemo />
               </div>
             </div>
