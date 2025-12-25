@@ -58,7 +58,7 @@ export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
   }, []); // Run once on mount
 
   return (
-    <div className="overflow-hidden rounded-xl bg-slate-900/90 shadow-2xl ring-1 ring-slate-800 transition-all duration-500 ease-out h-[22rem] w-full relative">
+    <div className="overflow-hidden bg-slate-900/90 shadow-2xl ring-1 ring-slate-800 rounded-lg md:rounded-xl transition-all duration-500 ease-out h-[22rem] w-full relative">
       <div className="flex gap-2 absolute top-4 left-4 z-30">
         <div className="w-3 h-3 rounded-full bg-[#ec6a5e]" />
         <div className="w-3 h-3 rounded-full bg-[#f4bf4f]" />
@@ -106,7 +106,7 @@ export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
 
       <div
         className={cx(
-          "transition-opacity duration-1000 ease-linear absolute bottom-0 w-full z-20 rounded-b-xl overflow-hidden",
+          "transition-opacity duration-1000 ease-linear absolute bottom-0 w-full z-20 overflow-hidden",
           showRows ? "opacity-100" : "opacity-0"
         )}
       >

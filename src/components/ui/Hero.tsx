@@ -20,7 +20,7 @@ export default async function Hero() {
     <div className="px-2 md:px-12">
       <section
         aria-labelledby="hero-title"
-        className="rounded-xl ring-1 ring-indigo-100 border-3 border-indigo-50 mt-4 overflow-hidden flex flex-col"
+        className="ring-1 ring-indigo-100 border-3 border-indigo-50 mt-4 overflow-hidden flex flex-col"
       >
         <div
           className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4 sm:py-20 py-8 text-center"
@@ -42,14 +42,14 @@ export default async function Hero() {
               className="text-md mt-2 max-w-2xl animate-slide-up-fade text-indigo-950 md:mt-6 md:text-lg"
               style={{ animationDuration: "900ms" }}
             >
-              You don't need the complexity of Elasticsearch, you just need search. ParadeDB brings
-              the power of Elastic to Postgres without the headache.
+              Better search without the complexity of Elasticsearch.<br/>
+              ParadeDB is the simplest way to bring the power of Elastic to Postgres.
             </p>
             <div
               className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
               style={{ animationDuration: "1100ms" }}
             >
-              <Button className="text-md rounded-xl px-4 bg-indigo-600 ring-2 ring-indigo-400 border-1 border-indigo-400">
+              <Button className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 border-1 border-indigo-400 rounded-none">
                 <Link target="_blank" href={social.CALENDLY}>
                   Book a Demo
                 </Link>
@@ -57,7 +57,7 @@ export default async function Hero() {
               <Button
                 asChild
                 variant="light"
-                className="text-md hover: group rounded-full bg-transparent hover:bg-transparent"
+                className="text-md hover:group bg-transparent hover:bg-transparent border-0"
               >
                 <Link
                   href={documentation.BASE}
@@ -73,8 +73,8 @@ export default async function Hero() {
               className="relative mx-auto mt-8 sm:mt-16 flex w-full max-w-[40rem] animate-slide-up-fade justify-center px-2"
               style={{ animationDuration: "1400ms" }}
             >
-              <div className="relative w-full h-[12.2rem] sm:h-auto overflow-hidden sm:overflow-visible rounded-xl flex justify-center">
-                <div className="min-w-[35rem] sm:min-w-0 scale-[0.55] origin-top sm:w-full sm:scale-100 sm:transform-none">
+              <div className="rounded-lg relative w-full h-[12.2rem] sm:h-auto overflow-hidden sm:overflow-visible flex justify-center">
+                <div className="rounded-lg min-w-[35rem] sm:min-w-0 scale-[0.55] origin-top sm:w-full sm:scale-100 sm:transform-none">
                   <HeroDemo tokens={tokens} />
                 </div>
               </div>
