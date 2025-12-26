@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import classNames from "classnames";
 import Image from "next/image";
 import { Badge } from "../Badge";
-import { RiStackLine, RiShieldCheckLine, RiPuzzle2Line } from "@remixicon/react";
+import { RiStackLine, RiShieldCheckLine } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
 import AwsLogo from "./logos/AwsLogo";
 import SupabaseLogo from "./logos/SupabaseLogo";
+import Link from "next/link";
+import { Button } from "../Button";
 
 const ParadeDBIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -96,7 +98,7 @@ const Table = ({
   highlightIdx: number;
   icon?: React.ElementType;
 }) => (
-  <div className="w-full bg-slate-900 shadow-xl border border-slate-800 rounded-lg overflow-hidden text-sm z-10 relative">
+  <div className="w-full bg-slate-900/90 shadow-xl border border-slate-800 rounded-lg overflow-hidden text-sm z-10 relative">
     <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800 font-medium text-slate-400 flex justify-between items-center">
       <div className="flex items-center gap-2">
         {Icon && <Icon className="h-4 w-auto text-slate-400" />}
@@ -239,7 +241,7 @@ function AnimationDemo() {
   }, []);
 
   return (
-    <div className="w-full h-full relative overflow-hidden py-4 px-4 bg-indigo-50/50 border border-indigo-100/50 flex flex-col justify-center">
+    <div className="w-full h-full relative overflow-hidden bg-indigo-50/50 flex flex-col">
       <style>{`
         @keyframes scan {
           0% { mask-position: 0 -100%; -webkit-mask-position: 0 -100%; }
@@ -256,7 +258,8 @@ function AnimationDemo() {
         />
       </div>
 
-      <div className="flex flex-col items-center w-full max-w-[420px] mx-auto relative z-10">
+      <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 relative z-10">
+        <div className="flex flex-col items-center w-full max-w-[420px] mx-auto">
         {/* Primary Table */}
         <Table
           title="Primary (Postgres)"
@@ -307,6 +310,17 @@ function AnimationDemo() {
           highlightIdx={highlightReplica}
           icon={ParadeDBIcon}
         />
+        </div>
+      </div>
+
+      {/* Footer Strip */}
+      <div className="relative z-20 bg-white/75 backdrop-blur-md border-t border-indigo-200/60 px-6 py-4 flex items-center justify-between">
+         <span className="text-xs font-semibold text-slate-600 truncate mr-4">Compatible with any Postgres</span>
+         <div className="flex items-center gap-4 transition-all duration-300 shrink-0">
+             <PostgresLogo className="h-5 w-auto shrink-0 opacity-100 grayscale-[0.3] hover:grayscale-0 hover:opacity-100 transition-all" />
+             <AwsLogo className="h-4 w-auto shrink-0 opacity-100 grayscale-[0.3] hover:grayscale-0 hover:opacity-100 transition-all" />
+             <SupabaseLogo className="h-5 w-auto shrink-0 opacity-100 grayscale-[0.3] hover:grayscale-0 hover:opacity-100 transition-all" />
+         </div>
       </div>
     </div>
   );
@@ -324,12 +338,23 @@ export default function HowItWorks() {
               <div className="w-fit">
                 <Badge>How It Works</Badge>
               </div>
-              <h2 className="mt-4 text-4xl font-bold tracking-tighter text-indigo-900 sm:text-6xl">
+              <h2 className="mt-4 text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl">
                 <span className="text-indigo-600">Zero ETL</span> means <br/>zero headache
               </h2>
               <p className="mt-6 text-lg text-gray-600">
-                ParadeDB is built on Postgres, which means it can run as a logical replica of any primary Postgres.
+                ParadeDB is built on Postgres, which means it can run as a logical replica of your primary Postgres.
               </p>
+
+              <div
+                className="mt-8 flex w-full sm:flex-row"
+                style={{ animationDuration: "1100ms" }}
+                >
+                <Button className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 border-1 border-indigo-400 rounded-none">
+                    <Link target="_blank" href={""}>
+                    Learn More
+                    </Link>
+                </Button>
+              </div>
 
               {/* Graphic - Mobile Only (Hidden on Desktop) */}
               <div className="flex lg:hidden justify-center w-full mt-8">
@@ -338,41 +363,26 @@ export default function HowItWorks() {
                 </div>
               </div>
 
-              <div className="mt-8 space-y-6">
-                <div className="border-t border-gray-200"></div>
-                <div className="flex gap-4 items-start">
-                    <RiStackLine className="size-5 text-indigo-600 shrink-0 mt-1" />
-                    <div>
-                        <h3 className="font-semibold text-gray-900">No sync overhead</h3>
-                        <p className="mt-2 text-gray-600">
-                            Eliminate complex third-party tools like ETL, Kafka, or Debezium.
-                        </p>
-                    </div>
-                </div>
-                <div className="border-t border-gray-200"></div>
-                <div className="flex gap-4 items-start">
-                    <RiShieldCheckLine className="size-5 text-indigo-600 shrink-0 mt-1" />
-                    <div>
-                        <h3 className="font-semibold text-gray-900">No data loss</h3>
-                        <p className="mt-2 text-gray-600">
-                            ParadeDB uses native Postgres replication so you'll never lose data.
-                        </p>
-                    </div>
-                </div>
+              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="pl-4 border-l border-gray-200">
+                    <RiStackLine className="size-6 text-indigo-600 mb-3" />
+                    <h3 className="font-semibold text-gray-900">No sync overhead</h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                        Eliminate complex third-party tools like ETL, Kafka, or Debezium.
+                    </p>
+                  </div>
+
+                  <div className="pl-4 border-l border-gray-200">
+                    <RiShieldCheckLine className="size-6 text-indigo-600 mb-3" />
+                    <h3 className="font-semibold text-gray-900">No data loss</h3>
+                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">
+                        ParadeDB uses native Postgres replication so you'll never lose data.
+                    </p>
+                  </div>
               </div>
 
-              <div className="border-t border-gray-200 mt-6 pt-6">
-                <div className="flex items-center gap-4">
-                   <RiPuzzle2Line className="text-indigo-600 size-5 shrink-0" />
-                   <div className="flex items-center gap-4">
-                     <span className="font-semibold text-gray-900">Compatible with any Postgres</span>
-                     <div className="flex items-center gap-4">
-                        <PostgresLogo className="h-6 w-auto transition-all duration-300" />
-                        <AwsLogo className="h-6 w-auto transition-all duration-300" />
-                        <SupabaseLogo className="h-6 w-auto shrink-0 transition-all duration-300" />
-                     </div>
-                   </div>
-                </div>
+              <div className="mt-8 pt-6">
+                 {/* Spacer to keep alignment if needed, or just empty */}
               </div>
             </div>
             {/* Graphic - Desktop Only (Hidden on Mobile) */}

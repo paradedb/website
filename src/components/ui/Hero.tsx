@@ -43,7 +43,7 @@ export default async function Hero() {
               style={{ animationDuration: "900ms" }}
             >
               You need better search, not the complexity of Elasticsearch.<br/>
-              ParadeDB is the simplest way to bring the power of Elastic to Postgres.
+              ParadeDB is the fastest way to bring the power of Elastic to Postgres.
             </p>
             <div
               className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
