@@ -53,8 +53,8 @@ export function Navigation() {
 
   return (
     <div>
-      <div className="flex w-screen justify-center space-x-4 bg-indigo-600 px-2 py-4 text-center text-white">
-        <div className="hidden rounded  bg-opacity-20 px-2 py-1 bg-[#786EEA] text-xs font-medium md:block">
+      <div className="flex w-full justify-center space-x-4 bg-indigo-600 px-2 md:px-12 py-4 text-center text-white">
+        <div className="hidden rounded bg-indigo-800 bg-opacity-20 px-2 py-1 text-xs font-medium md:block">
           News
         </div>
         <div className="relative top-0.5 text-left text-sm">
@@ -79,7 +79,7 @@ export function Navigation() {
       </div>
       <header
         className={classNames(
-          "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-3",
+          "z-50 mx-2 md:mx-12 mt-4 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-0",
           open === true ? "h-52" : "h-16",
           open === true
             ? "backdrop-blur-nav max-w-3xl border-gray-100 bg-white/80 shadow-xl shadow-black/5"
@@ -132,7 +132,7 @@ export function Navigation() {
                 </Link>
               </div>
             </nav>
-            <div className="flex space-x-6">
+            <div className="flex justify-between md:mr-1">
               <div className="flex items-center justify-center space-x-6">
                 <Link
                   href={github.REPO}
@@ -150,7 +150,7 @@ export function Navigation() {
                     {formatStarCount(stars ?? 0)}
                   </div>
                 </Link>
-                <Button className="hidden rounded-full border-4 border-indigo-200 px-4 md:flex">
+                <Button className="hidden border-indigo-200 px-4 md:flex rounded-none ring-2 ring-indigo-400 border-1 bg-indigo-600">
                   <Link target="_blank" href={social.CALENDLY}>
                     Book a Demo
                   </Link>

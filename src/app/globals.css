@@ -184,6 +184,27 @@
   }
 }
 
+@keyframes flow-down {
+  0% {
+    top: 0%;
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+
+.animate-flow-down {
+  animation: flow-down 2s linear infinite;
+}
+
 @layer base {
   .prose blockquote {
     border-left-color: #4f46e5;
