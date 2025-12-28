@@ -62,7 +62,7 @@ const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: bo
         <div
           className={classNames(
             "absolute inset-0 flex items-center",
-            "text-green-400 font-medium"
+            "text-emerald-600 font-medium"
           )}
           style={{ animation: "slideOutTop 500ms ease-in-out forwards" }}
         >
@@ -73,7 +73,7 @@ const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: bo
       <div
         className={classNames(
           "absolute inset-0 flex items-center",
-          isHighlighted ? "text-green-400 font-medium" : "text-slate-300"
+          isHighlighted ? "text-emerald-600 font-medium" : "text-slate-700"
         )}
         style={{
           animation: display.prev
@@ -98,15 +98,15 @@ const Table = ({
   highlightIdx: number;
   icon?: React.ElementType;
 }) => (
-  <div className="w-full bg-slate-900/90 shadow-xl border border-slate-800 rounded-lg overflow-hidden text-sm z-10 relative">
-    <div className="bg-slate-900/50 px-3 py-2 border-b border-slate-800 font-medium text-slate-400 flex justify-between items-center">
+  <div className="w-full bg-white/90 shadow-xl border border-indigo-100 overflow-hidden text-sm z-10 relative ring-3 ring-indigo-50">
+    <div className="bg-indigo-50/80 px-3 py-2 border-b border-indigo-100 font-medium text-slate-600 flex justify-between items-center">
       <div className="flex items-center gap-2">
-        {Icon && <Icon className="h-4 w-auto text-slate-400" />}
+        {Icon && <Icon className="h-4 w-auto text-indigo-400" />}
         <span className="text-xs uppercase tracking-wide">{title}</span>
       </div>
     </div>
-    <div className="divide-y divide-slate-800">
-      <div className="grid grid-cols-[30px_1fr_60px] bg-slate-900/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
+    <div className="divide-y divide-indigo-100">
+      <div className="grid grid-cols-[30px_1fr_60px] bg-indigo-50/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
         <div>id</div>
         <div>name</div>
         <div>weight</div>
@@ -116,10 +116,10 @@ const Table = ({
           key={row.id}
           className={classNames(
             "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center",
-            highlightIdx === i ? "bg-slate-800/60" : "bg-transparent"
+            highlightIdx === i ? "bg-indigo-50" : "bg-transparent"
           )}
         >
-          <div className="font-mono text-xs text-indigo-400">{row.id}</div>
+          <div className="font-mono text-xs text-indigo-600">{row.id}</div>
           <div className="relative h-4 overflow-hidden w-full">
             <AnimatedCell text={row.name} isHighlighted={highlightIdx === i} />
           </div>
@@ -271,7 +271,7 @@ function AnimationDemo() {
         {/* Connector */}
         <div className="h-28 lg:flex-1 w-full relative flex justify-center items-center min-h-[7rem]">
           {/* Base Dashed Line */}
-          <div className="h-full w-px border-l-2 border-dashed border-slate-700" />
+          <div className="h-full w-px border-l-2 border-dashed border-indigo-300" />
 
           {/* Active Dashed Line (Lighting up) */}
           <div
@@ -296,7 +296,7 @@ function AnimationDemo() {
           />
 
           {/* Label Pill */}
-          <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-100 px-4 py-1.5 rounded-full shadow-xl z-30">
+          <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-50 px-4 py-1.5 rounded-full shadow-xl z-30">
             <span className="text-[10px] font-mono text-indigo-800 font-semibold tracking-wide">
               LOGICAL REPLICATION
             </span>

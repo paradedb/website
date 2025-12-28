@@ -7,7 +7,6 @@ import type { ThemedToken } from "shiki";
 const TABLE_ROWS = [
   { id: 4, score: 0.89, name: "Asian Elephant", weight: 6000 },
   { id: 1, score: 0.76, name: "African Bush Elephant", weight: 6000 },
-  { id: 3, score: 0.65, name: "African Forest Elephant", weight: 4000 },
 ];
 
 export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
@@ -58,7 +57,7 @@ export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
   }, []); // Run once on mount
 
   return (
-    <div className="overflow-hidden bg-slate-900/90 shadow-2xl ring-1 ring-slate-800 rounded-lg md:rounded-xl transition-all duration-500 ease-out h-[22rem] w-full relative">
+    <div className="overflow-hidden bg-indigo-50/80 shadow-2xl border-4 border-indigo-100/60 ring-1 ring-white transition-all duration-500 ease-out h-[19rem] w-full relative">
       <div className="flex gap-2 absolute top-4 left-4 z-30">
         <div className="w-3 h-3 rounded-full bg-[#ec6a5e]" />
         <div className="w-3 h-3 rounded-full bg-[#f4bf4f]" />
@@ -77,7 +76,7 @@ export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
            return (
             <div key={i} className="relative flex items-center h-[1.5em]">
                {/* Fixed width line number container */}
-               <div className="w-8 text-slate-600 select-none text-right pr-4 flex-shrink-0">
+               <div className="w-8 text-slate-500 select-none text-right pr-4 flex-shrink-0">
                   {i + 1}
                </div>
 
@@ -111,22 +110,22 @@ export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
         )}
       >
         <div>
-          <div className="border-t border-slate-800 bg-slate-900/50 p-4">
-            <table className="w-full text-left text-sm text-slate-300 font-mono">
+          <div className="border-t border-indigo-100 bg-indigo-50/75 p-4">
+            <table className="w-full text-left text-sm text-slate-700 font-mono">
               <thead
                  className={cx(
-                   "border-b border-slate-800 text-slate-500 transition-opacity duration-500",
+                   "border-b border-indigo-100 text-slate-500 transition-opacity duration-500",
                    showRows ? "opacity-100" : "opacity-0"
                  )}
               >
-                <tr>
+                <tr className="text-slate-600">
                   <th className="py-3 pl-4 font-medium w-20">id</th>
                   <th className="py-3 pl-4 font-medium w-32">score</th>
                   <th className="py-3 pl-4 font-medium">name</th>
                   <th className="py-3 pl-4 font-medium">weight</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800">
+              <tbody className="divide-y divide-indigo-100">
                 {TABLE_ROWS.map((row, index) => (
                   <tr
                     key={row.id}
@@ -138,10 +137,10 @@ export function HeroDemo({ tokens }: { tokens: ThemedToken[][] }) {
                     )}
                     style={{ transitionDelay: `${index * 200}ms` }}
                   >
-                    <td className="py-3 pl-4 text-indigo-400">{row.id}</td>
-                    <td className="py-3 pl-4 text-emerald-400">{row.score}</td>
+                    <td className="py-3 pl-4 text-indigo-600">{row.id}</td>
+                    <td className="py-3 pl-4 text-emerald-600">{row.score}</td>
                     <td className="py-3 pl-4">{row.name}</td>
-                    <td className="py-3 pl-4 text-slate-400">{row.weight}</td>
+                    <td className="py-3 pl-4">{row.weight}</td>
                   </tr>
                 ))}
               </tbody>

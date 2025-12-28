@@ -13,7 +13,7 @@ ORDER BY pdb.score(id) DESC;`;
 export default async function Hero() {
   const { tokens } = await codeToTokens(code, {
     lang: "sql",
-    theme: "github-dark-dimmed",
+    theme: "github-light",
   });
 
   return (
@@ -23,10 +23,11 @@ export default async function Hero() {
         className="ring-1 ring-indigo-100 border-3 border-indigo-50 mt-4 overflow-hidden flex flex-col"
       >
         <div
-          className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4 sm:py-20 py-8 text-center"
+          className="relative flex flex-col items-center justify-center bg-cover bg-center bg-no-repeat px-4 sm:py-20 py-8 text-center bg-indigo-50/60"
           style={{
             backgroundImage:
               "linear-gradient(rgba(238, 242, 255, 0.6), rgba(238, 242, 255, 0.0)), url('/splash_color.png')",
+              backgroundPosition: "center 120px",
           }}
         >
           <div className="flex flex-col items-center w-full relative z-20">
@@ -42,8 +43,8 @@ export default async function Hero() {
               className="text-md mt-2 max-w-2xl animate-slide-up-fade text-indigo-950 md:mt-6 md:text-lg"
               style={{ animationDuration: "900ms" }}
             >
-              You need better search, not the complexity of Elasticsearch.<br/>
-              ParadeDB is the fastest way to bring the power of Elastic to Postgres.
+              You need better search, not the burden of Elasticsearch.<br/>
+              ParadeDB is the simplest way to bring the power of Elastic to Postgres.
             </p>
             <div
               className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"
