@@ -11,8 +11,8 @@ export default function Home() {
   return (
     <main className="flex flex-col overflow-hidden px-2 md:px-0">
       <Hero />
-      <HowItWorks />
       <SearchFeatures />
+      <HowItWorks />
       <Benefits />
       <SearchAnalytics />
       <Managed />

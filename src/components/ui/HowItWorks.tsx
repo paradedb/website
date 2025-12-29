@@ -3,11 +3,8 @@
 import { useEffect, useState } from "react";
 import classNames from "classnames";
 import Image from "next/image";
-import { Badge } from "../Badge";
-import { RiStackLine, RiShieldCheckLine } from "@remixicon/react";
+import { RiSearchLine, RiFlashlightFill } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
-import AwsLogo from "./logos/AwsLogo";
-import SupabaseLogo from "./logos/SupabaseLogo";
 import Link from "next/link";
 import { Button } from "../Button";
 
@@ -92,45 +89,257 @@ const Table = ({
   rows,
   highlightIdx,
   icon: Icon,
+  customHeader,
+  isLoading = false,
+  isExiting = false,
 }: {
-  title: string;
+  title?: string;
   rows: { id: number; name: string; weight: string }[];
   highlightIdx: number;
   icon?: React.ElementType;
+  customHeader?: React.ReactNode;
+  isLoading?: boolean;
+  isExiting?: boolean;
 }) => (
-  <div className="w-full bg-white/90 shadow-xl border border-indigo-100 overflow-hidden text-sm z-10 relative ring-3 ring-indigo-50">
+  <div className="w-full bg-white/90 border border-indigo-100 overflow-hidden text-sm z-10 relative ring-3 ring-indigo-50">
+    <style>{`
+      @keyframes slideInRow {
+        0% { transform: translateY(100%); opacity: 0; }
+        100% { transform: translateY(0); opacity: 1; }
+      }
+      @keyframes slideOutRow {
+        0% { transform: translateY(0); opacity: 1; }
+        100% { transform: translateY(100%); opacity: 0; }
+      }
+    `}</style>
     <div className="bg-indigo-50/80 px-3 py-2 border-b border-indigo-100 font-medium text-slate-600 flex justify-between items-center">
-      <div className="flex items-center gap-2">
-        {Icon && <Icon className="h-4 w-auto text-indigo-400" />}
-        <span className="text-xs uppercase tracking-wide">{title}</span>
-      </div>
+      {customHeader ? (
+        customHeader
+      ) : (
+        <div className="flex items-center gap-2">
+          {Icon && <Icon className="h-4 w-auto text-indigo-400" />}
+          {/* @ts-ignore */}
+          <span className="text-xs uppercase tracking-wide">{title}</span>
+        </div>
+      )}
     </div>
-    <div className="divide-y divide-indigo-100">
+    <div className="divide-y divide-indigo-100 min-h-[105px]">
       <div className="grid grid-cols-[30px_1fr_60px] bg-indigo-50/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
         <div>id</div>
         <div>name</div>
         <div>weight</div>
       </div>
-      {rows.map((row, i) => (
-        <div
-          key={row.id}
-          className={classNames(
-            "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center",
-            highlightIdx === i ? "bg-indigo-50" : "bg-transparent"
-          )}
-        >
-          <div className="font-mono text-xs text-indigo-600">{row.id}</div>
-          <div className="relative h-4 overflow-hidden w-full">
-            <AnimatedCell text={row.name} isHighlighted={highlightIdx === i} />
+      {isLoading ? (
+        // Loading State - Just white background (preserving height)
+        [1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="grid grid-cols-[30px_1fr_60px] px-3 py-2 items-center opacity-0"
+          >
+             {/* Invisible content to hold height */}
+            <div className="h-4 w-4" />
+            <div className="h-4 w-24" />
+            <div className="h-4 w-8" />
           </div>
-          <div className="relative h-4 overflow-hidden w-full">
-            <AnimatedCell text={row.weight} isHighlighted={highlightIdx === i} />
+        ))
+      ) : (
+        // Actual Rows
+        rows.map((row, i) => (
+          <div
+            key={row.id}
+            className={classNames(
+              "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
+              highlightIdx === i ? "bg-indigo-50" : "bg-transparent"
+            )}
+            style={{
+              animationName: isExiting ? "slideOutRow" : "slideInRow",
+              animationDuration: "0.5s",
+              animationTimingFunction: isExiting
+                ? "cubic-bezier(0.55, 0.085, 0.68, 0.53)"
+                : "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+              animationFillMode: "forwards",
+              animationDelay: `${i * 100}ms`
+            }}
+          >
+            <div className="font-mono text-xs text-indigo-600">{row.id}</div>
+            <div className="relative h-4 overflow-hidden w-full">
+              <AnimatedCell text={row.name} isHighlighted={highlightIdx === i} />
+            </div>
+            <div className="relative h-4 overflow-hidden w-full">
+              <AnimatedCell text={row.weight} isHighlighted={highlightIdx === i} />
+            </div>
           </div>
-        </div>
-      ))}
+        ))
+      )}
     </div>
   </div>
 );
+
+const SelfHostedHeader = () => (
+  <div className="flex items-center justify-between w-full">
+    <div className="flex items-center gap-2.5">
+      <div className="flex items-center bg-white p-1 rounded-md shadow-sm border border-indigo-100/50">
+        <PostgresLogo className="h-5 w-auto" />
+        <span className="text-indigo-400 mx-1 font-light">+</span>
+        <ParadeDBIcon className="h-5 w-auto" />
+      </div>
+    </div>
+    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-100/50 rounded-full border border-indigo-200/50">
+      <RiFlashlightFill className="size-3 text-indigo-500" />
+      <span className="text-[10px] font-bold text-indigo-600 tracking-wider uppercase">
+        ParadeDB Installed
+      </span>
+    </div>
+  </div>
+);
+
+function SelfHostedDemo() {
+  const ANIMAL_DATA = [
+    { id: 1, name: "Polar Bear", weight: "450" },
+    { id: 2, name: "Grizzly Bear", weight: "270" },
+    { id: 3, name: "Black Bear", weight: "135" },
+    { id: 4, name: "Great White Shark", weight: "1100" },
+    { id: 5, name: "Tiger Shark", weight: "600" },
+    { id: 6, name: "Hammerhead Shark", weight: "230" },
+    { id: 7, name: "Blue Whale", weight: "140000" },
+    { id: 8, name: "Humpback Whale", weight: "30000" },
+    { id: 9, name: "Killer Whale", weight: "6000" },
+  ];
+
+  const [query, setQuery] = useState("");
+  const [rows, setRows] = useState(ANIMAL_DATA.slice(0, 3));
+  const [isLoading, setIsLoading] = useState(false);
+  const [isExiting, setIsExiting] = useState(false);
+  const [highlightIdx] = useState(-1);
+
+  // Filter rows when query changes or loading finishes
+  useEffect(() => {
+    // If loading or exiting, don't update rows to prevent flashing default content
+    if (isLoading || isExiting) return;
+
+    const lowerQuery = query.toLowerCase();
+    if (!lowerQuery) {
+      setRows(ANIMAL_DATA.slice(0, 3));
+      return;
+    }
+    const filtered = ANIMAL_DATA.filter((item) =>
+      item.name.toLowerCase().includes(lowerQuery)
+    );
+    // Always show up to 3 rows
+    setRows(filtered.slice(0, 3));
+  }, [query, isLoading, isExiting]);
+
+  // Typing animation loop
+  useEffect(() => {
+    let mounted = true;
+    const QUERIES = ["bear", "shark", "whale"];
+    let queryIdx = 0;
+
+    const runLoop = async () => {
+      while (mounted) {
+        // 1. Idle (showing previous results or default)
+        if (!mounted) break;
+        await new Promise((r) => setTimeout(r, 1000));
+
+        // 2. Start Typing -> Loading State
+        setIsLoading(true);
+
+        const targetWord = QUERIES[queryIdx];
+        for (let i = 1; i <= targetWord.length; i++) {
+          if (!mounted) break;
+          setQuery(targetWord.slice(0, i));
+          await new Promise((r) => setTimeout(r, 120 + Math.random() * 50));
+        }
+
+        if (!mounted) break;
+
+        // 3. Typing Finished -> Show Results
+        await new Promise((r) => setTimeout(r, 200));
+        if (!mounted) break;
+        setIsLoading(false);
+
+        // 4. Hold result
+        await new Promise((r) => setTimeout(r, 2500));
+
+        // 5. Backspace (Slide out simultaneous with deletion)
+        if (!mounted) break;
+        setIsExiting(true);
+
+        for (let i = targetWord.length; i >= 0; i--) {
+          if (!mounted) break;
+          setQuery(targetWord.slice(0, i));
+          // Slower backspace to allow animation to be seen
+          await new Promise((r) => setTimeout(r, 100));
+        }
+
+        // Wait for animation tail if needed
+        await new Promise((r) => setTimeout(r, 200));
+
+        if (!mounted) break;
+        setIsExiting(false);
+        setIsLoading(true);
+        // Force a small delay
+        await new Promise((r) => setTimeout(r, 50));
+
+        queryIdx = (queryIdx + 1) % QUERIES.length;
+      }
+    };
+
+    runLoop();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  return (
+    <div className="w-full h-full relative overflow-hidden bg-indigo-50/50 flex flex-col">
+      {/* Background Mesh/Effect */}
+      <div className="absolute inset-0 z-0 opacity-75">
+        <Image
+          src="/mesh_1.svg"
+          alt="Background Gradient"
+          fill
+          className="object-cover opacity-100"
+        />
+      </div>
+
+      <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 relative z-10">
+        <div className="flex flex-col items-center w-full max-w-[420px] mx-auto gap-6">
+          {/* Animated Search Bar - Moved Above */}
+          <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+            <div className="relative group shadow-lg rounded-lg">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
+                <RiSearchLine className="h-4 w-4 text-indigo-400" />
+              </div>
+              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-indigo-200 bg-white/95 backdrop-blur-md shadow-sm ring-3 ring-indigo-50 transition-all group-hover:border-indigo-300">
+                <span className="text-sm text-slate-700 min-h-[20px]">
+                  {query}
+                </span>
+                <span className="w-0.5 h-5 bg-indigo-500 animate-[blink_1s_infinite] ml-0.5" />
+              </div>
+              <style>{`
+                @keyframes blink {
+                  0%, 100% { opacity: 1; }
+                  50% { opacity: 0; }
+                }
+              `}</style>
+            </div>
+          </div>
+
+          {/* Single Table with Combined Logo */}
+          <Table
+            rows={rows}
+            highlightIdx={highlightIdx}
+            customHeader={<SelfHostedHeader />}
+            isLoading={isLoading}
+            isExiting={isExiting}
+          />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function AnimationDemo() {
   const ELEPHANT_DATA = [
@@ -271,12 +480,12 @@ function AnimationDemo() {
         {/* Connector */}
         <div className="h-28 lg:flex-1 w-full relative flex justify-center items-center min-h-[7rem]">
           {/* Base Dashed Line */}
-          <div className="h-full w-px border-l-2 border-dashed border-indigo-300" />
+          <div className="absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-300/75" />
 
           {/* Active Dashed Line (Lighting up) */}
           <div
             className={classNames(
-              "absolute top-0 h-full w-px border-l-2 border-dashed border-indigo-400 drop-shadow-[0_0_3px_#818cf8] transition-opacity",
+              "absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-500 drop-shadow-[0_0_3px_#818cf8] transition-opacity",
               packetState === "moving" ? "opacity-100 duration-75" : "opacity-0 duration-200"
             )}
             style={{
@@ -312,88 +521,155 @@ function AnimationDemo() {
         />
         </div>
       </div>
-
-      {/* Footer Strip */}
-      <div className="relative z-20 bg-white/75 backdrop-blur-md border-t border-indigo-200/60 px-6 py-4 flex items-center justify-between">
-         <span className="text-xs font-semibold text-slate-600 truncate mr-4">Compatible with any Postgres</span>
-         <div className="flex items-center gap-4 transition-all duration-300 shrink-0">
-             <PostgresLogo className="h-5 w-auto shrink-0 opacity-100 grayscale-[0.3] hover:grayscale-0 hover:opacity-100 transition-all" />
-             <AwsLogo className="h-4 w-auto shrink-0 opacity-100 grayscale-[0.3] hover:grayscale-0 hover:opacity-100 transition-all" />
-             <SupabaseLogo className="h-5 w-auto shrink-0 opacity-100 grayscale-[0.3] hover:grayscale-0 hover:opacity-100 transition-all" />
-         </div>
-      </div>
     </div>
   );
 }
 
-export default function HowItWorks() {
-  return (
-    <div className="px-2 md:px-12">
-      <section className="mt-12 overflow-hidden flex flex-col border-3 border-transparent">
-        <div
-          className="relative flex flex-col items-center justify-center px-4 sm:py-20 py-8"
+const AccordionItem = ({
+  id,
+  title,
+  isActive,
+  onClick,
+  children,
+  number,
+}: {
+  id: string;
+  title: string;
+  isActive: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+  number: string;
+}) => (
+  <div className="border-b border-slate-200">
+    <button
+      onClick={onClick}
+      className="w-full py-6 flex items-start text-left group transition-all justify-between"
+    >
+      <div className="flex-1">
+        <h3
+          className={classNames(
+            "text-lg font-semibold transition-colors duration-300",
+            isActive ? "text-indigo-950" : "text-slate-500 group-hover:text-slate-800"
+          )}
         >
-          <div className="w-full flex flex-col lg:grid lg:grid-cols-2 gap-8 lg:gap-12 items-stretch">
-            <div className="flex flex-col justify-start h-full py-0 lg:py-8 w-full">
-              <div className="w-fit">
-                <Badge>How It Works</Badge>
-              </div>
-              <h2 className="mt-4 text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl">
-                <span className="text-indigo-600">Zero ETL</span> means <br/>zero headache
-              </h2>
-              <p className="mt-6 text-lg text-gray-600">
-                ParadeDB is built on Postgres, which means it can run as a logical replica of your primary Postgres.
-              </p>
+          {title}
+        </h3>
 
-              <div
-                className="mt-8 flex w-full sm:flex-row"
-                style={{ animationDuration: "1100ms" }}
-                >
-                <Button className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 border-1 border-indigo-400 rounded-none">
-                    <Link target="_blank" href={""}>
-                    Learn More
-                    </Link>
-                </Button>
-              </div>
+        <div
+          className={classNames(
+            "overflow-hidden transition-all duration-500 ease-in-out",
+            isActive ? "max-h-[1000px] opacity-100 mt-2" : "max-h-0 opacity-0"
+          )}
+        >
+          {children}
+          <div className="pb-2" />
+        </div>
+      </div>
+      <span
+        className={classNames(
+          "font-mono text-md ml-6 transition-colors duration-300",
+          isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"
+        )}
+      >
+        {number}
+      </span>
+    </button>
+  </div>
+);
 
-              {/* Graphic - Mobile Only (Hidden on Desktop) */}
-              <div className="flex lg:hidden justify-center w-full mt-8">
+export default function HowItWorks() {
+  const [activeTab, setActiveTab] = useState<"managed" | "selfHosted">("managed");
+
+  return (
+    <div className="px-2 md:px-12 relative mt-12 md:mt-24 mb-24 w-full">
+      <div className="lg:grid lg:grid-cols-12 lg:gap-12 items-start mx-auto w-full">
+        {/* Left Side */}
+        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-8 w-full min-h-[600px]">
+          <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl mb-6">
+            <span className="text-indigo-600">Zero ETL</span> means <br />
+            zero headache
+          </h2>
+
+          {/* Dynamic Tagline & Button Area */}
+          <div className="mb-12 flex flex-col justify-between">
+            <p
+              className="text-gray-600 leading-relaxed text-base animate-in fade-in slide-in-from-bottom-2 duration-300"
+              key={activeTab + "-text"}
+            >
+              ParadeDB is a Postgres extension. That means it can be run as a logical replica of any managed Postgres,
+              or installed inside any self-hosted Postgres.
+            </p>
+
+            <div
+              className="mt-6 flex w-full sm:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75"
+              key={activeTab + "-btn"}
+            >
+              <Button className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 border-1 border-indigo-400 rounded-none hover:bg-indigo-700 transition-all">
+                <Link target="_blank" href="">
+                  Learn More
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          <div className="flex flex-col border-t border-slate-200">
+            {/* Section 1: Managed */}
+            <AccordionItem
+              id="managed"
+              title="For managed Postgres"
+              isActive={activeTab === "managed"}
+              onClick={() => setActiveTab("managed")}
+              number="01"
+            >
+              {/* Mobile Graphic */}
+              <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
                 <div className="w-full max-w-md">
                   <AnimationDemo />
                 </div>
               </div>
 
-              <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="pl-4 border-l border-gray-200">
-                    <RiStackLine className="size-6 text-indigo-600 mb-3" />
-                    <h3 className="font-semibold text-gray-900">No sync overhead</h3>
-                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-                        Eliminate complex third-party tools like ETL, Kafka, or Debezium.
-                    </p>
-                  </div>
+              <div className="text-gray-600 leading-relaxed text-sm">
+                ParadeDB can replicate from any managed Postgres — RDS, Supabase, Google Cloud/Azure Postgres, Neon, etc.
+              </div>
+            </AccordionItem>
 
-                  <div className="pl-4 border-l border-gray-200">
-                    <RiShieldCheckLine className="size-6 text-indigo-600 mb-3" />
-                    <h3 className="font-semibold text-gray-900">No data loss</h3>
-                    <p className="mt-2 text-sm text-gray-600 leading-relaxed">
-                        ParadeDB uses native Postgres replication so you'll never lose data.
-                    </p>
-                  </div>
+            {/* Section 2: Self Hosted */}
+            <AccordionItem
+              id="selfHosted"
+              title="For self-hosted Postgres"
+              isActive={activeTab === "selfHosted"}
+              onClick={() => setActiveTab("selfHosted")}
+              number="02"
+            >
+              {/* Mobile Graphic */}
+              <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
+                <div className="w-full max-w-md">
+                  <SelfHostedDemo />
+                </div>
               </div>
 
-              <div className="mt-8 pt-6">
-                 {/* Spacer to keep alignment if needed, or just empty */}
+              <div className="text-gray-600 leading-relaxed text-sm">
+                Installing ParadeDB in a self-hosted Postgres deployment requires zero new infra overhead or spend.
               </div>
-            </div>
-            {/* Graphic - Desktop Only (Hidden on Mobile) */}
-            <div className="hidden lg:flex justify-center lg:justify-end w-full h-full">
-              <div className="w-full max-w-xl h-full">
-                <AnimationDemo />
-              </div>
-            </div>
+            </AccordionItem>
           </div>
         </div>
-      </section>
+
+        {/* Right Side - Desktop Only */}
+        <div className="hidden lg:col-span-7 lg:flex justify-end w-full py-8 sticky top-24 h-[640px] pl-16">
+           <div className="w-full h-full">
+            {activeTab === "managed" ? (
+              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500 overflow-hidden border border-indigo-100 bg-white">
+                <AnimationDemo />
+              </div>
+            ) : (
+              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500 overflow-hidden border border-indigo-100 bg-white">
+                <SelfHostedDemo />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
