@@ -5,6 +5,12 @@ import { useState, useEffect } from "react";
 
 let facetingChartStyleAdded = false;
 
+const tremorColorMap: Record<string, string> = {
+  amber: "#f59e0b",
+  violet: "#8b5cf6",
+  blue: "#3b82f6",
+};
+
 function CompactTooltip({ active, payload, label }: any) {
   if (!active || !payload || payload.length === 0) return null;
 
@@ -15,7 +21,9 @@ function CompactTooltip({ active, payload, label }: any) {
         <div key={item.dataKey} className="flex items-center gap-1">
           <span
             className="inline-block h-2 w-2 rounded-full"
-            style={{ backgroundColor: item.color }}
+            style={{
+              backgroundColor: tremorColorMap[item.color] || item.color,
+            }}
           />
           <span>{item.name}:</span>
           <span className="font-medium">
