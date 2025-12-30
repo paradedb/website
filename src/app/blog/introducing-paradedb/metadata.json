@@ -3,5 +3,5 @@
   "date": "2023-08-31T00:00:00.000Z",
   "author": "Ming Ying",
   "description": "We're excited to announce ParadeDB: a PostgreSQL database optimized for search.",
-  "categories": ["paradedb", "postgres", "search"]
+  "categories": ["announcement", "paradedb", "postgres", "search"]
 }
