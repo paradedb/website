@@ -1,14 +1,11 @@
 import Image from "next/image";
-import { LineChart } from "@/components/LineChart";
+import { BarChartCard } from "@/components/charts/BarChartCard";
+import { LineChartCard } from "@/components/charts/LineChartCard";
 import blogMetadata from "./metadata.json";
 import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
-import graph1 from "./images/graph1.png";
-import graph2 from "./images/graph2.png";
-import graph3 from "./images/graph3.png";
-import graph4 from "./images/graph4.png";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
@@ -72,32 +69,150 @@ Both Lucene and ParadeDB were run on identical machines with 4 CPU cores, 16GB R
 
 ParadeDB indexed 100 million documents over than twice as quickly as Lucene.
 
-<Image src={graph1} alt="Build Time (Minutes)" className="rounded-xl" />
+<BarChartCard
+  title="Build Time (Minutes)"
+  data={[
+    {
+      name: "Lucene",
+      "Build Time (Minutes)": 215,
+    },
+    {
+      name: "ParadeDB",
+      "Build Time (Minutes)": 75,
+    },
+  ]}
+  index="name"
+  categories={["Build Time (Minutes)"]}
+  showLegend={false}
+  colors={["blue"]}
+  layout="vertical"
+  yAxisWidth={100}
+  xAxisLabel="Minutes"
+  alt="Bar chart comparing index build time: Lucene took 215 minutes while ParadeDB took 75 minutes, showing ParadeDB is nearly 3 times faster"
+/>
 
 ### Index Size
 
 Lucene and ParadeDB indexes consumed a similar amount of disk space.
 
-<Image src={graph2} alt="Index Size (GB)" className="rounded-xl" />
+<BarChartCard
+  title="Index Size (GB)"
+  data={[
+    {
+      name: "Lucene",
+      "Index Size (GB)": 169,
+    },
+    {
+      name: "ParadeDB",
+      "Index Size (GB)": 187,
+    },
+  ]}
+  index="name"
+  categories={["Index Size (GB)"]}
+  showLegend={false}
+  colors={["blue"]}
+  layout="vertical"
+  yAxisWidth={100}
+  xAxisLabel="GB"
+  alt="Bar chart comparing index size on disk: Lucene uses 169 GB while ParadeDB uses 187 GB, showing similar disk space consumption"
+/>
 
 ### Throughput
 
 With 40 concurrent readers, ParadeDB was able to process 5X queries per second compared to Lucene. This difference was magnified as the number of concurrent readers grew.
 
-<Image
-  src={graph3}
-  alt="Queries per Second (QPS) vs. Concurrency"
-  className="rounded-xl"
+<LineChartCard
+  title="Queries per Second (QPS) vs. Concurrency"
+  data={[
+    {
+      concurrency: 1,
+      "Lucene (QPS)": 63.96,
+      "ParadeDB (QPS)": 184.92,
+    },
+    {
+      concurrency: 5,
+      "Lucene (QPS)": 145.84,
+      "ParadeDB (QPS)": 512.45,
+    },
+    {
+      concurrency: 10,
+      "Lucene (QPS)": 148.84,
+      "ParadeDB (QPS)": 605.36,
+    },
+    {
+      concurrency: 20,
+      "Lucene (QPS)": 155.83,
+      "ParadeDB (QPS)": 676.54,
+    },
+    {
+      concurrency: 30,
+      "Lucene (QPS)": 173.96,
+      "ParadeDB (QPS)": 760.18,
+    },
+    {
+      concurrency: 40,
+      "Lucene (QPS)": 168.89,
+      "ParadeDB (QPS)": 838.1,
+    },
+  ]}
+  index="concurrency"
+  categories={["Lucene (QPS)", "ParadeDB (QPS)"]}
+  showLegend={true}
+  colors={["amber", "blue"]}
+  yAxisWidth={80}
+  xAxisLabel="Number of Concurrent Connections"
+  yAxisLabel="Queries per Second (QPS)"
+  showXAxis={true}
+  alt="Line chart showing queries per second performance comparison between Lucene and ParadeDB across different concurrency levels. ParadeDB consistently outperforms Lucene, reaching 838 QPS at 40 concurrent connections compared to Lucene's 169 QPS, demonstrating approximately 5x better throughput"
 />
 
 ### Latency
 
-With 40 concurrent readers, ParadeDB’s round trip query times were 5X faster than Lucene.
+With 40 concurrent readers, ParadeDB's round trip query times were 5X faster than Lucene.
 
-<Image
-  src={graph4}
-  alt="Round Trip Time (ms) vs. Concurrency"
-  className="rounded-xl"
+<LineChartCard
+  title="Round Trip Time (ms) vs. Concurrency"
+  data={[
+    {
+      concurrency: 1,
+      "Lucene (RTT)": 15.59,
+      "ParadeDB (RTT)": 5.2,
+    },
+    {
+      concurrency: 5,
+      "Lucene (RTT)": 34.56,
+      "ParadeDB (RTT)": 9.63,
+    },
+    {
+      concurrency: 10,
+      "Lucene (RTT)": 59.24,
+      "ParadeDB (RTT)": 16.45,
+    },
+    {
+      concurrency: 20,
+      "Lucene (RTT)": 130.74,
+      "ParadeDB (RTT)": 28.84,
+    },
+    {
+      concurrency: 30,
+      "Lucene (RTT)": 221.71,
+      "ParadeDB (RTT)": 39.12,
+    },
+    {
+      concurrency: 40,
+      "Lucene (RTT)": 249.67,
+      "ParadeDB (RTT)": 47.96,
+    },
+  ]}
+  index="concurrency"
+  categories={["Lucene (RTT)", "ParadeDB (RTT)"]}
+  showLegend={true}
+  colors={["amber", "blue"]}
+  yAxisWidth={80}
+  xAxisLabel="Number of Concurrent Connections"
+  yAxisLabel="Round Trip Time (ms)"
+  showXAxis={true}
+  alt="Line chart comparing round trip time latency between Lucene and ParadeDB across different concurrency levels. ParadeDB shows significantly lower latency, with 47.96ms at 40 concurrent connections compared to Lucene's 249.67ms, demonstrating approximately 5x faster response times"
 />
 
 This means that, with ParadeDB, Alibaba is able to meet the business-critical workloads of its most demanding customers.
