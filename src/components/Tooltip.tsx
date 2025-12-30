@@ -8,8 +8,7 @@ import React from "react";
 import { cx } from "@/lib/utils";
 
 interface TooltipProps
-  extends
-    Omit<TooltipPrimitives.TooltipContentProps, "content" | "onClick">,
+  extends Omit<TooltipPrimitives.TooltipContentProps, "content" | "onClick">,
     Pick<
       TooltipPrimitives.TooltipProps,
       "open" | "defaultOpen" | "onOpenChange" | "delayDuration"

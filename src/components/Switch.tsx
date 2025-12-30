@@ -62,8 +62,7 @@ const switchVariants = tv({
 });
 
 interface SwitchProps
-  extends
-    Omit<
+  extends Omit<
       React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root>,
       "asChild"
     >,

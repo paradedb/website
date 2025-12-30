@@ -5,9 +5,8 @@ import React from "react";
 
 import { cx } from "@/lib/utils";
 
-interface LabelProps extends React.ComponentPropsWithoutRef<
-  typeof LabelPrimitives.Root
-> {
+interface LabelProps
+  extends React.ComponentPropsWithoutRef<typeof LabelPrimitives.Root> {
   disabled?: boolean;
 }
 
