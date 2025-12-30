@@ -21,7 +21,9 @@ function CompactTooltip({ active, payload, label }: any) {
         <div key={item.dataKey} className="flex items-center gap-1">
           <span
             className="inline-block h-2 w-2 rounded-full"
-            style={{ backgroundColor: tremorColorMap[item.color] || item.color }}
+            style={{
+              backgroundColor: tremorColorMap[item.color] || item.color,
+            }}
           />
           <span>{item.name}:</span>
           <span className="font-medium">
