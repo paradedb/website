@@ -3,5 +3,5 @@
   "date": "2025-10-22T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
   "description": "Build production-ready hybrid search that combines BM25 lexical matching with vector similarity search, all inside PostgreSQL",
-  "categories": ["postgresql", "search", "vectors", "bm25"]
+  "categories": ["postgres", "search", "vectors", "bm25"]
 }
