@@ -56,42 +56,38 @@ const CaseStudyCard = ({
 export default function SocialProof() {
   return (
     <div className="w-full">
-      <section className="border-y border-slate-200 overflow-hidden flex flex-col relative">
+      <section className="overflow-hidden flex flex-col relative">
         <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 z-30 pointer-events-none" />
+
+        {/* Section Borders constrained to vertical borders */}
+        <div className="absolute top-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30 pointer-events-none" />
+        <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30 pointer-events-none" />
 
         {/* Additional Vertical Lines */}
         <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200/50 z-30 pointer-events-none hidden xl:block" />
         <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200/50 z-30 pointer-events-none hidden xl:block" />
 
-        <div className="px-2 md:px-12 w-full h-full flex flex-col flex-grow relative">
-          {/* Fades */}
-          <div className="absolute bottom-0 left-0 right-0 h-[500px] bg-gradient-to-t from-white via-white/60 to-transparent z-0 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 left-0 w-24 md:w-60 bg-gradient-to-r from-white to-transparent z-0 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-24 md:w-60 bg-gradient-to-l from-white to-transparent z-0 pointer-events-none" />
-
+        <div className="px-2 md:px-12 w-full flex flex-col relative">
+          {/* Section 1: Case Studies (Gray Background) */}
           <div className="relative flex flex-col items-center justify-center px-4 sm:py-24 py-12 text-center bg-slate-100/50">
+            {/* Fades for Case Studies Section */}
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent z-0 pointer-events-none" />
+
             <div className="flex flex-col items-center w-full relative z-20">
               <Badge className="mb-6 mt-px ml-px bg-white border-slate-200">
                 Case Studies
               </Badge>
               <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl mb-4">
-                Loved by developers,
-                <br />
-                <span className="text-highlight-blink">trusted</span> by
+                <span className="text-highlight-blink">Trusted</span> by
                 enterprises
               </h2>
               <p className="text-lg text-gray-800 max-w-2xl mx-auto leading-relaxed mb-12">
-                The world&apos;s most innovative companies build their search
-                experiences on ParadeDB.
+                The most innovative companies are simplifying their search stack with ParadeDB.
               </p>
             </div>
 
             <div className="relative w-full max-w-[1128px] mx-auto z-20">
-              {/* Horizontal Lines */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 hidden md:block z-30 pointer-events-none" />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 hidden md:block z-30 pointer-events-none" />
-
               <div className="grid grid-cols-1 md:grid-cols-2 bg-white border-y md:border-y border-slate-200">
                 <div className="border-b md:border-b-0 md:border-r border-slate-200">
                   <CaseStudyCard

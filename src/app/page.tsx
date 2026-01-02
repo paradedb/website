@@ -3,6 +3,7 @@ import HeroV3 from "@/components/ui/HeroV3";
 import HowItWorks from "@/components/ui/HowItWorks";
 import SearchFeatures from "@/components/ui/SearchFeatures";
 import SocialProof from "@/components/ui/SocialProof";
+import CommunityProof from "@/components/ui/CommunityProof";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <SearchFeatures />
       <HowItWorks />
       <SocialProof />
+      <CommunityProof />
       <Cta />
     </main>
   );
