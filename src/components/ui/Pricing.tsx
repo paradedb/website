@@ -64,6 +64,8 @@ export default function Pricing() {
         <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 z-30 pointer-events-none" />
 
+        {/* Section Borders constrained to vertical borders */}
+        <div className="absolute top-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30 pointer-events-none" />
         <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30 pointer-events-none" />
 
         <div className="px-2 md:px-12 w-full flex flex-col relative">
