@@ -14,9 +14,6 @@ export default function CommunityProof() {
         <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 z-30 pointer-events-none" />
 
-        {/* Horizontal Line constrained to vertical borders */}
-        <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30 pointer-events-none" />
-
         <div className="px-2 md:px-12 w-full flex flex-col relative">
           {/* Section: Loved by Developers (White Background) */}
           <div className="relative flex flex-col items-center justify-center bg-white">
@@ -32,7 +29,7 @@ export default function CommunityProof() {
                   </h2>
                   <p className="text-md text-gray-800 leading-relaxed">
                     We are committed to building the best open source search
-                    engine for Postgres.
+                    experience for Postgres.
                   </p>
                 </div>
 

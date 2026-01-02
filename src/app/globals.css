@@ -495,6 +495,6 @@ a {
 }
 
 .bg-grid-pattern {
-  background-image: linear-gradient(to right, #64748b33 1px, transparent 1px),
-    linear-gradient(to bottom, #64748b33 1px, transparent 1px);
+  background-image: linear-gradient(to right, #64748b15 1px, transparent 1px),
+    linear-gradient(to bottom, #64748b15 1px, transparent 1px);
 }

@@ -22,7 +22,7 @@ function GridSquare() {
 
   return (
     <div
-      className="absolute w-6 h-6 bg-slate-300/70"
+      className="absolute w-6 h-6 bg-slate-200/40"
       style={{
         left: "50%",
         top: 0,

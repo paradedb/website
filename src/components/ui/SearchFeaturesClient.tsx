@@ -59,7 +59,7 @@ export default function SearchFeaturesClient({ features }: { features: Feature[]
 
           {/* Content Area */}
           <div
-            className="w-full relative bg-slate-100/50"
+            className="w-full relative bg-slate-100/70"
           >
             {features.map((feature) => (
               <Tabs.Content
@@ -99,10 +99,10 @@ export default function SearchFeaturesClient({ features }: { features: Feature[]
                   </div>
 
                   {/* Vertical Divider (Desktop) */}
-                  <div className="hidden lg:block w-px bg-slate-100 my-12" />
+                  <div className="hidden lg:block w-px bg-slate-200 my-12" />
 
                   {/* Horizontal Divider (Mobile) */}
-                  <div className="lg:hidden h-px w-full bg-slate-100 mx-8 md:mx-12" />
+                  <div className="lg:hidden h-px w-full bg-slate-200 mx-8 md:mx-12" />
 
                   {/* Right Column: Code */}
                   <div className="flex-1 p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden">

@@ -294,7 +294,7 @@ function SelfHostedDemo() {
   }, []);
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-slate-100 flex flex-col">
+    <div className="w-full h-full relative overflow-hidden bg-transparent flex flex-col">
       {/* Background Mesh/Effect */}
       {/* <div className="absolute inset-0 z-0">
         <Image
@@ -451,7 +451,7 @@ function AnimationDemo() {
   }, []);
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-slate-100 flex flex-col">
+    <div className="w-full h-full relative overflow-hidden bg-transparent flex flex-col">
       <style>{`
         @keyframes scan {
           0% { mask-position: 0 -100%; -webkit-mask-position: 0 -100%; }
@@ -659,8 +659,8 @@ export default function HowItWorks() {
         </div>
 
         {/* Right Side - Desktop Only */}
-        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 bg-slate-100">
-           <div className="sticky top-24 h-[640px] w-full overflow-hidden bg-slate-100">
+        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 bg-slate-100/70">
+           <div className="sticky top-24 h-[640px] w-full overflow-hidden">
             {activeTab === "managed" ? (
               <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
                 <AnimationDemo />

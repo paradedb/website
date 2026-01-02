@@ -88,6 +88,10 @@ export default function SocialProof() {
             </div>
 
             <div className="relative w-full max-w-[1128px] mx-auto z-20">
+              {/* Horizontal Lines */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 hidden md:block z-30 pointer-events-none" />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 hidden md:block z-30 pointer-events-none" />
+
               <div className="grid grid-cols-1 md:grid-cols-2 bg-white border-y md:border-y border-slate-200">
                 <div className="border-b md:border-b-0 md:border-r border-slate-200">
                   <CaseStudyCard

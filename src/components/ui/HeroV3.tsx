@@ -24,6 +24,9 @@ export default function HeroV3() {
             <Navigation />
           </div>
 
+          {/* Background color layer */}
+          <div className="absolute inset-0 bg-slate-100 -z-20" />
+
           {/* Grid Background */}
           <GridBackground />
 
@@ -33,9 +36,7 @@ export default function HeroV3() {
           <div className="absolute top-0 bottom-0 left-0 w-24 md:w-60 bg-gradient-to-r from-white to-transparent z-0 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-24 md:w-60 bg-gradient-to-l from-white to-transparent z-0 pointer-events-none" />
 
-          <div
-            className="relative flex flex-col items-center justify-center px-4 sm:py-24 py-12 text-center bg-slate-100/50"
-          >
+          <div className="relative flex flex-col items-center justify-center px-4 sm:py-24 py-12 text-center">
             <div className="flex flex-col items-center w-full relative z-20">
               <Link
                 href={`${siteConfig.baseLinks.blog}/series-a-announcement`}

@@ -1,9 +1,10 @@
-import Cta from "@/components/ui/Cta";
 import HeroV3 from "@/components/ui/HeroV3";
 import HowItWorks from "@/components/ui/HowItWorks";
 import SearchFeatures from "@/components/ui/SearchFeatures";
 import SocialProof from "@/components/ui/SocialProof";
 import CommunityProof from "@/components/ui/CommunityProof";
+import Pricing from "@/components/ui/Pricing";
+import PreFooterCta from "@/components/ui/PreFooterCta";
 
 export default function Home() {
   return (
@@ -13,7 +14,8 @@ export default function Home() {
       <HowItWorks />
       <SocialProof />
       <CommunityProof />
-      <Cta />
+      <Pricing />
+      <PreFooterCta />
     </main>
   );
 }
