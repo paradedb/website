@@ -3,7 +3,6 @@
 import { email, documentation } from "@/lib/links";
 import Link from "next/link";
 import { Button } from "../Button";
-import { GridBackground } from "@/components/ui/GridBackground";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 
 export default function PreFooterCta() {
@@ -23,7 +22,7 @@ export default function PreFooterCta() {
 
         <div className="px-2 md:px-12 w-full flex flex-col relative">
           {/* Grid Background */}
-          <GridBackground className="opacity-50"/>
+          {/* <GridBackground className="opacity-50"/> */}
 
           {/* Bottom fade to white */}
           <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white via-white/60 to-transparent z-0 pointer-events-none" />
@@ -34,7 +33,7 @@ export default function PreFooterCta() {
           <div className="relative flex flex-col items-center justify-center px-4 pt-24 md:pt-40 pb-12 md:pb-20 text-center">
             <div className="relative z-20 flex flex-col items-center">
               <h1 className="text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl leading-[1.1]">
-                Let's ship search<br /><span className="text-highlight-blink">without the complexity</span>
+                Ship faster search<br /><span className="text-highlight-blink">without the complexity</span>
               </h1>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-12">
                 <Button

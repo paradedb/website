@@ -14,10 +14,14 @@ export default function HeroV3() {
     <div className="w-full pt-4">
       <section
         aria-labelledby="hero-title"
-        className="border-y border-slate-200 overflow-hidden flex flex-col relative"
+        className="border-t border-slate-200 overflow-hidden flex flex-col relative"
       >
         <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 z-30 pointer-events-none" />
+
+        {/* Inner Vertical Borders for boxed look */}
+        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200/50 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200/50 z-30 pointer-events-none hidden xl:block" />
 
         <div className="px-2 md:px-12 w-full h-full flex flex-col flex-grow relative">
           <div className="relative z-20 opacity-0 pointer-events-none h-0">
@@ -90,9 +94,13 @@ export default function HeroV3() {
           </div>
         </div>
 
-        <div className="mt-0 relative z-20 bg-white/80 backdrop-blur-sm w-full border-t border-slate-200">
-          <div className="px-2 md:px-12 w-full mx-auto">
-            <LogoCloud variant="white" className="border-t-0 bg-transparent" />
+        <div className="mt-0 relative z-20 bg-white/80 backdrop-blur-sm w-full">
+          <div className="px-2 md:px-12 w-full mx-auto relative">
+            <div className="absolute top-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30" />
+            <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 z-30" />
+            <div className="max-w-[1128px] mx-auto">
+              <LogoCloud variant="white" className="bg-transparent" />
+            </div>
           </div>
         </div>
       </section>

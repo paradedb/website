@@ -13,116 +13,46 @@ export default function LogoCloud({
   return (
     <div
       className={cx(
-        "grid grid-cols-2 md:grid-cols-4",
-        isIndigo
-          ? "bg-[#4f46e5] border-t border-indigo-500"
-          : "bg-white border-t border-slate-200",
+        "flex flex-wrap items-center justify-center gap-x-8 md:gap-x-12 lg:gap-x-20 py-8 md:py-12",
         className
       )}
     >
-      <div
+      <Logos.BiltRewards
         className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-b border-r",
-          isIndigo ? "border-indigo-500" : "border-slate-200"
+          "w-16 md:w-20",
+          isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
         )}
-      >
-        <Logos.BiltRewards
-          className={cx(
-            "w-16 md:w-20",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div
+      />
+      <Logos.ModernTreasury
         className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-b border-r",
-          isIndigo ? "border-indigo-500" : "border-slate-200"
+          "w-28 md:w-36",
+          isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
         )}
-      >
-        <Logos.ModernTreasury
-          className={cx(
-            "w-28 md:w-36",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div
+      />
+      <Logos.Alibaba
         className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-b border-r",
-          isIndigo ? "border-indigo-500" : "border-slate-200"
+          "w-16 md:w-24",
+          isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
         )}
-      >
-        <Logos.Alibaba
-          className={cx(
-            "w-16 md:w-24",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div
+      />
+      <Logos.RxVantage
         className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-b",
-          isIndigo ? "border-indigo-500 md:border-r-0" : "border-slate-200 md:border-r-0"
+          "w-20 md:w-28",
+          isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
         )}
-      >
-        <Logos.Unify
-          className={cx(
-            "w-16 md:w-20",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div
+      />
+      <Logos.Tcdi
         className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-r",
-          isIndigo
-            ? "border-indigo-500 border-b md:border-b-0"
-            : "border-slate-200 border-b md:border-b-0"
+          "w-10 md:w-12",
+          isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
         )}
-      >
-        <Logos.Tcdi
-          className={cx(
-            "w-10 md:w-12",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div
+      />
+      <Logos.DemandScience
         className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-r",
-          isIndigo
-            ? "border-indigo-500 border-b md:border-b-0"
-            : "border-slate-200 border-b md:border-b-0"
+          "w-28 md:w-36",
+          isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
         )}
-      >
-        <Logos.DemandScience
-          className={cx(
-            "w-28 md:w-36",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div
-        className={cx(
-          "flex items-center justify-center px-4 py-6 md:p-8 border-r",
-          isIndigo ? "border-indigo-500" : "border-slate-200"
-        )}
-      >
-        <Logos.RxVantage
-          className={cx(
-            "w-20 md:w-28",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
-      <div className="flex items-center justify-center px-4 py-6 md:p-8">
-        <Logos.Cofactr
-          className={cx(
-            "w-16 md:w-24",
-            isIndigo ? "brightness-0 invert opacity-70" : "brightness-0 opacity-80"
-          )}
-        />
-      </div>
+      />
     </div>
   );
 }
