@@ -3,19 +3,15 @@ import SearchFeaturesClient from "./SearchFeaturesClient";
 import {
   RiScissorsCutLine,
   RiTranslate2,
-  RiFilter3Line,
-  RiBarChartBoxLine,
   RiSearchEyeLine,
   RiGlobalLine,
-  RiLinksLine,
-  RiDatabase2Line,
   RiBracesLine,
   RiSpeedLine,
   RiSortAsc,
   RiEqualizerLine,
   RiListCheck2,
-  RiArrowDownCircleLine,
   RiPieChartLine,
+  RiCheckDoubleLine,
 } from "@remixicon/react";
 
 const textProcessingCode = `CREATE INDEX ON animals
@@ -27,12 +23,14 @@ USING bm25 (
 
 const textSearchCode = `SELECT * FROM animals
 WHERE name &&& 'asian elephant'
-OR id @@@ pdb.more_like_this(1);`;
+OR id @@@ pdb.more_like_this(1)
+LIMIT 5;`;
 
 const booleanCode = `SELECT * FROM animals
 WHERE name &&& 'asian elephant'
 AND metadata->>'region' === 'Asia'
-AND weight >= 4000;`
+AND weight >= 4000
+LIMIT 5;`
 
 const topNCode = `SELECT * FROM animals
 WHERE name &&& 'asian elephant'
@@ -44,6 +42,17 @@ FROM animals
 WHERE name &&& 'asian elephant'
 GROUP BY metadata->>'region'
 ORDER BY 1;`
+
+const hybridSearchCode = `SELECT id, pdb.score(id)
+FROM animals
+WHERE name &&& 'asian elephant'
+ORDER BY pdb.score(id) DESC
+LIMIT 5;
+
+SELECT id, embedding <=> '[1,2,3]'
+FROM animals
+ORDER BY embedding <=> '[1,2,3]' DESC
+LIMIT 5;`;
 
 export default async function SearchFeatures() {
   const features = [
@@ -82,6 +91,19 @@ export default async function SearchFeatures() {
       ],
       code: <Code code={textSearchCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
       href: "/docs/full-text-search/overview",
+    },
+    {
+        value: "hybrid",
+        label: "Hybrid Search",
+        bullets: [
+            {
+                title: "Fully compatible with pgvector",
+                description: "ParadeDB can be combined with pgvector to deliver a hybrid search solution.",
+                icon: <RiCheckDoubleLine className="size-5" />,
+            }
+        ],
+        code: <Code code={hybridSearchCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+        href: "/docs/vector-search/overview",
     },
     {
       value: "boolean",

@@ -7,6 +7,7 @@ import { RiSearchLine, RiFlashlightFill } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
 import Link from "next/link";
 import { Button } from "../Button";
+import { Badge } from "./Badge";
 
 const ParadeDBIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg
@@ -101,7 +102,7 @@ const Table = ({
   isLoading?: boolean;
   isExiting?: boolean;
 }) => (
-  <div className="w-full bg-white/90 border border-indigo-100 overflow-hidden text-sm z-10 relative ring-3 ring-indigo-50">
+  <div className="w-full bg-white/90 border border-slate-200 overflow-hidden text-sm z-10 relative ring-3 ring-slate-50 shadow-xl">
     <style>{`
       @keyframes slideInRow {
         0% { transform: translateY(100%); opacity: 0; }
@@ -112,7 +113,7 @@ const Table = ({
         100% { transform: translateY(100%); opacity: 0; }
       }
     `}</style>
-    <div className="bg-indigo-50/80 px-3 py-2 border-b border-indigo-100 font-medium text-slate-600 flex justify-between items-center">
+    <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 font-medium text-slate-600 flex justify-between items-center">
       {customHeader ? (
         customHeader
       ) : (
@@ -123,8 +124,8 @@ const Table = ({
         </div>
       )}
     </div>
-    <div className="divide-y divide-indigo-100 min-h-[105px]">
-      <div className="grid grid-cols-[30px_1fr_60px] bg-indigo-50/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
+    <div className="divide-y divide-slate-100 min-h-[105px]">
+      <div className="grid grid-cols-[30px_1fr_60px] bg-slate-100/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
         <div>id</div>
         <div>name</div>
         <div>weight</div>
@@ -178,13 +179,13 @@ const Table = ({
 const SelfHostedHeader = () => (
   <div className="flex items-center justify-between w-full">
     <div className="flex items-center gap-2.5">
-      <div className="flex items-center bg-white p-1 rounded-md shadow-sm border border-indigo-100/50">
+      <div className="flex items-center bg-white p-1 rounded-md shadow-sm border border-slate-200/50">
         <PostgresLogo className="h-5 w-auto" />
         <span className="text-indigo-400 mx-1 font-light">+</span>
         <ParadeDBIcon className="h-5 w-auto" />
       </div>
     </div>
-    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-100/50 rounded-full border border-indigo-200/50">
+    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-100/50 rounded-full border border-slate-200">
       <RiFlashlightFill className="size-3 text-indigo-500" />
       <span className="text-[10px] font-bold text-indigo-600 tracking-wider uppercase">
         ParadeDB Installed
@@ -293,16 +294,16 @@ function SelfHostedDemo() {
   }, []);
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-indigo-50/50 flex flex-col">
+    <div className="w-full h-full relative overflow-hidden bg-slate-100 flex flex-col">
       {/* Background Mesh/Effect */}
-      <div className="absolute inset-0 z-0 opacity-75">
+      {/* <div className="absolute inset-0 z-0">
         <Image
           src="/mesh_1.svg"
           alt="Background Gradient"
           fill
           className="object-cover opacity-100"
         />
-      </div>
+      </div> */}
 
       <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 relative z-10">
         <div className="flex flex-col items-center w-full max-w-[420px] mx-auto gap-6">
@@ -312,7 +313,7 @@ function SelfHostedDemo() {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                 <RiSearchLine className="h-4 w-4 text-indigo-400" />
               </div>
-              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-indigo-200 bg-white/95 backdrop-blur-md shadow-sm ring-3 ring-indigo-50 transition-all group-hover:border-indigo-300">
+              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-indigo-200 bg-white/95 backdrop-blur-md shadow-sm ring-3 ring-slate-50 transition-all group-hover:border-indigo-300">
                 <span className="text-sm text-slate-700 min-h-[20px]">
                   {query}
                 </span>
@@ -450,7 +451,7 @@ function AnimationDemo() {
   }, []);
 
   return (
-    <div className="w-full h-full relative overflow-hidden bg-indigo-50/50 flex flex-col">
+    <div className="w-full h-full relative overflow-hidden bg-slate-100 flex flex-col">
       <style>{`
         @keyframes scan {
           0% { mask-position: 0 -100%; -webkit-mask-position: 0 -100%; }
@@ -458,14 +459,14 @@ function AnimationDemo() {
         }
       `}</style>
       {/* Background Mesh/Effect */}
-      <div className="absolute inset-0 z-0 opacity-75">
+      {/* <div className="absolute inset-0 z-0 opacity-75">
         <Image
           src="/mesh_1.svg"
           alt="Background Gradient"
           fill
           className="object-cover opacity-100"
         />
-      </div>
+      </div> */}
 
       <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 relative z-10">
         <div className="flex flex-col items-center w-full max-w-[420px] mx-auto">
@@ -540,7 +541,7 @@ const AccordionItem = ({
   children: React.ReactNode;
   number: string;
 }) => (
-  <div className="border-b border-slate-200">
+  <div>
     <button
       onClick={onClick}
       className="w-full py-6 flex items-start text-left group transition-all justify-between"
@@ -581,23 +582,25 @@ export default function HowItWorks() {
   const [activeTab, setActiveTab] = useState<"managed" | "selfHosted">("managed");
 
   return (
-    <div className="px-2 md:px-12 relative mt-12 md:mt-24 mb-24 w-full">
-      <div className="lg:grid lg:grid-cols-12 lg:gap-12 items-start mx-auto w-full">
+    <div className="px-2 md:px-12 relative w-full">
+      <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 pb-12 md:pb-20">
         {/* Left Side */}
-        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-8 w-full min-h-[600px]">
-          <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl mb-6">
-            <span className="text-indigo-600">Zero ETL</span> means <br />
+        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-4 md:px-12 w-full min-h-[600px] relative border-b border-slate-200">
+            <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200" />
+            <Badge className="w-fit">Benefits</Badge>
+          <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl mb-6 mt-2">
+            <span className="text-highlight-blink">Zero ETL</span> means <br />
             zero headache
           </h2>
 
           {/* Dynamic Tagline & Button Area */}
           <div className="mb-12 flex flex-col justify-between">
             <p
-              className="text-gray-600 leading-relaxed text-base animate-in fade-in slide-in-from-bottom-2 duration-300"
+              className="text-gray-800 leading-relaxed text-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
               key={activeTab + "-text"}
             >
-              ParadeDB is a Postgres extension. That means it can be run as a logical replica of any managed Postgres,
-              or installed inside any self-hosted Postgres.
+              Because ParadeDB is just Postgres, it can run as a logical replica of any managed Postgres,
+              or be installed inside any self-hosted Postgres.
             </p>
 
             <div
@@ -612,7 +615,7 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          <div className="flex flex-col border-t border-slate-200">
+          <div className="flex flex-col divide-y divide-slate-200">
             {/* Section 1: Managed */}
             <AccordionItem
               id="managed"
@@ -649,21 +652,21 @@ export default function HowItWorks() {
               </div>
 
               <div className="text-gray-600 leading-relaxed text-sm">
-                Installing ParadeDB in a self-hosted Postgres deployment requires zero new infra overhead or spend.
+                Installing ParadeDB in a self-hosted Postgres deployment incurs zero infra overhead or spend.
               </div>
             </AccordionItem>
           </div>
         </div>
 
         {/* Right Side - Desktop Only */}
-        <div className="hidden lg:col-span-7 lg:flex justify-end w-full py-8 sticky top-24 h-[640px] pl-16">
-           <div className="w-full h-full">
+        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 bg-slate-100">
+           <div className="sticky top-24 h-[640px] w-full overflow-hidden bg-slate-100">
             {activeTab === "managed" ? (
-              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500 overflow-hidden border border-indigo-100 bg-white">
+              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
                 <AnimationDemo />
               </div>
             ) : (
-              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500 overflow-hidden border border-indigo-100 bg-white">
+              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
                 <SelfHostedDemo />
               </div>
             )}

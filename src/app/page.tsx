@@ -1,22 +1,16 @@
-import Benefits from "@/components/ui/Benefits";
 import Cta from "@/components/ui/Cta";
-import Hero from "@/components/ui/Hero";
+import HeroV3 from "@/components/ui/HeroV3";
 import HowItWorks from "@/components/ui/HowItWorks";
-import Managed from "@/components/ui/Managed";
-import OpenSource from "@/components/ui/OpenSource";
-import SearchAnalytics from "@/components/ui/SearchAnalytics";
 import SearchFeatures from "@/components/ui/SearchFeatures";
+import SocialProof from "@/components/ui/SocialProof";
 
 export default function Home() {
   return (
     <main className="flex flex-col overflow-hidden px-2 md:px-0">
-      <Hero />
+      <HeroV3 />
       <SearchFeatures />
       <HowItWorks />
-      <Benefits />
-      <SearchAnalytics />
-      <Managed />
-      <OpenSource />
+      <SocialProof />
       <Cta />
     </main>
   );

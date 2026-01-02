@@ -3,9 +3,9 @@
 import * as Tabs from "@radix-ui/react-tabs";
 import { RiArrowRightSLine } from "@remixicon/react";
 import Link from "next/link";
-import { Badge } from "../Badge";
 import { ReactNode } from "react";
 import classNames from "classnames";
+import { Badge } from "./Badge";
 
 interface Feature {
   value: string;
@@ -22,21 +22,21 @@ interface Feature {
 export default function SearchFeaturesClient({ features }: { features: Feature[] }) {
   return (
     <div className="px-2 md:px-12">
-      <section className="mt-12 md:mt-24 flex flex-col items-center">
+      <section className="py-12 md:py-20 flex flex-col items-center border-r-1 border-l-1 border-slate-200">
         <Badge>Features</Badge>
-        <h2 className="mt-4 text-center text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl">
-          The full toolkit for <span className="text-indigo-600">search</span>
-        </h2>
-        <p className="mt-6 text-center text-lg text-gray-600 max-w-2xl">
-          Out of the box, ParadeDB comes with everything you need to build a modern search application.
+          <h2 className="text-center text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl">
+            The <span className="text-highlight-blink">complete</span> toolkit<br/>for search
+          </h2>
+        <p className="mt-6 text-center text-lg text-gray-800 max-w-2xl">
+          ParadeDB brings everything you need from a modern search engine into Postgres, including text, hybrid, and faceted search.
         </p>
 
         <Tabs.Root
           defaultValue={features[0].value}
-          className="mt-12 w-full overflow-hidden ring-1 ring-indigo-200/80"
+          className="mt-12 w-full overflow-hidden border-t-1 border-b-1 border-slate-200"
         >
           {/* Header */}
-          <div className="overflow-x-auto pb-px no-scrollbar bg-white border-b border-gray-100">
+          <div className="overflow-x-auto pb-px no-scrollbar bg-white border-b-1 border-slate-200">
              <Tabs.List className="flex w-full min-w-max items-end">
                {features.map((feature, i) => (
                  <Tabs.Trigger
@@ -59,7 +59,7 @@ export default function SearchFeaturesClient({ features }: { features: Feature[]
 
           {/* Content Area */}
           <div
-            className="w-full relative bg-indigo-50/50"
+            className="w-full relative bg-slate-100/50"
           >
             {features.map((feature) => (
               <Tabs.Content
@@ -99,10 +99,10 @@ export default function SearchFeaturesClient({ features }: { features: Feature[]
                   </div>
 
                   {/* Vertical Divider (Desktop) */}
-                  <div className="hidden lg:block w-px bg-indigo-200/80 my-12" />
+                  <div className="hidden lg:block w-px bg-slate-100 my-12" />
 
                   {/* Horizontal Divider (Mobile) */}
-                  <div className="lg:hidden h-px w-full bg-indigo-100/50 mx-8 md:mx-12" />
+                  <div className="lg:hidden h-px w-full bg-slate-100 mx-8 md:mx-12" />
 
                   {/* Right Column: Code */}
                   <div className="flex-1 p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden">

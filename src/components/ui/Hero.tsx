@@ -44,7 +44,7 @@ export default async function Hero() {
               style={{ animationDuration: "900ms" }}
             >
               You need better search, not the burden of Elasticsearch.<br/>
-              With ParadeDB, your team ships faster by just using Postgres.
+              ParadeDB is built on Postgres, so you can ship leaner and faster.
             </p>
             <div
               className="mt-8 flex w-full animate-slide-up-fade flex-col justify-center gap-3 px-3 sm:flex-row"

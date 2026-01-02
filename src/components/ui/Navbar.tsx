@@ -53,30 +53,6 @@ export function Navigation() {
 
   return (
     <div>
-      <div className="flex w-full justify-center space-x-4 bg-indigo-600 px-2 md:px-12 py-4 text-center text-white">
-        <div className="hidden rounded bg-indigo-800 bg-opacity-20 px-2 py-1 text-xs font-medium md:block">
-          News
-        </div>
-        <div className="relative top-0.5 text-left text-sm">
-          Announcing our{" "}
-          <Link
-            href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
-            className="font-semibold underline"
-          >
-            $12M Series A
-          </Link>{" "}
-          led by Craft Ventures 🎉. Read it on{" "}
-          <Link
-            href="https://techcrunch.com/2025/07/15/paradedb-takes-on-elasticsearch-as-interest-in-postgres-explodes-amid-ai-boom/"
-            className="font-semibold underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            TechCrunch
-          </Link>
-          {""}.
-        </div>
-      </div>
       <header
         className={classNames(
           "z-50 mx-2 md:mx-12 mt-4 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-0",
