@@ -113,9 +113,9 @@ Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/b
 
 ## v2 API: Less Magic, More Clarity
 
-None of these aggregation capabilities would matter if they were difficult to use, so alongside the our performance work we've also promoted our [V2 API](https://docs.paradedb.com/search/create) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
+None of these aggregation capabilities would matter if they were difficult to use, so alongside our performance work, we've also promoted our [V2 API](https://docs.paradedb.com/documentation/indexing/create-index) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
 
-One of the most significant advantages of the v2 API is that it eliminates the schema duplication that is present in most other search systems. With Elasticsearch you must define your data structure twice: once in your application database and again in your Elasticsearch mapping:
+One of the most significant advantages of the v2 API is that it eliminates the schema duplication that is present in most other search systems. With Elasticsearch, you must define your data structure twice: once in your application database and again in your Elasticsearch mapping:
 
 ```json
 // Elasticsearch mapping - separate from your database schema
@@ -163,7 +163,7 @@ LIMIT 5;
 (5 rows)
 ```
 
-Keep an eye out for another post showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/search).
+Keep an eye out for another post showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/documentation/full-text/overview).
 
 ## Write Performance: Updates That Scale With You
 
