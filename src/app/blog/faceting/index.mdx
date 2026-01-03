@@ -20,11 +20,11 @@ Picture this: you've built a perfectly reasonable search app. Users type "dinosa
 In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we structured the SQL API using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (spoiler alert: [over an order of magnitude faster](#performance-why-this-matters) for large result sets).
 
 <Note>
-  If you aren't familiar with [ParadeDB](https://paradedb.com), we're a Postgres
-  extension that brings modern search capabilities directly into your database.
-  Instead of managing separate search infrastructure, you get BM25 full-text
-  search, vector search, and real-time analytics while keeping all your data in
-  Postgres with full ACID guarantees.
+  If you aren't familiar with [ParadeDB](https://www.paradedb.com), we're a
+  Postgres extension that brings modern search capabilities directly into your
+  database. Instead of managing separate search infrastructure, you get BM25
+  full-text search, vector search, and real-time analytics while keeping all
+  your data in Postgres with full ACID guarantees.
 </Note>
 
 ## How Search Engines Count
@@ -280,10 +280,10 @@ Faceting is one of those features that looks simple on the surface, but is surpr
 
 The result is a simple SQL interface that gives you the best of both worlds: PostgreSQL's ACID guarantees and transactional semantics, combined with the performance and developer experience of modern search engines.
 
-Ready to try faceted search in your PostgreSQL database? [Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started) and see how faceting can transform your search experience.
+Ready to try faceted search in your PostgreSQL database? [Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/install) and see how faceting can transform your search experience.
 
 ---
 
-[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found [here](https://docs.paradedb.com/documentation/indexing/create-index).
+[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found under our [CREATE INDEX documentation](https://docs.paradedb.com/documentation/indexing/create-index).
 
 [^2]: [MVCC (Multi-Version Concurrency Control)](https://www.postgresql.org/docs/current/mvcc.html) is PostgreSQL's mechanism for handling concurrent transactions by maintaining multiple versions of data when rows are modified. The built in [VACUUM](https://www.postgresql.org/docs/current/routine-vacuuming.html) asynchronously cleans up these old versions. Accessing rows includes visibility checks in both tables and indexes to ensure each transaction sees the correct version of data.
