@@ -20,7 +20,7 @@ Picture this: you've built a perfectly reasonable search app. Users type "dinosa
 In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we structured the SQL API using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (spoiler alert: [over an order of magnitude faster](#performance-why-this-matters) for large result sets).
 
 <Note>
-  If you aren't familiar with [ParadeDB](https://paradedb.com), we're a Postgres
+  If you aren't familiar with [ParadeDB](https://www.paradedb.com), we're a Postgres
   extension that brings modern search capabilities directly into your database.
   Instead of managing separate search infrastructure, you get BM25 full-text
   search, vector search, and real-time analytics while keeping all your data in
