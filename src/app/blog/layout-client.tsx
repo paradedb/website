@@ -57,50 +57,69 @@ export default function BlogLayoutClient({
     : "";
 
   return (
-    <div className="mx-auto flex max-w-6xl md:mt-12">
-      {!isBlogIndex && (
-        <div className="hidden lg:flex lg:w-96 lg:flex-col">
-          {/* Sidebar component */}
-          <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
-            <nav className="flex flex-1 flex-col">
-              <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                <li>
-                  <ul role="list" className="-mx-2 space-y-1">
-                    {blogLinks.map((item) => (
-                      <li key={item.href}>
-                        <a
-                          href={`${siteConfig.baseLinks.blog}/${item.href}`}
-                          className={classNames(
-                            pathname.endsWith(item.href)
-                              ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
-                              : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
-                            "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
-                          )}
-                        >
-                          {item.name}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              </ul>
-            </nav>
-          </div>
-        </div>
-      )}
+    <div className="w-full">
+      <section className="border-t border-slate-200 dark:border-slate-900 overflow-hidden flex flex-col relative">
+        {/* Outer Vertical Layout Borders */}
+        <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+        <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-      {/* Blog content */}
-      <main className="w-full px-6 py-4 md:py-0">
-        <div className="mx-auto flex justify-between">
-          <div>{canGoBackward && <BackButton href={previousHref} />}</div>
-          <div>{canGoForward && <NextButton href={nextHref} />}</div>
+        {/* Inner Vertical Borders for boxed look */}
+        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+
+        <div className={classNames("mx-auto flex relative z-20", isBlogIndex ? "w-full" : "max-w-[1128px]")}>
+          {isBlogIndex && (
+            <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-10" />
+          )}
+          {!isBlogIndex && (
+            <div className="hidden lg:flex lg:w-80 lg:flex-col border-r border-slate-200 dark:border-slate-900">
+              {/* Sidebar component */}
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
+                <nav className="flex flex-1 flex-col">
+                  <ul role="list" className="flex flex-1 flex-col gap-y-7 mt-4">
+                    <li>
+                      <ul role="list" className="-mx-2 space-y-1">
+                        {blogLinks.map((item) => (
+                          <li key={item.href}>
+                            <a
+                              href={`${siteConfig.baseLinks.blog}/${item.href}`}
+                              className={classNames(
+                                pathname.endsWith(item.href)
+                                  ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
+                                  : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
+                                "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
+                              )}
+                            >
+                              {item.name}
+                            </a>
+                          </li>
+                        ))}
+                      </ul>
+                    </li>
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          )}
+
+          {/* Blog content */}
+          <main className={classNames("w-full", isBlogIndex ? "px-0" : "px-6 py-4 md:py-0")}>
+            {!isBlogIndex && (
+              <div className="mx-auto flex justify-between">
+                <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+                <div>{canGoForward && <NextButton href={nextHref} />}</div>
+              </div>
+            )}
+            <div className={classNames("w-full", !isBlogIndex && "py-4")}>{children}</div>
+            {!isBlogIndex && (
+              <div className="mx-auto flex justify-between">
+                <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+                <div>{canGoForward && <NextButton href={nextHref} />}</div>
+              </div>
+            )}
+          </main>
         </div>
-        <div className="w-full py-4">{children}</div>
-        <div className="mx-auto flex justify-between">
-          <div>{canGoBackward && <BackButton href={previousHref} />}</div>
-          <div>{canGoForward && <NextButton href={nextHref} />}</div>
-        </div>
-      </main>
+      </section>
     </div>
   );
 }

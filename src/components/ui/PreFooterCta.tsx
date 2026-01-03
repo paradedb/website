@@ -14,8 +14,8 @@ export default function PreFooterCta() {
         <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
         {/* Inner Vertical Borders for boxed look */}
-        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
         {/* Bottom Section Border constrained to vertical borders */}
         <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-white dark:bg-slate-950 z-30 pointer-events-none" />
@@ -30,12 +30,12 @@ export default function PreFooterCta() {
           <div className="absolute top-0 bottom-0 left-0 w-24 md:w-60 bg-gradient-to-r from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
           <div className="absolute top-0 bottom-0 right-0 w-24 md:w-60 bg-gradient-to-l from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
-          <div className="relative flex flex-col items-center justify-center px-4 pt-24 md:pt-40 pb-12 md:pb-20 text-center">
-            <div className="relative z-20 flex flex-col items-center">
-              <h1 className="text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1]">
-                Elastic-quality search<br /><span className="text-highlight-blink">without the complexity</span>
+          <div className="relative flex flex-col items-center justify-center px-4 py-20 md:py-32 text-center">
+            <div className="relative z-20 flex flex-col items-center px-4 sm:px-0">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1] text-center">
+                Elastic-quality search <br className="hidden sm:block" /> <span className="text-highlight-blink">without the complexity</span>
               </h1>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-12">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8 sm:mt-12">
                 <Button
                   asChild
                   className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none h-10 text-white font-semibold shadow-none"

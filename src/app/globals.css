@@ -292,7 +292,7 @@ code {
 code .line::before {
   content: counter(step);
   counter-increment: step;
-  @apply mr-8 inline-block w-4 text-right text-gray-600;
+  @apply mr-4 inline-block w-4 text-right text-gray-600;
 }
 
 pre {
@@ -476,16 +476,17 @@ a {
 
 .text-highlight-blink {
   position: relative;
-  display: inline-block;
+  display: inline;
   color: #4f46e5;
+  padding: 0 2px;
 }
 
 .text-highlight-blink::before {
   content: '';
   position: absolute;
-  left: -4px;
-  top: 0;
-  bottom: 0;
+  left: -2px;
+  top: 0.1em;
+  bottom: 0.1em;
   width: 2px;
   background-color: currentColor;
   animation: blink 1s step-end infinite;
@@ -494,15 +495,16 @@ a {
 .text-highlight-blink::after {
   content: '';
   position: absolute;
-  inset: 0;
+  inset: 0.1em -4px;
   background: linear-gradient(to right, rgba(224, 231, 255, 0.5), transparent);
   pointer-events: none;
   z-index: -10;
+  border-radius: 2px;
 }
 
 .bg-grid-pattern {
-  background-image: linear-gradient(to right, #64748b15 1px, transparent 1px),
-    linear-gradient(to bottom, #64748b15 1px, transparent 1px);
+  background-image: linear-gradient(to right, #64748b19 1px, transparent 1px),
+    linear-gradient(to bottom, #64748b19 1px, transparent 1px);
 }
 
 .dark {

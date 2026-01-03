@@ -114,7 +114,7 @@ const Table = ({
     `}</style>
     <div className="bg-slate-50 dark:bg-slate-950/50 px-3 py-2 border-b border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-400 flex justify-between items-center">
       {customHeader ? (
-        customHeader
+        <div className="w-full">{customHeader}</div>
       ) : (
         <div className="flex items-center gap-2">
           {Icon && <Icon className="h-4 w-auto text-indigo-400 dark:text-indigo-500" />}
@@ -294,18 +294,8 @@ function SelfHostedDemo() {
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-transparent flex flex-col">
-      {/* Background Mesh/Effect */}
-      {/* <div className="absolute inset-0 z-0">
-        <Image
-          src="/mesh_1.svg"
-          alt="Background Gradient"
-          fill
-          className="object-cover opacity-100"
-        />
-      </div> */}
-
-      <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 relative z-10">
-        <div className="flex flex-col items-center w-full max-w-[420px] mx-auto gap-6">
+      <div className="flex-1 flex flex-col justify-center items-center py-12 px-0 sm:px-4 relative z-10">
+        <div className="flex flex-col items-stretch w-full sm:max-w-xl mx-auto gap-6">
           {/* Animated Search Bar - Moved Above */}
           <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
             <div className="relative group shadow-lg rounded-lg">
@@ -457,18 +447,8 @@ function AnimationDemo() {
           100% { mask-position: 0 300%; -webkit-mask-position: 0 300%; }
         }
       `}</style>
-      {/* Background Mesh/Effect */}
-      {/* <div className="absolute inset-0 z-0 opacity-75">
-        <Image
-          src="/mesh_1.svg"
-          alt="Background Gradient"
-          fill
-          className="object-cover opacity-100"
-        />
-      </div> */}
-
-      <div className="flex-1 flex flex-col justify-center items-center py-12 px-4 relative z-10">
-        <div className="flex flex-col items-center w-full max-w-[420px] mx-auto">
+      <div className="flex-1 flex flex-col justify-center items-center py-12 px-0 sm:px-4 relative z-10">
+        <div className="flex flex-col items-stretch w-full sm:max-w-xl mx-auto">
         {/* Primary Table */}
         <Table
           title="Primary (Postgres)"
@@ -538,40 +518,44 @@ const AccordionItem = ({
   children: React.ReactNode;
   number: string;
 }) => (
-  <div>
+  <div className="px-0">
     <button
       onClick={onClick}
-      className="w-full py-6 flex items-start text-left group transition-all justify-between"
+      className="w-full py-6 flex items-start text-left group transition-all justify-between lg:cursor-pointer cursor-default px-4 sm:px-0"
     >
-      <div className="flex-1">
-        <h3
-          className={classNames(
-            "text-lg font-semibold transition-colors duration-300",
-            isActive ? "text-indigo-950 dark:text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200"
-          )}
-        >
-          {title}
-        </h3>
-
-        <div
-          className={classNames(
-            "overflow-hidden transition-all duration-500 ease-in-out",
-            isActive ? "max-h-[1000px] opacity-100 mt-2" : "max-h-0 opacity-0"
-          )}
-        >
-          {children}
-          <div className="pb-2" />
-        </div>
-      </div>
+      <h3
+        className={classNames(
+          "text-lg font-semibold transition-colors duration-300 flex-1",
+          "text-indigo-950 dark:text-white lg:text-slate-500 lg:dark:text-slate-400",
+          isActive ? "lg:text-indigo-950 lg:dark:text-white" : "lg:group-hover:text-slate-800 lg:dark:group-hover:text-slate-200"
+        )}
+      >
+        {title}
+      </h3>
       <span
         className={classNames(
           "font-mono text-md ml-6 transition-colors duration-300",
-          isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
+          "text-indigo-600 dark:text-indigo-400 lg:text-slate-400 lg:dark:text-slate-500",
+          isActive ? "lg:text-indigo-600 lg:dark:text-indigo-400" : "lg:group-hover:text-slate-600 lg:dark:group-hover:text-slate-300"
         )}
       >
         {number}
       </span>
     </button>
+
+    <div
+      className={classNames(
+        "overflow-hidden transition-all duration-500 ease-in-out",
+        "max-h-[2000px] opacity-100", // Always open on mobile
+        "lg:max-h-0 lg:opacity-0", // Closed by default on desktop
+        isActive ? "lg:max-h-[1000px] lg:opacity-100 lg:mt-2" : ""
+      )}
+    >
+      <div className="w-full">
+        {children}
+      </div>
+      <div className="pb-2" />
+    </div>
   </div>
 );
 
@@ -581,19 +565,18 @@ export default function HowItWorks() {
   return (
     <div className="px-2 md:px-12 relative w-full">
       <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
-        {/* Left Side */}
-        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-4 md:px-12 w-full min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
+        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-0 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
             <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
             <Badge className="w-fit">Benefits</Badge>
-          <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2 px-2 sm:px-0">
             <span className="text-highlight-blink">Zero ETL</span> means <br />
             zero headache
           </h2>
 
           {/* Dynamic Tagline & Button Area */}
-          <div className="mb-12 flex flex-col justify-between">
+          <div className="mb-12 flex flex-col justify-between px-2 sm:px-0">
             <p
-              className="text-gray-800 dark:text-slate-300 leading-relaxed text-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
+              className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300"
               key={activeTab + "-text"}
             >
               Because ParadeDB is just Postgres, it can run as a logical replica of any managed Postgres,
@@ -612,7 +595,7 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          <div className="flex flex-col divide-y divide-slate-200 dark:divide-slate-900">
+          <div className="flex flex-col divide-y divide-slate-200 dark:divide-slate-900 px-2 sm:px-0">
             {/* Section 1: Managed */}
             <AccordionItem
               title="For managed Postgres"
@@ -620,15 +603,15 @@ export default function HowItWorks() {
               onClick={() => setActiveTab("managed")}
               number="01"
             >
-              {/* Mobile Graphic */}
-              <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
-                <div className="w-full max-w-md">
-                  <AnimationDemo />
-                </div>
+              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4 px-4 sm:px-0">
+                ParadeDB can replicate from any managed Postgres — RDS, Supabase, Google Cloud/Azure Postgres, Neon, etc.
               </div>
 
-              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm">
-                ParadeDB can replicate from any managed Postgres — RDS, Supabase, Google Cloud/Azure Postgres, Neon, etc.
+              {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
+              <div className="flex lg:hidden justify-center w-full mt-4 mb-8 px-4 sm:px-0">
+                <div className="w-full">
+                  <AnimationDemo />
+                </div>
               </div>
             </AccordionItem>
 
@@ -639,22 +622,22 @@ export default function HowItWorks() {
               onClick={() => setActiveTab("selfHosted")}
               number="02"
             >
-              {/* Mobile Graphic */}
-              <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
-                <div className="w-full max-w-md">
-                  <SelfHostedDemo />
-                </div>
+              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4 px-4 sm:px-0">
+                Installing ParadeDB in a self-hosted Postgres deployment incurs zero infra overhead or spend.
               </div>
 
-              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm">
-                Installing ParadeDB in a self-hosted Postgres deployment incurs zero infra overhead or spend.
+              {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
+              <div className="flex lg:hidden justify-center w-full mt-4 mb-8 px-4 sm:px-0">
+                <div className="w-full">
+                  <SelfHostedDemo />
+                </div>
               </div>
             </AccordionItem>
           </div>
         </div>
 
         {/* Right Side - Desktop Only */}
-        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100/70 dark:bg-slate-900/50">
+        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100 dark:bg-slate-900/50">
            <div className="sticky top-24 h-[640px] w-full overflow-hidden">
             {activeTab === "managed" ? (
               <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">

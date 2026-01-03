@@ -15,6 +15,7 @@ export default function ResourcesLayoutClient({
   resourceSections: ResourceSection[];
 }) {
   const pathname = usePathname();
+  const isLearnIndex = pathname === siteConfig.baseLinks.resources;
   const [collapsedSections, setCollapsedSections] = useState<Set<string>>(
     new Set(),
   );
@@ -40,85 +41,102 @@ export default function ResourcesLayoutClient({
     .find((resource) => pathname.endsWith(resource.href));
 
   return (
-    <div className="mx-auto flex max-w-6xl md:mt-12">
-      <div className="hidden lg:flex lg:w-96 lg:flex-col">
-        {/* Sidebar component */}
-        <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
-          <nav className="flex flex-1 flex-col">
-            <ul role="list" className="flex flex-1 flex-col gap-y-7">
-              {resourceSections.map((section) => (
-                <li key={section.name}>
-                  <button
-                    onClick={() => toggleSection(section.name)}
-                    className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-900"
-                  >
-                    <span>{section.name}</span>
-                    <svg
-                      className={classNames(
-                        "h-4 w-4 transform transition-transform",
-                        collapsedSections.has(section.name)
-                          ? "rotate-0"
-                          : "rotate-90",
-                      )}
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                  {!collapsedSections.has(section.name) && (
-                    <ul role="list" className="mt-2 space-y-1 pl-4">
-                      {section.resources.map((item) => (
-                        <li key={item.href}>
-                          <a
-                            href={`${siteConfig.baseLinks.resources}/${item.href}`}
-                            className={classNames(
-                              pathname.endsWith(item.href)
-                                ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
-                                : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
-                              "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6",
-                            )}
-                          >
-                            <div className="flex flex-col">
-                              <span className="text-sm font-medium">
-                                {item.name}
-                              </span>
-                              <span className="text-xs text-gray-500 dark:text-slate-500 capitalize">
-                                {item.type}
-                              </span>
-                            </div>
-                          </a>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </div>
-      </div>
+    <div className="w-full">
+      <section className="border-t border-slate-200 dark:border-slate-900 overflow-hidden flex flex-col relative">
+        {/* Outer Vertical Layout Borders */}
+        <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+        <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-      {/* Resources content */}
-      <main className="w-full px-6 py-4 md:py-0">
-        {/* Mobile back navigation */}
-        {currentResource && (
-          <nav className="lg:hidden mb-4">
-            <a
-              href="/learn"
-              className="flex items-center text-sm text-gray-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
-            >
-              <span className="mr-2">←</span>
-              Learn
-            </a>
-          </nav>
-        )}
-        <div className="w-full py">{children}</div>
-      </main>
+        {/* Inner Vertical Borders for boxed look */}
+        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+
+        <div className={classNames("mx-auto flex relative z-20", isLearnIndex ? "w-full" : "max-w-[1128px]")}>
+          {isLearnIndex && (
+            <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-10" />
+          )}
+          {!isLearnIndex && (
+            <div className="hidden lg:flex lg:w-80 lg:flex-col border-r border-slate-200 dark:border-slate-900">
+              {/* Sidebar component */}
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
+                <nav className="flex flex-1 flex-col">
+                  <ul role="list" className="flex flex-1 flex-col gap-y-7 mt-4">
+                    {resourceSections.map((section) => (
+                      <li key={section.name}>
+                        <button
+                          onClick={() => toggleSection(section.name)}
+                          className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-900"
+                        >
+                          <span>{section.name}</span>
+                          <svg
+                            className={classNames(
+                              "h-4 w-4 transform transition-transform",
+                              collapsedSections.has(section.name)
+                                ? "rotate-0"
+                                : "rotate-90",
+                            )}
+                            fill="currentColor"
+                            viewBox="0 0 20 20"
+                          >
+                            <path
+                              fillRule="evenodd"
+                              d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                              clipRule="evenodd"
+                            />
+                          </svg>
+                        </button>
+                        {!collapsedSections.has(section.name) && (
+                          <ul role="list" className="mt-2 space-y-1 pl-4">
+                            {section.resources.map((item) => (
+                              <li key={item.href}>
+                                <a
+                                  href={`${siteConfig.baseLinks.resources}/${item.href}`}
+                                  className={classNames(
+                                    pathname.endsWith(item.href)
+                                      ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
+                                      : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
+                                    "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6",
+                                  )}
+                                >
+                                  <div className="flex flex-col">
+                                    <span className="text-sm font-medium">
+                                      {item.name}
+                                    </span>
+                                    <span className="text-xs text-gray-500 dark:text-slate-500 capitalize">
+                                      {item.type}
+                                    </span>
+                                  </div>
+                                </a>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
+              </div>
+            </div>
+          )}
+
+          {/* Resources content */}
+          <main className={classNames("w-full", isLearnIndex ? "px-0" : "px-6 py-4 md:py-0")}>
+            {/* Mobile back navigation */}
+            {!isLearnIndex && currentResource && (
+              <nav className="lg:hidden mb-4">
+                <a
+                  href="/learn"
+                  className="flex items-center text-sm text-gray-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
+                >
+                  <span className="mr-2">←</span>
+                  Learn
+                </a>
+              </nav>
+            )}
+            <div className="w-full">{children}</div>
+          </main>
+        </div>
+      </section>
       <CodeBlockEnhancer />
     </div>
   );

@@ -28,8 +28,8 @@ const CaseStudyCard = ({
   >
     {/* Content Wrapper - Blurs on hover */}
     <div className="w-full flex flex-col items-start transition-all duration-300 group-hover:blur-sm group-hover:opacity-40">
-      <div className="mb-8 h-10 flex items-center">{logo}</div>
-      <blockquote className="text-md text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
+      <div className="mb-8 h-8 sm:h-10 flex items-center">{logo}</div>
+      <blockquote className="text-sm sm:text-md text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
         {quote}
       </blockquote>
       <div className="mt-auto flex items-center gap-3">
@@ -65,35 +65,35 @@ export default function SocialProof() {
         <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
         {/* Additional Vertical Lines */}
-        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-        <div className="px-2 md:px-12 w-full flex flex-col relative">
+        <div className="px-0 sm:px-2 md:px-12 w-full flex flex-col relative">
           {/* Background color layer */}
-          <div className="absolute inset-0 bg-slate-100/50 dark:bg-slate-950/50 -z-20" />
+          <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-20" />
 
           {/* Section 1: Case Studies (Gray Background) */}
           <div className="relative flex flex-col items-center justify-center px-4 sm:py-24 py-12 text-center bg-transparent">
             {/* Fades for Case Studies Section */}
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
-            <div className="flex flex-col items-center w-full relative z-20">
+            <div className="flex flex-col items-center w-full relative z-20 px-4 sm:px-0">
               <Badge className="mb-6 mt-px ml-px bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">
                 Case Studies
               </Badge>
-              <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                 <span className="text-highlight-blink">Trusted</span> by
                 enterprises
-              </h2>
-              <p className="text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12">
+             </h2>
+              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
                 The most innovative companies are simplifying their search stack with ParadeDB.
-              </p>
-            </div>
+             </p>
+        </div>
 
             <div className="relative w-full max-w-[1128px] mx-auto z-20">
               {/* Horizontal Lines */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 dark:bg-slate-900/50 hidden md:block z-30 pointer-events-none" />
-              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 dark:bg-slate-900/50 hidden md:block z-30 pointer-events-none" />
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 dark:bg-slate-900 hidden md:block z-30 pointer-events-none" />
+              <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[calc(100vw-16px)] md:w-[calc(100vw-96px)] h-px bg-slate-200 dark:bg-slate-900 hidden md:block z-30 pointer-events-none" />
 
               <div className="grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900/50 border-y md:border-y border-slate-200 dark:border-slate-900">
                 <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
@@ -106,7 +106,7 @@ export default function SocialProof() {
                     role="VP of Engineering, Bilt"
                     companyName="Bilt"
                   />
-                </div>
+          </div>
 
                 <div>
                   <CaseStudyCard
@@ -118,7 +118,7 @@ export default function SocialProof() {
                     role="Principal Architect, Alibaba"
                     companyName="Alibaba"
                   />
-                </div>
+              </div>
               </div>
             </div>
           </div>

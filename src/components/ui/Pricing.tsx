@@ -22,15 +22,15 @@ const PricingCard = ({
   buttonVariant?: "primary" | "secondary" | "light";
   badgeText: string;
 }) => (
-  <div className="flex flex-col p-8 md:p-12 h-full bg-white dark:bg-transparent text-left items-start">
-    <div className="mb-8 w-full">
+  <div className="flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-transparent text-left items-start">
+    <div className="mb-6 sm:mb-8 w-full">
       <div className="flex justify-start mb-2">
-        <Badge className="bg-slate-100/50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 font-medium py-0.5 px-2 text-[10px] uppercase tracking-wider">
+        <Badge className="bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-200 font-medium py-0.5 px-2 text-[10px] uppercase tracking-wider">
           {badgeText}
         </Badge>
       </div>
       <div className="flex items-baseline justify-start gap-1 mb-4">
-        <span className="text-3xl font-bold text-indigo-950 dark:text-white">{planName}</span>
+        <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">{planName}</span>
       </div>
       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
         {description}
@@ -68,22 +68,22 @@ export default function Pricing() {
         <div className="absolute top-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute bottom-0 left-2 md:left-12 right-2 md:right-12 h-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        <div className="px-2 md:px-12 w-full flex flex-col relative">
+        <div className="px-0 sm:px-2 md:px-12 w-full flex flex-col relative">
           {/* Background color layer */}
-          <div className="absolute inset-0 bg-slate-100/50 dark:bg-slate-950/50 -z-20" />
+          <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-20" />
 
           {/* Vertical sandwiching lines for the whole section height */}
-          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
-          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
+          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-          <div className="relative flex flex-col items-center justify-center px-4 py-24 text-center bg-transparent">
+          <div className="relative flex flex-col items-center justify-center px-4 py-16 sm:py-24 text-center bg-transparent">
             {/* Header section */}
-            <div className="flex flex-col items-center w-full relative z-20">
-              <Badge className="mb-6 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700">Pricing</Badge>
-              <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
+            <div className="flex flex-col items-center w-full relative z-20 px-4 sm:px-0">
+              <Badge className="mb-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">Pricing</Badge>
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                 Ready, set, <span className="text-highlight-blink">deploy</span>
               </h2>
-              <p className="text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12">
+              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12">
                 Scale search on Postgres with confidence.
               </p>
             </div>

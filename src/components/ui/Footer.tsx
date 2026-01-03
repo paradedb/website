@@ -42,14 +42,7 @@ const navigation = {
 export default function Footer() {
   return (
     <footer id="footer" className="relative w-full overflow-hidden bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
-      {/* Outer Vertical Layout Borders */}
-      <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-      <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-
-      {/* Inner Vertical Borders for boxed look */}
-      <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
-      <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200/50 dark:bg-slate-900/50 z-30 pointer-events-none hidden xl:block" />
-
+      <div className="w-full h-px bg-slate-200 dark:bg-slate-900" />
       <div className="px-2 md:px-12 w-full flex flex-col relative pb-4">
         <div className="relative max-w-[1128px] mx-auto w-full pt-16 md:pt-24 pb-0 px-6 md:px-12">
           <div className="xl:grid xl:grid-cols-3 xl:gap-20">
@@ -187,24 +180,13 @@ export default function Footer() {
         </div>
 
         <div className="border-t border-slate-200 dark:border-slate-900 mt-16 md:mt-24">
-          <div className="max-w-[1128px] mx-auto px-6 md:px-12 pt-4 pb-0 flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="max-w-[1128px] mx-auto px-6 md:px-12 pt-8 sm:pt-4 pb-0 flex flex-col items-center justify-between gap-6 sm:flex-row">
             <div className="flex items-center gap-4">
               <ThemeToggle />
               <p className="text-sm leading-5 text-gray-500 dark:text-slate-400">
                 &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
                 reserved.
               </p>
-            </div>
-            <div className="rounded-full border border-gray-200 dark:border-slate-900 py-1 pl-1 pr-2">
-              <div className="flex items-center gap-1.5">
-                <div className="relative size-4 shrink-0">
-                  <div className="absolute inset-[1px] rounded-full bg-emerald-500/20" />
-                  <div className="absolute inset-1 rounded-full bg-emerald-600" />
-                </div>
-                <span className="text-xs text-gray-700 dark:text-slate-300">
-                  All systems operational
-                </span>
-              </div>
             </div>
           </div>
         </div>
