@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import classNames from "classnames";
-import Image from "next/image";
 import { RiSearchLine, RiFlashlightFill } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
 import Link from "next/link";
@@ -71,7 +70,7 @@ const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: bo
       <div
         className={classNames(
           "absolute inset-0 flex items-center",
-          isHighlighted ? "text-emerald-600 font-medium" : "text-slate-700"
+          isHighlighted ? "text-emerald-600 font-medium" : "text-slate-700 dark:text-slate-200"
         )}
         style={{
           animation: display.prev
@@ -102,7 +101,7 @@ const Table = ({
   isLoading?: boolean;
   isExiting?: boolean;
 }) => (
-  <div className="w-full bg-white/90 border border-slate-200 overflow-hidden text-sm z-10 relative ring-3 ring-slate-50 shadow-xl">
+  <div className="w-full bg-white/90 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden text-sm z-10 relative ring-3 ring-slate-50 dark:ring-slate-950 shadow-xl">
     <style>{`
       @keyframes slideInRow {
         0% { transform: translateY(100%); opacity: 0; }
@@ -113,19 +112,19 @@ const Table = ({
         100% { transform: translateY(100%); opacity: 0; }
       }
     `}</style>
-    <div className="bg-slate-50 px-3 py-2 border-b border-slate-200 font-medium text-slate-600 flex justify-between items-center">
+    <div className="bg-slate-50 dark:bg-slate-950/50 px-3 py-2 border-b border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-400 flex justify-between items-center">
       {customHeader ? (
         customHeader
       ) : (
         <div className="flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-auto text-indigo-400" />}
+          {Icon && <Icon className="h-4 w-auto text-indigo-400 dark:text-indigo-500" />}
           {/* @ts-ignore */}
           <span className="text-xs uppercase tracking-wide">{title}</span>
         </div>
       )}
     </div>
-    <div className="divide-y divide-slate-100 min-h-[105px]">
-      <div className="grid grid-cols-[30px_1fr_60px] bg-slate-100/50 text-[10px] uppercase tracking-wider text-slate-500 font-medium px-3 py-1.5">
+    <div className="divide-y divide-slate-100 dark:divide-slate-800 min-h-[105px]">
+      <div className="grid grid-cols-[30px_1fr_60px] bg-slate-100/50 dark:bg-slate-950/50 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium px-3 py-1.5">
         <div>id</div>
         <div>name</div>
         <div>weight</div>
@@ -150,7 +149,7 @@ const Table = ({
             key={row.id}
             className={classNames(
               "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
-              highlightIdx === i ? "bg-indigo-50" : "bg-transparent"
+              highlightIdx === i ? "bg-indigo-50 dark:bg-indigo-900/20" : "bg-transparent"
             )}
             style={{
               animationName: isExiting ? "slideOutRow" : "slideInRow",
@@ -162,7 +161,7 @@ const Table = ({
               animationDelay: `${i * 100}ms`
             }}
           >
-            <div className="font-mono text-xs text-indigo-600">{row.id}</div>
+            <div className="font-mono text-xs text-indigo-600 dark:text-indigo-400">{row.id}</div>
             <div className="relative h-4 overflow-hidden w-full">
               <AnimatedCell text={row.name} isHighlighted={highlightIdx === i} />
             </div>
@@ -179,15 +178,15 @@ const Table = ({
 const SelfHostedHeader = () => (
   <div className="flex items-center justify-between w-full">
     <div className="flex items-center gap-2.5">
-      <div className="flex items-center bg-white p-1 rounded-md shadow-sm border border-slate-200/50">
+      <div className="flex items-center bg-white dark:bg-slate-800 p-1 rounded-md shadow-sm border border-slate-200/50 dark:border-slate-700/50">
         <PostgresLogo className="h-5 w-auto" />
-        <span className="text-indigo-400 mx-1 font-light">+</span>
+        <span className="text-indigo-400 dark:text-indigo-500 mx-1 font-light">+</span>
         <ParadeDBIcon className="h-5 w-auto" />
       </div>
     </div>
-    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-100/50 rounded-full border border-slate-200">
-      <RiFlashlightFill className="size-3 text-indigo-500" />
-      <span className="text-[10px] font-bold text-indigo-600 tracking-wider uppercase">
+    <div className="flex items-center gap-1.5 px-2 py-0.5 bg-indigo-100/50 dark:bg-slate-800/50 rounded-full border border-slate-200 dark:border-slate-800">
+      <RiFlashlightFill className="size-3 text-indigo-500 dark:text-indigo-300" />
+      <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-300 tracking-wider uppercase">
         ParadeDB Installed
       </span>
     </div>
@@ -313,8 +312,8 @@ function SelfHostedDemo() {
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                 <RiSearchLine className="h-4 w-4 text-indigo-400" />
               </div>
-              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-indigo-200 bg-white/95 backdrop-blur-md shadow-sm ring-3 ring-slate-50 transition-all group-hover:border-indigo-300">
-                <span className="text-sm text-slate-700 min-h-[20px]">
+              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-indigo-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm ring-3 ring-slate-50 dark:ring-slate-950 transition-all group-hover:border-indigo-300 dark:group-hover:border-indigo-500">
+                <span className="text-sm text-slate-700 dark:text-slate-200 min-h-[20px]">
                   {query}
                 </span>
                 <span className="w-0.5 h-5 bg-indigo-500 animate-[blink_1s_infinite] ml-0.5" />
@@ -506,8 +505,8 @@ function AnimationDemo() {
           />
 
           {/* Label Pill */}
-          <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-50 px-4 py-1.5 rounded-full shadow-xl z-30">
-            <span className="text-[10px] font-mono text-indigo-800 font-semibold tracking-wide">
+          <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-50 dark:bg-slate-900 border border-transparent dark:border-slate-800 px-4 py-1.5 rounded-full shadow-xl z-30">
+            <span className="text-[10px] font-mono text-indigo-800 dark:text-indigo-300 font-semibold tracking-wide">
               LOGICAL REPLICATION
             </span>
           </div>
@@ -527,14 +526,12 @@ function AnimationDemo() {
 }
 
 const AccordionItem = ({
-  id,
   title,
   isActive,
   onClick,
   children,
   number,
 }: {
-  id: string;
   title: string;
   isActive: boolean;
   onClick: () => void;
@@ -550,7 +547,7 @@ const AccordionItem = ({
         <h3
           className={classNames(
             "text-lg font-semibold transition-colors duration-300",
-            isActive ? "text-indigo-950" : "text-slate-500 group-hover:text-slate-800"
+            isActive ? "text-indigo-950 dark:text-white" : "text-slate-500 dark:text-slate-400 group-hover:text-slate-800 dark:group-hover:text-slate-200"
           )}
         >
           {title}
@@ -569,7 +566,7 @@ const AccordionItem = ({
       <span
         className={classNames(
           "font-mono text-md ml-6 transition-colors duration-300",
-          isActive ? "text-indigo-600" : "text-slate-400 group-hover:text-slate-600"
+          isActive ? "text-indigo-600 dark:text-indigo-400" : "text-slate-400 dark:text-slate-500 group-hover:text-slate-600 dark:group-hover:text-slate-300"
         )}
       >
         {number}
@@ -583,12 +580,12 @@ export default function HowItWorks() {
 
   return (
     <div className="px-2 md:px-12 relative w-full">
-      <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 pb-12 md:pb-20">
+      <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
         {/* Left Side */}
-        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-4 md:px-12 w-full min-h-[600px] relative border-b border-slate-200">
-            <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200" />
+        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-4 md:px-12 w-full min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
+            <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
             <Badge className="w-fit">Benefits</Badge>
-          <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 sm:text-6xl mb-6 mt-2">
+          <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
             <span className="text-highlight-blink">Zero ETL</span> means <br />
             zero headache
           </h2>
@@ -596,7 +593,7 @@ export default function HowItWorks() {
           {/* Dynamic Tagline & Button Area */}
           <div className="mb-12 flex flex-col justify-between">
             <p
-              className="text-gray-800 leading-relaxed text-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
+              className="text-gray-800 dark:text-slate-300 leading-relaxed text-lg animate-in fade-in slide-in-from-bottom-2 duration-300"
               key={activeTab + "-text"}
             >
               Because ParadeDB is just Postgres, it can run as a logical replica of any managed Postgres,
@@ -607,7 +604,7 @@ export default function HowItWorks() {
               className="mt-6 flex w-full sm:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75"
               key={activeTab + "-btn"}
             >
-              <Button className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 border-1 border-indigo-400 rounded-none hover:bg-indigo-700 transition-all">
+              <Button className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all">
                 <Link target="_blank" href="">
                   Learn More
                 </Link>
@@ -615,10 +612,9 @@ export default function HowItWorks() {
             </div>
           </div>
 
-          <div className="flex flex-col divide-y divide-slate-200">
+          <div className="flex flex-col divide-y divide-slate-200 dark:divide-slate-900">
             {/* Section 1: Managed */}
             <AccordionItem
-              id="managed"
               title="For managed Postgres"
               isActive={activeTab === "managed"}
               onClick={() => setActiveTab("managed")}
@@ -631,14 +627,13 @@ export default function HowItWorks() {
                 </div>
               </div>
 
-              <div className="text-gray-600 leading-relaxed text-sm">
+              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm">
                 ParadeDB can replicate from any managed Postgres — RDS, Supabase, Google Cloud/Azure Postgres, Neon, etc.
               </div>
             </AccordionItem>
 
             {/* Section 2: Self Hosted */}
             <AccordionItem
-              id="selfHosted"
               title="For self-hosted Postgres"
               isActive={activeTab === "selfHosted"}
               onClick={() => setActiveTab("selfHosted")}
@@ -651,7 +646,7 @@ export default function HowItWorks() {
                 </div>
               </div>
 
-              <div className="text-gray-600 leading-relaxed text-sm">
+              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm">
                 Installing ParadeDB in a self-hosted Postgres deployment incurs zero infra overhead or spend.
               </div>
             </AccordionItem>
@@ -659,7 +654,7 @@ export default function HowItWorks() {
         </div>
 
         {/* Right Side - Desktop Only */}
-        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 bg-slate-100/70">
+        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100/70 dark:bg-slate-900/50">
            <div className="sticky top-24 h-[640px] w-full overflow-hidden">
             {activeTab === "managed" ? (
               <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">

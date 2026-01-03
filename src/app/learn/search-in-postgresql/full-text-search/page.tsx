@@ -8,7 +8,7 @@ import ResourceContent from "./index.mdx";
 export default function Resource() {
   return (
     <>
-      <article className="prose w-full max-w-3xl">
+      <article className="prose dark:prose-invert w-full max-w-3xl">
         <ResourceContent />
       </article>
       <TableOfContents />

@@ -21,7 +21,7 @@ export default function BlogPostWrapper({ children }: BlogPostWrapperProps) {
 
   return (
     <>
-      <article className="prose w-full max-w-3xl">{children}</article>
+      <article className="prose dark:prose-invert w-full max-w-3xl">{children}</article>
       {contentLoaded && <TableOfContents />}
     </>
   );

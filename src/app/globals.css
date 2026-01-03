@@ -70,7 +70,13 @@
   --animate-slide-down-fade: slide-down-fade ease-in-out;
   --animate-slide-up-fade: slide-up-fade ease-in-out;
   --animate-blink: blink 1s step-end infinite;
+
+  --color-background: #ffffff;
+  --color-foreground: #020617;
+  --color-border: #e2e8f0;
 }
+
+@variant dark (&:where(.dark, .dark *));
 
 @keyframes hide {
   from {
@@ -497,4 +503,40 @@ a {
 .bg-grid-pattern {
   background-image: linear-gradient(to right, #64748b15 1px, transparent 1px),
     linear-gradient(to bottom, #64748b15 1px, transparent 1px);
+}
+
+.dark {
+  --color-background: #020617;
+  --color-foreground: #f8fafc;
+  --color-border: #1e293b;
+
+  .bg-grid-pattern {
+    background-image: linear-gradient(to right, #ffffff15 1px, transparent 1px),
+      linear-gradient(to bottom, #ffffff15 1px, transparent 1px);
+  }
+
+  .text-highlight-blink {
+    color: #818cf8;
+  }
+
+  .text-highlight-blink::after {
+    background: linear-gradient(to right, rgba(129, 140, 248, 0.2), transparent);
+  }
+
+  * {
+    scrollbar-color: #1e293b #020617;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: #020617;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    background-color: #1e293b;
+    border: 2px solid #020617;
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: #334155;
+  }
 }

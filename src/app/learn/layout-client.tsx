@@ -50,7 +50,7 @@ export default function ResourcesLayoutClient({
                 <li key={section.name}>
                   <button
                     onClick={() => toggleSection(section.name)}
-                    className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-sm font-semibold text-gray-900 hover:bg-gray-50"
+                    className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-900"
                   >
                     <span>{section.name}</span>
                     <svg
@@ -78,8 +78,8 @@ export default function ResourcesLayoutClient({
                             href={`${siteConfig.baseLinks.resources}/${item.href}`}
                             className={classNames(
                               pathname.endsWith(item.href)
-                                ? "bg-gray-50 text-indigo-600"
-                                : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                                ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
+                                : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
                               "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6",
                             )}
                           >
@@ -87,7 +87,7 @@ export default function ResourcesLayoutClient({
                               <span className="text-sm font-medium">
                                 {item.name}
                               </span>
-                              <span className="text-xs text-gray-500 capitalize">
+                              <span className="text-xs text-gray-500 dark:text-slate-500 capitalize">
                                 {item.type}
                               </span>
                             </div>
@@ -110,7 +110,7 @@ export default function ResourcesLayoutClient({
           <nav className="lg:hidden mb-4">
             <a
               href="/learn"
-              className="flex items-center text-sm text-gray-600 hover:text-indigo-600"
+              className="flex items-center text-sm text-gray-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
             >
               <span className="mr-2">←</span>
               Learn

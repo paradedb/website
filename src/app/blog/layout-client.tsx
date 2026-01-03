@@ -11,11 +11,11 @@ import { siteConfig } from "../siteConfig";
 const BackButton = ({ href }: { href: string }) => (
   <Link href={href}>
     <Button
-      className="group bg-transparent px-0 text-gray-600 hover:bg-transparent"
+      className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent"
       variant="light"
     >
       <ArrowAnimated
-        className="relative right-3 rotate-180 transform stroke-gray-600"
+        className="relative right-3 rotate-180 transform stroke-gray-600 dark:stroke-slate-400"
         aria-hidden="true"
       />
       <div>Previous Post</div>
@@ -26,11 +26,11 @@ const BackButton = ({ href }: { href: string }) => (
 const NextButton = ({ href }: { href: string }) => (
   <Link href={href}>
     <Button
-      className="group bg-transparent px-0 text-gray-600 hover:bg-transparent"
+      className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent"
       variant="light"
     >
       Next Post
-      <ArrowAnimated className="stroke-gray-600" aria-hidden="true" />
+      <ArrowAnimated className="stroke-gray-600 dark:stroke-slate-400" aria-hidden="true" />
     </Button>
   </Link>
 );
@@ -72,8 +72,8 @@ export default function BlogLayoutClient({
                           href={`${siteConfig.baseLinks.blog}/${item.href}`}
                           className={classNames(
                             pathname.endsWith(item.href)
-                              ? "bg-gray-50 text-indigo-600"
-                              : "text-gray-700 hover:bg-gray-50 hover:text-indigo-600",
+                              ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
+                              : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
                             "group flex gap-x-3 rounded-md p-2 text-sm font-semibold leading-6",
                           )}
                         >

@@ -71,7 +71,7 @@ export default async function SearchFeatures() {
           icon: <RiTranslate2 className="size-5" />,
         }
       ],
-      code: <Code code={textProcessingCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+      code: <Code code={textProcessingCode} lang="sql" className="[&_pre]:!bg-transparent" />,
       href: "/docs/text-processing/tokenizers",
     },
     {
@@ -89,7 +89,7 @@ export default async function SearchFeatures() {
           icon: <RiGlobalLine className="size-5" />,
         },
       ],
-      code: <Code code={textSearchCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+      code: <Code code={textSearchCode} lang="sql" className="[&_pre]:!bg-transparent" />,
       href: "/docs/full-text-search/overview",
     },
     {
@@ -102,7 +102,7 @@ export default async function SearchFeatures() {
                 icon: <RiCheckDoubleLine className="size-5" />,
             }
         ],
-        code: <Code code={hybridSearchCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+        code: <Code code={hybridSearchCode} lang="sql" className="[&_pre]:!bg-transparent" />,
         href: "/docs/vector-search/overview",
     },
     {
@@ -120,7 +120,7 @@ export default async function SearchFeatures() {
             icon: <RiSpeedLine className="size-5" />
         }
       ],
-      code: <Code code={booleanCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+      code: <Code code={booleanCode} lang="sql" className="[&_pre]:!bg-transparent" />,
       href: "/docs/full-text-search/filtering",
     },
     {
@@ -138,7 +138,7 @@ export default async function SearchFeatures() {
           icon: <RiEqualizerLine className="size-5" />,
         }
       ],
-      code: <Code code={topNCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+      code: <Code code={topNCode} lang="sql" className="[&_pre]:!bg-transparent" />,
       href: "/docs/similarity-search/bm25",
     },
     {
@@ -156,7 +156,7 @@ export default async function SearchFeatures() {
           icon: <RiListCheck2 className="size-5" />,
         }
       ],
-      code: <Code code={facetedCode} lang="sql" theme="github-light" className="[&_pre]:!bg-transparent" />,
+      code: <Code code={facetedCode} lang="sql" className="[&_pre]:!bg-transparent" />,
       href: "/docs/analytics/aggregations",
     },
   ];

@@ -22,7 +22,7 @@ function GridSquare() {
 
   return (
     <div
-      className="absolute w-6 h-6 bg-slate-200/40"
+      className="absolute w-6 h-6 bg-slate-200/40 dark:bg-slate-700/40"
       style={{
         left: "50%",
         top: 0,
@@ -43,7 +43,7 @@ function GridSquare() {
 
 export function GridBackground({ className }: { className?: string }) {
   return (
-    <div className={classNames("absolute inset-0 -z-10 h-full w-full bg-slate-50 bg-grid-pattern bg-[size:24px_24px] bg-[position:center_top] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]", className)}>
+    <div className={classNames("absolute inset-0 -z-10 h-full w-full bg-grid-pattern bg-[size:24px_24px] bg-[position:center_top] [mask-image:radial-gradient(ellipse_50%_50%_at_50%_50%,#000_60%,transparent_100%)]", className)}>
       {/* Filled squares */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(60)].map((_, i) => (
