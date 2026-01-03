@@ -284,6 +284,6 @@ Ready to try faceted search in your PostgreSQL database? [Get started with Parad
 
 ---
 
-[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found [here](https://docs.paradedb.com/documentation/indexing/create-index).
+[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found under our [CREATE INDEX documentation](https://docs.paradedb.com/documentation/indexing/create-index).
 
 [^2]: [MVCC (Multi-Version Concurrency Control)](https://www.postgresql.org/docs/current/mvcc.html) is PostgreSQL's mechanism for handling concurrent transactions by maintaining multiple versions of data when rows are modified. The built in [VACUUM](https://www.postgresql.org/docs/current/routine-vacuuming.html) asynchronously cleans up these old versions. Accessing rows includes visibility checks in both tables and indexes to ensure each transaction sees the correct version of data.
