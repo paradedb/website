@@ -42,35 +42,48 @@ export default function ResourcesLayoutClient({
 
   return (
     <div className="w-full">
-      <section className="border-t border-slate-200 dark:border-slate-900 overflow-hidden flex flex-col relative">
+      <section className={classNames("border-t border-slate-200 dark:border-slate-900 overflow-hidden flex flex-col relative", isLearnIndex ? "" : "bg-white dark:bg-slate-950")}>
         {/* Outer Vertical Layout Borders */}
-        <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-        <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+        {isLearnIndex && (
+          <>
+            <div className="absolute inset-y-0 left-2 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+            <div className="absolute inset-y-0 right-2 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+          </>
+        )}
+
+        {/* Background color layer */}
+        {isLearnIndex && (
+          <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-[#f1f5f9] dark:bg-slate-950/50 -z-10" />
+        )}
 
         {/* Inner Vertical Borders for boxed look */}
-        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        {isLearnIndex && (
+          <>
+            <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+            <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+          </>
+        )}
 
-        <div className={classNames("mx-auto flex relative z-20", isLearnIndex ? "w-full" : "max-w-[1128px]")}>
-          {isLearnIndex && (
-            <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-10" />
-          )}
+        <div className={classNames("mx-auto flex relative z-20 w-full", isLearnIndex ? "lg:max-w-[1128px]" : "mx-2 md:mx-12")}>
           {!isLearnIndex && (
-            <div className="hidden lg:flex lg:w-80 lg:flex-col border-r border-slate-200 dark:border-slate-900">
+            <div className="hidden lg:flex lg:w-80 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900">
               {/* Sidebar component */}
-              <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-4">
+              <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-10">
                 <nav className="flex flex-1 flex-col">
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7 mt-4">
+                  <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-4 mt-12 px-2">
+                    Learning Resources
+                  </div>
+                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
                     {resourceSections.map((section) => (
                       <li key={section.name}>
                         <button
                           onClick={() => toggleSection(section.name)}
-                          className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-sm font-semibold text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-900"
+                          className="flex w-full items-center justify-between rounded-md px-2 py-1 text-left text-sm font-bold text-slate-900 dark:text-white hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
                         >
                           <span>{section.name}</span>
                           <svg
                             className={classNames(
-                              "h-4 w-4 transform transition-transform",
+                              "h-4 w-4 transform transition-transform text-slate-400",
                               collapsedSections.has(section.name)
                                 ? "rotate-0"
                                 : "rotate-90",
@@ -93,16 +106,16 @@ export default function ResourcesLayoutClient({
                                   href={`${siteConfig.baseLinks.resources}/${item.href}`}
                                   className={classNames(
                                     pathname.endsWith(item.href)
-                                      ? "bg-gray-50 dark:bg-slate-900 text-indigo-600 dark:text-indigo-400"
-                                      : "text-gray-700 dark:text-slate-300 hover:bg-gray-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
-                                    "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-6",
+                                      ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-semibold"
+                                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400",
+                                    "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-5 transition-all duration-200",
                                   )}
                                 >
                                   <div className="flex flex-col">
                                     <span className="text-sm font-medium">
                                       {item.name}
                                     </span>
-                                    <span className="text-xs text-gray-500 dark:text-slate-500 capitalize">
+                                    <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold mt-0.5">
                                       {item.type}
                                     </span>
                                   </div>
@@ -120,20 +133,22 @@ export default function ResourcesLayoutClient({
           )}
 
           {/* Resources content */}
-          <main className={classNames("w-full", isLearnIndex ? "px-0" : "px-6 py-4 md:py-0")}>
-            {/* Mobile back navigation */}
-            {!isLearnIndex && currentResource && (
-              <nav className="lg:hidden mb-4">
-                <a
-                  href="/learn"
-                  className="flex items-center text-sm text-gray-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400"
-                >
-                  <span className="mr-2">←</span>
-                  Learn
-                </a>
-              </nav>
-            )}
-            <div className="w-full">{children}</div>
+          <main className={classNames("w-full relative flex flex-col", isLearnIndex ? "px-0" : "px-6 md:px-12 py-2 md:py-4")}>
+            <div className={classNames("mx-auto w-full", isLearnIndex ? "" : "max-w-4xl")}>
+              {/* Mobile back navigation */}
+              {!isLearnIndex && currentResource && (
+                <nav className="lg:hidden mb-8">
+                  <a
+                    href="/learn"
+                    className="flex items-center text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
+                  >
+                    <span className="mr-2 text-indigo-500">←</span>
+                    Back to Learn
+                  </a>
+                </nav>
+              )}
+              <div className="w-full">{children}</div>
+            </div>
           </main>
         </div>
       </section>

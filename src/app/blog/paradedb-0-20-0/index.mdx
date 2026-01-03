@@ -35,7 +35,7 @@ Our aggregations excel for large search result sets (millions of records), with 
 <Image
   src={graph1}
   alt="Faceting (search and aggregation) query time for 42 million results"
-  className="rounded-xl"
+
 />
 
 `pdb.agg()` can also be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
@@ -167,7 +167,7 @@ Since we first introduced these features in `0.19.0` we've increased single row 
 <Image
   src={graph2}
   alt="Updates Per Second on a Wide Table with a BM25 index"
-  className="rounded-xl"
+
 />
 
 Again, you can expect a follow up post with all the gory data-structure details.

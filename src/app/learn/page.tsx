@@ -45,7 +45,7 @@ export default async function Resources() {
                       year: "numeric",
                     })}
                   </time>
-                  <span className="text-xs text-indigo-500 rounded-lg bg-indigo-50 dark:bg-indigo-900/50 py-1 px-2 capitalize">
+                  <span className="text-xs text-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 py-1 px-2 capitalize">
                     {resource.section}
                   </span>
                 </div>

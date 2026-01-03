@@ -87,18 +87,20 @@ export default function TableOfContents() {
 
   return (
     <div className="fixed right-8 top-1/2 transform -translate-y-1/2 hidden min-[1650px]:block z-50">
-      <div className="bg-white border border-gray-200 rounded-lg shadow-lg p-4 max-w-64">
-        <h3 className="text-sm font-semibold text-gray-900 mb-3">Contents</h3>
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg shadow-lg p-4 max-w-64">
+        <h3 className="text-[10px] font-bold text-slate-400 dark:text-slate-500 mb-3 uppercase tracking-widest">
+          Contents
+        </h3>
         <nav>
           <ul className="space-y-2">
             {headings.map((heading) => (
               <li key={heading.id}>
                 <a
                   href={`#${heading.id}`}
-                  className={`block text-sm transition-colors duration-200 hover:text-indigo-600 ${
+                  className={`block text-xs transition-colors duration-200 hover:text-indigo-600 dark:hover:text-indigo-400 ${
                     activeId === heading.id
-                      ? "text-indigo-600 font-medium"
-                      : "text-gray-600"
+                      ? "text-indigo-600 dark:text-indigo-400 font-semibold"
+                      : "text-slate-600 dark:text-slate-400"
                   }`}
                 >
                   {heading.text}

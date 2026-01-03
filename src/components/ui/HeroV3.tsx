@@ -32,7 +32,7 @@ export default function HeroV3() {
           <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 bg-[#f1f5f9] dark:bg-slate-950 -z-20" />
 
           {/* Grid Background */}
-          <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 -z-10">
+          <div className="absolute inset-y-0 left-2 md:left-12 right-2 md:right-12 -z-10 md:bottom-24">
             <GridBackground />
           </div>
 
@@ -40,7 +40,7 @@ export default function HeroV3() {
           <div className="flex flex-col items-center w-full relative z-20">
             <Link
               href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
-                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border-0 bg-white dark:bg-slate-800 px-1 text-xs font-medium text-indigo-900 dark:text-indigo-300 shadow-none transition-colors hover:bg-slate-50 dark:hover:bg-slate-700"
+                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border-0 bg-white dark:bg-slate-950 px-1 text-xs font-medium text-indigo-900 dark:text-indigo-300 shadow-none transition-colors hover:bg-slate-50 dark:hover:bg-slate-900"
             >
               <span className="mr-2 flex h-2 w-2">
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-indigo-500"></span>

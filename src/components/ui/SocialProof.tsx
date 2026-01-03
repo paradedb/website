@@ -29,7 +29,7 @@ const CaseStudyCard = ({
     {/* Content Wrapper - Blurs on hover */}
     <div className="w-full flex flex-col items-start transition-all duration-300 group-hover:blur-sm group-hover:opacity-40">
       <div className="mb-8 h-8 sm:h-10 flex items-center">{logo}</div>
-      <blockquote className="text-sm sm:text-md text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
+      <blockquote className="text-sm md:text-lg text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
         {quote}
       </blockquote>
       <div className="mt-auto flex items-center gap-3">
@@ -100,25 +100,25 @@ export default function SocialProof() {
                   <CaseStudyCard
                     href="#"
                     logo={<Logos.BiltRewards className="h-4 w-auto dark:brightness-0 dark:invert opacity-80" />}
-                    quote="“ParadeDB allowed us to consolidate our stack. We replaced Elasticsearch with Postgres and saw 10x query performance improvement while reducing costs by 60%.”"
-                    initials="AC"
-                    author="Alex Cohen"
-                    role="VP of Engineering, Bilt"
+                    quote="“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”"
+                    initials="JK"
+                    author="John King"
+                    role="Backend Engineer, Bilt"
                     companyName="Bilt"
                   />
-          </div>
+                </div>
 
                 <div>
                   <CaseStudyCard
                     href="#"
                     logo={<Logos.Alibaba className="h-8 w-auto dark:brightness-0 dark:invert opacity-80" />}
-                    quote="“We needed a search engine that could handle petabytes of data with sub-second latency. ParadeDB delivered exactly that, directly within our existing Postgres infrastructure.”"
-                    initials="JL"
-                    author="Jun Liu"
-                    role="Principal Architect, Alibaba"
+                    quote="“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”"
+                    initials="PB"
+                    author="Pang Bo"
+                    role="Product Manager, Alibaba"
                     companyName="Alibaba"
                   />
-              </div>
+                </div>
               </div>
             </div>
           </div>

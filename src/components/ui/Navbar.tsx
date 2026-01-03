@@ -110,21 +110,21 @@ export function Navigation() {
               </div>
             </nav>
             <div className="flex justify-between md:mr-1">
-              <div className="flex items-center justify-center space-x-4">
+              <div className="flex items-center justify-center gap-6">
                 <ThemeToggle />
                 <Link
                   href={github.REPO}
                   target="_blank"
                   className={classNames(
-                    "flex items-center justify-center space-x-2",
+                    "flex items-center justify-center space-x-2 transition-opacity duration-300",
                     stars ? "opacity-100" : "opacity-0",
                   )}
                 >
                   <RiGithubFill
                     aria-hidden="true"
-                    className="size-6 shrink-0 text-indigo-900 dark:text-indigo-300"
+                    className="size-6 shrink-0 text-slate-900 dark:text-slate-100"
                   />
-                  <div className="text-sm font-medium text-indigo-900 dark:text-indigo-300">
+                  <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
                     {formatStarCount(stars ?? 0)}
                   </div>
                 </Link>

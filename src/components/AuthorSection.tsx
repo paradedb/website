@@ -78,12 +78,12 @@ export function AuthorSection({
             <Image
               src={author.headshot}
               alt={`${author.name} headshot`}
-              className="h-7 w-7 rounded-full flex-shrink-0 border-2 border-white dark:border-slate-900"
+              className="h-7 w-7 rounded-full flex-shrink-0 border-2 border-white dark:border-slate-950"
             />
           </div>
         ))}
         {(authorsWithHeadshots.length > 3 || authorsWithoutHeadshots > 0) && (
-          <div className="h-7 w-7 rounded-full bg-purple-600 border-2 border-white dark:border-slate-900 flex items-center justify-center text-xs text-white font-semibold">
+          <div className="h-7 w-7 rounded-full bg-purple-600 border-2 border-white dark:border-slate-950 flex items-center justify-center text-xs text-white font-semibold">
             +
             {(authorsWithHeadshots.length > 3
               ? authorsWithHeadshots.length - 3
