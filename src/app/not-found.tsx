@@ -1,7 +1,7 @@
 import { Button } from "@/components/Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import Link from "next/link";
-import { DatabaseLogo } from "../../public/DatabaseLogo";
+import { DatabaseLogo } from "@/components/ui/DatabaseLogo";
 import { siteConfig } from "./siteConfig";
 
 export default function NotFound() {

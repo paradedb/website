@@ -24,7 +24,7 @@ export default function CommunityProof() {
                   <Badge className="mb-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">
                     Open Source
                   </Badge>
-                  <h2 className="text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white mb-4">
+                  <h2 className="text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white mb-4">
                     <span className="text-highlight-blink">Loved</span> by developers
                   </h2>
                   <p className="text-md text-gray-800 dark:text-slate-300 leading-relaxed">

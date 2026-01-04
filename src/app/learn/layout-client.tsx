@@ -6,6 +6,36 @@ import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { siteConfig } from "../siteConfig";
 import CodeBlockEnhancer from "@/components/CodeBlockEnhancer";
+import { Button } from "@/components/Button";
+import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
+import Link from "next/link";
+
+const BackButton = ({ href }: { href: string }) => (
+  <Link href={href}>
+    <Button
+      className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
+      variant="light"
+    >
+      <ArrowAnimated
+        className="relative right-3 rotate-180 transform stroke-gray-600 dark:stroke-slate-400"
+        aria-hidden="true"
+      />
+      <div>Previous</div>
+    </Button>
+  </Link>
+);
+
+const NextButton = ({ href }: { href: string }) => (
+  <Link href={href}>
+    <Button
+      className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
+      variant="light"
+    >
+      Next
+      <ArrowAnimated className="stroke-gray-600 dark:stroke-slate-400" aria-hidden="true" />
+    </Button>
+  </Link>
+);
 
 export default function ResourcesLayoutClient({
   children,
@@ -30,15 +60,23 @@ export default function ResourcesLayoutClient({
     setCollapsedSections(newCollapsed);
   };
 
-  // Find current resource info for breadcrumbs
-  const currentResource = resourceSections
-    .flatMap((section) =>
-      section.resources.map((resource) => ({
-        ...resource,
-        sectionName: section.name,
-      })),
-    )
-    .find((resource) => pathname.endsWith(resource.href));
+  // Flatten all resources from all sections to calculate next/prev
+  const allResources = resourceSections.flatMap((section) => section.resources);
+  const currentResourceIdx = allResources.findIndex((item) =>
+    pathname.endsWith(item.href),
+  );
+
+  const canGoBackward = !isLearnIndex && currentResourceIdx > 0;
+  const canGoForward = !isLearnIndex && currentResourceIdx < allResources.length - 1;
+  const nextHref = canGoForward
+    ? `${siteConfig.baseLinks.resources}/${allResources[currentResourceIdx + 1].href}`
+    : "";
+  const previousHref = canGoBackward
+    ? `${siteConfig.baseLinks.resources}/${allResources[currentResourceIdx - 1].href}`
+    : "";
+
+  // Find current resource info for breadcrumbs (using flattened list for consistency)
+  const currentResource = allResources[currentResourceIdx];
 
   return (
     <div className="w-full">
@@ -147,7 +185,22 @@ export default function ResourcesLayoutClient({
                   </a>
                 </nav>
               )}
+
+              {!isLearnIndex && (
+                <div className="mb-6 flex justify-between border-b border-slate-100 dark:border-slate-900 pb-4">
+                  <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+                  <div>{canGoForward && <NextButton href={nextHref} />}</div>
+                </div>
+              )}
+
               <div className="w-full">{children}</div>
+
+              {!isLearnIndex && (
+                <div className="mt-20 pt-8 flex justify-between border-t border-slate-100 dark:border-slate-900">
+                  <div>{canGoBackward && <BackButton href={previousHref} />}</div>
+                  <div>{canGoForward && <NextButton href={nextHref} />}</div>
+                </div>
+              )}
             </div>
           </main>
         </div>

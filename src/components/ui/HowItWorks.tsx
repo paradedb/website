@@ -294,15 +294,15 @@ function SelfHostedDemo() {
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-transparent flex flex-col">
-      <div className="flex-1 flex flex-col justify-center items-center py-12 px-0 sm:px-4 relative z-10">
-        <div className="flex flex-col items-stretch w-full sm:max-w-xl mx-auto gap-6">
+      <div className="flex-1 flex flex-col justify-center items-center px-0 sm:px-4 relative z-10">
+        <div className="flex flex-col items-stretch w-full sm:max-w-[420px] mx-auto gap-6">
           {/* Animated Search Bar - Moved Above */}
           <div className="w-full animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
             <div className="relative group shadow-lg rounded-lg">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none z-10">
                 <RiSearchLine className="h-4 w-4 text-indigo-400" />
               </div>
-              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-indigo-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm ring-3 ring-slate-50 dark:ring-slate-950 transition-all group-hover:border-indigo-300 dark:group-hover:border-indigo-500">
+              <div className="flex items-center w-full pl-10 pr-3 py-2.5 border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md shadow-sm ring-3 ring-slate-50 dark:ring-slate-950 transition-all group-hover:border-slate-300 dark:group-hover:border-indigo-500">
                 <span className="text-sm text-slate-700 dark:text-slate-200 min-h-[20px]">
                   {query}
                 </span>
@@ -447,8 +447,8 @@ function AnimationDemo() {
           100% { mask-position: 0 300%; -webkit-mask-position: 0 300%; }
         }
       `}</style>
-      <div className="flex-1 flex flex-col justify-center items-center py-12 px-0 sm:px-4 relative z-10">
-        <div className="flex flex-col items-stretch w-full sm:max-w-xl mx-auto">
+      <div className="flex-1 flex flex-col justify-center items-center px-0 sm:px-4 relative z-10">
+        <div className="flex flex-col items-stretch w-full sm:max-w-[420px] mx-auto">
         {/* Primary Table */}
         <Table
           title="Primary (Postgres)"

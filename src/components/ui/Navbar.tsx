@@ -7,7 +7,7 @@ import classNames from "classnames";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { DatabaseLogo } from "../../../public/DatabaseLogo";
+import { DatabaseLogo } from "./DatabaseLogo";
 import { Button } from "../Button";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -109,36 +109,36 @@ export function Navigation() {
                 </Link>
               </div>
             </nav>
-            <div className="flex justify-between md:mr-1">
-              <div className="flex items-center justify-center gap-6">
+            <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
+              <div className="hidden md:flex">
                 <ThemeToggle />
-                <Link
-                  href={github.REPO}
-                  target="_blank"
-                  className={classNames(
-                    "flex items-center justify-center space-x-2 transition-opacity duration-300",
-                    stars ? "opacity-100" : "opacity-0",
-                  )}
-                >
-                  <RiGithubFill
-                    aria-hidden="true"
-                    className="size-6 shrink-0 text-slate-900 dark:text-slate-100"
-                  />
-                  <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
-                    {formatStarCount(stars ?? 0)}
-                  </div>
-                </Link>
-                <Button className="hidden border-indigo-200 dark:border-indigo-600 px-4 md:flex rounded-none ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600">
-                  <Link target="_blank" href={social.CALENDLY}>
-                    Book a Demo
-                  </Link>
-                </Button>
               </div>
+              <Link
+                href={github.REPO}
+                target="_blank"
+                className={classNames(
+                  "flex items-center justify-center space-x-2 transition-opacity duration-300",
+                  stars ? "opacity-100" : "opacity-0",
+                )}
+              >
+                <RiGithubFill
+                  aria-hidden="true"
+                  className="size-6 shrink-0 text-slate-900 dark:text-slate-100"
+                />
+                <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  {formatStarCount(stars ?? 0)}
+                </div>
+              </Link>
+              <Button className="hidden border-indigo-200 dark:border-indigo-600 px-4 md:flex rounded-none ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600">
+                <Link target="_blank" href={social.CALENDLY}>
+                  Book a Demo
+                </Link>
+              </Button>
               <div className="md:hidden">
                 <Button
                   onClick={() => setOpen(!open)}
                   variant="light"
-                  className="aspect-square bg-opacity-0 p-2 text-indigo-900 dark:text-indigo-300"
+                  className="aspect-square bg-opacity-0 p-2 text-slate-900 dark:text-slate-100"
                 >
                   {open ? (
                     <RiCloseLine aria-hidden="true" className="size-5" />
@@ -157,18 +157,18 @@ export function Navigation() {
           >
             <ul className="space-y-4 font-medium">
               <li onClick={() => setOpen(false)}>
-                <Link target="_blank" href={documentation.BASE} className="text-indigo-900 dark:text-indigo-300">
+                <Link target="_blank" href={documentation.BASE} className="text-slate-900 dark:text-slate-100">
                   Documentation
                 </Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.blog} className="text-indigo-900 dark:text-indigo-300">Blog</Link>
+                <Link href={siteConfig.baseLinks.blog} className="text-slate-900 dark:text-slate-100">Blog</Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.resources} className="text-indigo-900 dark:text-indigo-300">Learn</Link>
+                <Link href={siteConfig.baseLinks.resources} className="text-slate-900 dark:text-slate-100">Learn</Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link target="_blank" href={documentation.CHANGELOG} className="text-indigo-900 dark:text-indigo-300">
+                <Link target="_blank" href={documentation.CHANGELOG} className="text-slate-900 dark:text-slate-100">
                   Changelog
                 </Link>
               </li>

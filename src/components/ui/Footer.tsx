@@ -9,7 +9,7 @@ import {
 } from "@/lib/links";
 import { RiArrowRightUpLine, RiMailLine } from "@remixicon/react";
 import Link from "next/link";
-import { DatabaseLogo } from "../../../public/DatabaseLogo";
+import { DatabaseLogo } from "./DatabaseLogo";
 import { Button } from "../Button";
 import { ThemeToggle } from "./ThemeToggle";
 
@@ -181,13 +181,11 @@ export default function Footer() {
 
         <div className="border-t border-slate-200 dark:border-slate-900 mt-16 md:mt-24">
           <div className="max-w-[1128px] mx-auto px-6 md:px-12 pt-8 sm:pt-4 pb-0 flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div className="flex items-center gap-4">
-              <ThemeToggle />
-              <p className="text-sm leading-5 text-gray-500 dark:text-slate-400">
-                &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
-                reserved.
-              </p>
-            </div>
+            <p className="text-sm leading-5 text-gray-500 dark:text-slate-400">
+              &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
+              reserved.
+            </p>
+            <ThemeToggle />
           </div>
         </div>
       </div>
