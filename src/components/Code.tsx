@@ -13,7 +13,6 @@ type Props = {
 export default async function Code({
   code,
   lang = "typescript",
-  theme = "github-light",
   className,
 }: Props) {
   const htmlLight = await codeToHtml(code, {
