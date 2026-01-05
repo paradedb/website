@@ -5,7 +5,10 @@ import classNames from "classnames";
 
 function GridSquare() {
   const [pos, setPos] = useState<{ col: number; row: number } | null>(null);
-  const [timing, setTiming] = useState<{ duration: number; delay: number } | null>(null);
+  const [timing, setTiming] = useState<{
+    duration: number;
+    delay: number;
+  } | null>(null);
 
   useEffect(() => {
     setPos({
@@ -43,7 +46,12 @@ function GridSquare() {
 
 export function GridBackground({ className }: { className?: string }) {
   return (
-    <div className={classNames("absolute inset-0 -z-10 h-full w-full bg-grid-pattern bg-[size:24px_24px] bg-[position:center_top] [mask-image:radial-gradient(ellipse_40%_25%_at_50%_25%,#000_0%,transparent_100%)]", className)}>
+    <div
+      className={classNames(
+        "absolute inset-0 -z-10 h-full w-full bg-grid-pattern bg-[size:24px_24px] bg-[position:center_top] [mask-image:radial-gradient(ellipse_40%_25%_at_50%_25%,#000_0%,transparent_100%)]",
+        className,
+      )}
+    >
       {/* Filled squares */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         {[...Array(60)].map((_, i) => (

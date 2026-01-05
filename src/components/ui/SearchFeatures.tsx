@@ -19,7 +19,7 @@ USING bm25 (
     id,
     (name::pdb.ngram(3,3)),
     (description::pdb.unicode_words('stemmer=english'))
-);`
+);`;
 
 const textSearchCode = `SELECT * FROM animals
 WHERE name &&& 'asian elephant'
@@ -30,7 +30,7 @@ const booleanCode = `SELECT * FROM animals
 WHERE name &&& 'asian elephant'
 AND metadata->>'region' === 'Asia'
 AND weight >= 4000
-LIMIT 5;`
+LIMIT 5;`;
 
 const topNCode = `SELECT * FROM animals
 WHERE name &&& 'asian elephant'
@@ -41,7 +41,7 @@ const facetedCode = `SELECT metadata->>'region', count(*)
 FROM animals
 WHERE name &&& 'asian elephant'
 GROUP BY metadata->>'region'
-ORDER BY 1;`
+ORDER BY 1;`;
 
 const hybridSearchCode = `SELECT id, pdb.score(id)
 FROM animals
@@ -62,16 +62,25 @@ export default async function SearchFeatures() {
       bullets: [
         {
           title: "Advanced tokenization",
-          description: "12+ different tokenizers to break apart text into searchable tokens.",
+          description:
+            "12+ different tokenizers to break apart text into searchable tokens.",
           icon: <RiScissorsCutLine className="size-5" />,
         },
         {
           title: "Multi-language support",
-          description: "Support for 20+ languages, including dictionary-based tokenizers.",
+          description:
+            "Support for 20+ languages, including dictionary-based tokenizers.",
           icon: <RiTranslate2 className="size-5" />,
-        }
+        },
       ],
-      code: <Code code={textProcessingCode} lang="sql" className="[&_pre]:!bg-transparent" copy={false} />,
+      code: (
+        <Code
+          code={textProcessingCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
     },
     {
       value: "text",
@@ -79,28 +88,45 @@ export default async function SearchFeatures() {
       bullets: [
         {
           title: "Full text search",
-          description: "Support for standard match, phrase, term, and fuzzy queries.",
+          description:
+            "Support for standard match, phrase, term, and fuzzy queries.",
           icon: <RiSearchEyeLine className="size-5" />,
         },
         {
           title: "Advanced search queries",
-          description: "And many more advanced queries like proximity, more-like-this, regex, etc.",
+          description:
+            "And many more advanced queries like proximity, more-like-this, regex, etc.",
           icon: <RiGlobalLine className="size-5" />,
         },
       ],
-      code: <Code code={textSearchCode} lang="sql" className="[&_pre]:!bg-transparent" copy={false} />,
+      code: (
+        <Code
+          code={textSearchCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
     },
     {
-        value: "hybrid",
-        label: "Hybrid Search",
-        bullets: [
-            {
-                title: "Fully compatible with pgvector",
-                description: "ParadeDB can be combined with pgvector to deliver a hybrid search solution.",
-                icon: <RiCheckDoubleLine className="size-5" />,
-            }
-        ],
-        code: <Code code={hybridSearchCode} lang="sql" className="[&_pre]:!bg-transparent" copy={false} />,
+      value: "hybrid",
+      label: "Hybrid Search",
+      bullets: [
+        {
+          title: "Fully compatible with pgvector",
+          description:
+            "ParadeDB can be combined with pgvector to deliver a hybrid search solution.",
+          icon: <RiCheckDoubleLine className="size-5" />,
+        },
+      ],
+      code: (
+        <Code
+          code={hybridSearchCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
     },
     {
       value: "boolean",
@@ -108,16 +134,25 @@ export default async function SearchFeatures() {
       bullets: [
         {
           title: "Boolean conditions",
-          description: "Multiple boolean conditions are efficiently handled as a single index scan.",
+          description:
+            "Multiple boolean conditions are efficiently handled as a single index scan.",
           icon: <RiBracesLine className="size-5" />,
         },
         {
-            title: "Metadata filtering",
-            description: "Most Postgres types (numeric, datetime, JSON, etc.) can be used to pre-filter search results.",
-            icon: <RiSpeedLine className="size-5" />
-        }
+          title: "Metadata filtering",
+          description:
+            "Most Postgres types (numeric, datetime, JSON, etc.) can be used to pre-filter search results.",
+          icon: <RiSpeedLine className="size-5" />,
+        },
       ],
-      code: <Code code={booleanCode} lang="sql" className="[&_pre]:!bg-transparent" copy={false} />,
+      code: (
+        <Code
+          code={booleanCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
     },
     {
       value: "top-n",
@@ -125,16 +160,25 @@ export default async function SearchFeatures() {
       bullets: [
         {
           title: "Efficient Top N",
-          description: "Optimized execution paths for quickly retrieving the Top N most relevant results.",
+          description:
+            "Optimized execution paths for quickly retrieving the Top N most relevant results.",
           icon: <RiSortAsc className="size-5" />,
         },
         {
           title: "BM25 Ranking",
-          description: "Tunable relevance scores with BM25, the state-of-the-art algorithm for relevance ranking.",
+          description:
+            "Tunable relevance scores with BM25, the state-of-the-art algorithm for relevance ranking.",
           icon: <RiEqualizerLine className="size-5" />,
-        }
+        },
       ],
-      code: <Code code={topNCode} lang="sql" className="[&_pre]:!bg-transparent" copy={false} />,
+      code: (
+        <Code
+          code={topNCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
     },
     {
       value: "faceted",
@@ -142,16 +186,25 @@ export default async function SearchFeatures() {
       bullets: [
         {
           title: "Bucket and metric aggregates",
-          description: "Quickly executes common aggregates (count, bucket, average, etc.) with a columnar index.",
+          description:
+            "Quickly executes common aggregates (count, bucket, average, etc.) with a columnar index.",
           icon: <RiPieChartLine className="size-5" />,
         },
         {
           title: "Search faceting",
-          description: "Return aggregates alongside your search results in a single query.",
+          description:
+            "Return aggregates alongside your search results in a single query.",
           icon: <RiListCheck2 className="size-5" />,
-        }
+        },
       ],
-      code: <Code code={facetedCode} lang="sql" className="[&_pre]:!bg-transparent" copy={false} />,
+      code: (
+        <Code
+          code={facetedCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
     },
   ];
 

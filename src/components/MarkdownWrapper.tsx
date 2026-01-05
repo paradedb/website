@@ -21,7 +21,9 @@ export default function MarkdownWrapper({ children }: MarkdownWrapperProps) {
 
   return (
     <div className="flex items-start gap-12 w-full lg:px-8 xl:px-12 pt-0">
-      <article className="prose dark:prose-invert w-full max-w-5xl pt-0">{children}</article>
+      <article className="prose dark:prose-invert w-full max-w-5xl pt-0">
+        {children}
+      </article>
       {contentLoaded && (
         <aside className="hidden 2xl:block w-64 shrink-0 sticky top-8">
           <TableOfContents />
@@ -30,4 +32,3 @@ export default function MarkdownWrapper({ children }: MarkdownWrapperProps) {
     </div>
   );
 }
-

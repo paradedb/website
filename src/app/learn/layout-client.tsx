@@ -32,7 +32,10 @@ const NextButton = ({ href }: { href: string }) => (
       variant="light"
     >
       Next
-      <ArrowAnimated className="stroke-gray-600 dark:stroke-slate-400" aria-hidden="true" />
+      <ArrowAnimated
+        className="stroke-gray-600 dark:stroke-slate-400"
+        aria-hidden="true"
+      />
     </Button>
   </Link>
 );
@@ -67,7 +70,8 @@ export default function ResourcesLayoutClient({
   );
 
   const canGoBackward = !isLearnIndex && currentResourceIdx > 0;
-  const canGoForward = !isLearnIndex && currentResourceIdx < allResources.length - 1;
+  const canGoForward =
+    !isLearnIndex && currentResourceIdx < allResources.length - 1;
   const nextHref = canGoForward
     ? `${siteConfig.baseLinks.resources}/${allResources[currentResourceIdx + 1].href}`
     : "";
@@ -184,8 +188,18 @@ export default function ResourcesLayoutClient({
             </div>
           )}
 
-          <main className={classNames("w-full relative flex flex-col", isLearnIndex ? "px-0" : "px-4 md:px-12 pt-8 pb-4")}>
-            <div className={classNames("mx-auto w-full", isLearnIndex ? "" : "max-w-none")}>
+          <main
+            className={classNames(
+              "w-full relative flex flex-col",
+              isLearnIndex ? "px-0" : "px-4 md:px-12 pt-8 pb-4",
+            )}
+          >
+            <div
+              className={classNames(
+                "mx-auto w-full",
+                isLearnIndex ? "" : "max-w-none",
+              )}
+            >
               {/* Mobile back navigation */}
               {!isLearnIndex && currentResource && (
                 <nav className="lg:hidden mb-8">

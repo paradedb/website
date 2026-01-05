@@ -17,18 +17,46 @@ const ParadeDBIcon = (props: React.SVGProps<SVGSVGElement>) => (
     {...props}
     className={classNames(props.className, "scale-75")}
   >
-    <path fillRule="evenodd" clipRule="evenodd" d="M158.322 75H130.387V180.211H158.322V75Z" fill="#4F46E5"/>
-    <path fillRule="evenodd" clipRule="evenodd" d="M126.13 75H98.1938V180.211H126.13V75Z" fill="#4F46E5"/>
-    <path fillRule="evenodd" clipRule="evenodd" d="M93.9357 75H66V180.211H93.9357V75Z" fill="#4F46E5"/>
-    <path fillRule="evenodd" clipRule="evenodd" d="M162.581 75.0088V143.124C162.581 152.987 166.496 162.358 173.465 169.329C180.434 176.298 189.807 180.213 199.67 180.213H216V152.277H199.67C197.238 152.277 194.932 151.293 193.217 149.577C191.502 147.862 190.517 145.556 190.517 143.124V103.603C190.517 88.0964 178.006 75.3661 162.581 75.0105V75.0088Z" fill="#4F46E5"/>
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M158.322 75H130.387V180.211H158.322V75Z"
+      fill="#4F46E5"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M126.13 75H98.1938V180.211H126.13V75Z"
+      fill="#4F46E5"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M93.9357 75H66V180.211H93.9357V75Z"
+      fill="#4F46E5"
+    />
+    <path
+      fillRule="evenodd"
+      clipRule="evenodd"
+      d="M162.581 75.0088V143.124C162.581 152.987 166.496 162.358 173.465 169.329C180.434 176.298 189.807 180.213 199.67 180.213H216V152.277H199.67C197.238 152.277 194.932 151.293 193.217 149.577C191.502 147.862 190.517 145.556 190.517 143.124V103.603C190.517 88.0964 178.006 75.3661 162.581 75.0105V75.0088Z"
+      fill="#4F46E5"
+    />
   </svg>
 );
 
-const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: boolean }) => {
-  const [display, setDisplay] = useState<{ curr: string; prev: string | null }>({
-    curr: text,
-    prev: null,
-  });
+const AnimatedCell = ({
+  text,
+  isHighlighted,
+}: {
+  text: string;
+  isHighlighted: boolean;
+}) => {
+  const [display, setDisplay] = useState<{ curr: string; prev: string | null }>(
+    {
+      curr: text,
+      prev: null,
+    },
+  );
 
   if (text !== display.curr) {
     setDisplay({ curr: text, prev: display.curr });
@@ -60,7 +88,7 @@ const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: bo
         <div
           className={classNames(
             "absolute inset-0 flex items-center",
-            "text-emerald-600 font-medium"
+            "text-emerald-600 font-medium",
           )}
           style={{ animation: "slideOutTop 500ms ease-in-out forwards" }}
         >
@@ -71,7 +99,9 @@ const AnimatedCell = ({ text, isHighlighted }: { text: string; isHighlighted: bo
       <div
         className={classNames(
           "absolute inset-0 flex items-center",
-          isHighlighted ? "text-emerald-600 font-medium" : "text-slate-700 dark:text-slate-200"
+          isHighlighted
+            ? "text-emerald-600 font-medium"
+            : "text-slate-700 dark:text-slate-200",
         )}
         style={{
           animation: display.prev
@@ -118,7 +148,9 @@ const Table = ({
         <div className="w-full">{customHeader}</div>
       ) : (
         <div className="flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-auto text-indigo-400 dark:text-indigo-500" />}
+          {Icon && (
+            <Icon className="h-4 w-auto text-indigo-400 dark:text-indigo-500" />
+          )}
           {/* @ts-ignore */}
           <span className="text-xs uppercase tracking-wide">{title}</span>
         </div>
@@ -130,48 +162,56 @@ const Table = ({
         <div>name</div>
         <div>weight</div>
       </div>
-      {isLoading ? (
-        // Loading State - Just white background (preserving height)
-        [1, 2, 3].map((i) => (
-          <div
-            key={i}
-            className="grid grid-cols-[30px_1fr_60px] px-3 py-2 items-center opacity-0"
-          >
-             {/* Invisible content to hold height */}
-            <div className="h-4 w-4" />
-            <div className="h-4 w-24" />
-            <div className="h-4 w-8" />
-          </div>
-        ))
-      ) : (
-        // Actual Rows
-        rows.map((row, i) => (
-          <div
-            key={row.id}
-            className={classNames(
-              "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
-              highlightIdx === i ? "bg-indigo-50 dark:bg-indigo-900/20" : "bg-transparent"
-            )}
-            style={{
-              animationName: isExiting ? "slideOutRow" : "slideInRow",
-              animationDuration: "0.5s",
-              animationTimingFunction: isExiting
-                ? "cubic-bezier(0.55, 0.085, 0.68, 0.53)"
-                : "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
-              animationFillMode: "forwards",
-              animationDelay: `${i * 100}ms`
-            }}
-          >
-            <div className="font-mono text-xs text-indigo-600 dark:text-indigo-400">{row.id}</div>
-            <div className="relative h-4 overflow-hidden w-full">
-              <AnimatedCell text={row.name} isHighlighted={highlightIdx === i} />
+      {isLoading
+        ? // Loading State - Just white background (preserving height)
+          [1, 2, 3].map((i) => (
+            <div
+              key={i}
+              className="grid grid-cols-[30px_1fr_60px] px-3 py-2 items-center opacity-0"
+            >
+              {/* Invisible content to hold height */}
+              <div className="h-4 w-4" />
+              <div className="h-4 w-24" />
+              <div className="h-4 w-8" />
             </div>
-            <div className="relative h-4 overflow-hidden w-full">
-              <AnimatedCell text={row.weight} isHighlighted={highlightIdx === i} />
+          ))
+        : // Actual Rows
+          rows.map((row, i) => (
+            <div
+              key={row.id}
+              className={classNames(
+                "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
+                highlightIdx === i
+                  ? "bg-indigo-50 dark:bg-indigo-900/20"
+                  : "bg-transparent",
+              )}
+              style={{
+                animationName: isExiting ? "slideOutRow" : "slideInRow",
+                animationDuration: "0.5s",
+                animationTimingFunction: isExiting
+                  ? "cubic-bezier(0.55, 0.085, 0.68, 0.53)"
+                  : "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+                animationFillMode: "forwards",
+                animationDelay: `${i * 100}ms`,
+              }}
+            >
+              <div className="font-mono text-xs text-indigo-600 dark:text-indigo-400">
+                {row.id}
+              </div>
+              <div className="relative h-4 overflow-hidden w-full">
+                <AnimatedCell
+                  text={row.name}
+                  isHighlighted={highlightIdx === i}
+                />
+              </div>
+              <div className="relative h-4 overflow-hidden w-full">
+                <AnimatedCell
+                  text={row.weight}
+                  isHighlighted={highlightIdx === i}
+                />
+              </div>
             </div>
-          </div>
-        ))
-      )}
+          ))}
     </div>
   </div>
 );
@@ -181,7 +221,9 @@ const SelfHostedHeader = () => (
     <div className="flex items-center gap-2.5">
       <div className="flex items-center bg-white dark:bg-slate-800 p-1 rounded-md shadow-sm border border-slate-200/50 dark:border-slate-700/50">
         <PostgresLogo className="h-5 w-auto" />
-        <span className="text-indigo-400 dark:text-indigo-500 mx-1 font-light">+</span>
+        <span className="text-indigo-400 dark:text-indigo-500 mx-1 font-light">
+          +
+        </span>
         <ParadeDBIcon className="h-5 w-auto" />
       </div>
     </div>
@@ -224,7 +266,7 @@ function SelfHostedDemo() {
       return;
     }
     const filtered = ANIMAL_DATA.filter((item) =>
-      item.name.toLowerCase().includes(lowerQuery)
+      item.name.toLowerCase().includes(lowerQuery),
     );
     // Always show up to 3 rows
     setRows(filtered.slice(0, 3));
@@ -356,7 +398,9 @@ function AnimationDemo() {
   const [replicaRows, setReplicaRows] = useState(INITIAL_ROWS);
   const [highlightPrimary, setHighlightPrimary] = useState(-1);
   const [highlightReplica, setHighlightReplica] = useState(-1);
-  const [packetState, setPacketState] = useState<"idle" | "moving" | "received">("idle");
+  const [packetState, setPacketState] = useState<
+    "idle" | "moving" | "received"
+  >("idle");
 
   useEffect(() => {
     let mounted = true;
@@ -391,14 +435,14 @@ function AnimationDemo() {
         await new Promise((r) => setTimeout(r, 300));
 
         // Update Primary State
-        setPrimaryRows(prev => {
-            const newRows = [...prev];
-            newRows[rowToUpdateIdx] = {
-              ...newRows[rowToUpdateIdx],
-              name: newData.name,
-              weight: newData.weight
-            };
-            return newRows;
+        setPrimaryRows((prev) => {
+          const newRows = [...prev];
+          newRows[rowToUpdateIdx] = {
+            ...newRows[rowToUpdateIdx],
+            name: newData.name,
+            weight: newData.weight,
+          };
+          return newRows;
         });
 
         // 2. Start Packet Travel
@@ -416,14 +460,14 @@ function AnimationDemo() {
         await new Promise((r) => setTimeout(r, 300));
 
         // Apply update to Replica
-        setReplicaRows(prev => {
-            const newRows = [...prev];
-            newRows[rowToUpdateIdx] = {
-              ...newRows[rowToUpdateIdx],
-              name: newData.name,
-              weight: newData.weight
-            };
-            return newRows;
+        setReplicaRows((prev) => {
+          const newRows = [...prev];
+          newRows[rowToUpdateIdx] = {
+            ...newRows[rowToUpdateIdx],
+            name: newData.name,
+            weight: newData.weight,
+          };
+          return newRows;
         });
 
         // 4. Hold
@@ -450,56 +494,58 @@ function AnimationDemo() {
       `}</style>
       <div className="flex-1 flex flex-col justify-center items-center px-0 sm:px-4 relative z-10">
         <div className="flex flex-col items-stretch w-full sm:max-w-[420px] mx-auto">
-        {/* Primary Table */}
-        <Table
-          title="Primary (Postgres)"
-          rows={primaryRows}
-          highlightIdx={highlightPrimary}
-          icon={PostgresLogo}
-        />
-
-        {/* Connector */}
-        <div className="h-28 lg:flex-1 w-full relative flex justify-center items-center min-h-[7rem]">
-          {/* Base Dashed Line */}
-          <div className="absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-300/75" />
-
-          {/* Active Dashed Line (Lighting up) */}
-          <div
-            className={classNames(
-              "absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-500 drop-shadow-[0_0_3px_#818cf8] transition-opacity",
-              packetState === "moving" ? "opacity-100 duration-75" : "opacity-0 duration-200"
-            )}
-            style={{
-              maskImage:
-                "linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%)",
-              WebkitMaskImage:
-                "linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%)",
-              maskSize: "100% 40%",
-              WebkitMaskSize: "100% 40%",
-              maskRepeat: "no-repeat",
-              WebkitMaskRepeat: "no-repeat",
-              animation:
-                packetState === "moving" || packetState === "received"
-                  ? "scan 0.8s linear forwards"
-                  : "none",
-            }}
+          {/* Primary Table */}
+          <Table
+            title="Primary (Postgres)"
+            rows={primaryRows}
+            highlightIdx={highlightPrimary}
+            icon={PostgresLogo}
           />
 
-          {/* Label Pill */}
-          <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-50 dark:bg-slate-900 border border-transparent dark:border-slate-800 px-4 py-1.5 rounded-full shadow-xl z-30">
-            <span className="text-[10px] font-mono text-indigo-800 dark:text-indigo-300 font-semibold tracking-wide">
-              LOGICAL REPLICATION
-            </span>
-          </div>
-        </div>
+          {/* Connector */}
+          <div className="h-28 lg:flex-1 w-full relative flex justify-center items-center min-h-[7rem]">
+            {/* Base Dashed Line */}
+            <div className="absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-300/75" />
 
-        {/* Replica Table */}
-        <Table
-          title="Replica (ParadeDB)"
-          rows={replicaRows}
-          highlightIdx={highlightReplica}
-          icon={ParadeDBIcon}
-        />
+            {/* Active Dashed Line (Lighting up) */}
+            <div
+              className={classNames(
+                "absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-500 drop-shadow-[0_0_3px_#818cf8] transition-opacity",
+                packetState === "moving"
+                  ? "opacity-100 duration-75"
+                  : "opacity-0 duration-200",
+              )}
+              style={{
+                maskImage:
+                  "linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%)",
+                WebkitMaskImage:
+                  "linear-gradient(to bottom, transparent 0%, black 50%, transparent 100%)",
+                maskSize: "100% 40%",
+                WebkitMaskSize: "100% 40%",
+                maskRepeat: "no-repeat",
+                WebkitMaskRepeat: "no-repeat",
+                animation:
+                  packetState === "moving" || packetState === "received"
+                    ? "scan 0.8s linear forwards"
+                    : "none",
+              }}
+            />
+
+            {/* Label Pill */}
+            <div className="absolute top-1/2 -translate-y-1/2 bg-indigo-50 dark:bg-slate-900 border border-transparent dark:border-slate-800 px-4 py-1.5 rounded-full shadow-xl z-30">
+              <span className="text-[10px] font-mono text-indigo-800 dark:text-indigo-300 font-semibold tracking-wide">
+                LOGICAL REPLICATION
+              </span>
+            </div>
+          </div>
+
+          {/* Replica Table */}
+          <Table
+            title="Replica (ParadeDB)"
+            rows={replicaRows}
+            highlightIdx={highlightReplica}
+            icon={ParadeDBIcon}
+          />
         </div>
       </div>
     </div>
@@ -528,7 +574,9 @@ const AccordionItem = ({
         className={classNames(
           "text-lg font-semibold transition-colors duration-300 flex-1",
           "text-indigo-950 dark:text-white lg:text-slate-500 lg:dark:text-slate-400",
-          isActive ? "lg:text-indigo-950 lg:dark:text-white" : "lg:group-hover:text-slate-800 lg:dark:group-hover:text-slate-200"
+          isActive
+            ? "lg:text-indigo-950 lg:dark:text-white"
+            : "lg:group-hover:text-slate-800 lg:dark:group-hover:text-slate-200",
         )}
       >
         {title}
@@ -537,7 +585,9 @@ const AccordionItem = ({
         className={classNames(
           "font-mono text-md ml-6 transition-colors duration-300",
           "text-indigo-600 dark:text-indigo-400 lg:text-slate-400 lg:dark:text-slate-500",
-          isActive ? "lg:text-indigo-600 lg:dark:text-indigo-400" : "lg:group-hover:text-slate-600 lg:dark:group-hover:text-slate-300"
+          isActive
+            ? "lg:text-indigo-600 lg:dark:text-indigo-400"
+            : "lg:group-hover:text-slate-600 lg:dark:group-hover:text-slate-300",
         )}
       >
         {number}
@@ -549,28 +599,28 @@ const AccordionItem = ({
         "overflow-hidden transition-all duration-500 ease-in-out",
         "max-h-[2000px] opacity-100", // Always open on mobile
         "lg:max-h-0 lg:opacity-0", // Closed by default on desktop
-        isActive ? "lg:max-h-[1000px] lg:opacity-100 lg:mt-2" : ""
+        isActive ? "lg:max-h-[1000px] lg:opacity-100 lg:mt-2" : "",
       )}
     >
-      <div className="w-full">
-        {children}
-      </div>
+      <div className="w-full">{children}</div>
       <div className="pb-2" />
     </div>
   </div>
 );
 
 export default function HowItWorks() {
-  const [activeTab, setActiveTab] = useState<"managed" | "selfHosted">("managed");
+  const [activeTab, setActiveTab] = useState<"managed" | "selfHosted">(
+    "managed",
+  );
 
   return (
     <div className="px-4 md:px-12 relative w-full">
       <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
         <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-6 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
-            <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
-            <div className="pt-8 md:pt-0">
-              <Badge className="w-fit">Benefits</Badge>
-            </div>
+          <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
+          <div className="pt-8 md:pt-0">
+            <Badge className="w-fit">Benefits</Badge>
+          </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
             <span className="text-highlight-blink">Zero ETL</span> means <br />
             zero headache
@@ -582,8 +632,9 @@ export default function HowItWorks() {
               className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300"
               key={activeTab + "-text"}
             >
-              Because ParadeDB is just Postgres, it can run as a logical replica of any managed Postgres,
-              or be installed inside any self-hosted Postgres.
+              Because ParadeDB is just Postgres, it can run as a logical replica
+              of any managed Postgres, or be installed inside any self-hosted
+              Postgres.
             </p>
 
             <div
@@ -607,7 +658,8 @@ export default function HowItWorks() {
               number="01"
             >
               <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                ParadeDB can replicate from any managed Postgres — RDS, Supabase, Google Cloud/Azure Postgres, Neon, etc.
+                ParadeDB can replicate from any managed Postgres — RDS,
+                Supabase, Google Cloud/Azure Postgres, Neon, etc.
               </div>
 
               {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
@@ -626,7 +678,8 @@ export default function HowItWorks() {
               number="02"
             >
               <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                Installing ParadeDB in a self-hosted Postgres deployment incurs zero infra overhead or spend.
+                Installing ParadeDB in a self-hosted Postgres deployment incurs
+                zero infra overhead or spend.
               </div>
 
               {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
@@ -641,7 +694,7 @@ export default function HowItWorks() {
 
         {/* Right Side - Desktop Only */}
         <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100 dark:bg-slate-900/50">
-           <div className="sticky top-24 h-[640px] w-full overflow-hidden">
+          <div className="sticky top-24 h-[640px] w-full overflow-hidden">
             {activeTab === "managed" ? (
               <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
                 <AnimationDemo />

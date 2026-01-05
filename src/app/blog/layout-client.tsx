@@ -15,7 +15,7 @@ const BackButton = ({ href }: { href: string }) => (
       className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
       variant="light"
     >
-    <ArrowAnimated
+      <ArrowAnimated
         className="relative right-3 rotate-180 transform stroke-gray-600 dark:stroke-slate-400"
         aria-hidden="true"
       />
@@ -31,7 +31,10 @@ const NextButton = ({ href }: { href: string }) => (
       variant="light"
     >
       Next Post
-      <ArrowAnimated className="stroke-gray-600 dark:stroke-slate-400" aria-hidden="true" />
+      <ArrowAnimated
+        className="stroke-gray-600 dark:stroke-slate-400"
+        aria-hidden="true"
+      />
     </Button>
   </Link>
 );
@@ -128,8 +131,18 @@ export default function BlogLayoutClient({
           )}
 
           {/* Blog content */}
-          <main className={classNames("w-full relative flex flex-col", isBlogIndex ? "px-0" : "px-4 md:px-12 pt-8 pb-4")}>
-            <div className={classNames("w-full mx-auto", isBlogIndex ? "" : "max-w-none")}>
+          <main
+            className={classNames(
+              "w-full relative flex flex-col",
+              isBlogIndex ? "px-0" : "px-4 md:px-12 pt-8 pb-4",
+            )}
+          >
+            <div
+              className={classNames(
+                "w-full mx-auto",
+                isBlogIndex ? "" : "max-w-none",
+              )}
+            >
               <div className="w-full">{children}</div>
             </div>
           </main>

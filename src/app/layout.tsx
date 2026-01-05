@@ -71,7 +71,11 @@ export default function RootLayout({
       <body
         className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-background text-foreground selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-700 dark:selection:text-indigo-300`}
       >
-        <ThemeProvider defaultTheme="system" attribute="class" enableSystem={true}>
+        <ThemeProvider
+          defaultTheme="system"
+          attribute="class"
+          enableSystem={true}
+        >
           <Navigation />
           {children}
           <Footer />

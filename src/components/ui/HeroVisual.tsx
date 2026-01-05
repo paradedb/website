@@ -23,7 +23,8 @@ export function HeroVisual({
     setMounted(true);
   }, []);
 
-  const meshSrc = mounted && resolvedTheme === "dark" ? "/mesh_dark.svg" : "/mesh.svg";
+  const meshSrc =
+    mounted && resolvedTheme === "dark" ? "/mesh_dark.svg" : "/mesh.svg";
 
   return (
     <div className="relative w-full overflow-hidden">
@@ -54,4 +55,3 @@ export function HeroVisual({
     </div>
   );
 }
-

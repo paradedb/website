@@ -56,10 +56,10 @@ export function Navigation() {
     <div>
       <header
         className={classNames(
-                  "z-50 mx-2 md:mx-12 mt-4 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-4 sm:px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-0",
+          "z-50 mx-2 md:mx-12 mt-4 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-4 sm:px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-0",
           open === true ? "h-52" : "h-16",
           open === true
-                    ? "backdrop-blur-nav max-w-3xl border-gray-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 shadow-xl shadow-black/5"
+            ? "backdrop-blur-nav max-w-3xl border-gray-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 shadow-xl shadow-black/5"
             : "bg-white/0",
         )}
       >
@@ -67,16 +67,16 @@ export function Navigation() {
           <div className="relative flex items-center justify-between">
             <Link href={siteConfig.baseLinks.home} aria-label="Home">
               <span className="sr-only">Company logo</span>
-                      <DatabaseLogo className="w-28 sm:w-32 dark:brightness-0 dark:invert" />
+              <DatabaseLogo className="w-28 sm:w-32 dark:brightness-0 dark:invert" />
             </Link>
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
                   className={classNames(
-                            "px-2 py-1 hover:text-indigo-600 dark:hover:text-white",
+                    "px-2 py-1 hover:text-indigo-600 dark:hover:text-white",
                     pathname.startsWith(siteConfig.baseLinks.blog)
-                              ? "text-indigo-600 dark:text-white"
-                              : "text-indigo-900 dark:text-slate-300",
+                      ? "text-indigo-600 dark:text-white"
+                      : "text-indigo-900 dark:text-slate-300",
                   )}
                   href={siteConfig.baseLinks.blog}
                 >
@@ -84,17 +84,17 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                          className="px-2 py-1 text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white"
+                  className="px-2 py-1 text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white"
                   href={documentation.BASE}
                 >
                   Documentation
                 </Link>
                 <Link
                   className={classNames(
-                            "px-2 py-1 hover:text-indigo-600 dark:hover:text-white",
+                    "px-2 py-1 hover:text-indigo-600 dark:hover:text-white",
                     pathname.startsWith(siteConfig.baseLinks.resources)
-                              ? "text-indigo-600 dark:text-white"
-                              : "text-indigo-900 dark:text-slate-300",
+                      ? "text-indigo-600 dark:text-white"
+                      : "text-indigo-900 dark:text-slate-300",
                   )}
                   href={siteConfig.baseLinks.resources}
                 >
@@ -102,7 +102,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                          className="px-2 py-1 text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white"
+                  className="px-2 py-1 text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white"
                   href={social.SLACK}
                 >
                   Community
@@ -157,18 +157,36 @@ export function Navigation() {
           >
             <ul className="space-y-4 font-medium">
               <li onClick={() => setOpen(false)}>
-                <Link target="_blank" href={documentation.BASE} className="text-slate-900 dark:text-slate-100">
+                <Link
+                  target="_blank"
+                  href={documentation.BASE}
+                  className="text-slate-900 dark:text-slate-100"
+                >
                   Documentation
                 </Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.blog} className="text-slate-900 dark:text-slate-100">Blog</Link>
+                <Link
+                  href={siteConfig.baseLinks.blog}
+                  className="text-slate-900 dark:text-slate-100"
+                >
+                  Blog
+                </Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.resources} className="text-slate-900 dark:text-slate-100">Learn</Link>
+                <Link
+                  href={siteConfig.baseLinks.resources}
+                  className="text-slate-900 dark:text-slate-100"
+                >
+                  Learn
+                </Link>
               </li>
               <li onClick={() => setOpen(false)}>
-                <Link target="_blank" href={documentation.CHANGELOG} className="text-slate-900 dark:text-slate-100">
+                <Link
+                  target="_blank"
+                  href={documentation.CHANGELOG}
+                  className="text-slate-900 dark:text-slate-100"
+                >
                   Changelog
                 </Link>
               </li>

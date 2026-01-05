@@ -37,8 +37,12 @@ const CaseStudyCard = ({
           {initials}
         </div>
         <div className="text-left">
-          <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm">{author}</div>
-          <div className="text-slate-500 dark:text-slate-400 text-sm">{role}</div>
+          <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+            {author}
+          </div>
+          <div className="text-slate-500 dark:text-slate-400 text-sm">
+            {role}
+          </div>
         </div>
       </div>
     </div>
@@ -88,10 +92,11 @@ export default function SocialProof() {
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                 <span className="text-highlight-blink">Trusted</span> by
                 enterprises
-             </h2>
+              </h2>
               <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
-                The most innovative companies are simplifying their search stack with ParadeDB.
-             </p>
+                The most innovative companies are simplifying their search stack
+                with ParadeDB.
+              </p>
             </div>
 
             <div className="relative w-full z-20">
@@ -99,7 +104,9 @@ export default function SocialProof() {
                 <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
                   <CaseStudyCard
                     href="#"
-                    logo={<Logos.BiltRewards className="h-4 w-auto dark:brightness-0 dark:invert opacity-80" />}
+                    logo={
+                      <Logos.BiltRewards className="h-4 w-auto dark:brightness-0 dark:invert opacity-80" />
+                    }
                     quote="“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”"
                     initials="JK"
                     author="John King"
@@ -111,7 +118,9 @@ export default function SocialProof() {
                 <div>
                   <CaseStudyCard
                     href="#"
-                    logo={<Logos.Alibaba className="h-8 w-auto dark:brightness-0 dark:invert opacity-80" />}
+                    logo={
+                      <Logos.Alibaba className="h-8 w-auto dark:brightness-0 dark:invert opacity-80" />
+                    }
                     quote="“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”"
                     initials="PB"
                     author="Pang Bo"

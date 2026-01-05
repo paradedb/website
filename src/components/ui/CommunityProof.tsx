@@ -25,7 +25,8 @@ export default function CommunityProof() {
                     Open Source
                   </Badge>
                   <h2 className="text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white mb-4">
-                    <span className="text-highlight-blink">Loved</span> by developers
+                    <span className="text-highlight-blink">Loved</span> by
+                    developers
                   </h2>
                   <p className="text-md text-gray-800 dark:text-slate-300 leading-relaxed">
                     We are committed to building the best open source search
@@ -115,4 +116,3 @@ export default function CommunityProof() {
     </div>
   );
 }
-

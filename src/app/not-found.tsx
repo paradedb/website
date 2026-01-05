@@ -24,12 +24,16 @@ export default function NotFound() {
             Page not found
           </h1>
           <p className="mt-2 text-base text-slate-600 dark:text-slate-400 max-w-sm text-center">
-            Sorry, we couldn’t find the page you’re looking for. It might have been moved or deleted.
+            Sorry, we couldn’t find the page you’re looking for. It might have
+            been moved or deleted.
           </p>
           <Button asChild className="group mt-8" variant="light">
             <Link href={siteConfig.baseLinks.home}>
               Go to home page
-              <ArrowAnimated className="stroke-slate-900 dark:stroke-white" aria-hidden="true" />
+              <ArrowAnimated
+                className="stroke-slate-900 dark:stroke-white"
+                aria-hidden="true"
+              />
             </Link>
           </Button>
         </div>

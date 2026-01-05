@@ -41,7 +41,10 @@ const navigation = {
 
 export default function Footer() {
   return (
-    <footer id="footer" className="relative w-full overflow-hidden bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100">
+    <footer
+      id="footer"
+      className="relative w-full overflow-hidden bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100"
+    >
       <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
       <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
@@ -59,8 +62,15 @@ export default function Footer() {
                 Simple, Elastic-Quality Search for Postgres.
               </p>
               <div className="md:pt-4">
-                <Button asChild className="h-10 rounded-none bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white font-semibold shadow-none">
-                  <Link href={social.CALENDLY} target="_blank" rel="noopener noreferrer">
+                <Button
+                  asChild
+                  className="h-10 rounded-none bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white font-semibold shadow-none"
+                >
+                  <Link
+                    href={social.CALENDLY}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
                     <RiMailLine className="mr-2 size-4" />
                     Contact Us
                   </Link>
@@ -80,7 +90,9 @@ export default function Footer() {
                           className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
                           href={item.href}
                           target={item.external ? "_blank" : undefined}
-                          rel={item.external ? "noopener noreferrer" : undefined}
+                          rel={
+                            item.external ? "noopener noreferrer" : undefined
+                          }
                         >
                           <span>{item.name}</span>
                           {item.external && (
@@ -107,7 +119,9 @@ export default function Footer() {
                           className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
                           href={item.href}
                           target={item.external ? "_blank" : undefined}
-                          rel={item.external ? "noopener noreferrer" : undefined}
+                          rel={
+                            item.external ? "noopener noreferrer" : undefined
+                          }
                         >
                           <span>{item.name}</span>
                           {item.external && (
@@ -136,7 +150,9 @@ export default function Footer() {
                           className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
                           href={item.href}
                           target={item.external ? "_blank" : undefined}
-                          rel={item.external ? "noopener noreferrer" : undefined}
+                          rel={
+                            item.external ? "noopener noreferrer" : undefined
+                          }
                         >
                           <span>{item.name}</span>
                           {item.external && (
@@ -163,7 +179,9 @@ export default function Footer() {
                           className="flex rounded-md text-sm text-gray-500 dark:text-slate-400 transition hover:text-gray-900 dark:hover:text-slate-100"
                           href={item.href}
                           target={item.external ? "_blank" : undefined}
-                          rel={item.external ? "noopener noreferrer" : undefined}
+                          rel={
+                            item.external ? "noopener noreferrer" : undefined
+                          }
                         >
                           <span>{item.name}</span>
                           {item.external && (

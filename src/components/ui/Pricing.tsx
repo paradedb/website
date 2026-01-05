@@ -31,7 +31,9 @@ const PricingCard = ({
         </Badge>
       </div>
       <div className="flex items-baseline justify-start gap-1 mb-4">
-        <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">{planName}</span>
+        <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">
+          {planName}
+        </span>
       </div>
       <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
         {description}
@@ -40,7 +42,10 @@ const PricingCard = ({
 
     <ul className="space-y-4 mb-10 w-full text-left">
       {features.map((feature, i) => (
-        <li key={i} className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300">
+        <li
+          key={i}
+          className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
+        >
           <RiCheckLine className="size-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
           <span className="leading-tight">{feature}</span>
         </li>
@@ -52,7 +57,13 @@ const PricingCard = ({
       className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
       variant={buttonVariant as any}
     >
-      <Link href={buttonLink} target={buttonLink.startsWith('mailto:') ? undefined : "_blank"} rel={buttonLink.startsWith('mailto:') ? undefined : "noopener noreferrer"}>
+      <Link
+        href={buttonLink}
+        target={buttonLink.startsWith("mailto:") ? undefined : "_blank"}
+        rel={
+          buttonLink.startsWith("mailto:") ? undefined : "noopener noreferrer"
+        }
+      >
         {buttonText}
       </Link>
     </Button>
@@ -81,7 +92,9 @@ export default function Pricing() {
           <div className="relative flex flex-col items-center justify-center py-16 sm:py-24 text-center bg-transparent">
             {/* Header section */}
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">Pricing</Badge>
+              <Badge className="mb-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">
+                Pricing
+              </Badge>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                 Ready, set, <span className="text-highlight-blink">deploy</span>
               </h2>
@@ -114,7 +127,7 @@ export default function Pricing() {
                     "Everything in Community",
                     "Read replica support",
                     "High availability",
-                    "Dedicated support and SLA"
+                    "Dedicated support and SLA",
                   ]}
                   buttonText="Custom Pricing"
                   buttonLink={social.CALENDLY}
@@ -127,7 +140,7 @@ export default function Pricing() {
                     "Everything in Enterprise",
                     "Fully managed",
                     "One-click deployments",
-                    "Currently in private beta"
+                    "Currently in private beta",
                   ]}
                   buttonText="Join Private Beta"
                   buttonLink={social.CALENDLY}

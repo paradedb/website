@@ -15,9 +15,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return (
-      <div className="h-[34px] w-[100px] shrink-0" />
-    );
+    return <div className="h-[34px] w-[100px] shrink-0" />;
   }
 
   const options = [
@@ -39,7 +37,7 @@ export function ThemeToggle() {
               "flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200",
               isActive
                 ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-slate-100"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
             aria-label={`Set ${option.value} theme`}
           >
@@ -50,4 +48,3 @@ export function ThemeToggle() {
     </div>
   );
 }
-

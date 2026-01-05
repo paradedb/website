@@ -66,15 +66,21 @@ export default function PreFooterCta() {
           <div className="relative flex flex-col items-center justify-center py-8 md:py-24 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1] text-center">
-                Elastic-quality search <br className="hidden sm:block" /> without the{" "}
-                <CropHighlight>complexity</CropHighlight>
+                Elastic-quality search <br className="hidden sm:block" />{" "}
+                without the <CropHighlight>complexity</CropHighlight>
               </h1>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
                 <Button
                   asChild
                   className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none h-10 text-white font-semibold shadow-none"
                 >
-                  <Link href={social.CALENDLY} target="_blank" rel="noopener noreferrer">Book a Demo</Link>
+                  <Link
+                    href={social.CALENDLY}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Book a Demo
+                  </Link>
                 </Button>
                 <Button
                   asChild

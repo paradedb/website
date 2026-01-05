@@ -50,4 +50,3 @@ export const DatabaseLogo = (props: SVGProps<SVGSVGElement>) => (
     </g>
   </svg>
 );
-
