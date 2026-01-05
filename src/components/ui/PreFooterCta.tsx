@@ -5,7 +5,6 @@ import Link from "next/link";
 import { Button } from "../Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import dynamic from "next/dynamic";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 // Dynamic import for the shader component to prevent SSR issues
