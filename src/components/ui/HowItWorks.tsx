@@ -157,17 +157,17 @@ const Table = ({
       )}
     </div>
     <div className="divide-y divide-slate-100 dark:divide-slate-800 min-h-[105px]">
-      <div className="grid grid-cols-[30px_1fr_60px] bg-slate-100/50 dark:bg-slate-950/50 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium px-3 py-1.5">
+      <div className="grid grid-cols-[30px_1fr_80px] bg-slate-100/50 dark:bg-slate-950/50 text-[10px] uppercase tracking-wider text-slate-500 dark:text-slate-400 font-medium px-3 py-1.5">
         <div>id</div>
         <div>name</div>
-        <div>weight</div>
+        <div className="whitespace-nowrap">weight (kg)</div>
       </div>
       {isLoading
         ? // Loading State - Just white background (preserving height)
           [1, 2, 3].map((i) => (
             <div
               key={i}
-              className="grid grid-cols-[30px_1fr_60px] px-3 py-2 items-center opacity-0"
+              className="grid grid-cols-[30px_1fr_80px] px-3 py-2 items-center opacity-0"
             >
               {/* Invisible content to hold height */}
               <div className="h-4 w-4" />
@@ -180,7 +180,7 @@ const Table = ({
             <div
               key={row.id}
               className={classNames(
-                "grid grid-cols-[30px_1fr_60px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
+                "grid grid-cols-[30px_1fr_80px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
                 highlightIdx === i
                   ? "bg-indigo-50 dark:bg-indigo-900/20"
                   : "bg-transparent",
