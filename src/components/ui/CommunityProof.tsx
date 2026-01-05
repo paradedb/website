@@ -39,7 +39,7 @@ export default function CommunityProof() {
                     <DockerLogo className="w-full h-full dark:brightness-0 dark:invert" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    450K+
+                    500K+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Docker deployments

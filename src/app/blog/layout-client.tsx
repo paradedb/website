@@ -154,6 +154,7 @@ export default function BlogLayoutClient({
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
         </div>
       </section>
+      <CodeBlockEnhancer />
     </div>
   );
 }
