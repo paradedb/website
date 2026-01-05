@@ -9,8 +9,8 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 
 // Dynamic import for the shader component to prevent SSR issues
-const Dithering = dynamic(
-  () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
+const ColorPanels = dynamic(
+  () => import("@paper-design/shaders-react").then((mod) => mod.ColorPanels),
   { ssr: false }
 );
 
@@ -55,7 +55,6 @@ export default function PreFooterCta() {
   }, []);
 
   const bgColor = resolvedTheme === "dark" ? "#020617" : "#ffffff";
-  const waveColor = resolvedTheme === "dark" ? "#1e293b" : "#f1f5f9";
 
   return (
     <div className="w-full">
@@ -68,15 +67,17 @@ export default function PreFooterCta() {
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
 
           {/* Background color layer */}
-          <div className="absolute inset-0 bg-white dark:bg-slate-950 -z-20" />
+          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-white dark:bg-slate-950 -z-20" />
 
-          <div className="relative flex flex-col items-center justify-center pt-8 md:pt-24 pb-4 md:pb-8 text-center">
-            <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1] text-center">
+          {/* Side-by-Side Container */}
+          <div className="relative flex flex-col lg:flex-row items-center justify-between border-x border-slate-200 dark:border-slate-900 flex-grow">
+            {/* Left Content (Text) */}
+            <div className="relative flex flex-col items-center lg:items-start justify-center py-12 lg:py-24 text-center lg:text-left px-6 lg:pl-12 lg:pr-6 w-full lg:w-1/2 z-20">
+              <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1]">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
                 without the <CropHighlight>complexity</CropHighlight>
               </h1>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8 justify-center lg:justify-start">
                 <Button
                   asChild
                   className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none h-10 text-white font-semibold shadow-none"
@@ -108,26 +109,41 @@ export default function PreFooterCta() {
                 </Button>
               </div>
             </div>
-          </div>
 
-          {/* Dither wave upright at the bottom, matching hero style */}
-          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden border-x border-slate-200 dark:border-slate-900">
-            {mounted && (
-              <div className="absolute inset-0 pointer-events-none opacity-80 dark:opacity-40">
-                <Dithering
-                  width="100%"
-                  height="100%"
-                  colorBack={bgColor}
-                  colorFront={waveColor}
-                  shape="wave"
-                  type="8x8"
-                  size={8}
-                  speed={0.25}
-                  scale={1.4}
-                  rotation={0}
-                />
+            {/* Right Content (Visual) */}
+            <div className="relative w-full lg:w-1/2 z-10 border-t lg:border-t-0 border-slate-200 dark:border-slate-900 min-h-[400px] lg:min-h-[500px]">
+              <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
+                <div className="w-full h-full opacity-100 dark:opacity-70">
+                  {mounted && (
+                    <ColorPanels
+                      width="100%"
+                      height="100%"
+                      colors={[
+                        "#ff9d00",
+                        "#fd4f30",
+                        "#809bff",
+                        "#6d2eff",
+                        "#333aff",
+                        "#f15cff",
+                        "#ffd557",
+                      ]}
+                      colorBack={bgColor}
+                      density={3}
+                      angle1={0}
+                      angle2={0}
+                      length={1.1}
+                      edges={false}
+                      blur={0}
+                      fadeIn={1}
+                      fadeOut={0.3}
+                      gradient={0}
+                      speed={0.5}
+                      scale={0.8}
+                    />
+                  )}
+                </div>
               </div>
-            )}
+            </div>
           </div>
 
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />

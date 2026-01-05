@@ -17,7 +17,7 @@ export default function HeroV3() {
         className="border-t border-slate-200 dark:border-slate-900 overflow-hidden flex flex-col relative"
       >
         <div className="px-4 md:px-12 w-full h-full flex flex-col flex-grow relative">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
           <div className="relative z-20 opacity-0 pointer-events-none h-0">
             <Navigation />
           </div>
@@ -25,13 +25,10 @@ export default function HeroV3() {
           {/* Background color layer */}
           <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-white dark:bg-slate-950 -z-20" />
 
-          {/* Grid Background */}
-          {/* <div className="absolute bottom-0 top-8 md:top-12 left-4 md:left-12 right-4 md:right-12 -z-10 md:bottom-24">
-            <GridBackground />
-          </div> */}
-
-          <div className="relative flex flex-col items-center justify-center sm:pt-16 pt-8 text-center px-6 sm:px-0">
-            <div className="flex flex-col items-center w-full relative z-20">
+          {/* Side-by-Side Container */}
+          <div className="relative flex flex-col lg:flex-row items-center justify-between border-x border-slate-200 dark:border-slate-900 flex-grow">
+            {/* Left Content (Text) */}
+            <div className="relative flex flex-col items-center lg:items-start justify-center py-12 lg:py-24 text-center lg:text-left px-6 lg:pl-12 lg:pr-6 w-full lg:w-1/2 z-20">
               <Link
                 href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
                 className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border-0 bg-white dark:bg-slate-950 px-1 text-xs font-medium text-indigo-900 dark:text-indigo-300 shadow-none transition-colors hover:bg-slate-50 dark:hover:bg-slate-900"
@@ -43,23 +40,19 @@ export default function HeroV3() {
               </Link>
               <h1
                 id="hero-title"
-                className="inline-block py-2 text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl"
+                className="inline-block py-2 text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1]"
                 style={{ animationDuration: "700ms" }}
               >
                 Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
                 <span className="text-highlight-blink">Search</span> for
                 Postgres
               </h1>
-            </div>
-
-            {/* Bottom Content - In front of everything */}
-            <div className="relative z-20 mt-auto flex flex-col items-center">
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 mb-8 mt-4">
+              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 mb-8 mt-4 max-w-lg">
                 You want better search, not the burden of Elasticsearch.{" "}
-                <br className="hidden sm:block" /> ParadeDB is the modern
-                Elastic alternative built as a Postgres extension.
+                ParadeDB is the modern Elastic alternative built as a Postgres
+                extension.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-8 sm:mb-12 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center lg:justify-start mb-8 sm:mb-12 sm:px-0">
                 <Button className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none h-10 text-white w-full sm:w-auto">
                   <Link target="_blank" href={social.CALENDLY}>
                     Book a Demo
@@ -84,13 +77,11 @@ export default function HeroV3() {
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* New Colorful Visual Section */}
-        <div className="relative z-20">
-          <div className="w-full mx-auto relative">
-            <HeroVisual />
+            {/* Right Content (Visual) */}
+            <div className="relative w-full lg:w-1/2 z-10 border-t lg:border-t-0 border-slate-200 dark:border-slate-900 min-h-[400px] lg:min-h-[600px]">
+              <HeroVisual />
+            </div>
           </div>
         </div>
 
