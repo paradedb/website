@@ -47,7 +47,7 @@ export default function HeroV3() {
                 <span className="text-highlight-blink">Search</span> for
                 Postgres
               </h1>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 mb-8 mt-4 max-w-lg">
+              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 mb-8 mt-4 max-w-xl">
                 You want better search, not the burden of Elasticsearch.{" "}
                 ParadeDB is the modern Elastic alternative built as a Postgres
                 extension.
