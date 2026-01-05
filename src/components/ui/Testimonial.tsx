@@ -5,7 +5,7 @@ export default function Testimonial() {
   return (
     <section id="testimonial" aria-label="Testimonial">
       <figure className="mx-auto">
-        <blockquote className="mx-auto max-w-2xl text-center text-xl font-semibold leading-8 text-gray-900 sm:text-2xl sm:leading-9">
+        <blockquote className="mx-auto max-w-2xl text-center text-xl font-semibold leading-8 text-gray-900 dark:text-white sm:text-2xl sm:leading-9">
           <p>
             <Balancer>
               “Thanks to this robust database solution, our organization has
@@ -23,8 +23,12 @@ export default function Testimonial() {
             alt="Image of Dima Coil"
           />
           <div>
-            <p className="font-semibold text-gray-900">Dima Coil</p>
-            <p className="text-sm text-gray-600">CEO Hornertools</p>
+            <p className="font-semibold text-gray-900 dark:text-white">
+              Dima Coil
+            </p>
+            <p className="text-sm text-gray-600 dark:text-slate-400">
+              CEO Hornertools
+            </p>
           </div>
         </figcaption>
       </figure>

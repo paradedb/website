@@ -37,7 +37,7 @@ function CustomHeading(props: any) {
 }
 
 export const H1 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
-  <h1 className="text-2xl font-bold normal-case tracking-tight text-gray-900 scroll-mt-36 md:scroll-mt-24">
+  <h1 className="text-2xl font-bold normal-case tracking-tight text-gray-900 dark:text-white scroll-mt-36 md:scroll-mt-24">
     {children}
   </h1>
 );
@@ -48,7 +48,7 @@ export const H2 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
 
 export const H3 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
   <CustomHeading
-    className="mb-2 font-semibold normal-case tracking-tight text-gray-900"
+    className="mb-2 font-semibold normal-case tracking-tight text-gray-900 dark:text-white"
     level={3}
   >
     {children}
@@ -56,18 +56,18 @@ export const H3 = ({ children }: React.HTMLProps<HTMLHeadingElement>) => (
 );
 
 export const P = (props: React.HTMLProps<HTMLParagraphElement>) => (
-  <p {...props} className="mb-8 leading-7 text-gray-600" />
+  <p {...props} className="mb-8 leading-7 text-gray-600 dark:text-slate-300" />
 );
 
 export const Ul = (props: React.HTMLAttributes<HTMLUListElement>) => (
   <ul
-    className="mb-10 ml-[30px] list-['–__'] space-y-1 leading-8 text-gray-600"
+    className="mb-10 ml-[30px] list-['–__'] space-y-1 leading-8 text-gray-600 dark:text-slate-300"
     {...props}
   />
 );
 
 export const Bold = (props: React.HTMLAttributes<HTMLSpanElement>) => (
-  <span className="font-semibold text-gray-900" {...props} />
+  <span className="font-semibold text-gray-900 dark:text-white" {...props} />
 );
 
 export function CustomLink(props: any) {
