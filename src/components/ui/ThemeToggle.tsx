@@ -10,7 +10,7 @@ export function ThemeToggle({
 }: {
   variant?: "default" | "white";
 }) {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // Avoid hydration mismatch
