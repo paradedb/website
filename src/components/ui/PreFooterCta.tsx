@@ -72,7 +72,7 @@ export default function PreFooterCta() {
           {/* Side-by-Side Container */}
           <div className="relative flex flex-col lg:flex-row items-center justify-between border-x border-slate-200 dark:border-slate-900 flex-grow">
             {/* Left Content (Text) */}
-            <div className="relative flex flex-col items-center lg:items-start justify-center py-12 lg:py-24 text-center lg:text-left px-6 lg:pl-12 lg:pr-6 w-full lg:w-1/2 z-20">
+            <div className="relative flex flex-col items-center lg:items-start justify-center py-12 lg:py-24 text-center lg:text-left px-6 lg:pl-12 lg:pr-6 w-full lg:w-[60%] z-20">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1]">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
                 without the <CropHighlight>complexity</CropHighlight>
@@ -111,7 +111,7 @@ export default function PreFooterCta() {
             </div>
 
             {/* Right Content (Visual) */}
-            <div className="relative w-full lg:w-1/2 z-10 border-t lg:border-t-0 border-slate-200 dark:border-slate-900 min-h-[400px] lg:min-h-[500px]">
+            <div className="relative w-full lg:w-[40%] z-10 border-t lg:border-t-0 border-slate-200 dark:border-slate-900 min-h-[400px] lg:min-h-[500px]">
               <div className="absolute inset-0 pointer-events-none overflow-hidden flex items-center justify-center">
                 <div className="w-full h-full opacity-100 dark:opacity-70">
                   {mounted && (

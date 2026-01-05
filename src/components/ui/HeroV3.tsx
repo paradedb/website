@@ -28,7 +28,7 @@ export default function HeroV3() {
           {/* Side-by-Side Container */}
           <div className="relative flex flex-col lg:flex-row items-center justify-between border-x border-slate-200 dark:border-slate-900 flex-grow">
             {/* Left Content (Text) */}
-            <div className="relative flex flex-col items-center lg:items-start justify-center py-12 lg:py-24 text-center lg:text-left px-6 lg:pl-12 lg:pr-6 w-full lg:w-1/2 z-20">
+            <div className="relative flex flex-col items-center lg:items-start justify-center py-12 lg:py-24 text-center lg:text-left px-6 lg:pl-12 lg:pr-6 w-full lg:w-[60%] z-20">
               <Link
                 href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
                 className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border-0 bg-white dark:bg-slate-950 px-1 text-xs font-medium text-indigo-900 dark:text-indigo-300 shadow-none transition-colors hover:bg-slate-50 dark:hover:bg-slate-900"
@@ -79,7 +79,7 @@ export default function HeroV3() {
             </div>
 
             {/* Right Content (Visual) */}
-            <div className="relative w-full lg:w-1/2 z-10 border-t lg:border-t-0 border-slate-200 dark:border-slate-900 min-h-[400px] lg:min-h-[600px]">
+            <div className="relative w-full lg:w-[40%] z-10 border-t lg:border-t-0 border-slate-200 dark:border-slate-900 min-h-[400px] lg:min-h-[600px]">
               <HeroVisual />
             </div>
           </div>
