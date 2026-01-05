@@ -124,8 +124,7 @@ export default function PreFooterCta() {
                         "#809bff",
                         "#6d2eff",
                         "#333aff",
-                        "#f15cff",
-                        "#ffd557",
+                        "#f15cff"
                       ]}
                       colorBack={bgColor}
                       density={3}
@@ -138,7 +137,7 @@ export default function PreFooterCta() {
                       fadeOut={0.3}
                       gradient={0}
                       speed={0.5}
-                      scale={0.8}
+                      scale={0.7}
                     />
                   )}
                 </div>
