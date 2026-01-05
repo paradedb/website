@@ -6,7 +6,7 @@ import dynamic from "next/dynamic";
 // Dynamic import for the shader component to prevent SSR issues
 const Dithering = dynamic(
   () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
-  { ssr: false }
+  { ssr: false },
 );
 
 export function HeroVisual() {

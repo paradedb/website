@@ -54,7 +54,12 @@ export function Navigation() {
   }, []);
 
   return (
-    <div className={classNames("w-full z-50", isHomePage ? "absolute top-0" : "relative h-16 md:h-20")}>
+    <div
+      className={classNames(
+        "w-full z-50",
+        isHomePage ? "absolute top-0" : "relative h-16 md:h-20",
+      )}
+    >
       <header
         className={classNames(
           "z-50 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
@@ -66,7 +71,9 @@ export function Navigation() {
           open === true
             ? classNames(
                 "backdrop-blur-nav max-w-3xl border-gray-100 dark:border-slate-800 shadow-xl shadow-black/5",
-                isHomePage ? "bg-white/95 dark:bg-slate-950/95" : "bg-white/80 dark:bg-slate-900/80"
+                isHomePage
+                  ? "bg-white/95 dark:bg-slate-950/95"
+                  : "bg-white/80 dark:bg-slate-900/80",
               )
             : "bg-transparent",
         )}
@@ -78,7 +85,9 @@ export function Navigation() {
               <DatabaseLogo
                 className={classNames(
                   "w-28 sm:w-32 transition-colors",
-                  isHomePage && !open ? "brightness-0 invert" : "dark:brightness-0 dark:invert"
+                  isHomePage && !open
+                    ? "brightness-0 invert"
+                    : "dark:brightness-0 dark:invert",
                 )}
               />
             </Link>
@@ -90,10 +99,10 @@ export function Navigation() {
                     pathname.startsWith(siteConfig.baseLinks.blog)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={siteConfig.baseLinks.blog}
                 >
@@ -106,8 +115,8 @@ export function Navigation() {
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                        ? "text-slate-900 dark:text-white"
+                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={documentation.BASE}
                 >
@@ -119,10 +128,10 @@ export function Navigation() {
                     pathname.startsWith(siteConfig.baseLinks.resources)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={siteConfig.baseLinks.resources}
                 >
@@ -135,8 +144,8 @@ export function Navigation() {
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                        ? "text-slate-900 dark:text-white"
+                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={social.SLACK}
                 >
@@ -146,7 +155,9 @@ export function Navigation() {
             </nav>
             <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
               <div className="hidden md:flex">
-                <ThemeToggle variant={isHomePage && !open ? "white" : "default"} />
+                <ThemeToggle
+                  variant={isHomePage && !open ? "white" : "default"}
+                />
               </div>
               <Link
                 href={github.REPO}
@@ -160,22 +171,30 @@ export function Navigation() {
                   aria-hidden="true"
                   className={classNames(
                     "size-6 shrink-0 transition-colors",
-                    isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                    isHomePage && !open
+                      ? "text-white"
+                      : "text-slate-900 dark:text-slate-100",
                   )}
                 />
-                <div className={classNames(
-                  "text-sm font-medium transition-colors",
-                  isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
-                )}>
+                <div
+                  className={classNames(
+                    "text-sm font-medium transition-colors",
+                    isHomePage && !open
+                      ? "text-white"
+                      : "text-slate-900 dark:text-slate-100",
+                  )}
+                >
                   {formatStarCount(stars ?? 0)}
                 </div>
               </Link>
-              <Button className={classNames(
-                "hidden px-4 md:flex rounded-none transition-all",
-                isHomePage && !open
-                  ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0"
-                  : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white"
-              )}>
+              <Button
+                className={classNames(
+                  "hidden px-4 md:flex rounded-none transition-all",
+                  isHomePage && !open
+                    ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0"
+                    : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white",
+                )}
+              >
                 <Link target="_blank" href={social.CALENDLY}>
                   Book a Demo
                 </Link>
@@ -186,7 +205,9 @@ export function Navigation() {
                   variant="light"
                   className={classNames(
                     "aspect-square bg-opacity-0 p-2 transition-colors",
-                    isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                    isHomePage && !open
+                      ? "text-white"
+                      : "text-slate-900 dark:text-slate-100",
                   )}
                 >
                   {open ? (
@@ -210,7 +231,11 @@ export function Navigation() {
                   target="_blank"
                   href={documentation.BASE}
                   className={classNames(
-                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                    isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white"
+                        : "text-slate-900 dark:text-slate-100",
                   )}
                 >
                   Documentation
@@ -220,7 +245,11 @@ export function Navigation() {
                 <Link
                   href={siteConfig.baseLinks.blog}
                   className={classNames(
-                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                    isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white"
+                        : "text-slate-900 dark:text-slate-100",
                   )}
                 >
                   Blog
@@ -230,7 +259,11 @@ export function Navigation() {
                 <Link
                   href={siteConfig.baseLinks.resources}
                   className={classNames(
-                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                    isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white"
+                        : "text-slate-900 dark:text-slate-100",
                   )}
                 >
                   Learn
@@ -241,7 +274,11 @@ export function Navigation() {
                   target="_blank"
                   href={documentation.CHANGELOG}
                   className={classNames(
-                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                    isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white"
+                        : "text-slate-900 dark:text-slate-100",
                   )}
                 >
                   Changelog

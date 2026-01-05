@@ -41,8 +41,7 @@ export default function HeroV3() {
                 style={{ animationDuration: "700ms" }}
               >
                 Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
-                <span className="text-white/90">Search</span> for
-                Postgres
+                <span className="text-white/90">Search</span> for Postgres
               </h1>
             </div>
 

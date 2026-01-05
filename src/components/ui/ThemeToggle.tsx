@@ -53,8 +53,8 @@ export function ThemeToggle({
                   ? "bg-white text-indigo-600 shadow-sm"
                   : "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-slate-100"
                 : isWhite
-                ? "text-indigo-100 hover:text-white hover:bg-white/10"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+                  ? "text-indigo-100 hover:text-white hover:bg-white/10"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
             aria-label={`Set ${option.value} theme`}
           >

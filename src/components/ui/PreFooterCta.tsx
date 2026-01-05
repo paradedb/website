@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 // Dynamic import for the shader component to prevent SSR issues
 const Dithering = dynamic(
   () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
-  { ssr: false }
+  { ssr: false },
 );
 
 const CropHighlight = ({ children }: { children: React.ReactNode }) => (
@@ -39,9 +39,7 @@ const CropHighlight = ({ children }: { children: React.ReactNode }) => (
         />
       </svg>
     </span>
-    <span className="relative z-10 text-white">
-      {children}
-    </span>
+    <span className="relative z-10 text-white">{children}</span>
   </span>
 );
 

@@ -6,7 +6,6 @@ import CommunityProof from "@/components/ui/CommunityProof";
 import Pricing from "@/components/ui/Pricing";
 import PreFooterCta from "@/components/ui/PreFooterCta";
 
-
 export default async function Home() {
   return (
     <main className="flex flex-col overflow-hidden px-0">

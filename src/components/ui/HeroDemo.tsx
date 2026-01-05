@@ -68,7 +68,10 @@ export function HeroDemo({
             (lineTokens.length === 1 && lineTokens[0].content.trim() === "");
 
           return (
-            <div key={i} className="relative flex items-start min-h-0 mb-1 last:mb-0">
+            <div
+              key={i}
+              className="relative flex items-start min-h-0 mb-1 last:mb-0"
+            >
               <span className="text-indigo-500/50 dark:text-white/60 mr-3 select-none flex-shrink-0 w-4 text-xs md:text-sm pt-0.5">
                 {!isLineEmpty ? "$" : ""}
               </span>
