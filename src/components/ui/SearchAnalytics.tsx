@@ -27,9 +27,9 @@ export default function SearchAnalytics() {
           className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl md:hover:shadow-xl md:hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           style={{ animationDuration: "1400ms" }}
         >
-          <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
+          <div className="rounded-2xl bg-indigo-50 p-2 ring-1 ring-inset ring-slate-300/50">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
-              <div className="relative rounded-t-xl bg-slate-100">
+              <div className="relative rounded-t-xl bg-indigo-100">
                 {/* <div className="absolute inset-0"></div> */}
                 <SearchImage className="max-h-72 w-full px-8 pt-8" />
               </div>
@@ -61,7 +61,7 @@ export default function SearchAnalytics() {
           className="relative col-span-2 mx-auto h-max max-w-2xl animate-slide-up-fade rounded-2xl md:hover:shadow-xl md:hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           style={{ animationDuration: "1400ms" }}
         >
-          <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50">
+          <div className="rounded-2xl bg-indigo-50 p-2 ring-1 ring-inset ring-slate-300/50">
             <div className="rounded-xl bg-white ring-1 ring-indigo-900/5">
               <div className="relative rounded-t-xl bg-indigo-400">
                 <AnalyticsImage className="max-h-72 w-full px-8 pt-8" />

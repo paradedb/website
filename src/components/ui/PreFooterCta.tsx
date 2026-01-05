@@ -51,7 +51,7 @@ export default function PreFooterCta() {
   }, []);
 
   return (
-    <div className="w-full">
+    <div className="w-full opacity-0 animate-fade-in delay-2200">
       <section className="overflow-hidden flex flex-col relative bg-indigo-600">
         {/* Global Vertical Lines */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-white/20 z-30 pointer-events-none" />
@@ -102,7 +102,7 @@ export default function PreFooterCta() {
           </div>
 
           {/* Dither wave upright at the bottom, matching hero style */}
-          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden">
+          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden opacity-0 animate-fade-in delay-300">
             {mounted && (
               <div className="absolute inset-0 pointer-events-none">
                 <Dithering

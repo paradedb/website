@@ -59,7 +59,7 @@ const CaseStudyCard = ({
 
 export default function SocialProof() {
   return (
-    <div className="w-full">
+    <div className="w-full opacity-0 animate-fade-in delay-1600">
       <section className="overflow-hidden flex flex-col relative">
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
@@ -86,9 +86,7 @@ export default function SocialProof() {
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 mt-px ml-px bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">
-                Case Studies
-              </Badge>
+              <Badge className="mb-6 mt-px ml-px">Case Studies</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                 <span className="text-highlight-blink">Trusted</span> by
                 enterprises

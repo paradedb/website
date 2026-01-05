@@ -62,24 +62,26 @@ export function Navigation() {
     >
       <header
         className={classNames(
-          "z-50 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
+          "z-50 flex transform-gpu opacity-0 animate-navbar justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
           "left-4 md:left-12 right-4 md:right-12 absolute border-b",
           isHomePage
             ? "border-white/20"
             : "border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md",
-          open === true ? "h-52" : "h-16 md:h-20",
           open === true
-            ? classNames(
-                "backdrop-blur-nav max-w-3xl border-gray-100 dark:border-slate-800 shadow-xl shadow-black/5",
-                isHomePage
-                  ? "bg-white/95 dark:bg-slate-950/95"
-                  : "bg-white/80 dark:bg-slate-900/80",
-              )
+            ? "h-auto pb-8 pt-2 top-2 rounded-2xl"
+            : "h-16 md:h-20 top-0",
+          open === true
+            ? "bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/10"
             : "bg-transparent",
         )}
       >
-        <div className="w-full my-auto px-0">
-          <div className="relative flex items-center justify-between">
+        <div className="w-full flex flex-col justify-start">
+          <div
+            className={classNames(
+              "relative flex items-center justify-between h-16 md:h-20 shrink-0",
+              open ? "px-6" : "px-0",
+            )}
+          >
             <Link href={siteConfig.baseLinks.home} aria-label="Home">
               <span className="sr-only">Company logo</span>
               <DatabaseLogo
@@ -163,8 +165,8 @@ export function Navigation() {
                 href={github.REPO}
                 target="_blank"
                 className={classNames(
-                  "flex items-center justify-center space-x-2 transition-all duration-300",
-                  stars ? "opacity-100" : "opacity-0",
+                  "items-center justify-center space-x-2 transition-all duration-300",
+                  stars && !open ? "flex opacity-100" : "hidden opacity-0",
                 )}
               >
                 <RiGithubFill
@@ -191,8 +193,8 @@ export function Navigation() {
                 className={classNames(
                   "hidden px-4 md:flex rounded-none transition-all",
                   isHomePage && !open
-                    ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0"
-                    : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white",
+                    ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
+                    : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
                 )}
               >
                 <Link target="_blank" href={social.CALENDLY}>
@@ -202,12 +204,12 @@ export function Navigation() {
               <div className="md:hidden">
                 <Button
                   onClick={() => setOpen(!open)}
-                  variant="light"
+                  variant="ghost"
                   className={classNames(
-                    "aspect-square bg-opacity-0 p-2 transition-colors",
+                    "aspect-square p-2 transition-colors border-0 hover:bg-transparent",
                     isHomePage && !open
-                      ? "text-white"
-                      : "text-slate-900 dark:text-slate-100",
+                      ? "text-white hover:text-white/80"
+                      : "text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400",
                   )}
                 >
                   {open ? (
@@ -221,68 +223,69 @@ export function Navigation() {
           </div>
           <nav
             className={classNames(
-              "my-6 flex text-lg ease-in-out will-change-transform md:hidden",
-              open ? "" : "hidden",
+              "flex flex-col md:hidden",
+              open ? "pb-8" : "hidden",
             )}
           >
-            <ul className="space-y-4 font-medium">
-              <li onClick={() => setOpen(false)}>
+            <ul className="flex flex-col font-semibold w-full">
+              <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   target="_blank"
                   href={documentation.BASE}
                   className={classNames(
-                    isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white"
-                        : "text-slate-900 dark:text-slate-100",
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
                   Documentation
                 </Link>
               </li>
-              <li onClick={() => setOpen(false)}>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   href={siteConfig.baseLinks.blog}
                   className={classNames(
-                    isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white"
-                        : "text-slate-900 dark:text-slate-100",
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
                   Blog
                 </Link>
               </li>
-              <li onClick={() => setOpen(false)}>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   href={siteConfig.baseLinks.resources}
                   className={classNames(
-                    isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white"
-                        : "text-slate-900 dark:text-slate-100",
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
                   Learn
                 </Link>
               </li>
-              <li onClick={() => setOpen(false)}>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   target="_blank"
-                  href={documentation.CHANGELOG}
+                  href={social.SLACK}
                   className={classNames(
-                    isHomePage && open
-                      ? "text-slate-900 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white"
-                        : "text-slate-900 dark:text-slate-100",
+                    "block w-full py-5 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
-                  Changelog
+                  Community
                 </Link>
+              </li>
+              <li className="pt-6 px-6">
+                <Button
+                  asChild
+                  className="w-full h-12 !rounded-none bg-indigo-600 text-white font-bold border-0 shadow-none text-md"
+                >
+                  <Link target="_blank" href={social.CALENDLY}>
+                    Book a Demo
+                  </Link>
+                </Button>
+              </li>
+              <li className="flex justify-center pt-6">
+                <ThemeToggle variant="default" />
               </li>
             </ul>
           </nav>

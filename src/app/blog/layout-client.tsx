@@ -61,7 +61,7 @@ export default function BlogLayoutClient({
     : "";
 
   return (
-    <div className="w-full">
+    <div className="w-full opacity-0 animate-fade-in delay-300">
       <section className="bg-white dark:bg-slate-950 flex flex-col relative">
         {/* Shaded Hatch Region below navbar */}
         <div className="px-4 md:px-12 w-full relative z-20">

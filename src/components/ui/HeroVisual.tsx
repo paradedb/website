@@ -19,7 +19,7 @@ export function HeroVisual() {
   if (!mounted) return null;
 
   return (
-    <div className="relative w-full overflow-hidden px-4 md:px-12">
+    <div className="relative w-full overflow-hidden px-4 md:px-12 opacity-0 animate-fade-in delay-1000">
       <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden">
         {/* Paper Dithering Background */}
         <div className="absolute inset-0 pointer-events-none opacity-100">

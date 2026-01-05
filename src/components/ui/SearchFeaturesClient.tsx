@@ -22,14 +22,14 @@ export default function SearchFeaturesClient({
   features: Feature[];
 }) {
   return (
-    <div className="px-4 md:px-12">
-      <section className="py-12 md:py-20 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-6 sm:px-0">
-        <Badge>Features</Badge>
-        <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl">
+    <div className="px-4 md:px-12 opacity-0 animate-fade-in delay-1200">
+      <section className="py-12 md:py-20 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
+        <Badge className="mb-6">Features</Badge>
+        <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
           The <span className="text-highlight-blink">complete</span> toolkit{" "}
           <br className="hidden sm:block" /> for search
         </h2>
-        <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl">
+        <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl px-6 sm:px-0">
           ParadeDB brings everything you need from a modern search engine into
           Postgres, including text, hybrid, and faceted search.
         </p>

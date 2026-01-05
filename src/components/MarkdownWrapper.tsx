@@ -20,7 +20,7 @@ export default function MarkdownWrapper({ children }: MarkdownWrapperProps) {
   }, []);
 
   return (
-    <div className="flex items-start gap-12 w-full lg:px-8 xl:px-12 pt-0">
+    <div className="flex items-start gap-12 w-full lg:px-8 xl:px-12 pt-0 opacity-0 animate-fade-in delay-500">
       <article className="prose dark:prose-invert w-full max-w-5xl pt-0">
         {children}
       </article>

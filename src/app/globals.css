@@ -221,6 +221,113 @@
 }
 
 @layer base {
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes slide-in-from-top {
+    from {
+      transform: translateY(-1rem);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-from-bottom {
+    from {
+      transform: translateY(0.5rem);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes slide-in-from-bottom-large {
+    from {
+      transform: translateY(1rem);
+    }
+    to {
+      transform: translateY(0);
+    }
+  }
+
+  .animate-in {
+    animation-fill-mode: both;
+    animation-duration: 1000ms;
+  }
+
+  .duration-1000 {
+    animation-duration: 1000ms;
+  }
+
+  .fade-in {
+    animation-name: fade-in;
+  }
+
+  .slide-in-from-top-4 {
+    animation-name: fade-in, slide-in-from-top;
+  }
+
+  .slide-in-from-bottom-2 {
+    animation-name: fade-in, slide-in-from-bottom;
+  }
+
+  .slide-in-from-bottom-4 {
+    animation-name: fade-in, slide-in-from-bottom-large;
+  }
+
+  .fill-mode-both {
+    animation-fill-mode: both;
+  }
+
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+
+  .delay-700 {
+    animation-delay: 700ms;
+  }
+
+  .delay-1000 {
+    animation-delay: 1000ms;
+  }
+
+  .delay-\[1000ms\] {
+    animation-delay: 1000ms;
+  }
+
+  .delay-\[1100ms\] {
+    animation-delay: 1100ms;
+  }
+
+  .delay-\[1200ms\] {
+    animation-delay: 1200ms;
+  }
+
+  .delay-\[1300ms\] {
+    animation-delay: 1300ms;
+  }
+
+  .delay-\[1400ms\] {
+    animation-delay: 1400ms;
+  }
+
+  .delay-\[1500ms\] {
+    animation-delay: 1500ms;
+  }
+}
+
+@layer base {
   .prose blockquote {
     border-left-color: #4f46e5;
   }
@@ -598,4 +705,84 @@ a {
   *::-webkit-scrollbar-thumb:hover {
     background-color: #334155;
   }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-from-top {
+  from {
+    transform: translateY(-2rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-bottom {
+  from {
+    transform: translateY(1rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-in-from-bottom-large {
+  from {
+    transform: translateY(2rem);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@layer utilities {
+  .animate-navbar {
+    animation: fade-in 1000ms ease-out both, slide-in-from-top 1000ms ease-out both;
+  }
+
+  .animate-hero-pill {
+    animation: fade-in 1000ms ease-out both, slide-in-from-bottom 1000ms ease-out both;
+    animation-delay: 300ms;
+  }
+
+  .animate-hero-title {
+    animation: fade-in 1000ms ease-out both, slide-in-from-bottom-large 1000ms ease-out both;
+    animation-delay: 500ms;
+  }
+
+  .animate-hero-content {
+    animation: fade-in 1000ms ease-out both, slide-in-from-bottom-large 1000ms ease-out both;
+    animation-delay: 700ms;
+  }
+
+  .animate-logo {
+    animation: fade-in 1000ms ease-out both;
+  }
+
+  .animate-fade-in {
+    animation: fade-in 1000ms ease-out both;
+  }
+
+  .fill-mode-both {
+    animation-fill-mode: both;
+  }
+
+  .delay-300 { animation-delay: 300ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-1000 { animation-delay: 1000ms; }
+  .delay-1200 { animation-delay: 1200ms; }
+  .delay-1400 { animation-delay: 1400ms; }
+  .delay-1600 { animation-delay: 1600ms; }
+  .delay-1800 { animation-delay: 1800ms; }
+  .delay-2000 { animation-delay: 2000ms; }
+  .delay-2200 { animation-delay: 2200ms; }
 }

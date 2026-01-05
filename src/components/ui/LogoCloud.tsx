@@ -23,7 +23,7 @@ export default function LogoCloud({
         className,
       )}
     >
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.BiltRewards
           className={cx(
             "w-16 md:w-20",
@@ -33,7 +33,7 @@ export default function LogoCloud({
           )}
         />
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.ModernTreasury
           className={cx(
             "w-28 md:w-36",
@@ -43,7 +43,7 @@ export default function LogoCloud({
           )}
         />
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.Alibaba
           className={cx(
             "w-16 md:w-24",
@@ -53,7 +53,7 @@ export default function LogoCloud({
           )}
         />
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.RxVantage
           className={cx(
             "w-20 md:w-28",
@@ -63,7 +63,7 @@ export default function LogoCloud({
           )}
         />
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.Tcdi
           className={cx(
             "w-10 md:w-12",
@@ -73,7 +73,7 @@ export default function LogoCloud({
           )}
         />
       </div>
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.DemandScience
           className={cx(
             "w-28 md:w-36",

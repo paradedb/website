@@ -52,7 +52,7 @@ export default function Footer() {
     <footer
       id="footer"
       className={classNames(
-        "relative w-full overflow-hidden",
+        "relative w-full overflow-hidden opacity-0 animate-fade-in delay-2200",
         isHomePage
           ? "bg-indigo-600 text-white"
           : "bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100",

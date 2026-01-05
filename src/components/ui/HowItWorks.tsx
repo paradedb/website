@@ -614,12 +614,12 @@ export default function HowItWorks() {
   );
 
   return (
-    <div className="px-4 md:px-12 relative w-full">
+    <div className="px-4 md:px-12 relative w-full opacity-0 animate-fade-in delay-1400">
       <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
         <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-6 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
           <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
           <div className="pt-8 md:pt-0">
-            <Badge className="w-fit">Benefits</Badge>
+            <Badge className="mb-6">Benefits</Badge>
           </div>
           <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
             <span className="text-highlight-blink">Zero ETL</span> means <br />

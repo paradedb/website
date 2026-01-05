@@ -28,7 +28,7 @@ export default function HeroV3() {
             <div className="flex flex-col items-center w-full relative z-20">
               <Link
                 href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
-                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border border-white/20 bg-white/10 px-1 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20"
+                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border border-white/20 bg-white/10 px-1 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20 opacity-0 animate-hero-pill"
               >
                 <span className="mr-2 flex h-2 w-2">
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
@@ -37,8 +37,8 @@ export default function HeroV3() {
               </Link>
               <h1
                 id="hero-title"
-                className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl"
-                style={{ animationDuration: "700ms" }}
+                className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl opacity-0 animate-hero-title"
+                style={{ animationDuration: "1000ms" }}
               >
                 Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
                 <span className="text-white/90">Search</span> for Postgres
@@ -46,7 +46,7 @@ export default function HeroV3() {
             </div>
 
             {/* Bottom Content - In front of everything */}
-            <div className="relative z-20 mt-auto flex flex-col items-center">
+            <div className="relative z-20 mt-auto flex flex-col items-center opacity-0 animate-hero-content">
               <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4">
                 You want better search, not the burden of Elasticsearch.{" "}
                 <br className="hidden sm:block" /> ParadeDB is the modern
@@ -98,6 +98,11 @@ export default function HeroV3() {
               <LogoCloud variant="white" className="bg-transparent" />
             </div>
           </div>
+        </div>
+
+        {/* Shaded Region Below Logos */}
+        <div className="relative z-20 px-4 md:px-12">
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-40" />
         </div>
 
         {/* Global Vertical Lines - Rendered last to ensure they are on top */}
