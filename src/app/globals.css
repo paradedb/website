@@ -544,6 +544,16 @@ a {
   );
 }
 
+.bg-diagonal-hatch-white {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    rgba(255, 255, 255, 0.3) 4px,
+    rgba(255, 255, 255, 0.3) 5px
+  );
+}
+
 .dark {
   --color-background: #020617;
   --color-foreground: #f8fafc;

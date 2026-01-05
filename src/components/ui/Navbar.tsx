@@ -23,6 +23,7 @@ export function Navigation() {
   const [stars, setStars] = React.useState();
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
+  const isHomePage = pathname === siteConfig.baseLinks.home;
 
   React.useEffect(() => {
     const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)");
@@ -53,30 +54,46 @@ export function Navigation() {
   }, []);
 
   return (
-    <div>
+    <div className={classNames("w-full z-50", isHomePage ? "absolute top-0" : "relative h-16 md:h-20")}>
       <header
         className={classNames(
-          "z-50 mx-2 md:mx-12 mt-4 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-4 sm:px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-0",
-          open === true ? "h-52" : "h-16",
+          "z-50 flex transform-gpu animate-slide-down-fade justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
+          "left-4 md:left-12 right-4 md:right-12 absolute border-b",
+          isHomePage
+            ? "border-white/20"
+            : "border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md",
+          open === true ? "h-52" : "h-16 md:h-20",
           open === true
-            ? "backdrop-blur-nav max-w-3xl border-gray-100 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 shadow-xl shadow-black/5"
-            : "bg-white/0",
+            ? classNames(
+                "backdrop-blur-nav max-w-3xl border-gray-100 dark:border-slate-800 shadow-xl shadow-black/5",
+                isHomePage ? "bg-white/95 dark:bg-slate-950/95" : "bg-white/80 dark:bg-slate-900/80"
+              )
+            : "bg-transparent",
         )}
       >
-        <div className="w-full md:my-auto">
+        <div className="w-full my-auto px-0">
           <div className="relative flex items-center justify-between">
             <Link href={siteConfig.baseLinks.home} aria-label="Home">
               <span className="sr-only">Company logo</span>
-              <DatabaseLogo className="w-28 sm:w-32 dark:brightness-0 dark:invert" />
+              <DatabaseLogo
+                className={classNames(
+                  "w-28 sm:w-32 transition-colors",
+                  isHomePage && !open ? "brightness-0 invert" : "dark:brightness-0 dark:invert"
+                )}
+              />
             </Link>
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
                   className={classNames(
-                    "px-2 py-1 hover:text-indigo-600 dark:hover:text-white",
+                    "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.blog)
                       ? "text-indigo-600 dark:text-white"
-                      : "text-indigo-900 dark:text-slate-300",
+                      : isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={siteConfig.baseLinks.blog}
                 >
@@ -84,17 +101,28 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                  className="px-2 py-1 text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white"
+                  className={classNames(
+                    "px-2 py-1 transition-colors",
+                    isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                  )}
                   href={documentation.BASE}
                 >
                   Documentation
                 </Link>
                 <Link
                   className={classNames(
-                    "px-2 py-1 hover:text-indigo-600 dark:hover:text-white",
+                    "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.resources)
                       ? "text-indigo-600 dark:text-white"
-                      : "text-indigo-900 dark:text-slate-300",
+                      : isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={siteConfig.baseLinks.resources}
                 >
@@ -102,7 +130,14 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                  className="px-2 py-1 text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white"
+                  className={classNames(
+                    "px-2 py-1 transition-colors",
+                    isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                      ? "text-slate-900 dark:text-white"
+                      : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                  )}
                   href={social.SLACK}
                 >
                   Community
@@ -111,25 +146,36 @@ export function Navigation() {
             </nav>
             <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
               <div className="hidden md:flex">
-                <ThemeToggle />
+                <ThemeToggle variant={isHomePage && !open ? "white" : "default"} />
               </div>
               <Link
                 href={github.REPO}
                 target="_blank"
                 className={classNames(
-                  "flex items-center justify-center space-x-2 transition-opacity duration-300",
+                  "flex items-center justify-center space-x-2 transition-all duration-300",
                   stars ? "opacity-100" : "opacity-0",
                 )}
               >
                 <RiGithubFill
                   aria-hidden="true"
-                  className="size-6 shrink-0 text-slate-900 dark:text-slate-100"
+                  className={classNames(
+                    "size-6 shrink-0 transition-colors",
+                    isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                  )}
                 />
-                <div className="text-sm font-medium text-slate-900 dark:text-slate-100">
+                <div className={classNames(
+                  "text-sm font-medium transition-colors",
+                  isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                )}>
                   {formatStarCount(stars ?? 0)}
                 </div>
               </Link>
-              <Button className="hidden border-indigo-200 dark:border-indigo-600 px-4 md:flex rounded-none ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600">
+              <Button className={classNames(
+                "hidden px-4 md:flex rounded-none transition-all",
+                isHomePage && !open
+                  ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0"
+                  : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white"
+              )}>
                 <Link target="_blank" href={social.CALENDLY}>
                   Book a Demo
                 </Link>
@@ -138,7 +184,10 @@ export function Navigation() {
                 <Button
                   onClick={() => setOpen(!open)}
                   variant="light"
-                  className="aspect-square bg-opacity-0 p-2 text-slate-900 dark:text-slate-100"
+                  className={classNames(
+                    "aspect-square bg-opacity-0 p-2 transition-colors",
+                    isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                  )}
                 >
                   {open ? (
                     <RiCloseLine aria-hidden="true" className="size-5" />
@@ -160,7 +209,9 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   href={documentation.BASE}
-                  className="text-slate-900 dark:text-slate-100"
+                  className={classNames(
+                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                  )}
                 >
                   Documentation
                 </Link>
@@ -168,7 +219,9 @@ export function Navigation() {
               <li onClick={() => setOpen(false)}>
                 <Link
                   href={siteConfig.baseLinks.blog}
-                  className="text-slate-900 dark:text-slate-100"
+                  className={classNames(
+                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                  )}
                 >
                   Blog
                 </Link>
@@ -176,7 +229,9 @@ export function Navigation() {
               <li onClick={() => setOpen(false)}>
                 <Link
                   href={siteConfig.baseLinks.resources}
-                  className="text-slate-900 dark:text-slate-100"
+                  className={classNames(
+                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                  )}
                 >
                   Learn
                 </Link>
@@ -185,7 +240,9 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   href={documentation.CHANGELOG}
-                  className="text-slate-900 dark:text-slate-100"
+                  className={classNames(
+                    isHomePage && open ? "text-slate-900 dark:text-white" : isHomePage && !open ? "text-white" : "text-slate-900 dark:text-slate-100"
+                  )}
                 >
                   Changelog
                 </Link>
