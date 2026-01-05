@@ -76,7 +76,9 @@ export default function RootLayout({
           attribute="class"
           enableSystem={true}
         >
-          <Navigation />
+          <div className="relative mx-auto w-full max-w-[1440px]">
+            <Navigation />
+          </div>
           {children}
           <Footer />
         </ThemeProvider>

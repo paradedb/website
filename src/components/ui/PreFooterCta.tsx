@@ -51,8 +51,8 @@ export default function PreFooterCta() {
   }, []);
 
   return (
-    <div className="w-full opacity-0 animate-fade-in delay-2200">
-      <section className="overflow-hidden flex flex-col relative bg-indigo-600">
+    <div className="w-full relative opacity-0 animate-fade-in delay-2200 bg-indigo-600">
+      <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         {/* Global Vertical Lines */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-white/20 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-white/20 z-30 pointer-events-none" />

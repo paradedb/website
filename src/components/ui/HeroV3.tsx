@@ -10,10 +10,10 @@ import { HeroVisual } from "./HeroVisual";
 
 export default function HeroV3() {
   return (
-    <div className="w-full">
+    <div className="w-full bg-indigo-600">
       <section
         aria-labelledby="hero-title"
-        className="overflow-hidden flex flex-col relative bg-indigo-600"
+        className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto"
       >
         {/* Top Shaded Region */}
         <div className="absolute top-[64px] md:top-[80px] left-4 md:left-12 right-4 md:right-12 z-20">

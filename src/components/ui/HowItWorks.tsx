@@ -614,96 +614,99 @@ export default function HowItWorks() {
   );
 
   return (
-    <div className="px-4 md:px-12 relative w-full opacity-0 animate-fade-in delay-1400">
-      <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
-        <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-6 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
-          <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
-          <div className="pt-8 md:pt-0">
-            <Badge className="mb-6">Benefits</Badge>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
-            <span className="text-highlight-blink">Zero ETL</span> means <br />
-            zero headache
-          </h2>
+    <div className="w-full relative opacity-0 animate-fade-in delay-1400 bg-white dark:bg-slate-950">
+      <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
+        <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
+          <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-6 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
+            <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
+            <div className="pt-8 md:pt-0">
+              <Badge className="mb-6">Benefits</Badge>
+            </div>
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
+              <span className="text-highlight-blink">Zero ETL</span> means{" "}
+              <br />
+              zero headache
+            </h2>
 
-          {/* Dynamic Tagline & Button Area */}
-          <div className="mb-12 flex flex-col justify-between">
-            <p
-              className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300"
-              key={activeTab + "-text"}
-            >
-              Because ParadeDB is just Postgres, it can run as a logical replica
-              of any managed Postgres, or be installed inside any self-hosted
-              Postgres.
-            </p>
+            {/* Dynamic Tagline & Button Area */}
+            <div className="mb-12 flex flex-col justify-between">
+              <p
+                className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300"
+                key={activeTab + "-text"}
+              >
+                Because ParadeDB is just Postgres, it can run as a logical
+                replica of any managed Postgres, or be installed inside any
+                self-hosted Postgres.
+              </p>
 
-            <div
-              className="mt-6 flex w-full sm:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75"
-              key={activeTab + "-btn"}
-            >
-              <Button className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all">
-                <Link target="_blank" href={documentation.REPLICATION}>
-                  Learn More
-                </Link>
-              </Button>
+              <div
+                className="mt-6 flex w-full sm:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75"
+                key={activeTab + "-btn"}
+              >
+                <Button className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all">
+                  <Link target="_blank" href={documentation.REPLICATION}>
+                    Learn More
+                  </Link>
+                </Button>
+              </div>
+            </div>
+
+            <div className="flex flex-col divide-y divide-slate-200 dark:divide-slate-900">
+              {/* Section 1: Managed */}
+              <AccordionItem
+                title="For managed Postgres"
+                isActive={activeTab === "managed"}
+                onClick={() => setActiveTab("managed")}
+                number="01"
+              >
+                <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
+                  ParadeDB can replicate from any managed Postgres — RDS,
+                  Supabase, Google Cloud/Azure Postgres, Neon, etc.
+                </div>
+
+                {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
+                <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
+                  <div className="w-full">
+                    <AnimationDemo />
+                  </div>
+                </div>
+              </AccordionItem>
+
+              {/* Section 2: Self Hosted */}
+              <AccordionItem
+                title="For self-hosted Postgres"
+                isActive={activeTab === "selfHosted"}
+                onClick={() => setActiveTab("selfHosted")}
+                number="02"
+              >
+                <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
+                  Installing ParadeDB in a self-hosted Postgres deployment
+                  incurs zero infra overhead or spend.
+                </div>
+
+                {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
+                <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
+                  <div className="w-full">
+                    <SelfHostedDemo />
+                  </div>
+                </div>
+              </AccordionItem>
             </div>
           </div>
 
-          <div className="flex flex-col divide-y divide-slate-200 dark:divide-slate-900">
-            {/* Section 1: Managed */}
-            <AccordionItem
-              title="For managed Postgres"
-              isActive={activeTab === "managed"}
-              onClick={() => setActiveTab("managed")}
-              number="01"
-            >
-              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                ParadeDB can replicate from any managed Postgres — RDS,
-                Supabase, Google Cloud/Azure Postgres, Neon, etc.
-              </div>
-
-              {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
-              <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
-                <div className="w-full">
+          {/* Right Side - Desktop Only */}
+          <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100 dark:bg-slate-900/50">
+            <div className="sticky top-24 h-[640px] w-full overflow-hidden">
+              {activeTab === "managed" ? (
+                <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
                   <AnimationDemo />
                 </div>
-              </div>
-            </AccordionItem>
-
-            {/* Section 2: Self Hosted */}
-            <AccordionItem
-              title="For self-hosted Postgres"
-              isActive={activeTab === "selfHosted"}
-              onClick={() => setActiveTab("selfHosted")}
-              number="02"
-            >
-              <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                Installing ParadeDB in a self-hosted Postgres deployment incurs
-                zero infra overhead or spend.
-              </div>
-
-              {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
-              <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
-                <div className="w-full">
+              ) : (
+                <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
                   <SelfHostedDemo />
                 </div>
-              </div>
-            </AccordionItem>
-          </div>
-        </div>
-
-        {/* Right Side - Desktop Only */}
-        <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100 dark:bg-slate-900/50">
-          <div className="sticky top-24 h-[640px] w-full overflow-hidden">
-            {activeTab === "managed" ? (
-              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
-                <AnimationDemo />
-              </div>
-            ) : (
-              <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
-                <SelfHostedDemo />
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
