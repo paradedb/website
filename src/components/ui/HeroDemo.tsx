@@ -37,11 +37,11 @@ export function HeroDemo({
   return (
     <div
       onClick={copyToClipboard}
-      className="overflow-hidden bg-white/60 dark:bg-slate-900/80 backdrop-blur-md transition-all duration-300 ease-out w-full relative group cursor-pointer"
+      className="overflow-hidden bg-white dark:bg-slate-900 transition-all duration-300 ease-out w-full relative group cursor-pointer"
     >
       {/* Hover Overlay */}
       <div className="absolute inset-0 z-30 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-indigo-50/10 dark:bg-slate-900/20">
-        <div className="flex items-center gap-2 px-4 py-2 bg-white/70 dark:bg-slate-800/90 backdrop-blur shadow-lg border border-slate-200/50 dark:border-slate-700/50 rounded-lg transform scale-95 group-hover:scale-100 transition-transform duration-300">
+        <div className="flex items-center gap-2 px-4 py-2 bg-white/70 dark:bg-slate-800/90 backdrop-blur transform scale-95 group-hover:scale-100 transition-transform duration-300">
           {copied ? (
             <>
               <RiCheckLine className="size-4 text-emerald-600 dark:text-emerald-400" />
@@ -61,18 +61,18 @@ export function HeroDemo({
       </div>
 
       {/* Code Content */}
-      <div className="relative w-full bg-transparent text-left py-4 md:py-6 pl-6 md:pl-8 pr-20 md:pr-32 text-sm md:text-base font-mono leading-tight z-10 overflow-x-auto custom-scrollbar group-hover:opacity-40 transition-opacity duration-300">
+      <div className="relative w-full bg-transparent text-left py-4 md:py-6 pl-6 md:pl-8 pr-6 text-sm md:text-base font-mono leading-tight z-10 group-hover:opacity-40 transition-opacity duration-300">
         {tokens.map((lineTokens, i) => {
           const isLineEmpty =
             lineTokens.length === 0 ||
             (lineTokens.length === 1 && lineTokens[0].content.trim() === "");
 
           return (
-            <div key={i} className="relative flex items-start min-h-0">
+            <div key={i} className="relative flex items-start min-h-0 mb-1 last:mb-0">
               <span className="text-indigo-500/50 dark:text-white/60 mr-3 select-none flex-shrink-0 w-4 text-xs md:text-sm pt-0.5">
                 {!isLineEmpty ? "$" : ""}
               </span>
-              <div className="whitespace-nowrap">
+              <div className="whitespace-pre-wrap break-all">
                 {lineTokens.map((token, j) => (
                   <span key={j} style={{ color: token.color }}>
                     {token.content}

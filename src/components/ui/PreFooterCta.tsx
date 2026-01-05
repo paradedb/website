@@ -4,7 +4,15 @@ import { documentation, social } from "@/lib/links";
 import Link from "next/link";
 import { Button } from "../Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
-import { GridBackground } from "./GridBackground";
+import dynamic from "next/dynamic";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+
+// Dynamic import for the shader component to prevent SSR issues
+const Dithering = dynamic(
+  () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
+  { ssr: false }
+);
 
 const CropHighlight = ({ children }: { children: React.ReactNode }) => (
   <span className="relative inline-block px-1">
@@ -39,6 +47,16 @@ const CropHighlight = ({ children }: { children: React.ReactNode }) => (
 );
 
 export default function PreFooterCta() {
+  const { resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const bgColor = resolvedTheme === "dark" ? "#020617" : "#ffffff";
+  const waveColor = resolvedTheme === "dark" ? "#1e293b" : "#f1f5f9";
+
   return (
     <div className="w-full">
       <section className="border-t border-slate-200 dark:border-slate-900 overflow-hidden flex flex-col relative">
@@ -49,21 +67,10 @@ export default function PreFooterCta() {
         <div className="px-4 md:px-12 w-full flex flex-col relative">
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
 
-          {/* Grid Background */}
-          <div className="absolute inset-0 top-8 md:top-12 bottom-8 md:bottom-12 left-4 md:left-12 right-4 md:right-12 -z-10 [mask-image:linear-gradient(to_bottom,transparent,black_10%,black_90%,transparent)]">
-            <GridBackground />
-          </div>
-
           {/* Background color layer */}
           <div className="absolute inset-0 bg-white dark:bg-slate-950 -z-20" />
 
-          {/* Bottom fade to white/black */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 via-white/60 dark:via-slate-950/60 to-transparent z-0 pointer-events-none" />
-          {/* Side fades to white/black */}
-          <div className="absolute top-0 bottom-0 left-0 w-24 md:w-60 bg-gradient-to-r from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
-          <div className="absolute top-0 bottom-0 right-0 w-24 md:w-60 bg-gradient-to-l from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
-
-          <div className="relative flex flex-col items-center justify-center py-8 md:py-24 text-center">
+          <div className="relative flex flex-col items-center justify-center pt-8 md:pt-24 pb-4 md:pb-8 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl leading-[1.1] text-center">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
@@ -102,6 +109,27 @@ export default function PreFooterCta() {
               </div>
             </div>
           </div>
+
+          {/* Dither wave upright at the bottom, matching hero style */}
+          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden border-x border-slate-200 dark:border-slate-900">
+            {mounted && (
+              <div className="absolute inset-0 pointer-events-none opacity-80 dark:opacity-40">
+                <Dithering
+                  width="100%"
+                  height="100%"
+                  colorBack={bgColor}
+                  colorFront={waveColor}
+                  shape="wave"
+                  type="8x8"
+                  size={8}
+                  speed={0.25}
+                  scale={1.4}
+                  rotation={0}
+                />
+              </div>
+            )}
+          </div>
+
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
         </div>
       </section>

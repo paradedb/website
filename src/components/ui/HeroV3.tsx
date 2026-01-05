@@ -8,18 +8,8 @@ import LogoCloud from "./LogoCloud";
 import { Navigation } from "@/components/ui/Navbar";
 import { siteConfig } from "@/app/siteConfig";
 import { HeroVisual } from "./HeroVisual";
-import { GridBackground } from "@/components/ui/GridBackground";
-import type { ThemedToken } from "shiki";
 
-export default function HeroV3({
-  lightTokens,
-  darkTokens,
-  code,
-}: {
-  lightTokens: ThemedToken[][];
-  darkTokens: ThemedToken[][];
-  code: string;
-}) {
+export default function HeroV3() {
   return (
     <div className="w-full">
       <section
@@ -36,9 +26,9 @@ export default function HeroV3({
           <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-white dark:bg-slate-950 -z-20" />
 
           {/* Grid Background */}
-          <div className="absolute bottom-0 top-8 md:top-12 left-4 md:left-12 right-4 md:right-12 -z-10 md:bottom-24">
+          {/* <div className="absolute bottom-0 top-8 md:top-12 left-4 md:left-12 right-4 md:right-12 -z-10 md:bottom-24">
             <GridBackground />
-          </div>
+          </div> */}
 
           <div className="relative flex flex-col items-center justify-center sm:pt-16 pt-8 text-center px-6 sm:px-0">
             <div className="flex flex-col items-center w-full relative z-20">
@@ -69,7 +59,7 @@ export default function HeroV3({
                 <br className="hidden sm:block" /> ParadeDB is the modern
                 Elastic alternative built as a Postgres extension.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-12 sm:mb-20 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-8 sm:mb-12 sm:px-0">
                 <Button className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none h-10 text-white w-full sm:w-auto">
                   <Link target="_blank" href={social.CALENDLY}>
                     Book a Demo
@@ -98,16 +88,9 @@ export default function HeroV3({
         </div>
 
         {/* New Colorful Visual Section */}
-        <div className="relative z-20 hidden md:block">
-          <div className="px-4 md:px-12 w-full mx-auto relative">
-            <div className="absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px bg-slate-200 dark:bg-slate-900 z-30" />
-            <div className="max-w-[1128px] mx-auto relative">
-              <HeroVisual
-                lightTokens={lightTokens}
-                darkTokens={darkTokens}
-                code={code}
-              />
-            </div>
+        <div className="relative z-20">
+          <div className="w-full mx-auto relative">
+            <HeroVisual />
           </div>
         </div>
 
@@ -124,10 +107,6 @@ export default function HeroV3({
         {/* Global Vertical Lines - Rendered last to ensure they are on top */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-
-        {/* Inner Vertical Borders for boxed look */}
-        <div className="absolute bottom-0 top-8 md:top-12 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute bottom-0 top-8 md:top-12 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
       </section>
     </div>
   );
