@@ -100,15 +100,6 @@ export default function SearchFeaturesClient({ features }: { features: Feature[]
                             </li>
                         ))}
                     </ul>
-                    <div className="mt-8 sm:mt-10 ml-2">
-                       <Link
-                         href={feature.href}
-                         className="text-sm group inline-flex items-center gap-1 font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors"
-                       >
-                         Learn more
-                         <RiArrowRightSLine className="size-5 transition-transform group-hover:translate-x-1" />
-                       </Link>
-                    </div>
                   </div>
                 </div>
               </Tabs.Content>

@@ -1,6 +1,6 @@
 "use client";
 
-import { email, documentation } from "@/lib/links";
+import { documentation, social } from "@/lib/links";
 import Link from "next/link";
 import { Button } from "../Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
@@ -74,7 +74,7 @@ export default function PreFooterCta() {
                   asChild
                   className="text-md px-4 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none h-10 text-white font-semibold shadow-none"
                 >
-                  <Link href={email.SALES}>Book a Demo</Link>
+                  <Link href={social.CALENDLY} target="_blank" rel="noopener noreferrer">Book a Demo</Link>
                 </Button>
                 <Button
                   asChild

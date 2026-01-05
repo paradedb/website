@@ -16,6 +16,7 @@ export default async function Code({
   code,
   lang = "typescript",
   className,
+  copy = true,
 }: Props) {
   const htmlLight = await codeToHtml(code, {
     lang,

@@ -29,8 +29,8 @@ const navigation = {
   ],
   resources: [
     { name: "Careers", href: company.CAREERS, external: true },
-    { name: "Contact", href: email.HELLO, external: false },
-    { name: "Sales", href: email.SALES, external: false },
+    { name: "Contact", href: social.CALENDLY, external: true },
+    { name: "Sales", href: social.CALENDLY, external: true },
     { name: "Support", href: email.SUPPORT, external: false },
   ],
   legal: [
@@ -60,7 +60,7 @@ export default function Footer() {
               </p>
               <div className="md:pt-4">
                 <Button asChild className="h-10 rounded-none bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white font-semibold shadow-none">
-                  <Link href={email.SALES}>
+                  <Link href={social.CALENDLY} target="_blank" rel="noopener noreferrer">
                     <RiMailLine className="mr-2 size-4" />
                     Contact Us
                   </Link>

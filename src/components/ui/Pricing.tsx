@@ -4,6 +4,7 @@ import { Badge } from "./Badge";
 import { Button } from "../Button";
 import Link from "next/link";
 import { RiCheckLine } from "@remixicon/react";
+import { social } from "@/lib/links";
 
 const PricingCard = ({
   planName,
@@ -51,7 +52,9 @@ const PricingCard = ({
       className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
       variant={buttonVariant as any}
     >
-      <Link href={buttonLink}>{buttonText}</Link>
+      <Link href={buttonLink} target={buttonLink.startsWith('mailto:') ? undefined : "_blank"} rel={buttonLink.startsWith('mailto:') ? undefined : "noopener noreferrer"}>
+        {buttonText}
+      </Link>
     </Button>
   </div>
 );
@@ -114,7 +117,7 @@ export default function Pricing() {
                     "Dedicated support and SLA"
                   ]}
                   buttonText="Custom Pricing"
-                  buttonLink="mailto:sales@paradedb.com"
+                  buttonLink={social.CALENDLY}
                 />
                 <PricingCard
                   planName="Cloud"
@@ -127,7 +130,7 @@ export default function Pricing() {
                     "Currently in private beta"
                   ]}
                   buttonText="Join Private Beta"
-                  buttonLink="#"
+                  buttonLink={social.CALENDLY}
                   buttonVariant="light"
                 />
               </div>
