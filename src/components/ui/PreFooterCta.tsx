@@ -13,36 +13,6 @@ const Dithering = dynamic(
   { ssr: false },
 );
 
-const CropHighlight = ({ children }: { children: React.ReactNode }) => (
-  <span className="relative inline-block px-1">
-    <span className="absolute -inset-1 border-2 border-white/40 pointer-events-none bg-white/10">
-      {/* Corner Handles */}
-      <span className="absolute -top-1 -left-1 size-1.5 bg-white border border-white/40" />
-      <span className="absolute -top-1 -right-1 size-1.5 bg-white border border-white/40" />
-      <span className="absolute -bottom-1 -left-1 size-1.5 bg-white border border-white/40" />
-      <span className="absolute -bottom-1 -right-1 size-1.5 bg-white border border-white/40" />
-    </span>
-    {/* Cursor icon - Positioned slightly offset from the handle corner */}
-    <span className="absolute top-full left-full translate-x-[2px] translate-y-[2px] sm:translate-x-[4px] sm:translate-y-[4px] pointer-events-none drop-shadow-xl z-20">
-      <svg
-        className="w-5 h-5 sm:w-7 sm:h-7"
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M3 3L9 20L12 12L20 9L3 3Z"
-          fill="transparent"
-          stroke="white"
-          strokeWidth="2"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </span>
-    <span className="relative z-10 text-white">{children}</span>
-  </span>
-);
-
 export default function PreFooterCta() {
   const [mounted, setMounted] = useState(false);
 
@@ -65,7 +35,10 @@ export default function PreFooterCta() {
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
-                without the <CropHighlight>complexity</CropHighlight>
+                without the{" "}
+                <span className="text-highlight-blink !text-white after:!bg-white/10 after:!bg-gradient-to-r after:!from-white/20 after:!to-transparent">
+                  complexity
+                </span>
               </h1>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
                 <Button

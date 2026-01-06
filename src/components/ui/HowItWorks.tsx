@@ -696,6 +696,57 @@ export default function HowItWorks() {
 
           {/* Right Side - Desktop Only */}
           <div className="hidden lg:col-span-7 lg:block w-full relative border-b border-slate-200 dark:border-slate-900 bg-slate-100 dark:bg-slate-900/50">
+            {/* Desktop Tabs */}
+            <div className="flex w-full border-b border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
+              <button
+                onClick={() => setActiveTab("managed")}
+                className={classNames(
+                  "flex-1 flex items-center justify-center gap-3 py-4 text-sm font-medium transition-all border-b-2 outline-none",
+                  activeTab === "managed"
+                    ? "border-indigo-600 text-indigo-900 dark:text-white"
+                    : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50",
+                )}
+              >
+                <span
+                  className={classNames(
+                    "text-[10px] font-mono font-semibold",
+                    activeTab === "managed"
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-slate-400 dark:text-slate-600",
+                  )}
+                >
+                  01
+                </span>
+                <span className="font-semibold tracking-tight">
+                  Managed Postgres
+                </span>
+              </button>
+              <div className="w-px bg-slate-200 dark:bg-slate-900" />
+              <button
+                onClick={() => setActiveTab("selfHosted")}
+                className={classNames(
+                  "flex-1 flex items-center justify-center gap-3 py-4 text-sm font-medium transition-all border-b-2 outline-none",
+                  activeTab === "selfHosted"
+                    ? "border-indigo-600 text-indigo-900 dark:text-white"
+                    : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50",
+                )}
+              >
+                <span
+                  className={classNames(
+                    "text-[10px] font-mono font-semibold",
+                    activeTab === "selfHosted"
+                      ? "text-indigo-600 dark:text-indigo-400"
+                      : "text-slate-400 dark:text-slate-600",
+                  )}
+                >
+                  02
+                </span>
+                <span className="font-semibold tracking-tight">
+                  Self-Hosted Postgres
+                </span>
+              </button>
+            </div>
+
             <div className="sticky top-24 h-[640px] w-full overflow-hidden">
               {activeTab === "managed" ? (
                 <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
