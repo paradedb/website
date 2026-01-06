@@ -63,49 +63,49 @@ export default function PreFooterCta() {
                     Book a Demo
                   </Link>
                 </Button>
-                  <Button
-                    asChild
-                    variant="ghost"
-                    className="text-md hover:group hover:bg-white/10 bg-transparent border-0 h-10 px-4 dark:hover:bg-transparent"
+                <Button
+                  asChild
+                  variant="ghost"
+                  className="text-md hover:group hover:bg-white/10 bg-transparent border-0 h-10 px-4 dark:hover:bg-transparent"
+                >
+                  <Link
+                    href={documentation.BASE}
+                    className="text-white flex items-center gap-2"
+                    target="_blank"
                   >
-                    <Link
-                      href={documentation.BASE}
-                      className="text-white flex items-center gap-2"
-                      target="_blank"
-                    >
-                      Documentation
-                      <ArrowAnimated
-                        className="stroke-white"
-                        aria-hidden="true"
-                      />
-                    </Link>
-                  </Button>
-                </div>
+                    Documentation
+                    <ArrowAnimated
+                      className="stroke-white"
+                      aria-hidden="true"
+                    />
+                  </Link>
+                </Button>
               </div>
             </div>
+          </div>
 
-            {/* Dither wave upright at the bottom, matching hero style */}
-            <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden opacity-0 animate-fade-in delay-300">
-              {mounted && (
-                <div className="absolute inset-0 pointer-events-none">
-                  <Dithering
-                    width="100%"
-                    height="100%"
-                    colorBack="#4f46e500"
-                    colorFront="#6366f1"
-                    shape="wave"
-                    type="8x8"
-                    size={8}
-                    speed={0.25}
-                    scale={1.4}
-                    rotation={0}
-                  />
-                </div>
-              )}
-            </div>
+          {/* Dither wave upright at the bottom, matching hero style */}
+          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden opacity-0 animate-fade-in delay-300">
+            {mounted && (
+              <div className="absolute inset-0 pointer-events-none">
+                <Dithering
+                  width="100%"
+                  height="100%"
+                  colorBack="#4f46e500"
+                  colorFront="#6366f1"
+                  shape="wave"
+                  type="8x8"
+                  size={8}
+                  speed={0.25}
+                  scale={1.4}
+                  rotation={0}
+                />
+              </div>
+            )}
+          </div>
 
-            {/* Bottom Shaded Region */}
-            <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-t border-white/20 relative z-20 bg-indigo-700/20 opacity-60" />
+          {/* Bottom Shaded Region */}
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-t border-white/20 relative z-20 bg-indigo-700/20 opacity-60" />
         </section>
       </div>
     </div>
