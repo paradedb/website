@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
   // Homepage title & global template for all other pages
   title: {
-    default: "ParadeDB — The Transactional Elasticsearch Alternative",
+    default: "ParadeDB — Simple, Elastic-Quality Search for Postgres",
     template: "%s | ParadeDB",
   },
   description: siteConfig.description,
@@ -38,14 +38,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
-    title: "ParadeDB — The Transactional Elasticsearch Alternative",
+    title: "ParadeDB — Simple, Elastic-Quality Search for Postgres",
     description: siteConfig.description,
     siteName: "ParadeDB",
     images: "/opengraph-image.png",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ParadeDB — The Transactional Elasticsearch Alternative",
+    title: "ParadeDB — Simple, Elastic-Quality Search for Postgres",
     description: siteConfig.description,
     images: "/twitter-image.png",
   },
