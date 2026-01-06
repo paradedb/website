@@ -21,17 +21,27 @@ export default function PreFooterCta() {
   }, []);
 
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-2200 bg-indigo-600">
-      <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
-        {/* Global Vertical Lines */}
-        <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-white/20 z-30 pointer-events-none" />
-        <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-white/20 z-30 pointer-events-none" />
+    <div className="w-full relative opacity-0 animate-fade-in delay-2200">
+      {/* White Grid Divider Section - Full Width Background */}
+      <div className="hidden sm:block w-full bg-white dark:bg-slate-950 relative border-t border-slate-200 dark:border-slate-900">
+        <div className="max-w-[1440px] mx-auto relative px-4 md:px-12">
+          <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+          <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+          <div className="h-12 md:h-20 w-full border-b border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
+        </div>
+      </div>
 
-        <div className="px-4 md:px-12 w-full flex flex-col relative">
-          {/* Top Shaded Region */}
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 relative z-20 bg-indigo-700/20 opacity-40" />
+      {/* Main CTA Section (Indigo) - Full Width Background */}
+      <div className="bg-indigo-600 relative overflow-hidden">
+        <section className="flex flex-col relative max-w-[1440px] mx-auto px-4 md:px-12">
+          {/* Global Vertical Lines (White) */}
+          <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-white/20 z-30 pointer-events-none" />
+          <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-white/20 z-30 pointer-events-none" />
 
-          <div className="relative flex flex-col items-center justify-center pt-16 md:pt-32 pb-4 md:pb-8 text-center">
+          {/* Top Indigo Shaded Region */}
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 relative z-20 bg-indigo-700/20 opacity-60" />
+
+          <div className="relative flex flex-col items-center justify-center pt-24 md:pt-32 pb-4 md:pb-8 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
@@ -95,9 +105,9 @@ export default function PreFooterCta() {
           </div>
 
           {/* Bottom Shaded Region */}
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-t border-white/20 relative z-20 bg-indigo-700/20 opacity-40" />
-        </div>
-      </section>
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-t border-white/20 relative z-20 bg-indigo-700/20 opacity-60" />
+        </section>
+      </div>
     </div>
   );
 }

@@ -10,7 +10,7 @@ export default function NotFound() {
         <section className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 flex flex-col relative">
           {/* Shaded Hatch Region below navbar */}
           <div className="px-4 md:px-12 w-full relative z-20">
-            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950 opacity-60" />
           </div>
 
           {/* Outer Vertical Layout Borders */}
@@ -41,7 +41,7 @@ export default function NotFound() {
 
           {/* Shaded Hatch Region above footer */}
           <div className="px-4 md:px-12 w-full relative z-20">
-            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950 opacity-60" />
           </div>
         </section>
       </div>

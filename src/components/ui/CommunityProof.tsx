@@ -9,12 +9,15 @@ import { documentation, github } from "@/lib/links";
 
 export default function CommunityProof() {
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-1800 bg-white dark:bg-slate-950">
+    <div className="w-full relative opacity-0 animate-fade-in delay-1800 bg-transparent">
       <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
         <div className="px-4 md:px-12 w-full flex flex-col relative">
+          {/* Top Shaded Region */}
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
+
           {/* Section: Loved by Developers (White Background) */}
           <div className="relative flex flex-col items-center justify-center bg-white dark:bg-slate-950">
             <div className="relative w-full z-20">
@@ -109,6 +112,9 @@ export default function CommunityProof() {
               </div>
             </div>
           </div>
+
+          {/* Bottom Shaded Region */}
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
         </div>
       </section>
     </div>

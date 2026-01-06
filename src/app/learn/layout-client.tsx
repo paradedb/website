@@ -88,7 +88,7 @@ export default function ResourcesLayoutClient({
         <section className="bg-white dark:bg-slate-950 flex flex-col relative">
           {/* Shaded Hatch Region below navbar */}
           <div className="px-4 md:px-12 w-full relative z-20">
-            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50" />
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
           </div>
 
           {/* Learn Navigation - Top Bar */}
@@ -123,7 +123,7 @@ export default function ResourcesLayoutClient({
 
           <div className="flex relative z-20 w-full px-4 md:px-12">
             {!isLearnIndex && (
-              <div className="hidden lg:flex lg:w-80 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900 pt-8">
+              <div className="hidden lg:flex lg:w-80 lg:shrink-0 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900 pt-8">
                 {/* Sidebar component */}
                 <div className="flex grow flex-col gap-y-5 overflow-y-auto px-6 pb-10">
                   <nav className="flex flex-1 flex-col text-slate-900 dark:text-white">
@@ -191,8 +191,10 @@ export default function ResourcesLayoutClient({
 
             <main
               className={classNames(
-                "w-full relative flex flex-col",
-                isLearnIndex ? "px-0" : "pl-4 md:pl-12 pr-0 pt-8 pb-4",
+                "relative flex flex-col",
+                isLearnIndex
+                  ? "w-full px-0"
+                  : "flex-1 min-w-0 pl-4 md:pl-12 pr-0 pt-8 pb-4",
               )}
             >
               <div
@@ -235,7 +237,7 @@ export default function ResourcesLayoutClient({
 
           {/* Shaded Hatch Region above footer */}
           <div className="px-4 md:px-12 w-full relative z-20">
-            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50" />
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
           </div>
         </section>
         <CodeBlockEnhancer />

@@ -614,9 +614,16 @@ export default function HowItWorks() {
   );
 
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-1400 bg-white dark:bg-slate-950">
+    <div className="w-full relative opacity-0 animate-fade-in delay-1400 bg-transparent">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
-        <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full border-l border-r border-t border-slate-200 dark:border-slate-900 pb-12 md:pb-20">
+        {/* Global Vertical Lines */}
+        <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+        <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+
+        {/* Top Shaded Region */}
+        <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
+
+        <div className="lg:grid lg:grid-cols-12 lg:gap-0 items-stretch mx-auto w-full bg-white dark:bg-slate-950 pb-12 md:pb-20 relative">
           <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-6 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
             <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
             <div className="pt-8 md:pt-0">
@@ -760,6 +767,8 @@ export default function HowItWorks() {
             </div>
           </div>
         </div>
+        {/* Bottom Shaded Region */}
+        <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
       </div>
     </div>
   );
