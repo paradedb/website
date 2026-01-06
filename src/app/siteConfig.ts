@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "ParadeDB",
   url: "https://www.paradedb.com", // (canonical host)
   description:
-    "ParadeDB is an open source, ACID-compliant search and analytics database. Built on Postgres for update-heavy workloads.",
+    "You want better search, not the burden of Elasticsearch. ParadeDB is the modern Elastic alternative built as a Postgres extension.",
   baseLinks: {
     home: "/",
     pricing: "/pricing",
