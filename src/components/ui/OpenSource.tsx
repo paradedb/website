@@ -93,7 +93,7 @@ export default function OpenSource() {
             key={item.name}
             className="col-span-full flex flex-col sm:col-span-1"
           >
-            <div className="w-fit rounded-lg p-2.5 shadow-sm ring-1 ring-slate-200">
+            <div className="w-fit rounded-lg p-2.5 shadow-sm ring-1 ring-indigo-200">
               <item.icon
                 aria-hidden="true"
                 className="size-4 text-gray-900 md:size-6"

@@ -26,9 +26,7 @@ const PricingCard = ({
   <div className="flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-slate-900/50 text-left items-start">
     <div className="mb-6 sm:mb-8 w-full">
       <div className="flex justify-start mb-2">
-        <Badge className="bg-slate-100 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-200 font-medium py-0.5 px-2 text-[10px] uppercase tracking-wider">
-          {badgeText}
-        </Badge>
+        <Badge className="py-0.5 px-2 text-[10px]">{badgeText}</Badge>
       </div>
       <div className="flex items-baseline justify-start gap-1 mb-4">
         <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">
@@ -72,8 +70,8 @@ const PricingCard = ({
 
 export default function Pricing() {
   return (
-    <div className="w-full">
-      <section className="overflow-hidden flex flex-col relative">
+    <div className="w-full relative opacity-0 animate-fade-in delay-2000 bg-white dark:bg-slate-950">
+      <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         {/* Main Layout Vertical Borders */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
@@ -92,9 +90,7 @@ export default function Pricing() {
           <div className="relative flex flex-col items-center justify-center py-16 sm:py-24 text-center bg-transparent">
             {/* Header section */}
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">
-                Pricing
-              </Badge>
+              <Badge className="mb-6">Pricing</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                 Ready, set, <span className="text-highlight-blink">deploy</span>
               </h2>

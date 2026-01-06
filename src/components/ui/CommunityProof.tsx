@@ -9,8 +9,8 @@ import { documentation, github } from "@/lib/links";
 
 export default function CommunityProof() {
   return (
-    <div className="w-full">
-      <section className="overflow-hidden flex flex-col relative">
+    <div className="w-full relative opacity-0 animate-fade-in delay-1800 bg-white dark:bg-slate-950">
+      <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
@@ -21,9 +21,7 @@ export default function CommunityProof() {
               <div className="grid grid-cols-1 md:grid-cols-4 bg-white dark:bg-slate-950 divide-y md:divide-y-0 divide-slate-200 dark:divide-slate-900">
                 {/* Heading Column */}
                 <div className="p-8 md:p-12 md:py-24 text-left flex flex-col items-start md:border-r border-slate-200 dark:border-slate-900">
-                  <Badge className="mb-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-900">
-                    Open Source
-                  </Badge>
+                  <Badge className="mb-6">Open Source</Badge>
                   <h2 className="text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white mb-4">
                     <span className="text-highlight-blink">Loved</span> by
                     developers

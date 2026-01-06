@@ -61,113 +61,115 @@ export default function BlogLayoutClient({
     : "";
 
   return (
-    <div className="w-full">
-      <section className="bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900 flex flex-col relative">
-        {/* Shaded Hatch Region below navbar */}
-        <div className="px-4 md:px-12 w-full relative z-20">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
-        </div>
-
-        {/* Blog Navigation - Top Bar */}
-        {!isBlogIndex && (
-          <div className="px-4 md:px-12 w-full relative z-30">
-            <div className="border-b border-slate-100 dark:border-slate-900 flex justify-between items-center h-12 px-6">
-              <div className="flex items-center">
-                {canGoBackward && <BackButton href={previousHref} />}
-              </div>
-              <div className="flex items-center">
-                {canGoForward && <NextButton href={nextHref} />}
-              </div>
-            </div>
+    <div className="w-full relative opacity-0 animate-fade-in delay-300 bg-white dark:bg-slate-950">
+      <div className="max-w-[1440px] mx-auto relative w-full">
+        <section className="bg-white dark:bg-slate-950 flex flex-col relative">
+          {/* Shaded Hatch Region below navbar */}
+          <div className="px-4 md:px-12 w-full relative z-20">
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50" />
           </div>
-        )}
 
-        {/* Outer Vertical Layout Borders */}
-        {isBlogIndex ? (
-          <>
-            <div className="absolute bottom-8 md:bottom-12 top-8 md:top-12 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-            <div className="absolute bottom-8 md:bottom-12 top-8 md:top-12 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-          </>
-        ) : (
-          <>
-            <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-            <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-          </>
-        )}
-
-        <div className="flex relative z-20 w-full px-4 md:px-12">
+          {/* Blog Navigation - Top Bar */}
           {!isBlogIndex && (
-            <div className="hidden lg:flex lg:w-80 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900 pt-8">
-              {/* Sidebar component - Sticky positioning */}
-              <div className="sticky top-8 flex flex-col gap-y-5 px-6 pb-10">
-                <nav className="flex flex-1 flex-col">
-                  <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-4 mt-0 px-2">
-                    Latest Posts
-                  </div>
-                  <ul role="list" className="flex flex-1 flex-col gap-y-7">
-                    <li>
-                      <ul role="list" className="-mx-2 space-y-1">
-                        {blogLinks.map((item) => (
-                          <li key={item.href}>
-                            <a
-                              href={`${siteConfig.baseLinks.blog}/${item.href}`}
-                              className={classNames(
-                                pathname.endsWith(item.href)
-                                  ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-semibold"
-                                  : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
-                                "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-5 transition-all duration-200",
-                              )}
-                            >
-                              {item.name}
-                            </a>
-                          </li>
-                        ))}
-                      </ul>
-                    </li>
-                  </ul>
-                </nav>
+            <div className="px-4 md:px-12 w-full relative z-30">
+              <div className="border-b border-slate-100 dark:border-slate-900 flex justify-between items-center h-12 px-6">
+                <div className="flex items-center">
+                  {canGoBackward && <BackButton href={previousHref} />}
+                </div>
+                <div className="flex items-center">
+                  {canGoForward && <NextButton href={nextHref} />}
+                </div>
               </div>
             </div>
           )}
 
-          {/* Blog content */}
-          <main
-            className={classNames(
-              "w-full relative flex flex-col",
-              isBlogIndex ? "px-0" : "px-4 md:px-12 pt-8 pb-4",
+          {/* Outer Vertical Layout Borders */}
+          {isBlogIndex ? (
+            <>
+              <div className="absolute bottom-8 md:bottom-12 top-8 md:top-12 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+              <div className="absolute bottom-8 md:bottom-12 top-8 md:top-12 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+            </>
+          ) : (
+            <>
+              <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+              <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+            </>
+          )}
+
+          <div className="flex relative z-20 w-full px-4 md:px-12">
+            {!isBlogIndex && (
+              <div className="hidden lg:flex lg:w-80 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900 pt-8">
+                {/* Sidebar component - Sticky positioning */}
+                <div className="sticky top-8 flex flex-col gap-y-5 px-6 pb-10">
+                  <nav className="flex flex-1 flex-col">
+                    <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-4 mt-0 px-2">
+                      Latest Posts
+                    </div>
+                    <ul role="list" className="flex flex-1 flex-col gap-y-7">
+                      <li>
+                        <ul role="list" className="-mx-2 space-y-1">
+                          {blogLinks.map((item) => (
+                            <li key={item.href}>
+                              <a
+                                href={`${siteConfig.baseLinks.blog}/${item.href}`}
+                                className={classNames(
+                                  pathname.endsWith(item.href)
+                                    ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-semibold"
+                                    : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
+                                  "group flex gap-x-3 rounded-md p-2 text-sm font-medium leading-5 transition-all duration-200",
+                                )}
+                              >
+                                {item.name}
+                              </a>
+                            </li>
+                          ))}
+                        </ul>
+                      </li>
+                    </ul>
+                  </nav>
+                </div>
+              </div>
             )}
-          >
-            <div
+
+            {/* Blog content */}
+            <main
               className={classNames(
-                "w-full mx-auto",
-                isBlogIndex ? "" : "max-w-none",
+                "w-full relative flex flex-col",
+                isBlogIndex ? "px-0" : "pl-4 md:pl-12 pr-0 pt-8 pb-4",
               )}
             >
-              <div className="w-full">{children}</div>
-            </div>
-          </main>
-        </div>
-
-        {/* Blog Navigation - Bottom Bar */}
-        {!isBlogIndex && (
-          <div className="px-4 md:px-12 w-full relative z-30">
-            <div className="border-t border-slate-100 dark:border-slate-900 flex justify-between items-center h-16 px-6">
-              <div className="flex items-center">
-                {canGoBackward && <BackButton href={previousHref} />}
+              <div
+                className={classNames(
+                  "w-full mx-auto",
+                  isBlogIndex ? "" : "max-w-none",
+                )}
+              >
+                <div className="w-full">{children}</div>
               </div>
-              <div className="flex items-center">
-                {canGoForward && <NextButton href={nextHref} />}
-              </div>
-            </div>
+            </main>
           </div>
-        )}
 
-        {/* Shaded Hatch Region above footer */}
-        <div className="px-4 md:px-12 w-full relative z-20">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
-        </div>
-      </section>
-      <CodeBlockEnhancer />
+          {/* Blog Navigation - Bottom Bar */}
+          {!isBlogIndex && (
+            <div className="px-4 md:px-12 w-full relative z-30">
+              <div className="border-t border-slate-100 dark:border-slate-900 flex justify-between items-center h-16 px-6">
+                <div className="flex items-center">
+                  {canGoBackward && <BackButton href={previousHref} />}
+                </div>
+                <div className="flex items-center">
+                  {canGoForward && <NextButton href={nextHref} />}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Shaded Hatch Region above footer */}
+          <div className="px-4 md:px-12 w-full relative z-20">
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50" />
+          </div>
+        </section>
+        <CodeBlockEnhancer />
+      </div>
     </div>
   );
 }

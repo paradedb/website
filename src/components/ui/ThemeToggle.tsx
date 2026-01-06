@@ -5,7 +5,11 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import classNames from "classnames";
 
-export function ThemeToggle() {
+export function ThemeToggle({
+  variant = "default",
+}: {
+  variant?: "default" | "white";
+}) {
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -24,8 +28,17 @@ export function ThemeToggle() {
     { value: "dark", icon: RiMoonLine },
   ] as const;
 
+  const isWhite = variant === "white";
+
   return (
-    <div className="flex items-center gap-0.5 rounded-full bg-slate-100/80 dark:bg-slate-900/80 p-0.5 border border-slate-200/50 dark:border-slate-800/50 backdrop-blur-sm">
+    <div
+      className={classNames(
+        "flex items-center gap-0.5 rounded-full p-0.5 border backdrop-blur-sm transition-colors",
+        isWhite
+          ? "bg-white/10 border-white/20"
+          : "bg-slate-100/80 dark:bg-slate-900/80 border-slate-200/50 dark:border-slate-800/50",
+      )}
+    >
       {options.map((option) => {
         const Icon = option.icon;
         const isActive = theme === option.value;
@@ -36,8 +49,12 @@ export function ThemeToggle() {
             className={classNames(
               "flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200",
               isActive
-                ? "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-slate-100"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
+                ? isWhite
+                  ? "bg-white text-indigo-600 shadow-sm"
+                  : "bg-white text-slate-900 shadow-sm dark:bg-slate-800 dark:text-slate-100"
+                : isWhite
+                  ? "text-indigo-100 hover:text-white hover:bg-white/10"
+                  : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100",
             )}
             aria-label={`Set ${option.value} theme`}
           >

@@ -11,7 +11,8 @@ export function Badge({
   return (
     <span
       className={classNames(
-        "mb-4 inline-flex items-center border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-1 text-xs font-medium text-indigo-950 dark:text-white uppercase",
+        "inline-flex items-center border px-3 py-1 text-xs font-medium uppercase tracking-wider transition-colors",
+        "bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-200",
         className,
       )}
     >

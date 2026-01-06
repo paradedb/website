@@ -1,55 +1,39 @@
 "use client";
 
-import { HeroDemo } from "./HeroDemo";
-import type { ThemedToken } from "shiki";
-import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 
-import Image from "next/image";
+// Dynamic import for the shader component to prevent SSR issues
+const Dithering = dynamic(
+  () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
+  { ssr: false },
+);
 
-export function HeroVisual({
-  lightTokens,
-  darkTokens,
-  code,
-}: {
-  lightTokens: ThemedToken[][];
-  darkTokens: ThemedToken[][];
-  code: string;
-}) {
-  const { resolvedTheme } = useTheme();
+export function HeroVisual() {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const meshSrc =
-    mounted && resolvedTheme === "dark" ? "/mesh_dark.svg" : "/mesh.svg";
+  if (!mounted) return null;
 
   return (
-    <div className="relative w-full overflow-hidden">
-      {/* Colorful Band Section */}
-      <div className="relative w-full h-[300px] md:h-[400px] flex items-center justify-center overflow-hidden bg-white dark:bg-slate-950">
-        {/* Colorful Background Image */}
-        <div className="absolute inset-0 pointer-events-none">
-          <Image
-            src={meshSrc}
-            alt="Colorful gradient background"
-            fill
-            className="object-cover opacity-90"
-            priority
+    <div className="relative w-full overflow-hidden px-4 md:px-12 opacity-0 animate-fade-in delay-1000">
+      <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden">
+        {/* Paper Dithering Background */}
+        <div className="absolute inset-0 pointer-events-none opacity-100">
+          <Dithering
+            width="100%"
+            height="100%"
+            colorBack="#4f46e500"
+            colorFront="#6366f1"
+            shape="wave"
+            type="8x8"
+            size={8}
+            speed={0.25}
+            scale={1.4}
           />
-        </div>
-
-        {/* Content */}
-        <div className="relative z-10 w-full max-w-[900px] px-6 md:px-12">
-          <div className="overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.3)] border border-white/40 dark:border-slate-800/60">
-            <HeroDemo
-              lightTokens={lightTokens}
-              darkTokens={darkTokens}
-              code={code}
-            />
-          </div>
         </div>
       </div>
     </div>
