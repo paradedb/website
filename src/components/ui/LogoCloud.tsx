@@ -14,7 +14,7 @@ export default function LogoCloud({
   return (
     <div
       className={cx(
-        "grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-20 py-10 md:py-12 px-6 sm:px-0",
+        "flex flex-wrap items-center justify-between w-full py-10 md:py-12 px-8 md:px-16 gap-y-8",
         isIndigo
           ? "bg-[#4f46e5]"
           : isWhite
@@ -26,7 +26,7 @@ export default function LogoCloud({
       <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.BiltRewards
           className={cx(
-            "w-16 md:w-20",
+            "w-16 md:w-18",
             isIndigo || isWhite
               ? "brightness-0 invert opacity-70"
               : "brightness-0 dark:brightness-0 dark:invert opacity-80",
@@ -54,6 +54,16 @@ export default function LogoCloud({
         />
       </div>
       <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.Span
+          className={cx(
+            "w-16 md:w-18",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
+      </div>
+      <div className="hidden sm:flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
         <Logos.RxVantage
           className={cx(
             "w-20 md:w-28",

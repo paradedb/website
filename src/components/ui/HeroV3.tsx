@@ -94,7 +94,7 @@ export default function HeroV3() {
           <div className="px-4 md:px-12 w-full mx-auto relative">
             <div className="absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />
             <div className="absolute bottom-0 left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />
-            <div className="max-w-[1128px] mx-auto">
+            <div className="w-full">
               <LogoCloud variant="white" className="bg-transparent" />
             </div>
           </div>
