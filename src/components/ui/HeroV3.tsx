@@ -16,7 +16,7 @@ export default function HeroV3() {
     <div className="w-full bg-indigo-600 relative">
       {/* Alpha overlay for dark mode */}
       {resolvedTheme === 'dark' && (
-        <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+        <div className="absolute inset-0 bg-black/5 pointer-events-none" />
       )}
       
       <section
