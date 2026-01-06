@@ -69,10 +69,16 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <GoogleTagManager gtmId="GTM-KMGRG564" />
       <body
-        className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-white selection:bg-indigo-100 selection:text-indigo-700`}
+        className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-background text-foreground selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-700 dark:selection:text-indigo-300`}
       >
-        <ThemeProvider defaultTheme="light" attribute="class">
-          <Navigation />
+        <ThemeProvider
+          defaultTheme="system"
+          attribute="class"
+          enableSystem={true}
+        >
+          <div className="relative mx-auto w-full max-w-[1440px]">
+            <Navigation />
+          </div>
           {children}
           <Footer />
         </ThemeProvider>

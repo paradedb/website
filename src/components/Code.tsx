@@ -15,18 +15,17 @@ type Props = {
 export default async function Code({
   code,
   lang = "typescript",
-  copy = false,
-
-  // tokyo-night
-  // catppuccin-macchiato
-  // min-dark
-  // poimandres
-  theme = "catppuccin-macchiato",
   className,
+  copy = true,
 }: Props) {
-  const html = await codeToHtml(code, {
+  const htmlLight = await codeToHtml(code, {
     lang,
-    theme,
+    theme: "github-light",
+  });
+
+  const htmlDark = await codeToHtml(code, {
+    lang,
+    theme: "github-dark",
   });
 
   return (
@@ -39,8 +38,12 @@ export default async function Code({
         </div>
       )}
       <div
-        className="text-sm [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-4 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full"
-        dangerouslySetInnerHTML={{ __html: html }}
+        className="text-sm dark:hidden [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-2 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full"
+        dangerouslySetInnerHTML={{ __html: htmlLight }}
+      ></div>
+      <div
+        className="text-sm hidden dark:block [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-2 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full"
+        dangerouslySetInnerHTML={{ __html: htmlDark }}
       ></div>
     </div>
   );

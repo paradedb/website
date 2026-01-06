@@ -11,44 +11,55 @@ export default async function Resources() {
   );
 
   return (
-    <div className="mx-auto max-w-6xl lg:px-6">
-      <div className="mb-12">
-        <h1 className="text-2xl font-semibold text-gray-900 mb-6">Learn</h1>
-        <p className="text-lg text-gray-600 mb-6">
-          Deep dive into search concepts, and learn how to build powerful search
-          features in Postgres.
-        </p>
+    <div className="w-full">
+      <div className="relative border-b border-slate-200 dark:border-slate-900">
+        <div className="pt-8 pb-10 md:py-12 px-6 md:px-12 relative">
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
+            Learn
+          </h1>
+          <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl">
+            Deep dive into search concepts, and learn how to build powerful
+            search features in Postgres.
+          </p>
+        </div>
       </div>
 
-      {/* Desktop: Cards */}
-      <div className="lg:block">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="md:py-12 px-4 md:px-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {sortedResources.map((resource) => (
             <Link
               key={resource.href}
               href={`${siteConfig.baseLinks.resources}/${resource.href}`}
               className="group"
             >
-              <div className="bg-white border border-gray-200 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-200 p-6 h-full flex flex-col">
-                <div className="mb-3">
-                  <time className="text-sm text-gray-500 whitespace-nowrap">
-                    {new Date(resource.date).toLocaleDateString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                    })}
-                  </time>
-                </div>
-                <h3 className="text-lg font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors duration-200 mb-2">
-                  {resource.name}
-                </h3>
-                <p className="text-gray-600 text-md md:text-sm leading-relaxed mb-4 flex-grow">
-                  {resource.description}
-                </p>
-                <div className="flex items-center justify-between mt-4">
-                  <span className="text-sm md:text-xs text-indigo-500">
-                    {resource.section}
-                  </span>
+              <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-none">
+                <div className="p-6 flex flex-col flex-grow">
+                  <div className="mb-3 flex items-center justify-between">
+                    <time className="text-sm text-gray-500 dark:text-slate-400 whitespace-nowrap">
+                      {new Date(resource.date).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      })}
+                    </time>
+                    <span className="text-xs text-indigo-500 bg-indigo-50 dark:bg-indigo-900/50 py-1 px-2 capitalize rounded-lg">
+                      {resource.section}
+                    </span>
+                  </div>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 mb-2">
+                    {resource.name}
+                  </h3>
+                  <p className="text-gray-600 dark:text-slate-400 text-md md:text-sm leading-relaxed mb-4 flex-grow">
+                    {resource.description}
+                  </p>
+                  <div className="mt-4">
+                    <span className="text-sm md:text-xs text-gray-700 dark:text-slate-300 font-medium">
+                      Topic:{" "}
+                      <span className="text-indigo-600 dark:text-indigo-400">
+                        {resource.section}
+                      </span>
+                    </span>
+                  </div>
                 </div>
               </div>
             </Link>

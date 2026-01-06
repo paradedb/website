@@ -35,7 +35,7 @@ In this post, we'll do a deep dive into:
 <Image
   src={LsmTreeArchitectureImage}
   alt="Diagram of an LSM tree showing the segment hierarchy and compaction process"
-  className="rounded-xl"
+
 />
 
 A Log-Structured Merge Tree (LSM tree) is a write-optimized data structure commonly used in systems like RocksDB and Cassandra.
@@ -61,7 +61,7 @@ Logical consistency is like waiting until the chapter is finished before copying
 <Image
   src={PhysicalConsistencyImage}
   alt="Illustration of Postgres WAL shipping from a primary to a standby to maintain physical consistency between replicas"
-  className="rounded-xl"
+
 />
 
 In a primary-standby physical replication setup, a primary server is paired with a standby server that acts as a read-only copy of its leader. The servers remain in sync by using a Write-Ahead Log (WAL) to record all binary-level changes to storage blocks on the primary server before they occur. Changes to this append-only WAL file are then streamed to the standby (a process called “log shipping”) and applied in the order received. This process enables near-realtime data synchronization between the two servers, hence the phrase “hot standby”.
@@ -81,7 +81,7 @@ Instead, for multi-node operations `pg_search` uses a Copy-on-Write (CoW) clone 
 <Image
   src={CopyOnWriteImage}
   alt="Diagram of a copy-on-write linked list where a new version is built and the head pointer is atomically swapped to preserve consistency"
-  className="rounded-xl"
+
 />
 
 ## A Problem: Vacuums Undermine Logical Consistency
@@ -115,7 +115,7 @@ To understand what information `hot_standby_feedback` actually relays, we must f
 <Image
   src={HotStandbyFeedbackImage}
   alt="Diagram of a Postgres tuple showcasing the xmin and xmax columns"
-  className="rounded-xl"
+
 />
 
 When `hot_standby_feedback` is enabled, the replica will periodically communicate the smallest `xmin` (oldest “creation time”) that any of its active queries is currently pinned to. This `xmin` identifies the oldest tuple still in use on the standby.

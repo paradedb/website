@@ -7,8 +7,9 @@ import classNames from "classnames";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { DatabaseLogo } from "../../../public/DatabaseLogo";
+import { DatabaseLogo } from "./DatabaseLogo";
 import { Button } from "../Button";
+import { ThemeToggle } from "./ThemeToggle";
 
 const formatStarCount = (count: number) => {
   if (count < 1000) {
@@ -22,6 +23,7 @@ export function Navigation() {
   const [stars, setStars] = React.useState();
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
+  const isHomePage = pathname === siteConfig.baseLinks.home;
 
   React.useEffect(() => {
     const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)");
@@ -52,54 +54,57 @@ export function Navigation() {
   }, []);
 
   return (
-    <div>
-      <div className="flex w-screen justify-center space-x-4 bg-indigo-600 px-2 py-4 text-center text-white">
-        <div className="hidden rounded  bg-opacity-20 px-2 py-1 bg-[#786EEA] text-xs font-medium md:block">
-          News
-        </div>
-        <div className="relative top-0.5 text-left text-sm">
-          Announcing our{" "}
-          <Link
-            href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
-            className="font-semibold underline"
-          >
-            $12M Series A
-          </Link>{" "}
-          led by Craft Ventures 🎉. Read it on{" "}
-          <Link
-            href="https://techcrunch.com/2025/07/15/paradedb-takes-on-elasticsearch-as-interest-in-postgres-explodes-amid-ai-boom/"
-            className="font-semibold underline"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            TechCrunch
-          </Link>
-          {""}.
-        </div>
-      </div>
+    <div
+      className={classNames(
+        "w-full z-50",
+        isHomePage ? "absolute top-0" : "relative h-16 md:h-20",
+      )}
+    >
       <header
         className={classNames(
-          "inset-x-3 z-50 mx-auto mt-4 flex max-w-6xl transform-gpu animate-slide-down-fade justify-center overflow-hidden rounded-xl border border-transparent px-6 py-3 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform md:mt-4 md:px-3",
-          open === true ? "h-52" : "h-16",
+          "z-50 flex transform-gpu opacity-0 animate-navbar justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
+          "left-4 md:left-12 right-4 md:right-12 absolute border-b",
+          isHomePage
+            ? "border-white/20"
+            : "border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md",
           open === true
-            ? "backdrop-blur-nav max-w-3xl border-gray-100 bg-white/80 shadow-xl shadow-black/5"
-            : "bg-white/0",
+            ? "h-auto pb-8 pt-2 top-2 rounded-2xl"
+            : "h-16 md:h-20 top-0",
+          open === true
+            ? "bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/10"
+            : "bg-transparent",
         )}
       >
-        <div className="w-full md:my-auto">
-          <div className="relative flex items-center justify-between">
+        <div className="w-full flex flex-col justify-start">
+          <div
+            className={classNames(
+              "relative flex items-center justify-between h-16 md:h-20 shrink-0",
+              open ? "px-6" : "px-0",
+            )}
+          >
             <Link href={siteConfig.baseLinks.home} aria-label="Home">
               <span className="sr-only">Company logo</span>
-              <DatabaseLogo className="w-32" />
+              <DatabaseLogo
+                className={classNames(
+                  "w-28 sm:w-32 transition-colors",
+                  isHomePage && !open
+                    ? "brightness-0 invert"
+                    : "dark:brightness-0 dark:invert",
+                )}
+              />
             </Link>
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
                   className={classNames(
-                    "px-2 py-1 hover:text-indigo-600",
+                    "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.blog)
-                      ? "text-indigo-600"
-                      : "text-indigo-900",
+                      ? "text-indigo-600 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={siteConfig.baseLinks.blog}
                 >
@@ -107,17 +112,28 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                  className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
+                  className={classNames(
+                    "px-2 py-1 transition-colors",
+                    isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                        ? "text-slate-900 dark:text-white"
+                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                  )}
                   href={documentation.BASE}
                 >
                   Documentation
                 </Link>
                 <Link
                   className={classNames(
-                    "px-2 py-1 hover:text-indigo-600",
+                    "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.resources)
-                      ? "text-indigo-600"
-                      : "text-indigo-900",
+                      ? "text-indigo-600 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
                   href={siteConfig.baseLinks.resources}
                 >
@@ -125,42 +141,76 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                  className="px-2 py-1 text-indigo-900 hover:text-indigo-600"
+                  className={classNames(
+                    "px-2 py-1 transition-colors",
+                    isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                        ? "text-slate-900 dark:text-white"
+                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                  )}
                   href={social.SLACK}
                 >
                   Community
                 </Link>
               </div>
             </nav>
-            <div className="flex space-x-6">
-              <div className="flex items-center justify-center space-x-6">
-                <Link
-                  href={github.REPO}
-                  target="_blank"
+            <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
+              <div className="hidden md:flex">
+                <ThemeToggle
+                  variant={isHomePage && !open ? "white" : "default"}
+                />
+              </div>
+              <Link
+                href={github.REPO}
+                target="_blank"
+                className={classNames(
+                  "items-center justify-center space-x-2 transition-all duration-300",
+                  stars && !open ? "flex opacity-100" : "hidden opacity-0",
+                )}
+              >
+                <RiGithubFill
+                  aria-hidden="true"
                   className={classNames(
-                    "flex items-center justify-center space-x-2",
-                    stars ? "opacity-100" : "opacity-0",
+                    "size-6 shrink-0 transition-colors",
+                    isHomePage && !open
+                      ? "text-white"
+                      : "text-slate-900 dark:text-slate-100",
+                  )}
+                />
+                <div
+                  className={classNames(
+                    "text-sm font-medium transition-colors",
+                    isHomePage && !open
+                      ? "text-white"
+                      : "text-slate-900 dark:text-slate-100",
                   )}
                 >
-                  <RiGithubFill
-                    aria-hidden="true"
-                    className="size-6 shrink-0 text-indigo-900"
-                  />
-                  <div className="text-sm font-medium text-indigo-900">
-                    {formatStarCount(stars ?? 0)}
-                  </div>
+                  {formatStarCount(stars ?? 0)}
+                </div>
+              </Link>
+              <Button
+                className={classNames(
+                  "hidden px-4 md:flex rounded-none transition-all",
+                  isHomePage && !open
+                    ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
+                    : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
+                )}
+              >
+                <Link target="_blank" href={social.CALENDLY}>
+                  Book a Demo
                 </Link>
-                <Button className="hidden rounded-full border-4 border-indigo-200 px-4 md:flex">
-                  <Link target="_blank" href={social.CALENDLY}>
-                    Book a Demo
-                  </Link>
-                </Button>
-              </div>
+              </Button>
               <div className="md:hidden">
                 <Button
                   onClick={() => setOpen(!open)}
-                  variant="light"
-                  className="aspect-square bg-opacity-0 p-2"
+                  variant="ghost"
+                  className={classNames(
+                    "aspect-square p-2 transition-colors border-0 hover:bg-transparent",
+                    isHomePage && !open
+                      ? "text-white hover:text-white/80"
+                      : "text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400",
+                  )}
                 >
                   {open ? (
                     <RiCloseLine aria-hidden="true" className="size-5" />
@@ -173,26 +223,69 @@ export function Navigation() {
           </div>
           <nav
             className={classNames(
-              "my-6 flex text-lg ease-in-out will-change-transform md:hidden",
-              open ? "" : "hidden",
+              "flex flex-col md:hidden",
+              open ? "pb-8" : "hidden",
             )}
           >
-            <ul className="space-y-4 font-medium">
-              <li onClick={() => setOpen(false)}>
-                <Link target="_blank" href={documentation.BASE}>
+            <ul className="flex flex-col font-semibold w-full">
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  target="_blank"
+                  href={documentation.BASE}
+                  className={classNames(
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
                   Documentation
                 </Link>
               </li>
-              <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.blog}>Blog</Link>
-              </li>
-              <li onClick={() => setOpen(false)}>
-                <Link href={siteConfig.baseLinks.resources}>Learn</Link>
-              </li>
-              <li onClick={() => setOpen(false)}>
-                <Link target="_blank" href={documentation.CHANGELOG}>
-                  Changelog
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  href={siteConfig.baseLinks.blog}
+                  className={classNames(
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Blog
                 </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  href={siteConfig.baseLinks.resources}
+                  className={classNames(
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Learn
+                </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  target="_blank"
+                  href={social.SLACK}
+                  className={classNames(
+                    "block w-full py-5 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Community
+                </Link>
+              </li>
+              <li className="pt-6 px-6">
+                <Button
+                  asChild
+                  className="w-full h-12 !rounded-none bg-indigo-600 text-white font-bold border-0 shadow-none text-md"
+                >
+                  <Link target="_blank" href={social.CALENDLY}>
+                    Book a Demo
+                  </Link>
+                </Button>
+              </li>
+              <li className="flex justify-center pt-6">
+                <ThemeToggle variant="default" />
               </li>
             </ul>
           </nav>

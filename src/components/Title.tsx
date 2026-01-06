@@ -10,7 +10,7 @@ interface TitleProps {
 
 export function Title({
   children,
-  className = "text-2xl font-bold normal-case tracking-tight text-gray-900 scroll-mt-36 md:scroll-mt-24",
+  className = "text-2xl md:text-3xl font-bold normal-case tracking-tight text-slate-900 dark:text-white scroll-mt-36 md:scroll-mt-24",
   hideTitle = false,
   metadata,
 }: TitleProps) {

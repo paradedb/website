@@ -1,46 +1,88 @@
 import { Logos } from "./Logos";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 
-const logoCellStyle = "flex justify-center";
-const bottomDotted = "";
-const rightDotted = "";
+export default function LogoCloud({
+  variant = "indigo",
+  className,
+}: {
+  variant?: "indigo" | "white";
+  className?: string;
+}) {
+  const isIndigo = variant === "indigo";
+  const isWhite = variant === "white";
 
-export default function LogoCloud() {
   return (
-    <section
-      aria-label="Company logos"
-      className="mx-auto mt-24 flex max-w-6xl animate-slide-up-fade flex-col items-center justify-center text-center px-4"
-      style={{ animationDuration: "1500ms" }}
+    <div
+      className={cx(
+        "grid grid-cols-2 sm:flex sm:flex-wrap items-center justify-center gap-8 md:gap-12 lg:gap-20 py-10 md:py-12 px-6 sm:px-0",
+        isIndigo
+          ? "bg-[#4f46e5]"
+          : isWhite
+            ? "bg-transparent"
+            : "bg-white dark:bg-slate-950",
+        className,
+      )}
     >
-      <div className="text-md mx-auto font-medium text-gray-900">
-        Trusted by enterprises, loved by developers
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.BiltRewards
+          className={cx(
+            "w-16 md:w-20",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
       </div>
-      <div className="flex flex-wrap justify-center gap-x-6 sm:gap-x-12 mt-6 gap-y-4">
-        <div className={classNames(logoCellStyle, bottomDotted, rightDotted)}>
-          <Logos.BiltRewards className="mx-auto w-14 sm:w-16" />
-        </div>
-        <div className={classNames(logoCellStyle, bottomDotted, rightDotted)}>
-          <Logos.ModernTreasury className="mx-auto w-36 sm:w-40" />
-        </div>
-        <div className={classNames(logoCellStyle, bottomDotted)}>
-          <Logos.Alibaba className="mx-auto w-20 sm:w-24" />
-        </div>
-        <div className={classNames(logoCellStyle, rightDotted)}>
-          <Logos.Unify className="mx-auto w-12 sm:w-16" />
-        </div>
-        <div className={classNames(logoCellStyle, bottomDotted, rightDotted)}>
-          <Logos.Tcdi className="mx-auto w-8 sm:w-10" />
-        </div>
-        <div className={classNames(logoCellStyle, rightDotted)}>
-          <Logos.DemandScience className="mx-auto w-32 sm:w-36" />
-        </div>
-        <div className={classNames(logoCellStyle, bottomDotted)}>
-          <Logos.RxVantage className="mx-auto w-24 sm:w-28 pt-0.5" />
-        </div>
-        <div className={logoCellStyle}>
-          <Logos.Cofactr className="mx-auto w-20 sm:w-20 my-auto" />
-        </div>
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.ModernTreasury
+          className={cx(
+            "w-28 md:w-36",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
       </div>
-    </section>
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.Alibaba
+          className={cx(
+            "w-16 md:w-24",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
+      </div>
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.RxVantage
+          className={cx(
+            "w-20 md:w-28",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
+      </div>
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.Tcdi
+          className={cx(
+            "w-10 md:w-12",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
+      </div>
+      <div className="flex items-center justify-center opacity-0 animate-logo delay-1000 fill-mode-both">
+        <Logos.DemandScience
+          className={cx(
+            "w-28 md:w-36",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
+      </div>
+    </div>
   );
 }

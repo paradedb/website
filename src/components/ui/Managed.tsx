@@ -15,9 +15,9 @@ const caseStudies = [
     description: "Fewer Query Timeouts",
     logo: () => <Bilt fill="black" className="h-6 md:h-8" />,
     link: "case-study-bilt",
-    imageBgStyle: "bg-slate-50",
-    bgStyle: "bg-slate-50",
-    textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
+    imageBgStyle: "bg-indigo-50",
+    bgStyle: "bg-indigo-50",
+    textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-indigo-200",
     title: "Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB",
     hoverColor: "rgba(255,255,255,0.2)",
   },
@@ -27,9 +27,9 @@ const caseStudies = [
     description: "Read Throughput",
     logo: () => <Alibaba fill="#ff6600" className="h-6 md:h-8" />,
     link: "case-study-alibaba",
-    imageBgStyle: "bg-slate-50",
-    bgStyle: "bg-slate-50",
-    textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-slate-200",
+    imageBgStyle: "bg-indigo-50",
+    bgStyle: "bg-indigo-50",
+    textStyle: "text-gray-600 rounded-2xl py-1 px-3 border border-indigo-200",
     title:
       "Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse",
     hoverColor: "rgba(255,102,0,0.5)",
@@ -56,9 +56,9 @@ export default function SearchAnalytics() {
             key={index}
             className="relative col-span-2 mx-auto h-full max-w-2xl animate-slide-up-fade rounded-2xl md:hover:shadow-xl md:hover:shadow-indigo-200 sm:ml-auto sm:w-full md:col-span-1 duration-300"
           >
-            <div className="rounded-2xl bg-slate-50 p-2 ring-1 ring-inset ring-slate-300/50 h-full">
+            <div className="rounded-2xl bg-indigo-50 p-2 ring-1 ring-inset ring-slate-300/50 h-full">
               <div className="rounded-xl bg-white ring-1 ring-indigo-900/5 h-full">
-                <div className="relative rounded-t-xl bg-slate-100 h-full">
+                <div className="relative rounded-t-xl bg-indigo-100 h-full">
                   <Link
                     href={`/blog/${study.link}`}
                     target="_blank"
@@ -74,7 +74,7 @@ export default function SearchAnalytics() {
                       <div className="relative z-10 h-full flex flex-col bg-white">
                         <div
                           className={classNames(
-                            "border-b border-slate-200 py-12 md:py-20 px-8 flex justify-between",
+                            "border-b border-indigo-200 py-12 md:py-20 px-8 flex justify-between",
                             study.imageBgStyle,
                           )}
                         >

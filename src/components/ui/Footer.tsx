@@ -1,3 +1,5 @@
+"use client";
+
 import { siteConfig } from "@/app/siteConfig";
 import {
   company,
@@ -7,11 +9,16 @@ import {
   legal,
   social,
 } from "@/lib/links";
-import { RiArrowRightUpLine } from "@remixicon/react";
+import { RiArrowRightUpLine, RiMailLine } from "@remixicon/react";
 import Link from "next/link";
-import { DatabaseLogo } from "../../../public/DatabaseLogo";
+import { DatabaseLogo } from "./DatabaseLogo";
+import { Button } from "../Button";
+import { ThemeToggle } from "./ThemeToggle";
+import { usePathname } from "next/navigation";
+import classNames from "classnames";
 
 const navigation = {
+  // ... (rest of navigation object remains the same)
   company: [
     { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
     { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
@@ -27,8 +34,8 @@ const navigation = {
   ],
   resources: [
     { name: "Careers", href: company.CAREERS, external: true },
-    { name: "Contact", href: email.HELLO, external: false },
-    { name: "Sales", href: email.SALES, external: false },
+    { name: "Contact", href: social.CALENDLY, external: true },
+    { name: "Sales", href: social.CALENDLY, external: true },
     { name: "Support", href: email.SUPPORT, external: false },
   ],
   legal: [
@@ -38,168 +45,336 @@ const navigation = {
 };
 
 export default function Footer() {
+  const pathname = usePathname();
+  const isHomePage = pathname === "/";
+
   return (
-    <footer id="footer">
-      <div className="mx-auto max-w-6xl px-6 pb-8 pt-16 sm:pt-24 md:px-3 lg:pt-32">
-        <div className="xl:grid xl:grid-cols-3 xl:gap-20">
-          <div className="space-y-8">
-            <Link href={siteConfig.baseLinks.home}>
-              <DatabaseLogo className="w-28" />
-            </Link>
-            <p className="mt-8 text-sm leading-6 text-gray-600">
-              The Transactional Elasticsearch Alternative Built on Postgres.
-            </p>
-            <div></div>
-          </div>
-          <div className="mt-16 grid grid-cols-1 gap-14 sm:gap-8 md:grid-cols-2 xl:col-span-2 xl:mt-0">
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Company
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Product"
+    <div
+      className={classNames(
+        "w-full relative opacity-0 animate-fade-in delay-2200",
+        isHomePage ? "bg-indigo-600" : "bg-white dark:bg-slate-950",
+      )}
+    >
+      <footer
+        id="footer"
+        className={classNames(
+          "relative w-full overflow-hidden max-w-[1440px] mx-auto",
+          isHomePage
+            ? "bg-indigo-600 text-white"
+            : "bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100",
+        )}
+      >
+        <div
+          className={classNames(
+            "absolute inset-y-0 left-4 md:left-12 w-px z-30 pointer-events-none",
+            isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
+          )}
+        />
+        <div
+          className={classNames(
+            "absolute inset-y-0 right-4 md:right-12 w-px z-30 pointer-events-none",
+            isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
+          )}
+        />
+
+        {/* Horizontal Line constrained to vertical lines */}
+        <div
+          className={classNames(
+            "absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px z-30",
+            isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
+          )}
+        />
+
+        <div className="px-4 md:px-12 w-full flex flex-col relative pb-0">
+          <div className="relative w-full pt-16 md:pt-24 pb-0 px-6 md:px-12">
+            <div className="xl:grid xl:grid-cols-3 xl:gap-20">
+              <div className="space-y-8">
+                <Link href={siteConfig.baseLinks.home}>
+                  <DatabaseLogo
+                    className={classNames(
+                      "w-32 transition-colors",
+                      isHomePage
+                        ? "brightness-0 invert"
+                        : "dark:brightness-0 dark:invert",
+                    )}
+                  />
+                </Link>
+                <p
+                  className={classNames(
+                    "mt-4 md:mt-8 text-sm leading-6 max-w-xs",
+                    isHomePage
+                      ? "text-indigo-50"
+                      : "text-gray-600 dark:text-slate-400",
+                  )}
                 >
-                  {navigation.company.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+                  Simple, Elastic-Quality Search for Postgres.
+                </p>
+                <div className="md:pt-4">
+                  <Button
+                    asChild
+                    className={classNames(
+                      "h-10 rounded-none shadow-none font-semibold",
+                      isHomePage
+                        ? "bg-white text-indigo-600 ring-2 ring-white/50 border-1 border-white hover:bg-indigo-50"
+                        : "bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white",
+                    )}
+                  >
+                    <Link
+                      href={social.CALENDLY}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      <RiMailLine className="mr-2 size-4" />
+                      Contact Us
+                    </Link>
+                  </Button>
+                </div>
               </div>
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Connect
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Resources"
-                >
-                  {navigation.connect.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-0.5 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+              <div className="mt-16 grid grid-cols-1 gap-14 sm:gap-8 md:grid-cols-2 xl:col-span-2 xl:mt-0">
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <h3
+                      className={classNames(
+                        "text-sm font-semibold leading-6",
+                        isHomePage
+                          ? "text-white"
+                          : "text-gray-900 dark:text-slate-100",
+                      )}
+                    >
+                      Company
+                    </h3>
+                    <ul role="list" className="mt-6 space-y-4">
+                      {navigation.company.map((item) => (
+                        <li key={item.name} className="w-fit">
+                          <Link
+                            className={classNames(
+                              "flex rounded-md text-sm transition",
+                              isHomePage
+                                ? "text-indigo-100 hover:text-white"
+                                : "text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100",
+                            )}
+                            href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={
+                              item.external ? "noopener noreferrer" : undefined
+                            }
+                          >
+                            <span>{item.name}</span>
+                            {item.external && (
+                              <div
+                                className={classNames(
+                                  "ml-1 aspect-square size-3 rounded-full p-px",
+                                  isHomePage
+                                    ? "bg-white/10"
+                                    : "bg-gray-100 dark:bg-slate-800",
+                                )}
+                              >
+                                <RiArrowRightUpLine
+                                  aria-hidden="true"
+                                  className={classNames(
+                                    "size-full shrink-0",
+                                    isHomePage
+                                      ? "text-white"
+                                      : "text-gray-900 dark:text-slate-100",
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3
+                      className={classNames(
+                        "text-sm font-semibold leading-6",
+                        isHomePage
+                          ? "text-white"
+                          : "text-gray-900 dark:text-slate-100",
+                      )}
+                    >
+                      Connect
+                    </h3>
+                    <ul role="list" className="mt-6 space-y-4">
+                      {navigation.connect.map((item) => (
+                        <li key={item.name} className="w-fit">
+                          <Link
+                            className={classNames(
+                              "flex rounded-md text-sm transition",
+                              isHomePage
+                                ? "text-indigo-100 hover:text-white"
+                                : "text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100",
+                            )}
+                            href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={
+                              item.external ? "noopener noreferrer" : undefined
+                            }
+                          >
+                            <span>{item.name}</span>
+                            {item.external && (
+                              <div
+                                className={classNames(
+                                  "ml-0.5 aspect-square size-3 rounded-full p-px",
+                                  isHomePage
+                                    ? "bg-white/10"
+                                    : "bg-gray-100 dark:bg-slate-800",
+                                )}
+                              >
+                                <RiArrowRightUpLine
+                                  aria-hidden="true"
+                                  className={classNames(
+                                    "size-full shrink-0",
+                                    isHomePage
+                                      ? "text-white"
+                                      : "text-gray-900 dark:text-slate-100",
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-8">
+                  <div>
+                    <h3
+                      className={classNames(
+                        "text-sm font-semibold leading-6",
+                        isHomePage
+                          ? "text-white"
+                          : "text-gray-900 dark:text-slate-100",
+                      )}
+                    >
+                      Resources
+                    </h3>
+                    <ul role="list" className="mt-6 space-y-4">
+                      {navigation.resources.map((item) => (
+                        <li key={item.name} className="w-fit">
+                          <Link
+                            className={classNames(
+                              "flex rounded-md text-sm transition",
+                              isHomePage
+                                ? "text-indigo-100 hover:text-white"
+                                : "text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100",
+                            )}
+                            href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={
+                              item.external ? "noopener noreferrer" : undefined
+                            }
+                          >
+                            <span>{item.name}</span>
+                            {item.external && (
+                              <div
+                                className={classNames(
+                                  "ml-1 aspect-square size-3 rounded-full p-px",
+                                  isHomePage
+                                    ? "bg-white/10"
+                                    : "bg-gray-100 dark:bg-slate-800",
+                                )}
+                              >
+                                <RiArrowRightUpLine
+                                  aria-hidden="true"
+                                  className={classNames(
+                                    "size-full shrink-0",
+                                    isHomePage
+                                      ? "text-white"
+                                      : "text-gray-900 dark:text-slate-100",
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div>
+                    <h3
+                      className={classNames(
+                        "text-sm font-semibold leading-6",
+                        isHomePage
+                          ? "text-white"
+                          : "text-gray-900 dark:text-slate-100",
+                      )}
+                    >
+                      Legal
+                    </h3>
+                    <ul role="list" className="mt-6 space-y-4">
+                      {navigation.legal.map((item) => (
+                        <li key={item.name} className="w-fit">
+                          <Link
+                            className={classNames(
+                              "flex rounded-md text-sm transition",
+                              isHomePage
+                                ? "text-indigo-100 hover:text-white"
+                                : "text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-slate-100",
+                            )}
+                            href={item.href}
+                            target={item.external ? "_blank" : undefined}
+                            rel={
+                              item.external ? "noopener noreferrer" : undefined
+                            }
+                          >
+                            <span>{item.name}</span>
+                            {item.external && (
+                              <div
+                                className={classNames(
+                                  "ml-1 aspect-square size-3 rounded-full p-px",
+                                  isHomePage
+                                    ? "bg-white/10"
+                                    : "bg-gray-100 dark:bg-slate-800",
+                                )}
+                              >
+                                <RiArrowRightUpLine
+                                  aria-hidden="true"
+                                  className={classNames(
+                                    "size-full shrink-0",
+                                    isHomePage
+                                      ? "text-white"
+                                      : "text-gray-900 dark:text-slate-100",
+                                  )}
+                                />
+                              </div>
+                            )}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
               </div>
             </div>
-            <div className="grid grid-cols-2 gap-8">
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Resources
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Company"
-                >
-                  {navigation.resources.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <div>
-                <h3 className="text-sm font-semibold leading-6 text-gray-900">
-                  Legal
-                </h3>
-                <ul
-                  role="list"
-                  className="mt-6 space-y-4"
-                  aria-label="Quick links Legal"
-                >
-                  {navigation.legal.map((item) => (
-                    <li key={item.name} className="w-fit">
-                      <Link
-                        className="flex rounded-md text-sm text-gray-500 transition hover:text-gray-900"
-                        href={item.href}
-                        target={item.external ? "_blank" : undefined}
-                        rel={item.external ? "noopener noreferrer" : undefined}
-                      >
-                        <span>{item.name}</span>
-                        {item.external && (
-                          <div className="ml-1 aspect-square size-3 rounded-full bg-gray-100 p-px">
-                            <RiArrowRightUpLine
-                              aria-hidden="true"
-                              className="size-full shrink-0 text-gray-900"
-                            />
-                          </div>
-                        )}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+          </div>
+
+          <div className="relative mt-16 md:mt-24">
+            <div
+              className={classNames(
+                "absolute top-0 left-0 right-0 h-px z-30",
+                isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
+              )}
+            />
+            <div className="w-full px-6 md:px-12 pt-8 sm:pt-4 pb-4 flex flex-col items-center justify-between gap-6 sm:flex-row">
+              <p
+                className={classNames(
+                  "text-sm leading-5",
+                  isHomePage
+                    ? "text-indigo-100"
+                    : "text-gray-500 dark:text-slate-400",
+                )}
+              >
+                &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
+                reserved.
+              </p>
+              <ThemeToggle variant={isHomePage ? "white" : "default"} />
             </div>
           </div>
         </div>
-        <div className="mt-16 flex flex-col items-center justify-between gap-4 border-t border-gray-200 pt-8 sm:mt-20 sm:flex-row lg:mt-24">
-          <p className="text-sm leading-5 text-gray-500">
-            &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
-            reserved.
-          </p>
-          <div className="rounded-full border border-gray-200 py-1 pl-1 pr-2">
-            <div className="flex items-center gap-1.5">
-              <div className="relative size-4 shrink-0">
-                <div className="absolute inset-[1px] rounded-full bg-emerald-500/20" />
-                <div className="absolute inset-1 rounded-full bg-emerald-600" />
-              </div>
-              <span className="text-xs text-gray-700">
-                All systems operational
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </footer>
+      </footer>
+    </div>
   );
 }
