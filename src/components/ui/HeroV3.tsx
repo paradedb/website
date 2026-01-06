@@ -7,10 +7,18 @@ import { Button } from "../Button";
 import LogoCloud from "./LogoCloud";
 import { siteConfig } from "@/app/siteConfig";
 import { HeroVisual } from "./HeroVisual";
+import { useTheme } from "next-themes";
 
 export default function HeroV3() {
+  const { resolvedTheme } = useTheme();
+  
   return (
-    <div className="w-full bg-indigo-600">
+    <div className="w-full bg-indigo-600 relative">
+      {/* Alpha overlay for dark mode */}
+      {resolvedTheme === 'dark' && (
+        <div className="absolute inset-0 bg-black/15 pointer-events-none" />
+      )}
+      
       <section
         aria-labelledby="hero-title"
         className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto"
