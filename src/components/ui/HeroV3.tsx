@@ -17,7 +17,7 @@ export default function HeroV3() {
       >
         {/* Top Shaded Region */}
         <div className="absolute top-[64px] md:top-[80px] left-4 md:left-12 right-4 md:right-12 z-20">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 bg-indigo-700/20 opacity-40" />
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 bg-indigo-700/20 opacity-60" />
         </div>
 
         {/* Horizontal line below top shaded region - constrained to vertical lines */}
@@ -87,7 +87,7 @@ export default function HeroV3() {
 
         {/* Shaded Region */}
         <div className="relative z-20 px-4 md:px-12">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-40" />
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-60" />
         </div>
 
         <div className="mt-0 relative z-20 w-full">
@@ -102,7 +102,7 @@ export default function HeroV3() {
 
         {/* Shaded Region Below Logos */}
         <div className="relative z-20 px-4 md:px-12">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-40" />
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-60" />
         </div>
 
         {/* Global Vertical Lines - Rendered last to ensure they are on top */}
