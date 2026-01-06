@@ -31,7 +31,7 @@ export default function PreFooterCta() {
           {/* Top Shaded Region */}
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 relative z-20 bg-indigo-700/20 opacity-40" />
 
-          <div className="relative flex flex-col items-center justify-center pt-8 md:pt-32 pb-4 md:pb-8 text-center">
+          <div className="relative flex flex-col items-center justify-center pt-16 md:pt-32 pb-4 md:pb-8 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
