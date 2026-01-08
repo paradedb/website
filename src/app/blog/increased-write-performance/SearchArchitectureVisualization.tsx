@@ -157,6 +157,8 @@ export const SearchArchitectureVisualization: React.FC = () => {
         newState.totalBytesWrittenKB += totalWriteSizeKB; // Track total bytes written
         
         // Calculate RPS (Rows Per Second) - 5 second average
+        // When mutable enabled: measure writes into mutable buffers (what app sees)
+        // When mutable disabled: measure writes to L0 (same as total writes)
         const currentTime = Date.now();
         newState.last5SecondRows += totalNewRows;
         
@@ -224,7 +226,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                   isConverting: false
                 };
               });
-            }, 100);
+            }, 200);
           }
         } else {
           // Direct to L0 when mutable is disabled - each transaction becomes its own tiny segment!
@@ -240,7 +242,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
           newState.mutableBuffers = newState.mutableBuffers.map(() => ({ rows: 0, sizeKB: 0 }));
           
           // Simulate the overhead cost of creating many tiny segments
-          if (Math.random() < 0.5) { // 50% chance of segment creation overhead (more likely due to tiny segments)
+          if (Math.random() < 0.8) { // 80% chance of segment creation overhead (very likely due to tiny segments)
             const avgSegmentSizeKB = totalWriteSizeKB / totalSegmentsCreated;
             newState.isCreatingSegment = true;
             newState.segmentCreationLevel = `L0 (${totalSegmentsCreated} tiny segments, avg ${avgSegmentSizeKB.toFixed(0)}KB each)`;
@@ -251,7 +253,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 isCreatingSegment: false,
                 segmentCreationLevel: ''
               }));
-            }, 100); // 100ms for tiny segment creation
+            }, 200); // 200ms for segment creation (same as all other segments)
           }
         }
         
@@ -284,14 +286,16 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 // Second phase: Complete segment creation after lock period
                 setTimeout(() => {
                   setState(s => {
-                    // Remove approximately 10 L0 segments (100KB each) to create 1 L1 segment (1MB)
-                    const segmentsToRemove = Math.min(s.l0Segments, Math.ceil(L1_THRESHOLD_KB / L0_SIZE_KB));
+                    // Remove segments to get as close to L1_THRESHOLD_KB as possible
+                    const avgSegmentSizeKB = s.l0Segments > 0 ? s.l0SizeKB / s.l0Segments : L0_SIZE_KB;
+                    const segmentsToRemove = Math.min(s.l0Segments, Math.round(L1_THRESHOLD_KB / avgSegmentSizeKB));
+                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
                     
                     return {
                       ...s,
-                      l0SizeKB: Math.max(0, s.l0SizeKB - L1_THRESHOLD_KB),
+                      l0SizeKB: Math.max(0, s.l0SizeKB - actualSizeRemoved),
                       l0Segments: Math.max(0, s.l0Segments - segmentsToRemove),
-                      l1SizeKB: s.l1SizeKB + L1_THRESHOLD_KB,
+                      l1SizeKB: s.l1SizeKB + actualSizeRemoved,
                       l1Segments: s.l1Segments + 1,
                       [workerKey]: 'idle',
                       [`worker${i + 1}Task`]: '',
@@ -300,7 +304,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                       ...(i === 0 && { isMerging: false })
                     };
                   });
-                }, 100); // 100ms for segment creation
+                }, 200); // 200ms for segment creation
               }, 5000);
             }
           }
@@ -326,14 +330,16 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 
                 setTimeout(() => {
                   setState(s => {
-                    const avgL1SegmentSize = s.l1Segments > 0 ? s.l1SizeKB / s.l1Segments : 1024;
-                    const segmentsToRemove = Math.min(s.l1Segments, Math.ceil(L2_THRESHOLD_KB / avgL1SegmentSize));
+                    // Remove segments to get as close to L2_THRESHOLD_KB as possible
+                    const avgSegmentSizeKB = s.l1Segments > 0 ? s.l1SizeKB / s.l1Segments : 1024;
+                    const segmentsToRemove = Math.min(s.l1Segments, Math.round(L2_THRESHOLD_KB / avgSegmentSizeKB));
+                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
                     
                     return {
                       ...s,
-                      l1SizeKB: Math.max(0, s.l1SizeKB - L2_THRESHOLD_KB),
+                      l1SizeKB: Math.max(0, s.l1SizeKB - actualSizeRemoved),
                       l1Segments: Math.max(0, s.l1Segments - segmentsToRemove),
-                      l2SizeKB: s.l2SizeKB + L2_THRESHOLD_KB,
+                      l2SizeKB: s.l2SizeKB + actualSizeRemoved,
                       l2Segments: s.l2Segments + 1,
                       [workerKey]: 'idle',
                       [`worker${i + 1}Task`]: '',
@@ -341,7 +347,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                       segmentCreationLevel: ''
                     };
                   });
-                }, 100); // 100ms for segment creation
+                }, 200); // 200ms for segment creation
               }, 8000);
             }
           }
@@ -367,14 +373,16 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 
                 setTimeout(() => {
                   setState(s => {
-                    const avgL2SegmentSize = s.l2Segments > 0 ? s.l2SizeKB / s.l2Segments : 10240;
-                    const segmentsToRemove = Math.min(s.l2Segments, Math.ceil(L3_THRESHOLD_KB / avgL2SegmentSize));
+                    // Remove segments to get as close to L3_THRESHOLD_KB as possible
+                    const avgSegmentSizeKB = s.l2Segments > 0 ? s.l2SizeKB / s.l2Segments : 10240;
+                    const segmentsToRemove = Math.min(s.l2Segments, Math.round(L3_THRESHOLD_KB / avgSegmentSizeKB));
+                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
                     
                     return {
                       ...s,
-                      l2SizeKB: Math.max(0, s.l2SizeKB - L3_THRESHOLD_KB),
+                      l2SizeKB: Math.max(0, s.l2SizeKB - actualSizeRemoved),
                       l2Segments: Math.max(0, s.l2Segments - segmentsToRemove),
-                      l3SizeKB: s.l3SizeKB + L3_THRESHOLD_KB,
+                      l3SizeKB: s.l3SizeKB + actualSizeRemoved,
                       l3Segments: s.l3Segments + 1,
                       [workerKey]: 'idle',
                       [`worker${i + 1}Task`]: '',
@@ -382,7 +390,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                       segmentCreationLevel: ''
                     };
                   });
-                }, 100); // 100ms for segment creation
+                }, 200); // 200ms for segment creation
               }, 12000);
             }
           }
@@ -408,14 +416,16 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 
                 setTimeout(() => {
                   setState(s => {
-                    const avgL3SegmentSize = s.l3Segments > 0 ? s.l3SizeKB / s.l3Segments : 102400;
-                    const segmentsToRemove = Math.min(s.l3Segments, Math.ceil(L4_THRESHOLD_KB / avgL3SegmentSize));
+                    // Remove segments to get as close to L4_THRESHOLD_KB as possible
+                    const avgSegmentSizeKB = s.l3Segments > 0 ? s.l3SizeKB / s.l3Segments : 102400;
+                    const segmentsToRemove = Math.min(s.l3Segments, Math.round(L4_THRESHOLD_KB / avgSegmentSizeKB));
+                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
                     
                     return {
                       ...s,
-                      l3SizeKB: Math.max(0, s.l3SizeKB - L4_THRESHOLD_KB),
+                      l3SizeKB: Math.max(0, s.l3SizeKB - actualSizeRemoved),
                       l3Segments: Math.max(0, s.l3Segments - segmentsToRemove),
-                      l4PlusSizeKB: s.l4PlusSizeKB + L4_THRESHOLD_KB,
+                      l4PlusSizeKB: s.l4PlusSizeKB + actualSizeRemoved,
                       l4PlusSegments: s.l4PlusSegments + 1,
                       [workerKey]: 'idle',
                       [`worker${i + 1}Task`]: '',
@@ -423,7 +433,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                       segmentCreationLevel: ''
                     };
                   });
-                }, 100); // 100ms for segment creation
+                }, 200); // 200ms for segment creation
               }, 15000);
             }
           }
@@ -431,7 +441,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
         
         return newState;
       });
-    }, state.mutableEnabled ? 300 : 500); // Fixed interval regardless of client count
+    }, state.mutableEnabled ? 300 : 2000); // Much slower when mutable disabled due to per-tx segment overhead
 
     return () => clearInterval(interval);
   }, [state.clientCount, state.mutableEnabled]);
