@@ -2,132 +2,254 @@
 
 import React, { useState, useEffect } from 'react';
 
+// Simple configuration
+const CONFIG = {
+  MUTABLE_ROW_THRESHOLD: 1000,
+  TICK_INTERVAL: 150,
+  SEGMENT_CREATION_DELAY: 200, // milliseconds to block ingestion per segment
+  THROUGHPUT_UPDATE_INTERVAL: 5000,
+  COMPACTION_DELAYS: {
+    L0_TO_L1: 2000,    // 2 seconds
+    L1_TO_L2: 4000,    // 4 seconds
+    L2_TO_L3: 8000,    // 8 seconds
+  },
+  LAYER_SIZES: {
+    L0: 100,      // 100KB threshold
+    L1: 1024,     // 1MB threshold  
+    L2: 10240,    // 10MB threshold
+    L3: 102400,   // 100MB threshold
+    L4: 1048576,  // 1GB threshold
+    L5: 10485760, // 10GB threshold
+  },
+};
+
+// Simple interfaces
+interface MutableBuffer {
+  rows: number;
+  sizeKB: number;
+}
+
+interface Segment {
+  id: string;
+  sizeKB: number;
+  mergeLocked: boolean;
+}
+
+interface WorkerState {
+  status: 'idle' | 'compacting';
+  task: string;
+}
+
 interface State {
-  // Mutable buffers: one per connection
-  mutableBuffers: Array<{ rows: number; sizeKB: number }>;
-  // Size in KB for realistic modeling
+  // Core data
+  mutableBuffers: MutableBuffer[];
+  l0Segments: Segment[];
+  l1Segments: Segment[];
+  l2Segments: Segment[];
+  l3Segments: Segment[];
+  
+  // Derived sizes for display
   l0SizeKB: number;
   l1SizeKB: number;
   l2SizeKB: number;
   l3SizeKB: number;
-  l4PlusSizeKB: number;
-  // Segment counts for display
-  l0Segments: number;
-  l1Segments: number;
-  l2Segments: number;
-  l3Segments: number;
-  l4PlusSegments: number;
-  isConverting: boolean;
-  isMerging: boolean;
-  isCreatingSegment: boolean;
-  segmentCreationLevel: string;
-  writeCount: number;
-  worker1Status: 'idle' | 'working';
-  worker2Status: 'idle' | 'working';
-  worker3Status: 'idle' | 'working';
-  worker4Status: 'idle' | 'working';
-  worker1Task: string;
-  worker2Task: string;
-  worker3Task: string;
-  worker4Task: string;
-  readCount: number;
-  workerCount: number;
+  
+  // Workers
+  workers: WorkerState[];
+  
+  // Settings
   mutableEnabled: boolean;
   clientCount: number;
-  totalBytesWrittenKB: number;
+  workerCount: number;
+  
+  // Performance tracking
   rowsPerSecond: number;
+  totalRows: number;
   last5SecondRows: number;
-  lastTPSUpdate: number;
+  lastUpdate: number;
+  writeCount: number;
+  readCount: number;
+  
+  // Blocking state
+  isBlocked: boolean;
+  blockUntil: number;
+  
 }
+
+// Utility functions
+const generateWriteSize = (): number => {
+  const rand = Math.random();
+  if (rand < 0.7) return Math.floor(Math.random() * 20) + 1;
+  if (rand < 0.95) return Math.floor(Math.random() * 80) + 21;
+  return Math.floor(Math.random() * 400) + 101;
+};
+
+const calculateRowSizeKB = (): number => {
+  const textSize = Math.floor(Math.random() * 240) + 60; // 60-300 bytes
+  return (8 + 12 + textSize + 24) / 1024; // Convert to KB
+};
+
+const formatSize = (sizeKB: number): string => {
+  if (sizeKB >= 1048576) return `${(sizeKB / 1048576).toFixed(1)}GB`;
+  if (sizeKB >= 1024) return `${(sizeKB / 1024).toFixed(1)}MB`;
+  return `${sizeKB.toFixed(0)}KB`;
+};
+
+// Simple compaction logic
+const shouldMergeSegments = (segments: Segment[], targetSizeKB: number, level: string): boolean => {
+  if (segments.length === 0) return false;
+  const totalSize = segments.reduce((sum, s) => sum + s.sizeKB, 0);
+  
+  // For L0→L1: only merge when total size approaches L1 capacity (1MB)
+  if (level === 'L1') {
+    return totalSize >= targetSizeKB;
+  }
+  
+  // For L1+ levels: only merge when total size exceeds threshold
+  return totalSize >= targetSizeKB;
+};
 
 export const SearchArchitectureVisualization: React.FC = () => {
   const [state, setState] = useState<State>({
-    // One mutable buffer per connection
     mutableBuffers: [{ rows: 0, sizeKB: 0 }],
-    // Size tracking in KB
+    l0Segments: [],
+    l1Segments: [],
+    l2Segments: [],
+    l3Segments: [],
+    
     l0SizeKB: 0,
     l1SizeKB: 0,
     l2SizeKB: 0,
     l3SizeKB: 0,
-    l4PlusSizeKB: 0,
-    // Segment counts
-    l0Segments: 0,
-    l1Segments: 0,
-    l2Segments: 0,
-    l3Segments: 0,
-    l4PlusSegments: 0,
-    isConverting: false,
-    isMerging: false,
-    isCreatingSegment: false,
-    segmentCreationLevel: '',
-    writeCount: 0,
-    worker1Status: 'idle',
-    worker2Status: 'idle',
-    worker3Status: 'idle',
-    worker4Status: 'idle',
-    worker1Task: '',
-    worker2Task: '',
-    worker3Task: '',
-    worker4Task: '',
-    readCount: 0,
-    workerCount: 2,
+    
+    workers: [
+      { status: 'idle', task: '' },
+      { status: 'idle', task: '' },
+      { status: 'idle', task: '' },
+      { status: 'idle', task: '' },
+    ],
+    
     mutableEnabled: true,
     clientCount: 1,
-    totalBytesWrittenKB: 0,
+    workerCount: 2,
     rowsPerSecond: 0,
+    totalRows: 0,
     last5SecondRows: 0,
-    lastTPSUpdate: Date.now()
+    lastUpdate: Date.now(),
+    writeCount: 0,
+    readCount: 0,
+    isBlocked: false,
+    blockUntil: 0,
   });
 
   const resetSimulation = () => {
     setState({
       mutableBuffers: Array.from({ length: state.clientCount }, () => ({ rows: 0, sizeKB: 0 })),
+      l0Segments: [],
+      l1Segments: [],
+      l2Segments: [],
+      l3Segments: [],
+      
       l0SizeKB: 0,
       l1SizeKB: 0,
       l2SizeKB: 0,
       l3SizeKB: 0,
-      l4PlusSizeKB: 0,
-      l0Segments: 0,
-      l1Segments: 0,
-      l2Segments: 0,
-      l3Segments: 0,
-      l4PlusSegments: 0,
-      isConverting: false,
-      isMerging: false,
-      isCreatingSegment: false,
-      segmentCreationLevel: '',
-      writeCount: 0,
-      worker1Status: 'idle',
-      worker2Status: 'idle',
-      worker3Status: 'idle',
-      worker4Status: 'idle',
-      worker1Task: '',
-      worker2Task: '',
-      worker3Task: '',
-      worker4Task: '',
-      readCount: 0,
-      workerCount: state.workerCount,
+      
+      workers: Array.from({ length: 4 }, () => ({ status: 'idle' as const, task: '' })),
+      
       mutableEnabled: state.mutableEnabled,
       clientCount: state.clientCount,
-      totalBytesWrittenKB: 0,
+      workerCount: state.workerCount,
       rowsPerSecond: 0,
+      totalRows: 0,
       last5SecondRows: 0,
-      lastTPSUpdate: Date.now()
+      lastUpdate: Date.now(),
+      writeCount: 0,
+      readCount: 0,
+      isBlocked: false,
+      blockUntil: 0,
     });
   };
 
-  // Main animation loop
-  useEffect(() => {
+  // Simple compaction execution
+  const executeCompaction = async (
+    fromLevel: string,
+    toLevel: string,
+    workerId: number
+  ): Promise<void> => {
+    // Mark worker as busy
+    setState(s => {
+      const newWorkers = [...s.workers];
+      newWorkers[workerId] = { status: 'compacting', task: `${fromLevel}→${toLevel}` };
+      return { ...s, workers: newWorkers };
+    });
 
+    // Wait for compaction delay
+    const compactionDelay = fromLevel === 'L0' ? CONFIG.COMPACTION_DELAYS.L0_TO_L1 :
+                           fromLevel === 'L1' ? CONFIG.COMPACTION_DELAYS.L1_TO_L2 :
+                           CONFIG.COMPACTION_DELAYS.L2_TO_L3;
+    
+    await new Promise(resolve => setTimeout(resolve, compactionDelay));
+
+    // Complete compaction - move segments
+    setState(s => {
+      let newState = { ...s };
+      let segmentsToMerge: Segment[] = [];
+      
+      if (fromLevel === 'L0') {
+        segmentsToMerge = newState.l0Segments.filter(seg => seg.mergeLocked);
+        newState.l0Segments = newState.l0Segments.filter(seg => !seg.mergeLocked);
+      } else if (fromLevel === 'L1') {
+        segmentsToMerge = newState.l1Segments.filter(seg => seg.mergeLocked);
+        newState.l1Segments = newState.l1Segments.filter(seg => !seg.mergeLocked);
+      } else if (fromLevel === 'L2') {
+        segmentsToMerge = newState.l2Segments.filter(seg => seg.mergeLocked);
+        newState.l2Segments = newState.l2Segments.filter(seg => !seg.mergeLocked);
+      }
+      
+      if (segmentsToMerge.length > 0) {
+        const totalMergeSize = segmentsToMerge.reduce((sum, s) => sum + s.sizeKB, 0);
+        const mergedSegment: Segment = {
+          id: `merged_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          sizeKB: totalMergeSize,
+          mergeLocked: false
+        };
+        
+        // Add to target level
+        if (toLevel === 'L1') {
+          newState.l1Segments.push(mergedSegment);
+        } else if (toLevel === 'L2') {
+          newState.l2Segments.push(mergedSegment);
+        } else if (toLevel === 'L3') {
+          newState.l3Segments.push(mergedSegment);
+        }
+      }
+      
+      // Worker returns to idle
+      const newWorkers = [...newState.workers];
+      newWorkers[workerId] = { status: 'idle', task: '' };
+      
+      return { ...newState, workers: newWorkers };
+    });
+  };
+
+  // Main simulation loop
+  useEffect(() => {
     const interval = setInterval(() => {
       setState(prev => {
-        // Skip animation tick if segment creation is in progress
-        if (prev.isCreatingSegment) {
-          return prev;
-        }
         let newState = { ...prev };
+        const currentTime = Date.now();
         
-        // Ensure we have the right number of mutable buffers for current client count
+        // Clear blocking state if time has passed
+        if (prev.isBlocked && currentTime >= prev.blockUntil) {
+          newState.isBlocked = false;
+          newState.blockUntil = 0;
+        }
+        
+        // Check if writes are currently blocked
+        const writesBlocked = prev.isBlocked && currentTime < prev.blockUntil;
+        
+        // Ensure correct number of mutable buffers
         while (newState.mutableBuffers.length < prev.clientCount) {
           newState.mutableBuffers.push({ rows: 0, sizeKB: 0 });
         }
@@ -135,330 +257,159 @@ export const SearchArchitectureVisualization: React.FC = () => {
           newState.mutableBuffers.pop();
         }
         
-        // Generate writes per client once - weighted toward smaller batches
-        const clientWrites = Array.from({ length: prev.clientCount }, () => {
-          const rand = Math.random();
-          if (rand < 0.7) {
-            // 70% chance: small writes (1-20 rows, median ~10)
-            return Math.floor(Math.random() * 20) + 1;
-          } else if (rand < 0.95) {
-            // 25% chance: medium writes (21-100 rows)
-            return Math.floor(Math.random() * 80) + 21;
-          } else {
-            // 5% chance: large writes (101-500 rows)
-            return Math.floor(Math.random() * 400) + 101;
-          }
-        });
-        const totalNewRows = clientWrites.reduce((sum, rows) => sum + rows, 0);
+        // Generate writes for each client (no staggering)
+        const clientWrites = Array.from({ length: prev.clientCount }, generateWriteSize);
+        let totalNewRows = clientWrites.reduce((sum, rows) => sum + rows, 0);
         
-        const rowSizeKB = 1; // Fixed 1KB per row
-        const totalWriteSizeKB = totalNewRows * rowSizeKB;
-        newState.writeCount += prev.clientCount; // Each client contributes writes
-        newState.totalBytesWrittenKB += totalWriteSizeKB; // Track total bytes written
-        
-        // Calculate RPS (Rows Per Second) - 5 second average
-        // When mutable enabled: measure writes into mutable buffers (what app sees)
-        // When mutable disabled: measure writes to L0 (same as total writes)
-        const currentTime = Date.now();
-        newState.last5SecondRows += totalNewRows;
-        
-        // Only update every 5 seconds, not on every tick that happens to cross the threshold
-        const timeSinceLastUpdate = currentTime - prev.lastTPSUpdate;
-        if (timeSinceLastUpdate >= 5000) {
-          const actualSeconds = timeSinceLastUpdate / 1000;
-          newState.rowsPerSecond = Math.round(newState.last5SecondRows / actualSeconds);
-          newState.last5SecondRows = 0;
-          newState.lastTPSUpdate = currentTime;
+        // If writes are blocked, prevent any writes
+        if (writesBlocked) {
+          clientWrites.fill(0);
+          totalNewRows = 0;
         }
         
-        // Simulate reads happening constantly too
+        let successfulRows = 0;
+        let segmentsCreated = 0;
+        
+        // Simulate reads
         const newReads = Math.floor(Math.random() * 3) + 1;
         newState.readCount += newReads;
         
-        // Mutable buffer: 1000 rows max, regardless of total size
-        const MUTABLE_ROW_THRESHOLD = 1000;
-        const L0_SIZE_KB = 100; // 100KB per L0 segment
-        const L1_THRESHOLD_KB = 1024; // 1MB
-        const L2_THRESHOLD_KB = 10240; // 10MB
-        const L3_THRESHOLD_KB = 102400; // 100MB
-        const L4_THRESHOLD_KB = 1048576; // 1GB
-        
-        // Handle writes based on mutable enabled status
         if (prev.mutableEnabled) {
-          // Add to per-connection mutable buffers (row-based limit)
+          // MUTABLE MODE: Fast writes to buffers
           newState.mutableBuffers = newState.mutableBuffers.map((buffer, clientIndex) => {
-            if (clientIndex < prev.clientCount && clientIndex < clientWrites.length) {
+            if (clientIndex < clientWrites.length && clientWrites[clientIndex] > 0) {
               const newRows = clientWrites[clientIndex];
-              if (buffer.rows < MUTABLE_ROW_THRESHOLD) {
-                const rowsToAdd = Math.min(newRows, MUTABLE_ROW_THRESHOLD - buffer.rows);
+              const newSizeKB = newRows * calculateRowSizeKB();
+              
+              if (buffer.rows < CONFIG.MUTABLE_ROW_THRESHOLD) {
+                const rowsToAdd = Math.min(newRows, CONFIG.MUTABLE_ROW_THRESHOLD - buffer.rows);
+                const proportionalSizeKB = newSizeKB * (rowsToAdd / newRows);
+                successfulRows += rowsToAdd;
+                
                 return {
                   rows: buffer.rows + rowsToAdd,
-                  sizeKB: buffer.sizeKB + (rowsToAdd * rowSizeKB)
+                  sizeKB: buffer.sizeKB + proportionalSizeKB
                 };
               }
             }
             return buffer;
           });
           
-          // Convert any full mutable buffers to L0
-          const fullBuffers = newState.mutableBuffers.filter(buffer => buffer.rows >= MUTABLE_ROW_THRESHOLD);
-          if (fullBuffers.length > 0 && !prev.isConverting) {
-            newState.isConverting = true;
-            setTimeout(() => {
-              setState(s => {
-                const buffersToConvert = s.mutableBuffers.filter(buffer => buffer.rows >= MUTABLE_ROW_THRESHOLD);
-                let totalSizeToConvert = 0;
-                let segmentsToCreate = 0;
-                
-                buffersToConvert.forEach(buffer => {
-                  totalSizeToConvert += buffer.sizeKB;
-                  // Split each full buffer (1MB) into multiple 100KB L0 segments
-                  segmentsToCreate += Math.ceil(buffer.sizeKB / L0_SIZE_KB);
-                });
-                
-                return {
-                  ...s,
-                  mutableBuffers: s.mutableBuffers.map(buffer => 
-                    buffer.rows >= MUTABLE_ROW_THRESHOLD ? { rows: 0, sizeKB: 0 } : buffer
-                  ),
-                  l0SizeKB: s.l0SizeKB + totalSizeToConvert,
-                  l0Segments: s.l0Segments + segmentsToCreate,
-                  isConverting: false
-                };
-              });
-            }, 200);
-          }
-        } else {
-          // Direct to L0 when mutable is disabled - each transaction becomes its own tiny segment!
-          // This is VERY expensive because you get one segment per transaction (could be 1 row!)
-          let totalSegmentsCreated = 0;
-          clientWrites.forEach(rows => {
-            // Each client write = 1 transaction = 1 new L0 segment (regardless of size!)
-            totalSegmentsCreated += 1;
+          // Convert full buffers to segments and clear them in one step
+          newState.mutableBuffers = newState.mutableBuffers.map(buffer => {
+            if (buffer.rows >= CONFIG.MUTABLE_ROW_THRESHOLD) {
+              const newSegment: Segment = {
+                id: `mutable_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+                sizeKB: buffer.sizeKB, // Transfer exact accumulated size
+                mergeLocked: false
+              };
+              
+              // Mutable buffers go to the lowest layer that can fit them
+              // Each layer has a maximum capacity, not a minimum threshold
+              if (buffer.sizeKB <= CONFIG.LAYER_SIZES.L1) { // <= 1MB, fits in L1
+                newState.l1Segments.push(newSegment);
+              } else if (buffer.sizeKB <= CONFIG.LAYER_SIZES.L2) { // <= 10MB, fits in L2
+                newState.l2Segments.push(newSegment);
+              } else { // > 10MB, goes to L3
+                newState.l3Segments.push(newSegment);
+              }
+              
+              segmentsCreated++; // Count segments created by mutable conversion
+              
+              // Return cleared buffer
+              return { rows: 0, sizeKB: 0 };
+            }
+            return buffer;
           });
           
-          newState.l0SizeKB = prev.l0SizeKB + totalWriteSizeKB;
-          newState.l0Segments = prev.l0Segments + totalSegmentsCreated; // One segment per transaction!
-          newState.mutableBuffers = newState.mutableBuffers.map(() => ({ rows: 0, sizeKB: 0 }));
+        } else {
+          // NON-MUTABLE MODE: Direct segment creation with overhead (many small L0 segments)
+          clientWrites.forEach((rows, clientIndex) => {
+            if (rows > 0) { // Only create segments for actual writes
+              const sizeKB = rows * calculateRowSizeKB();
+              const newSegment: Segment = {
+                id: `direct_${Date.now()}_${clientIndex}_${Math.random().toString(36).substr(2, 9)}`,
+                sizeKB, // Each write becomes a segment with exact calculated size
+                mergeLocked: false
+              };
+              newState.l0Segments.push(newSegment);
+              segmentsCreated++;
+            }
+          });
           
-          // Simulate the overhead cost of creating many tiny segments
-          if (Math.random() < 0.8) { // 80% chance of segment creation overhead (very likely due to tiny segments)
-            const avgSegmentSizeKB = totalWriteSizeKB / totalSegmentsCreated;
-            newState.isCreatingSegment = true;
-            newState.segmentCreationLevel = `L0 (${totalSegmentsCreated} tiny segments, avg ${avgSegmentSizeKB.toFixed(0)}KB each)`;
+          successfulRows = totalNewRows;
+        }
+        
+        // Block ingestion if segments were created
+        if (segmentsCreated > 0) {
+          const blockDuration = segmentsCreated * CONFIG.SEGMENT_CREATION_DELAY;
+          newState.isBlocked = true;
+          newState.blockUntil = currentTime + blockDuration;
+        }
+        
+        // Background compaction work
+        const segmentLayers = [
+          { fromLevel: 'L0', segments: newState.l0Segments.filter(s => !s.mergeLocked), threshold: CONFIG.LAYER_SIZES.L1, toLevel: 'L1' },
+          { fromLevel: 'L1', segments: newState.l1Segments.filter(s => !s.mergeLocked), threshold: CONFIG.LAYER_SIZES.L2, toLevel: 'L2' },
+          { fromLevel: 'L2', segments: newState.l2Segments.filter(s => !s.mergeLocked), threshold: CONFIG.LAYER_SIZES.L3, toLevel: 'L3' },
+        ];
+
+        // Find work for idle workers
+        for (let layerIndex = 0; layerIndex < segmentLayers.length; layerIndex++) {
+          const layer = segmentLayers[layerIndex];
+          
+          if (!shouldMergeSegments(layer.segments, layer.threshold, layer.toLevel)) {
+            continue;
+          }
+          
+          // Find idle worker
+          const availableWorkerIndex = newState.workers.findIndex((worker, i) => 
+            i < prev.workerCount && worker.status === 'idle'
+          );
+          
+          if (availableWorkerIndex >= 0) {
+            // Mark segments as locked for merge
+            if (layer.fromLevel === 'L0') {
+              newState.l0Segments.forEach(segment => { segment.mergeLocked = true; });
+            } else if (layer.fromLevel === 'L1') {
+              newState.l1Segments.forEach(segment => { segment.mergeLocked = true; });
+            } else if (layer.fromLevel === 'L2') {
+              newState.l2Segments.forEach(segment => { segment.mergeLocked = true; });
+            }
             
-            setTimeout(() => {
-              setState(s => ({
-                ...s,
-                isCreatingSegment: false,
-                segmentCreationLevel: ''
-              }));
-            }, 200); // 200ms for segment creation (same as all other segments)
+            // Start compaction
+            executeCompaction(layer.fromLevel, layer.toLevel, availableWorkerIndex);
+            break; // Only start one compaction per tick
           }
         }
         
-        // Background merge operations with priority ordering
-        const workers = ['worker1Status', 'worker2Status', 'worker3Status', 'worker4Status'] as const;
+        // Update derived sizes
+        newState.l0SizeKB = newState.l0Segments.reduce((sum, s) => sum + s.sizeKB, 0);
+        newState.l1SizeKB = newState.l1Segments.reduce((sum, s) => sum + s.sizeKB, 0);
+        newState.l2SizeKB = newState.l2Segments.reduce((sum, s) => sum + s.sizeKB, 0);
+        newState.l3SizeKB = newState.l3Segments.reduce((sum, s) => sum + s.sizeKB, 0);
         
-        // Priority-based compaction assignment
-        // 1. L0→L1 (highest priority - blocks writes if L0 gets too full)
-        // Merge L0 segments when we have enough to create a 1MB L1 segment (about 10 L0 segments)
-        let availableL0SizeKB = newState.l0SizeKB;
-        if (availableL0SizeKB >= L1_THRESHOLD_KB) {
-          for (let i = 0; i < prev.workerCount; i++) {
-            const workerKey = workers[i];
-            if (newState[workerKey] === 'idle' && availableL0SizeKB >= L1_THRESHOLD_KB) {
-              newState[workerKey] = 'working';
-              const taskKey = `worker${i + 1}Task` as keyof State;
-              newState[taskKey] = 'L0→L1';
-              if (i === 0) newState.isMerging = true;
-              
-              availableL0SizeKB -= L1_THRESHOLD_KB;
-              
-              setTimeout(() => {
-                // First phase: Start segment creation (acquire locks)
-                setState(s => ({
-                  ...s,
-                  isCreatingSegment: true,
-                  segmentCreationLevel: 'L1'
-                }));
-                
-                // Second phase: Complete segment creation after lock period
-                setTimeout(() => {
-                  setState(s => {
-                    // Remove segments to get as close to L1_THRESHOLD_KB as possible
-                    const avgSegmentSizeKB = s.l0Segments > 0 ? s.l0SizeKB / s.l0Segments : L0_SIZE_KB;
-                    const segmentsToRemove = Math.min(s.l0Segments, Math.round(L1_THRESHOLD_KB / avgSegmentSizeKB));
-                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
-                    
-                    return {
-                      ...s,
-                      l0SizeKB: Math.max(0, s.l0SizeKB - actualSizeRemoved),
-                      l0Segments: Math.max(0, s.l0Segments - segmentsToRemove),
-                      l1SizeKB: s.l1SizeKB + actualSizeRemoved,
-                      l1Segments: s.l1Segments + 1,
-                      [workerKey]: 'idle',
-                      [`worker${i + 1}Task`]: '',
-                      isCreatingSegment: false,
-                      segmentCreationLevel: '',
-                      ...(i === 0 && { isMerging: false })
-                    };
-                  });
-                }, 200); // 200ms for segment creation
-              }, 5000);
-            }
-          }
+        // Update counters
+        if (successfulRows > 0) {
+          newState.totalRows += successfulRows;
+          newState.last5SecondRows += successfulRows;
+          newState.writeCount += prev.clientCount;
         }
-
-        // 2. L1→L2 (second priority - only if no L0→L1 work available)
-        let availableL1SizeKB = newState.l1SizeKB;
-        if (availableL1SizeKB >= L2_THRESHOLD_KB && availableL0SizeKB < L1_THRESHOLD_KB) {
-          for (let i = 0; i < prev.workerCount; i++) {
-            const workerKey = workers[i];
-            if (newState[workerKey] === 'idle' && availableL1SizeKB >= L2_THRESHOLD_KB) {
-              newState[workerKey] = 'working';
-              const taskKey = `worker${i + 1}Task` as keyof State;
-              newState[taskKey] = 'L1→L2';
-              availableL1SizeKB -= L2_THRESHOLD_KB;
-              
-              setTimeout(() => {
-                setState(s => ({
-                  ...s,
-                  isCreatingSegment: true,
-                  segmentCreationLevel: 'L2'
-                }));
-                
-                setTimeout(() => {
-                  setState(s => {
-                    // Remove segments to get as close to L2_THRESHOLD_KB as possible
-                    const avgSegmentSizeKB = s.l1Segments > 0 ? s.l1SizeKB / s.l1Segments : 1024;
-                    const segmentsToRemove = Math.min(s.l1Segments, Math.round(L2_THRESHOLD_KB / avgSegmentSizeKB));
-                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
-                    
-                    return {
-                      ...s,
-                      l1SizeKB: Math.max(0, s.l1SizeKB - actualSizeRemoved),
-                      l1Segments: Math.max(0, s.l1Segments - segmentsToRemove),
-                      l2SizeKB: s.l2SizeKB + actualSizeRemoved,
-                      l2Segments: s.l2Segments + 1,
-                      [workerKey]: 'idle',
-                      [`worker${i + 1}Task`]: '',
-                      isCreatingSegment: false,
-                      segmentCreationLevel: ''
-                    };
-                  });
-                }, 200); // 200ms for segment creation
-              }, 8000);
-            }
-          }
-        }
-
-        // 3. L2→L3 (third priority - only if no L0→L1 or L1→L2 work available)
-        let availableL2SizeKB = newState.l2SizeKB;
-        if (availableL2SizeKB >= L3_THRESHOLD_KB && availableL0SizeKB < L1_THRESHOLD_KB && availableL1SizeKB < L2_THRESHOLD_KB) {
-          for (let i = 0; i < prev.workerCount; i++) {
-            const workerKey = workers[i];
-            if (newState[workerKey] === 'idle' && availableL2SizeKB >= L3_THRESHOLD_KB) {
-              newState[workerKey] = 'working';
-              const taskKey = `worker${i + 1}Task` as keyof State;
-              newState[taskKey] = 'L2→L3';
-              availableL2SizeKB -= L3_THRESHOLD_KB;
-              
-              setTimeout(() => {
-                setState(s => ({
-                  ...s,
-                  isCreatingSegment: true,
-                  segmentCreationLevel: 'L3'
-                }));
-                
-                setTimeout(() => {
-                  setState(s => {
-                    // Remove segments to get as close to L3_THRESHOLD_KB as possible
-                    const avgSegmentSizeKB = s.l2Segments > 0 ? s.l2SizeKB / s.l2Segments : 10240;
-                    const segmentsToRemove = Math.min(s.l2Segments, Math.round(L3_THRESHOLD_KB / avgSegmentSizeKB));
-                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
-                    
-                    return {
-                      ...s,
-                      l2SizeKB: Math.max(0, s.l2SizeKB - actualSizeRemoved),
-                      l2Segments: Math.max(0, s.l2Segments - segmentsToRemove),
-                      l3SizeKB: s.l3SizeKB + actualSizeRemoved,
-                      l3Segments: s.l3Segments + 1,
-                      [workerKey]: 'idle',
-                      [`worker${i + 1}Task`]: '',
-                      isCreatingSegment: false,
-                      segmentCreationLevel: ''
-                    };
-                  });
-                }, 200); // 200ms for segment creation
-              }, 12000);
-            }
-          }
-        }
-
-        // 4. L3→L4+ (lowest priority - only if no other work available)
-        let availableL3SizeKB = newState.l3SizeKB;
-        if (availableL3SizeKB >= L4_THRESHOLD_KB && availableL0SizeKB < L1_THRESHOLD_KB && availableL1SizeKB < L2_THRESHOLD_KB && availableL2SizeKB < L3_THRESHOLD_KB) {
-          for (let i = 0; i < prev.workerCount; i++) {
-            const workerKey = workers[i];
-            if (newState[workerKey] === 'idle' && availableL3SizeKB >= L4_THRESHOLD_KB) {
-              newState[workerKey] = 'working';
-              const taskKey = `worker${i + 1}Task` as keyof State;
-              newState[taskKey] = 'L3→L4+';
-              availableL3SizeKB -= L4_THRESHOLD_KB;
-              
-              setTimeout(() => {
-                setState(s => ({
-                  ...s,
-                  isCreatingSegment: true,
-                  segmentCreationLevel: 'L4+'
-                }));
-                
-                setTimeout(() => {
-                  setState(s => {
-                    // Remove segments to get as close to L4_THRESHOLD_KB as possible
-                    const avgSegmentSizeKB = s.l3Segments > 0 ? s.l3SizeKB / s.l3Segments : 102400;
-                    const segmentsToRemove = Math.min(s.l3Segments, Math.round(L4_THRESHOLD_KB / avgSegmentSizeKB));
-                    const actualSizeRemoved = segmentsToRemove * avgSegmentSizeKB;
-                    
-                    return {
-                      ...s,
-                      l3SizeKB: Math.max(0, s.l3SizeKB - actualSizeRemoved),
-                      l3Segments: Math.max(0, s.l3Segments - segmentsToRemove),
-                      l4PlusSizeKB: s.l4PlusSizeKB + actualSizeRemoved,
-                      l4PlusSegments: s.l4PlusSegments + 1,
-                      [workerKey]: 'idle',
-                      [`worker${i + 1}Task`]: '',
-                      isCreatingSegment: false,
-                      segmentCreationLevel: ''
-                    };
-                  });
-                }, 200); // 200ms for segment creation
-              }, 15000);
-            }
-          }
+        
+        // Update RPS every 5 seconds
+        if (currentTime - prev.lastUpdate >= CONFIG.THROUGHPUT_UPDATE_INTERVAL) {
+          const actualSeconds = (currentTime - prev.lastUpdate) / 1000;
+          newState.rowsPerSecond = Math.round(newState.last5SecondRows / actualSeconds);
+          newState.last5SecondRows = 0;
+          newState.lastUpdate = currentTime;
         }
         
         return newState;
       });
-    }, state.mutableEnabled ? 300 : 2000); // Much slower when mutable disabled due to per-tx segment overhead
+    }, CONFIG.TICK_INTERVAL);
 
     return () => clearInterval(interval);
-  }, [state.clientCount, state.mutableEnabled]);
-
-  // Progress bar renderer
-  const renderProgressBar = (current: number, max: number, width: number = 20) => {
-    const filled = Math.floor((current / max) * width);
-    const empty = width - filled;
-    return `[${'█'.repeat(filled)}${'░'.repeat(empty)}]`;
-  };
-
-  // Format size in KB to human readable
-  const formatSize = (sizeKB: number): string => {
-    if (sizeKB >= 1048576) return `${(sizeKB / 1048576).toFixed(1)}GB`;
-    if (sizeKB >= 1024) return `${(sizeKB / 1024).toFixed(1)}MB`;
-    return `${sizeKB.toFixed(0)}KB`;
-  };
+  }, [state.clientCount, state.mutableEnabled, state.workerCount]);
 
   return (
     <div className="w-full mx-auto p-3 bg-black text-green-400 font-mono text-xs">
@@ -560,7 +511,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 <div className="text-xs">
                   <span className="text-cyan-400">→ Immutable:</span>
                   <div className="text-gray-300 ml-2">
-                    Scan {state.l0Segments + state.l1Segments + state.l2Segments + state.l3Segments + state.l4PlusSegments} immutable segments
+                    Scan {state.l0Segments.length + state.l1Segments.length + state.l2Segments.length + state.l3Segments.length} immutable segments
                   </div>
                 </div>
               </div>
@@ -575,7 +526,6 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 Rows per second
               </div>
             </div>
-
           </div>
 
           {/* Database storage */}
@@ -598,7 +548,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
                     <div className="text-green-400 grid grid-cols-4 gap-1">
                       {state.mutableBuffers.map((buffer, index) => (
                         <span key={index} className={`${buffer.rows > 0 ? "text-green-400" : "text-gray-600"} text-xs font-mono`}>
-                          [{buffer.rows.toString().padStart(3)}/1000]
+                          [{buffer.rows.toString().padStart(3)}/{CONFIG.MUTABLE_ROW_THRESHOLD}]
                         </span>
                       ))}
                     </div>
@@ -619,26 +569,22 @@ export const SearchArchitectureVisualization: React.FC = () => {
                 <div className="text-cyan-400">IMMUTABLE SEGMENTS</div>
                 <div className="flex justify-between">
                   <span className="text-white">L0:</span>
-                  <span className="text-cyan-400">{state.l0Segments} ({formatSize(state.l0SizeKB)})</span>
+                  <span className="text-cyan-400">{state.l0Segments.length} ({formatSize(state.l0SizeKB)})</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white">L1:</span>
-                  <span className="text-cyan-400">{state.l1Segments} ({formatSize(state.l1SizeKB)})</span>
+                  <span className="text-cyan-400">{state.l1Segments.length} ({formatSize(state.l1SizeKB)})</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white">L2:</span>
-                  <span className="text-cyan-400">{state.l2Segments} ({formatSize(state.l2SizeKB)})</span>
+                  <span className="text-cyan-400">{state.l2Segments.length} ({formatSize(state.l2SizeKB)})</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-white">L3:</span>
-                  <span className="text-cyan-400">{state.l3Segments} ({formatSize(state.l3SizeKB)})</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-white">L4+:</span>
-                  <span className="text-cyan-400">{state.l4PlusSegments} ({formatSize(state.l4PlusSizeKB)})</span>
+                  <span className="text-cyan-400">{state.l3Segments.length} ({formatSize(state.l3SizeKB)})</span>
                 </div>
                 <div className="text-purple-300 text-xs mt-1">
-                  Total: {formatSize(state.l0SizeKB + state.l1SizeKB + state.l2SizeKB + state.l3SizeKB + state.l4PlusSizeKB)}
+                  Total: {formatSize(state.l0SizeKB + state.l1SizeKB + state.l2SizeKB + state.l3SizeKB)}
                 </div>
               </div>
 
@@ -646,20 +592,22 @@ export const SearchArchitectureVisualization: React.FC = () => {
               <div className="border border-purple-400 bg-black/50 p-2">
                 <div className="text-purple-400">COMPACTION ({state.workerCount} worker{state.workerCount > 1 ? 's' : ''})</div>
                 <div className="space-y-1 mt-2">
-                  {Array.from({ length: state.workerCount }, (_, i) => {
-                    const workerKey = `worker${i + 1}Status` as keyof State;
-                    const taskKey = `worker${i + 1}Task` as keyof State;
-                    const workerStatus = state[workerKey] as 'idle' | 'working';
-                    const workerTask = state[taskKey] as string;
-                    const isWorking = workerStatus === 'working';
+                  {state.workers.slice(0, state.workerCount).map((worker, i) => {
+                    const statusColors = {
+                      'idle': 'text-green-400',
+                      'compacting': 'text-orange-400'
+                    };
+                    
+                    const statusSymbols = {
+                      'idle': '●',
+                      'compacting': '🔧'
+                    };
                     
                     return (
                       <div key={i} className="text-white text-xs">
-                        {isWorking ? (
-                          <span className="text-orange-400 animate-pulse">🔧 Worker {i + 1} {workerTask}</span>
-                        ) : (
-                          <span className="text-green-400">● Worker {i + 1} idle</span>
-                        )}
+                        <span className={`${statusColors[worker.status]} ${worker.status !== 'idle' ? 'animate-pulse' : ''}`}>
+                          {statusSymbols[worker.status]} Worker {i + 1} {worker.task || 'idle'}
+                        </span>
                       </div>
                     );
                   })}
