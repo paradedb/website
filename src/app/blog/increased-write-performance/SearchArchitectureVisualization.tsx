@@ -486,7 +486,7 @@ export const SearchArchitectureVisualization: React.FC = () => {
           <div className="border border-green-400 bg-green-900/20 p-2 inline-block">
             <div className="text-green-400">WRITES ({state.clientCount} client{state.clientCount > 1 ? 's' : ''})</div>
             <div className="text-green-300 text-xs">
-              {Array.from({ length: Math.min(state.clientCount, 8) }, (_, i) => '▼').join('')}
+              {Array.from({ length: Math.min(state.clientCount, 8) }, () => '▼').join('')}
             </div>
             <div className="text-gray-300 text-xs mt-1">
               → {state.mutableEnabled ? 'Shared mutable buffer' : 'Direct to L0 segments'}
