@@ -119,11 +119,7 @@ export default function Footer() {
                         : "bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white",
                     )}
                   >
-                    <Link
-                      href={social.CALENDLY}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
+                    <Link href={email.HELLO}>
                       <RiMailLine className="mr-2 size-4" />
                       Contact Us
                     </Link>
