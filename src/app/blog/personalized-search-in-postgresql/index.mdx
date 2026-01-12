@@ -16,7 +16,7 @@ Personalization can take a "good enough" search experience to a magical experien
 
 This isn't a new concept—I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine. What's changed is that the tooling has matured to make it production-ready.
 
-What if you could build a FAANG-quality personalized search engine _entirely_ within postgres? No new infrastructure. No network hops. Just SQL.
+What if you could build a FAANG-quality personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
 
 In this post, we’ll build a personalized movie search engine using **ParadeDB**. We’ll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
 
