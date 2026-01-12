@@ -20,7 +20,7 @@ What if you could build a FAANG-quality personalized search engine _entirely_ wi
 
 In this post, we’ll build a personalized movie search engine using **ParadeDB**. We’ll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
 
-This architectural simplicity is a superpower. Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how "Rube Goldberg" pipelines crumble under their own weight. . Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040), and today, we'll build it in standard Postgres.
+This architectural simplicity is a superpower. Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how "Rube Goldberg" pipelines crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040), and today, we'll build it in standard Postgres.
 
 ## The Architecture: Retrieve & Rerank
 
