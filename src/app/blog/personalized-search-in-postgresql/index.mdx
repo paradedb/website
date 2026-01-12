@@ -91,7 +91,7 @@ We use Pgvector’s vector column to store movie and users embeddings. Movie emb
 
 ### 2. Generating User Profiles
 
-How do we get a vector that represents a user's taste? In a complex stack, you'd have a background worker processing datastreams in Python. We can do that too, but since all our movie embeddings are already being streamed into postgres we can use standard SQL aggregation to get user embeddings.
+How do we get a vector that represents a user's taste? In a complex stack, you'd have a background worker processing datastreams in Python. We can do that too, but since all our movie embeddings are already being streamed into Postgres we can use standard SQL aggregation to get user embeddings.
 
 ```sql
 -- Generate a user's profile vector:
