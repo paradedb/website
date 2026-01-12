@@ -26,7 +26,7 @@ This architectural simplicity is a superpower. Having [engineered search infrast
 
 **Retrieve and Rerank approach** breaks the problem into two stages, utilizing the strengths of different algorithms:
 
-1. **Retrieval** We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top n candidates matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
+1. **Retrieval** We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
 2. **Reranking** : We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) on just those 100 candidates to re-order them based on the user's personal profile.
 
 Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For a n=100 items (or even 1000), we would not need any vector index and instead brute force our way out.
