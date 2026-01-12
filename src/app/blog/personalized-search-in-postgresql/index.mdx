@@ -14,7 +14,7 @@ When I search for "King", I’m looking for LOTR- _The Return of the King_. You 
 
 Personalization can take a "good enough" search experience to a magical experience. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data between a primary database and a search engine (like Elasticsearch), building a separate ML recommendation service, dragging data across the wire to Python workers for re-ranking, and then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
 
-This isn't a new concept—I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine. What's changed is that the tooling has matured to make it production-ready.
+This isn't a new concept—I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine, and today we'll build it in standard Postgres so you can too.
 
 What if you could build a FAANG-quality personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
 
@@ -56,6 +56,10 @@ Let's build it. We need two core entities: **Movies** (the content) and **Users*
 We use standard Postgres tables for movies and users. These are core tables. We also have ratings table that contains user’s likes and dislikes. For success in personalization you do need some user specific signals that can be modeled into their profiles. Here we use explicit likes/dislikes in the form of ratings. A rating of 4 or 5 signals a like, a rating of 1 and 2 signals a dislike. Implicit signals like watching a video, interacting with content, duration of engagements can be used as well.
 
 ```sql
+-- Enable required extensions
+CREATE EXTENSION IF NOT EXISTS pg_search;
+CREATE EXTENSION IF NOT EXISTS vector;
+
 -- The content we want to search
 CREATE TABLE movies (
     movie_id BIGINT PRIMARY KEY,
@@ -226,7 +230,7 @@ A powerful alternative is using a **Cross-Encoder**. While our in-database appro
 - **Use in database Bi-Encoder**: For most use cases where you want "Good Enough" and fast personalization (&lt;100ms latency), data privacy, and zero operational complexity. Having no network hop reduces distributed systems issues like high tail latencies.
 - **Use Cross-Encoder approach**: For the 5% of use cases where squeezing out the final drops of relevance is worth the extra latency, vendor cost, and privacy trade-offs.
 
-The architecture we built today hits a "Sweet Spot" for 95% of use cases. It gives you **hybrid search** and **personalization** with **zero added infrastructure**. You aren't managing separate inference clusters (like Ray), paying for Re-ranker API calls, or maintaining ETL pipelines. You just have Postgres.
+The architecture we built at ParadeDB hits a "Sweet Spot" for 95% of use cases. It gives you **hybrid search** and **personalization** with **zero added infrastructure**. You aren't managing separate inference clusters (like Ray), paying for Re-ranker API calls, or maintaining ETL pipelines. You just have Postgres.
 
 The main consideration? **Resource Management**. Because search runs on your database, it shares CPU and RAM with your transactional workload. For most applications, this is a non-issue given Postgres's efficiency. For high-scale deployments, you can simply run this on a **dedicated read replica** to isolate inference load from your primary writes.
 
