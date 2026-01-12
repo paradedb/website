@@ -26,7 +26,7 @@ This architectural simplicity is a superpower. Having [engineered search infrast
 
 **Retrieve and Rerank approach** breaks the problem into two stages, utilizing the strengths of different algorithms:
 
-1. **Retrieval** We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
+1. **Retrieval** We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top 100 candidates matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
 2. **Reranking** : We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) on just those 100 candidates to re-order them based on the user's personal profile.
 
 Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For a n=100 items (or even 1000), we would not need any vector index and instead brute force our way out.
@@ -41,7 +41,7 @@ Before we look at code, it helps to understand _why_ this works.
 
 />
 
-Traditional search matches **keywords**. If you search for "Sci-Fi", a database looks for the string "Sci-Fi". To a keyword engine, _Star Wars_ (Action/Adventure) and _Solaris_ (Psychological Drama) are identical because they share a tag.
+Traditional search matches **keywords**. If you search for "King", a keyword engine simply looks for the string "King" in titles. It returns _The Return of the King_, _The King's Speech_, and _The Lion King_ with equal confidence—it has no way to know which one _you_ want.
 
 A **Uer Vector** represents aggregated taste. It can be built from **explicit signals** (like the 5-star ratings we look at in this post) or **implicit signals** (like clickstream data or watch time).
 
@@ -217,12 +217,12 @@ For the most advanced use cases, companies perform retrieval in a database and t
 
 ### 3. The "Cross-Encoder" Approach (e.g. Cohere Re-ranker)
 
-### The ParadeDB Sweet Spot
-
-A powerful alternative is using a **Cross-Encoder**. While our in-database approach uses a **Bi-Encoder.** A bi-encoder is where we calculate vector embeddings for the Query and Document _independently_ and just look at the angle/distance-angle between them, a Cross-Encoder feeds _both_ the query and the document into the model simultaneously.
+A powerful alternative is using a **Cross-Encoder**. Our in-database approach uses a **Bi-Encoder**, which calculates embeddings for the query and document _independently_ and compares the distance between them. A Cross-Encoder, by contrast, feeds _both_ the query and document into the model simultaneously.
 
 - **Pro**: **Maximum Accuracy**. Cross-encoders are more advanced because they understand the interaction between words in the query and words in the document. Although they are generally considered blackbox for most users
 - **Con**: **The Latency & Cost Cliff**. You cannot pre-compute a Cross-Encoder score. You must run this heavy model _at query time (inference time)_ for every single candidate. This typically adds 200ms–500ms of latency per search and requires sending your sensitive user data to a third-party API.
+
+### The ParadeDB Sweet Spot
 
 **When to use which?**
 
