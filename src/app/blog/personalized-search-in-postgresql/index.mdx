@@ -15,7 +15,7 @@ When I search for "King", I’m looking for LOTR- _The Return of the King_. You 
 
 Personalization can take a "good enough" search experience to a magical experience. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data between a primary database and a search engine (like Elasticsearch), building a separate ML recommendation service, dragging data across the wire to Python workers for re-ranking, and then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
 
-This isn't a new concept—I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine, and today we'll build it in standard Postgres so you can too.
+This isn't a new concept. I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine. Today we'll build it in standard Postgres so you can too.
 
 <Image
     src={pgconf}
@@ -47,7 +47,7 @@ Before we look at code, it helps to understand _why_ this works.
 
 />
 
-Traditional search matches **keywords**. If you search for "King", a keyword engine simply looks for the string "King" in titles. It returns _The Return of the King_, _The King's Speech_, and _The Lion King_ with equal confidence—it has no way to know which one _you_ want.
+Traditional search matches **keywords**. If you search for "King", a keyword engine simply looks for the string "King" in titles. It returns _The Return of the King_, _The King's Speech_, and _The Lion King_ with equal confidence, but it has no way to know which one _you_ want.
 
 A **Uer Vector** represents aggregated taste. It can be built from **explicit signals** (like the 5-star ratings we look at in this post) or **implicit signals** (like clickstream data or watch time).
 
@@ -128,7 +128,7 @@ Instead of a black box, let's break this down into four logical steps: **Retriev
 
 ### Step 1: The Retrieval (Fast)
 
-First, we use BM25 to find the top 100 candidates. This is our "coarse filter"—it casts a wide net to find anything relevant to the text query.
+First, we use BM25 to find the top 100 candidates. This is our "coarse filter" that casts a wide net to find anything relevant to the text query.
 
 ```sql
 WITH first_pass_retrieval AS (
@@ -211,7 +211,7 @@ No architecture is perfect. While the "In-Database" approach offers unbeatable s
 
 The most common alternative is fetching data and re-ranking it in your application code (or a dedicated microservice).
 
-- **Pro**: **Maximum Flexibility**. You can use arbitrary logic and complex machine learning models (PyTorch/TensorFlow) that might be hard to express in SQL. (Though note: standard A/B testing is still easy in Postgres—you just generate different SQL queries or swap the "User Embedding" table in your application logic).
+- **Pro**: **Maximum Flexibility**. You can use arbitrary logic and complex machine learning models (PyTorch/TensorFlow) that might be hard to express in SQL. (Though note: standard A/B testing is still easy in Postgres since you just generate different SQL queries or swap the "User Embedding" table in your application logic).
 - **Con**: **The "Data Transfer Tax"**. You have to ship thousands of candidate rows over the network to your application just to discard most of them. This adds significant latency and serialization overhead.
 
 ### 2. Dedicated Inference Platforms (e.g. Ray Serve, NVIDIA Triton)
