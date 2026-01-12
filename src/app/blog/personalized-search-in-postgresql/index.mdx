@@ -14,6 +14,8 @@ When I search for "King", I’m looking for LOTR- _The Return of the King_. You 
 
 Personalization can take a "good enough" search experience to a magical experience. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data between a primary database and a search engine (like Elasticsearch), building a separate ML recommendation service, dragging data across the wire to Python workers for re-ranking, and then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
 
+This isn't a new concept—I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine. What's changed is that the tooling has matured to make it production-ready.
+
 What if you could build a FAANG-quality personalized search engine _entirely_ within postgres? No new infrastructure. No network hops. Just SQL.
 
 In this post, we’ll build a personalized movie search engine using **ParadeDB**. We’ll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
