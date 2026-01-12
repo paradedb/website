@@ -5,6 +5,7 @@ import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
 import reranking from "./images/reranking.png";
+import pgconf from "./images/pgconf.JPG";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
@@ -15,6 +16,11 @@ When I search for "King", I’m looking for LOTR- _The Return of the King_. You 
 Personalization can take a "good enough" search experience to a magical experience. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data between a primary database and a search engine (like Elasticsearch), building a separate ML recommendation service, dragging data across the wire to Python workers for re-ranking, and then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
 
 This isn't a new concept—I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine, and today we'll build it in standard Postgres so you can too.
+
+<Image
+    src={pgconf}
+    alt="Presenting at PGConf NYC 2023"
+/>
 
 What if you could build a FAANG-quality personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
 
