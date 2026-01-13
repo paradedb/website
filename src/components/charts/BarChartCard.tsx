@@ -76,6 +76,18 @@ export function BarChartCard({
           text-overflow: ellipsis !important;
           overflow: visible !important;
           white-space: nowrap !important;
+          fill: #374151 !important;
+        }
+        .dark .recharts-cartesian-axis-tick-value {
+          fill: #d1d5db !important;
+        }
+        .recharts-cartesian-axis-line,
+        .recharts-cartesian-axis-tick-line {
+          stroke: #9ca3af !important;
+        }
+        .dark .recharts-cartesian-axis-line,
+        .dark .recharts-cartesian-axis-tick-line {
+          stroke: #6b7280 !important;
         }
         .recharts-yAxis .recharts-cartesian-axis-tick-value {
           text-overflow: clip !important;

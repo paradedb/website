@@ -1,0 +1,157 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { HeroImage } from "@/components/HeroImage";
+import Image from "next/image";
+import hot from "./images/hot.png";
+import mutable from "./images/mutable buffers.png";
+import heroImage from "./images/hero.png";
+import { BarChartCard } from "@/components/charts/BarChartCard";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+Supporting update-heavy workloads is one of the most challenging database problems in the search space. The most popular search libraries, [Lucene](https://github.com/apache/lucene) (which powers Elasticsearch and Solr) and [Tantivy](https://github.com/quickwit-oss/tantivy) (which powers ParadeDB and Quickwit), use read-optimized, immutable data structures that excel at query performance but struggle with high throughput non-batched writes.
+
+This presents a fundamental trade-off: updating a single field requires reindexing and serializing all fields which are stored alongside it, and merging these data structures during compaction adds significant write overhead. For applications that need both fast search and high write throughput (real-time dashboards, e-commerce catalogs, and recommendation systems) this bottleneck can be a deal-breaker.
+
+We set out to solve this problem in ParadeDB. Through two key optimizations, searchable buffers and background merging, we achieved more than a **10x improvement in write throughput** while maintaining search performance. In this post we'll dive into how we built these optimizations into Postgres, and the engineering challenges we encountered along the way.
+
+## The Challenge: Write-Optimized vs. Read-Optimized Data Structures
+
+Almost all search engines use LSM (log structured merge) trees or WORM (write once, read many) architectures. In both patterns, once data is written it's immutable with no in-place updates possible.
+
+Take Lucene's segment-based architecture, which Tantivy closely mirrors. Data is arranged into immutable segments, essentially sub-indexes that contain compressed data optimized for read performance. Writing new data requires:
+
+1. Buffering writes in memory until reaching a threshold (or a user-initiated commit)
+2. Flushing the entire buffer to create a new segment (which could be tiny if it represents a single operation)
+3. Periodically merging smaller segments into larger ones to maintain performance at query time
+
+This approach works well for append-only workloads, but it breaks down when you need to support frequent updates or high throughput non-batched writes. Each write operation touches multiple data structures, and the periodic merge operations can create significant write amplification as thousands of tiny segments get rolled up into bigger ones. Reads also suffer, with results not reflecting recently written data until after the buffers are flushed.
+
+This is particularly problematic for ParadeDB because we respect [Postgres' ACID guarantees](/blog/elasticsearch-acid-test). We can't rely on in-memory buffers that might be lost on crash, so we need to persist index changes within each transaction. If a transaction inserts or updates a single value, we create a segment with just one or a few rows. With many non-batched write operations, this results in thousands of tiny segments.
+
+While Elastic still has this issue it's partially mitigated by not fully supporting ACID semantics: the values of writes are durable but they aren't immediately searchable with the search indexes being updated lazily. This means that a value which is written and committed may not show up in fast follow search results, a deal-breaker for many legal, financial, and real-time workloads.
+
+## Building Searchable Buffers
+
+Our first optimization was creating our own mutable write buffer inside Postgres, and making it searchable. Traditional search engines maintain an in-memory buffer that gets flushed periodically, but this buffer typically isn't queryable or durable meaning there's no read-after-write or even durability guarantee. That was never an option for us, previously we were committing the Tantivy in-memory buffer with each Postgres transaction and creating too many small segments.
+
+We quickly learned maintaining a persistent mutable buffer for full document payloads on top of the Tantivy structures would be expensive, essentially double writing everything. Luckily Postgres comes with a built in row identifier we can store, and then use as a lookup key. Every row in Postgres has a `ctid`, a `(u32, u16)` tuple that identifies its physical location. By maintaining a fixed-size buffer of `ctid` values rather than full document content, we could dramatically reduce the cost of each write operation.
+
+<Image
+  src={mutable}
+  alt="ParadeDB mutable segments provide a search buffer which offsets the negative effects of high-throughput insert and update workloads"
+/>
+
+Here's how it works:
+
+1. **Minimal write overhead**: Instead of indexing and serializing all fields for each write, we simply append a single `(u32, u16)` ctid to a per-connection buffer. On commit, this buffer is persisted in a Postgres block-backed linked list.
+2. **Search-Time index construction**: When executing a query, we construct an in-memory index over the contents of all visible buffers to provide read-your-writes. For typical buffer sizes (1000 records), the additional overhead of querying the buffer is minimal compared to searching large persistent segments.
+3. **Immutable segment optimization**: When buffers are full they can be written out to larger Tanitvy immutable segments, reading the actual data using the `ctid` as a key,
+
+This approach gives us the best of both worlds: minimal write overhead and immediate searchability without waiting for mutable segment buffers to flush to immutable segments.
+
+## The HOT Chain Challenge
+
+Implementing searchable buffers seemed straightforward until we encountered Postgres's Heap-Only Tuple (HOT) optimization. This is where our integration with Postgres's storage layer created an unexpected challenge.
+
+In Postgres, rows are never updated in-place. Instead, each update creates a new tuple version which is appended to the table (old versions are cleaned up later by the vacuum process). To reduce write amplification HOT chains form when:
+
+1. No indexed columns are modified in the update
+2. The new tuple version fits on the same page as the original
+
+When this happens, Postgres creates a "heap-only" tuple that's linked to the original but not propagated to indexes, saving having to update all indexes for all tuples:
+
+When a heap only tuple is read by an index it still points at the original index entry, and the chain is followed to find the most recent version. This happens without any additional IO, as the 8KB page has already been read into memory.
+
+<Image
+  src={hot}
+  alt="Heap only tuples (HOT) are a write time optimization in Postgres that uses inter-page linking to avoid updating indexes during UPDATE queries."
+/>
+
+The problem arises when our searchable buffer contains a `ctid` which points to outdated tuple versions. If we try to fetch data from these stale ctids, we might encounter:
+
+- Invalid pointers to TOAST (large object) data
+- Corrupted reads from deallocated memory
+- Inconsistent search results
+
+To fix this issue we implemented Postgres's HOT chain following mechanism. Before indexing any tuple data, we now call into Postgres's internal functions to "follow the chain" and ensure we're always working with the current tuple version. This ensures that our searchable buffer always reflects the current state of the data, even in the presence of frequent updates.
+
+## Background Merging for Write Isolation
+
+Our second major optimization addresses the expensive merge operations that compact smaller segments into larger ones. These merges are crucial for maintaining read performance, but they traditionally block writes and can cause significant latency spikes. In the past ParadeDB had several layers of foreground merging, combined with several layers of background merging.
+
+Our solution runs merges using Postgres dynamic background workers, separate on-demand processes that handle compaction without blocking the main write path. We build ParadeDB using [pgrx](https://github.com/pgcentralfoundation/pgrx), a Rust framework for developing Postgres extensions, which provides a great [API](https://docs.rs/pgrx/latest/pgrx/bgworkers/struct.DynamicBackgroundWorker.html) for managing these workers ([James, our Marketing guy](https://github.com/pgcentralfoundation/pgrx/pull/5), wrote the original pgrx `BGworker` implementation, then [Yurii Rashkovskii](https://github.com/pgcentralfoundation/pgrx/commit/8aa148a697e01d403296d344e152395f6de6d3ac) extended it for `DynamicBackgroundWorker` management).
+
+The background workers operate independently, merging segments based on size while the main database continues processing writes. This approach provides several benefits:
+
+1. **Write Isolation**: Foreground writes never block on merge operations
+2. **Resource Control**: Background workers can be throttled or prioritized based on system load
+3. **Fault Tolerance**: Failed merge operations don't impact the main write path
+4. **Parallelization**: Multiple workers (defined by a configuration option) can handle different merge operations concurrently
+
+## Why Faster Writes Matter
+
+These optimizations aren't just about raw performance, they solve real architectural problems that our users face. Many ParadeDB deployments serve as logical replicas of production Postgres databases, essentially acting as dedicated search instances that stay in sync with the primary.
+
+In this setup, write performance directly impacts:
+
+- **Replication Lag**: Slow indexing causes the search replica to fall behind the primary
+- **WAL Accumulation**: Backlogged writes can lead to disk space issues on the primary
+- **Search Freshness**: Users expect recently updated data to be immediately searchable
+- **Operational Stability**: Write bottlenecks can cascade into broader system issues
+
+By achieving an order of magnitude faster write throughput improvements, we've enabled ParadeDB to keep pace with even the most write-heavy production workloads while maintaining the search performance that users expect.
+
+## Performance Results
+
+Our write optimizations delivered significant improvements across multiple benchmarks:
+
+- **10x write throughput** compared to our previous implementation
+- **Immediate search visibility** for new writes (vs. eventual consistency)
+- **Reduced replication lag** in logical replica configurations
+- **Lower resource utilization** during high-write periods
+
+As we've mentioned in previous blog posts the difference between v0.18.0 (no mutable segments, primarily foreground merging), v0.19.0 (mutable segments and background merging), and v0.20.0 (small improvements, and both features on by default) is large. The following test runs batched updates in a single thread at the same time as inserts and TopN queries to simulate a realistic workload (see [https://github.com/paradedb/paradedb/tree/main/stressgres](https://github.com/paradedb/paradedb/tree/main/stressgres)).
+
+<BarChartCard
+title="Updates Per Second on a Wide Table with a BM25 index"
+data={[
+    {
+      name: "v0.20.0",
+      "Updates per second": 2016,
+    },
+    {
+      name: "v0.19.0",
+      "Updates per second": 1857,
+    },
+    {
+      name: "v0.18.0",
+      "Updates per second": 120,
+    },
+]}
+
+index="name"
+categories={["Updates per second"]}
+showLegend={false}
+colors={["blue"]}
+layout="vertical"
+yAxisWidth={80}
+xAxisLabel="Updates per second"
+className="h-56"
+
+alt="Bar chart showing write performance improvements across ParadeDB versions: v0.20.0 achieves 2016 updates per second, v0.19.0 achieves 1857 updates per second, and v0.18.0 achieves 120 updates per second, demonstrating over 16x improvement from v0.18.0 to v0.20.0"
+
+/>
+
+These improvements make ParadeDB viable for use cases that were previously challenging, where full-text search, correctness, and speed are all critical.
+
+## Looking Forward
+
+Write performance is just one piece of the larger puzzle. ParadeDB already offers a compelling Elasticsearch alternative built on Postgres foundations, and we're continuing to invest in optimizations that push even further. With v0.20.0 we focused on performance and developer experience (with our new [v2 API](/blog/v2api)), and coming into 2026 we've got our sights on making joins better (if that sounds interesting to you then please reach out).
+
+Our combination of Postgres's ACID guarantees with Elasticsearch-level search performance opens up exciting possibilities for application architectures. Instead of managing separate systems for transactions and search, developers can build on a single, consistent foundation.
+
+Ready to experience faster search indexing? [Get started with ParadeDB](https://paradedb.com) and see how write-optimized search can simplify your architecture.
