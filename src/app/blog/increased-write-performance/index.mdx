@@ -1,14 +1,17 @@
 import blogMetadata from "./metadata.json";
 import { AuthorSection } from "@/components/AuthorSection";
 import { Title } from "@/components/Title";
+import { HeroImage } from "@/components/HeroImage";
 import { SearchArchitectureVisualization } from "./SearchArchitectureVisualization";
 import Image from "next/image";
 import hot from "./images/hot.png";
 import mutable from "./images/mutable buffers.png";
+import heroImage from "./images/hero.png"
 import { BarChartCard } from "@/components/charts/BarChartCard";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
 
 Supporting update-heavy workloads is one of the most challenging database problems in the search space. The most popular search libraries, Lucene (which powers Elasticsearch and Solr) and Tantivy (which powers ParadeDB and Quickwit), use read-optimized, immutable data structures that excel at query performance but struggle with high throughput non-batched writes.
 
