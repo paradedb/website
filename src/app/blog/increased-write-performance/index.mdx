@@ -154,8 +154,3 @@ Our combination of Postgres's ACID guarantees with Elasticsearch-level search pe
 
 Ready to experience faster search indexing? [Get started with ParadeDB](https://paradedb.com) and see how write-optimized search can simplify your architecture.
 
----
-
-**Interactive Demo**: The visualization below simulates how ParadeDB's LSM tree architecture handles writes. Toggle "Mutable" to compare write throughput with and without searchable buffers. The **MUTABLE** section shows per-connection buffers filling up before being flushed. **IMMUTABLE SEGMENTS** displays the tiered segment layers (L0-L3) that data flows through. **COMPACTION** shows background workers merging segments. Adjust the number of clients and workers to see how the system scales.
-
-<SearchArchitectureVisualization />

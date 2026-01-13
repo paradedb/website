@@ -81,6 +81,11 @@ export function BarChartCard({
         .dark .recharts-cartesian-axis-tick-value {
           fill: #d1d5db !important;
         }
+        @media (prefers-color-scheme: dark) {
+          .recharts-cartesian-axis-tick-value {
+            fill: #d1d5db !important;
+          }
+        }
         .recharts-cartesian-axis-line,
         .recharts-cartesian-axis-tick-line {
           stroke: #9ca3af !important;
@@ -88,6 +93,12 @@ export function BarChartCard({
         .dark .recharts-cartesian-axis-line,
         .dark .recharts-cartesian-axis-tick-line {
           stroke: #6b7280 !important;
+        }
+        @media (prefers-color-scheme: dark) {
+          .recharts-cartesian-axis-line,
+          .recharts-cartesian-axis-tick-line {
+            stroke: #6b7280 !important;
+          }
         }
         .recharts-yAxis .recharts-cartesian-axis-tick-value {
           text-overflow: clip !important;
