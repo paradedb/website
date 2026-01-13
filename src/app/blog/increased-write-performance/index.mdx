@@ -13,7 +13,7 @@ import { BarChartCard } from "@/components/charts/BarChartCard";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-Supporting update-heavy workloads is one of the most challenging database problems in the search space. The most popular search libraries, Lucene (which powers Elasticsearch and Solr) and Tantivy (which powers ParadeDB and Quickwit), use read-optimized, immutable data structures that excel at query performance but struggle with high throughput non-batched writes.
+Supporting update-heavy workloads is one of the most challenging database problems in the search space. The most popular search libraries, [Lucene](https://github.com/apache/lucene) (which powers Elasticsearch and Solr) and [Tantivy](https://github.com/quickwit-oss/tantivy) (which powers ParadeDB and Quickwit), use read-optimized, immutable data structures that excel at query performance but struggle with high throughput non-batched writes.
 
 This presents a fundamental trade-off: updating a single field requires reindexing and serializing all fields which are stored alongside it, and merging these data structures during compaction adds significant write overhead. For applications that need both fast search and high write throughput (real-time dashboards, e-commerce catalogs, and recommendation systems) this bottleneck can be a deal-breaker.
 
@@ -115,7 +115,7 @@ Our write optimizations delivered significant improvements across multiple bench
 - **Reduced replication lag** in logical replica configurations
 - **Lower resource utilization** during high-write periods
 
-As we've mentioned in previous blog posts the difference between v0.18.0 (no mutable segments, primarily foreground merging), v0.19.0 (mutable segments and background merging), and v0.20.0 (small improvements, and both features on by default) is large:
+As we've mentioned in previous blog posts the difference between v0.18.0 (no mutable segments, primarily foreground merging), v0.19.0 (mutable segments and background merging), and v0.20.0 (small improvements, and both features on by default) is large. The following test runs batched updates in a single thread at the same time as inserts and TopN queries to simulate a realistic workload (see [https://github.com/paradedb/paradedb/tree/main/stressgres](https://github.com/paradedb/paradedb/tree/main/stressgres)).
 
 <BarChartCard
 title="Updates Per Second on a Wide Table with a BM25 index"
