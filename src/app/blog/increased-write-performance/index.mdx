@@ -6,7 +6,7 @@ import { SearchArchitectureVisualization } from "./SearchArchitectureVisualizati
 import Image from "next/image";
 import hot from "./images/hot.png";
 import mutable from "./images/mutable buffers.png";
-import heroImage from "./images/hero.png"
+import heroImage from "./images/hero.png";
 import { BarChartCard } from "@/components/charts/BarChartCard";
 
 <Title metadata={blogMetadata} />
@@ -84,7 +84,7 @@ To fix this issue we implemented Postgres's HOT chain following mechanism. Befor
 
 Our second major optimization addresses the expensive merge operations that compact smaller segments into larger ones. These merges are crucial for maintaining read performance, but they traditionally block writes and can cause significant latency spikes. In the past ParadeDB had several layers of foreground merging, combined with several layers of background merging.
 
-Our solution runs merges using Postgres dynamic background workers, separate on-demand processes that handle compaction without blocking the main write path. We build ParadeDB using [pgrx](https://github.com/pgcentralfoundation/pgrx), a Rust framework for developing Postgres extensions, which provides a great [API](https://docs.rs/pgrx/latest/pgrx/bgworkers/struct.DynamicBackgroundWorker.html) for managing these workers ([James, our Marketing guy](https://github.com/pgcentralfoundation/pgrx/pull/5), wrote the orginal pgrx `BGworker` implementation, then [Yurii Rashkovskii](https://github.com/pgcentralfoundation/pgrx/commit/8aa148a697e01d403296d344e152395f6de6d3ac) extended it for `DynamicBackgroundWorker` management).
+Our solution runs merges using Postgres dynamic background workers, separate on-demand processes that handle compaction without blocking the main write path. We build ParadeDB using [pgrx](https://github.com/pgcentralfoundation/pgrx), a Rust framework for developing Postgres extensions, which provides a great [API](https://docs.rs/pgrx/latest/pgrx/bgworkers/struct.DynamicBackgroundWorker.html) for managing these workers ([James, our Marketing guy](https://github.com/pgcentralfoundation/pgrx/pull/5), wrote the original pgrx `BGworker` implementation, then [Yurii Rashkovskii](https://github.com/pgcentralfoundation/pgrx/commit/8aa148a697e01d403296d344e152395f6de6d3ac) extended it for `DynamicBackgroundWorker` management).
 
 The background workers operate independently, merging segments based on size while the main database continues processing writes. This approach provides several benefits:
 
@@ -156,4 +156,3 @@ Write performance is just one piece of the larger puzzle. ParadeDB already offer
 Our combination of Postgres's ACID guarantees with Elasticsearch-level search performance opens up exciting possibilities for application architectures. Instead of managing separate systems for transactions and search, developers can build on a single, consistent foundation.
 
 Ready to experience faster search indexing? [Get started with ParadeDB](https://paradedb.com) and see how write-optimized search can simplify your architecture.
-
