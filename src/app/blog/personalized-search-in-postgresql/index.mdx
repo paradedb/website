@@ -13,7 +13,7 @@ import pgconf from "./images/pgconf.JPG";
 
 When I search for "King", I’m looking for LOTR- _The Return of the King_. You might be looking for _The King's Speech_. A generic search engine returns the same results for both of us, likely a mix of Fantasy and Drama, which means it fails both of us.
 
-Personalization can take a "good enough" search experience to a magical experience. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data between a primary database and a search engine (like Elasticsearch), building a separate ML recommendation service, dragging data across the wire to Python workers for re-ranking, and then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
+Personalization can take a "good enough" search experience to a magical one. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data to Elasticsearch, building a separate ML recommendation service, dragging data to Python workers for re-ranking, then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
 
 This isn't a new concept. I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine. Today we'll build it in standard Postgres so you can too.
 
@@ -51,7 +51,7 @@ Traditional search matches **keywords**. If you search for "King", a keyword eng
 
 A **Uer Vector** represents aggregated taste. It can be built from **explicit signals** (like the 5-star ratings we look at in this post) or **implicit signals** (like clickstream data or watch time).
 
-In our example, if a user explicitly rates The king’s speech pooly (Dislike) but rate _Star Wars_ highly, we mathematically steer the user’s vector _towards_ the fantasy region in movie embedding space and _away_ from the drama region.
+In our example, if a user dislikes _The King's Speech_ but loves _Star Wars_, we steer their vector _towards_ fantasy and _away_ from drama in the embedding space.
 
 ## Implementation
 
@@ -59,7 +59,9 @@ Let's build it. We need two core entities: **Movies** (the content) and **Users*
 
 ### 1. Core Schema
 
-We use standard Postgres tables for movies and users. These are core tables. We also have ratings table that contains user’s likes and dislikes. For success in personalization you do need some user specific signals that can be modeled into their profiles. Here we use explicit likes/dislikes in the form of ratings. A rating of 4 or 5 signals a like, a rating of 1 and 2 signals a dislike. Implicit signals like watching a video, interacting with content, duration of engagements can be used as well.
+We use standard Postgres tables for movies and users, plus a ratings table for likes and dislikes.
+
+Personalization requires user-specific signals. Here we use explicit ratings: 4-5 stars signals a like, 1-2 stars signals a dislike. You could also use implicit signals like watch time or click behavior.
 
 ```sql
 -- Enable required extensions
@@ -250,7 +252,9 @@ This pattern isn't just a PostgreSQL trick; it's a fundamental optimization prin
 - **Big Data**: Modern data warehouses like BigQuery and Snowflake push filtering logic down to the storage layer to avoid scanning petabytes of data.
 - **Edge Computing**: IoT devices process sensor data locally (at the "edge") rather than sending every raw byte to the cloud, saving massive bandwidth.
 
-ParadeDB applies this same principle to search: **Move the compute to the data, not the data to the compute.** By treating personalization as a database query rather than an application workflow, we simplify the stack, reduce latency, and give you a unified engine for both search and recommendations. If there is any more recommender engine workload you would like to see in Postgres, do write to us link to paradedb community.
+ParadeDB applies this same principle to search: **Move the compute to the data, not the data to the compute.** Treat personalization as a database query rather than an application workflow. You simplify the stack, reduce latency, and get a unified engine for both search and recommendations.
+
+Have a recommender workload you'd like to see in Postgres? Write to us in the ParadeDB community.
 
 ---
 
