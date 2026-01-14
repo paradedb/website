@@ -15,10 +15,10 @@ function CompactTooltip({ active, payload, label }: any) {
   if (!active || !payload || payload.length === 0) return null;
 
   return (
-    <div className="rounded-md border bg-white px-2 py-1 shadow-sm text-sm">
-      <div className="font-medium">{String(label)}</div>
+    <div className="rounded-md border bg-white dark:bg-gray-800 dark:border-gray-700 px-2 py-1 shadow-sm text-sm">
+      <div className="font-medium text-gray-900 dark:text-gray-100">{String(label)}</div>
       {payload.map((item: any) => (
-        <div key={item.dataKey} className="flex items-center gap-1">
+        <div key={item.dataKey} className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
           <span
             className="inline-block h-2 w-2 rounded-full"
             style={{
@@ -26,7 +26,7 @@ function CompactTooltip({ active, payload, label }: any) {
             }}
           />
           <span>{item.name}:</span>
-          <span className="font-medium">
+          <span className="font-medium text-gray-900 dark:text-gray-100">
             {Intl.NumberFormat("us").format(item.value)} ms
           </span>
         </div>
@@ -140,6 +140,13 @@ export default function FacetingChart({
     const style = document.createElement("style");
     style.id = "faceting-chart-mobile-axis-style";
     style.textContent = `
+      /* Dark mode support for axis labels */
+      .dark .faceting-chart .recharts-cartesian-axis-tick-value {
+        fill: #d1d5db !important;
+      }
+      .dark .faceting-chart .recharts-cartesian-grid line {
+        stroke: #374151 !important;
+      }
       @media (max-width: 768px) {
         .faceting-chart {
           overflow: visible !important;
@@ -207,20 +214,20 @@ export default function FacetingChart({
       <Title className="text-base sm:text-lg leading-snug">
         ParadeDB Faceting vs Manual Faceting Query Time in Milliseconds
       </Title>
-      <div className="mt-1 text-[11px] text-gray-600 md:hidden">
+      <div className="mt-1 text-[11px] text-gray-600 dark:text-gray-400 md:hidden">
         Tap a bar to see details
       </div>
 
       <div className="flex flex-col md:flex-row">
         <div className="flex-1 min-w-0 faceting-chart">
           {isMounted && isMobile && activeBar && (
-            <div className="mt-3 rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs shadow-sm">
+            <div className="mt-3 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 text-xs shadow-sm">
               <div className="flex items-start justify-between gap-2">
                 <div className="min-w-0">
-                  <div className="font-medium text-gray-900 truncate">
+                  <div className="font-medium text-gray-900 dark:text-gray-100 truncate">
                     {mobileSelectedLabel}
                   </div>
-                  <div className="mt-0.5 text-gray-700 flex flex-wrap items-center gap-x-2 gap-y-1">
+                  <div className="mt-0.5 text-gray-700 dark:text-gray-300 flex flex-wrap items-center gap-x-2 gap-y-1">
                     {mobileSelectedCategory && (
                       <span className="inline-flex items-center gap-1">
                         <span
@@ -241,7 +248,7 @@ export default function FacetingChart({
                 <button
                   type="button"
                   aria-label="Close"
-                  className="shrink-0 rounded-md px-2 py-1 text-gray-500 active:text-gray-700"
+                  className="shrink-0 rounded-md px-2 py-1 text-gray-500 dark:text-gray-400 active:text-gray-700 dark:active:text-gray-200"
                   onClick={() => {
                     setActiveBar(null);
                     setActiveBarKey("");
