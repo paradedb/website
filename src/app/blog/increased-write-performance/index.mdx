@@ -32,11 +32,11 @@ This approach works well for append-only workloads, but it breaks down when you 
 
 This is particularly problematic for ParadeDB because we respect [Postgres' ACID guarantees](/blog/elasticsearch-acid-test). We can't rely on in-memory buffers that might be lost on crash, so we need to persist index changes within each transaction. If a transaction inserts or updates a single value, we create a segment with just one or a few rows. With many non-batched write operations, this results in thousands of tiny segments.
 
-While Elastic still has this issue it's partially mitigated by not fully supporting ACID semantics: the values of writes are durable but they aren't immediately searchable with the search indexes being updated lazily. This means that a value which is written and committed may not show up in fast follow search results, a deal-breaker for many legal, financial, and real-time workloads.
+While Elastic still has this issue, it's partially mitigated by not fully supporting ACID semantics. The values of writes are durable but they aren't immediately searchable with the search indexes being updated lazily. This means that a value which is written and committed may not show up in fast follow search results.
 
 ## Building Searchable Buffers
 
-Our first optimization was creating our own mutable write buffer inside Postgres, and making it searchable. Traditional search engines maintain an in-memory buffer that gets flushed periodically, but this buffer typically isn't queryable or durable meaning there's no read-after-write or even durability guarantee. That was never an option for us, previously we were committing the Tantivy in-memory buffer with each Postgres transaction and creating too many small segments.
+Our first optimization was creating our own mutable write buffer inside Postgres, and making it searchable. Traditional search engines maintain an in-memory buffer that gets flushed periodically, but this buffer typically isn't queryable or durable meaning there's no read-after-write or even durability guarantee. That was never an option for us. Previously, we were aggressively committing Tantivy’s in-memory buffer on every Postgres transaction, which produced an excessive number of tiny segments.
 
 We quickly learned maintaining a persistent mutable buffer for full document payloads on top of the Tantivy structures would be expensive, essentially double writing everything. Luckily Postgres comes with a built in row identifier we can store, and then use as a lookup key. Every row in Postgres has a `ctid`, a `(u32, u16)` tuple that identifies its physical location. By maintaining a fixed-size buffer of `ctid` values rather than full document content, we could dramatically reduce the cost of each write operation.
 
@@ -77,13 +77,13 @@ The problem arises when our searchable buffer contains a `ctid` which points to 
 - Corrupted reads from deallocated memory
 - Inconsistent search results
 
-To fix this issue we implemented Postgres's HOT chain following mechanism. Before indexing any tuple data, we now call into Postgres's internal functions to "follow the chain" and ensure we're always working with the current tuple version. This ensures that our searchable buffer always reflects the current state of the data, even in the presence of frequent updates.
+To fix this issue we implemented Postgres's HOT chain following mechanism. Before indexing any tuple data, we now call into Postgres's internal functions to "follow the chain" and ensure we're always working with the current tuple version.
 
 ## Background Merging for Write Isolation
 
 Our second major optimization addresses the expensive merge operations that compact smaller segments into larger ones. These merges are crucial for maintaining read performance, but they traditionally block writes and can cause significant latency spikes. In the past ParadeDB had several layers of foreground merging, combined with several layers of background merging.
 
-Our solution runs merges using Postgres dynamic background workers, separate on-demand processes that handle compaction without blocking the main write path. We build ParadeDB using [pgrx](https://github.com/pgcentralfoundation/pgrx), a Rust framework for developing Postgres extensions, which provides a great [API](https://docs.rs/pgrx/latest/pgrx/bgworkers/struct.DynamicBackgroundWorker.html) for managing these workers ([James, our Marketing guy](https://github.com/pgcentralfoundation/pgrx/pull/5), wrote the original pgrx `BGworker` implementation, then [Yurii Rashkovskii](https://github.com/pgcentralfoundation/pgrx/commit/8aa148a697e01d403296d344e152395f6de6d3ac) extended it for `DynamicBackgroundWorker` management).
+Our solution runs merges using Postgres dynamic background workers: separate on-demand processes that handle compaction without blocking the main write path. Luckily, we build ParadeDB using [pgrx](https://github.com/pgcentralfoundation/pgrx) (a Rust framework for developing Postgres extensions) which provides a great [API](https://docs.rs/pgrx/latest/pgrx/bgworkers/struct.DynamicBackgroundWorker.html) for managing these workers. [James, our Marketing guy](https://github.com/pgcentralfoundation/pgrx/pull/5), wrote the original pgrx `BGworker` implementation, then [Yurii Rashkovskii](https://github.com/pgcentralfoundation/pgrx/commit/8aa148a697e01d403296d344e152395f6de6d3ac) extended it for `DynamicBackgroundWorker` management.
 
 The background workers operate independently, merging segments based on size while the main database continues processing writes. This approach provides several benefits:
 
