@@ -1,6 +1,5 @@
 export const company = {
-  CAREERS:
-    "https://paradedb.notion.site/",
+  CAREERS: "https://paradedb.notion.site/",
 };
 
 export const documentation = {
