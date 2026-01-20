@@ -212,8 +212,13 @@
 }
 
 @keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0; }
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
 }
 
 .animate-flow-down {
@@ -614,9 +619,15 @@ a {
 }
 
 @keyframes grid-pulse {
-  0% { opacity: 0; }
-  50% { opacity: 1; }
-  100% { opacity: 0; }
+  0% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 .text-highlight-blink {
@@ -627,7 +638,7 @@ a {
 }
 
 .text-highlight-blink::before {
-  content: '';
+  content: "";
   position: absolute;
   left: -2px;
   top: 0.1em;
@@ -638,7 +649,7 @@ a {
 }
 
 .text-highlight-blink::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: 0.1em -4px;
   background: linear-gradient(to right, rgba(224, 231, 255, 0.5), transparent);
@@ -648,7 +659,8 @@ a {
 }
 
 .bg-grid-pattern {
-  background-image: linear-gradient(to right, #64748b19 1px, transparent 1px),
+  background-image:
+    linear-gradient(to right, #64748b19 1px, transparent 1px),
     linear-gradient(to bottom, #64748b19 1px, transparent 1px);
 }
 
@@ -678,7 +690,8 @@ a {
   --color-border: #1e293b;
 
   .bg-grid-pattern {
-    background-image: linear-gradient(to right, #ffffff15 1px, transparent 1px),
+    background-image:
+      linear-gradient(to right, #ffffff15 1px, transparent 1px),
       linear-gradient(to bottom, #ffffff15 1px, transparent 1px);
   }
 
@@ -697,7 +710,11 @@ a {
   }
 
   .text-highlight-blink::after {
-    background: linear-gradient(to right, rgba(129, 140, 248, 0.2), transparent);
+    background: linear-gradient(
+      to right,
+      rgba(129, 140, 248, 0.2),
+      transparent
+    );
   }
 
   * {
@@ -756,21 +773,29 @@ a {
 
 @layer utilities {
   .animate-navbar {
-    animation: fade-in 1000ms ease-out both, slide-in-from-top 1000ms ease-out both;
+    animation:
+      fade-in 1000ms ease-out both,
+      slide-in-from-top 1000ms ease-out both;
   }
 
   .animate-hero-pill {
-    animation: fade-in 1000ms ease-out both, slide-in-from-bottom 1000ms ease-out both;
+    animation:
+      fade-in 1000ms ease-out both,
+      slide-in-from-bottom 1000ms ease-out both;
     animation-delay: 300ms;
   }
 
   .animate-hero-title {
-    animation: fade-in 1000ms ease-out both, slide-in-from-bottom-large 1000ms ease-out both;
+    animation:
+      fade-in 1000ms ease-out both,
+      slide-in-from-bottom-large 1000ms ease-out both;
     animation-delay: 500ms;
   }
 
   .animate-hero-content {
-    animation: fade-in 1000ms ease-out both, slide-in-from-bottom-large 1000ms ease-out both;
+    animation:
+      fade-in 1000ms ease-out both,
+      slide-in-from-bottom-large 1000ms ease-out both;
     animation-delay: 700ms;
   }
 
@@ -786,14 +811,34 @@ a {
     animation-fill-mode: both;
   }
 
-  .delay-300 { animation-delay: 300ms; }
-  .delay-500 { animation-delay: 500ms; }
-  .delay-700 { animation-delay: 700ms; }
-  .delay-1000 { animation-delay: 1000ms; }
-  .delay-1200 { animation-delay: 1200ms; }
-  .delay-1400 { animation-delay: 1400ms; }
-  .delay-1600 { animation-delay: 1600ms; }
-  .delay-1800 { animation-delay: 1800ms; }
-  .delay-2000 { animation-delay: 2000ms; }
-  .delay-2200 { animation-delay: 2200ms; }
+  .delay-300 {
+    animation-delay: 300ms;
+  }
+  .delay-500 {
+    animation-delay: 500ms;
+  }
+  .delay-700 {
+    animation-delay: 700ms;
+  }
+  .delay-1000 {
+    animation-delay: 1000ms;
+  }
+  .delay-1200 {
+    animation-delay: 1200ms;
+  }
+  .delay-1400 {
+    animation-delay: 1400ms;
+  }
+  .delay-1600 {
+    animation-delay: 1600ms;
+  }
+  .delay-1800 {
+    animation-delay: 1800ms;
+  }
+  .delay-2000 {
+    animation-delay: 2000ms;
+  }
+  .delay-2200 {
+    animation-delay: 2200ms;
+  }
 }

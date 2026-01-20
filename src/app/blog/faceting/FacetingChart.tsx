@@ -16,9 +16,14 @@ function CompactTooltip({ active, payload, label }: any) {
 
   return (
     <div className="rounded-md border bg-white dark:bg-gray-800 dark:border-gray-700 px-2 py-1 shadow-sm text-sm">
-      <div className="font-medium text-gray-900 dark:text-gray-100">{String(label)}</div>
+      <div className="font-medium text-gray-900 dark:text-gray-100">
+        {String(label)}
+      </div>
       {payload.map((item: any) => (
-        <div key={item.dataKey} className="flex items-center gap-1 text-gray-700 dark:text-gray-300">
+        <div
+          key={item.dataKey}
+          className="flex items-center gap-1 text-gray-700 dark:text-gray-300"
+        >
           <span
             className="inline-block h-2 w-2 rounded-full"
             style={{
