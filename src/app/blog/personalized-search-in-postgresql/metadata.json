@@ -2,6 +2,6 @@
   "title": "Personalized Search in PostgreSQL",
   "date": "2026-01-21T00:00:00.000Z",
   "author": "Ankit Mittal",
-  "description": "Build a FAANG-quality personalized search engine entirely within Postgres using BM25 retrieval and vector-based reranking — no external infrastructure required.",
+  "description": "Build a production-grade personalized search engine entirely within Postgres using BM25 retrieval and vector-based reranking, no external infrastructure required.",
   "categories": ["search", "paradedb", "postgresql"]
 }

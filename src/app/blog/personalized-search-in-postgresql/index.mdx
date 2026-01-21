@@ -14,15 +14,15 @@ import { Note } from "@/components/mdx/Callouts";
 
 When I search for "King", I'm looking for LOTR- _The Return of the King_. You might be looking for _The King's Speech_. A generic search engine returns the same results for both of us, likely a mix of Fantasy and Drama, which means it fails both of us.
 
-Personalization can take a "good enough" search experience to a magical one. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data to Elasticsearch, building a separate ML recommendation service, dragging data to Python workers for re-ranking, then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
-
-What if you could build a FAANG-quality personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
-
-I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/). Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how these distributed pipelines crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040).
+I first presented a solution to this issue at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/). Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how these distributed pipelines crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040).
 
 <Image src={pgconf} alt="Presenting at PGConf NYC 2023" />
 
-In this post, we'll build a personalized movie search engine using **ParadeDB**. We'll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
+Personalization can take a "good enough" search experience to a magical one. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data to Elasticsearch, building a separate ML recommendation service, dragging data to Python workers for re-ranking, then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
+
+What if you could build a production-grade personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
+
+In this post, we'll build a personalized movie search engine using just Postgres, with ParadeDB installed. We'll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
 
 <Note>
   This post is based on a [functional prototype
@@ -35,7 +35,7 @@ In this post, we'll build a personalized movie search engine using **ParadeDB**.
 
 **The Retrieve and Rerank approach** breaks the problem into two stages, utilizing the strengths of different algorithms:
 
-1. **Retrieval**: We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates (100 here) matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
+1. **Retrieval**: We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates (100 here) matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
 2. **Reranking**: We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) on just those 100 candidates to re-order them based on the user's personal profile.
 
 Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For $$n=100$$ items (or even 1000), we would be better to ignore vector indexes, and instead brute force our way to a result.
@@ -103,7 +103,7 @@ CREATE INDEX movies_search_idx ON movies
 
 ```
 
-We use Pgvector’s vector column to store movie and users embeddings. Movie embeddings can be created by calling OpenRouter or Huggingface APIs. For the demo we used `sentence-transformers/all-minilm-l12-v2` model.
+We use pgvector’s vector column to store movie and users embeddings. Movie embeddings can be created by calling OpenRouter or Huggingface APIs. For the demo we used `sentence-transformers/all-minilm-l12-v2` model.
 
 ### 2. Generating User Profiles
 
@@ -208,7 +208,7 @@ This composable approach allows you to tune the knobs. Want personalization to m
 
 There are few more workloads that can be supported in a similar way inside Postgres.
 
-- **Collaborative filtering → Users Like Me**: Find other users who are similar to a user id. This can be directly used or used as a subquery to find `items liked by similar users`.
+- **Collaborative filtering (Users Like Me)**: Find other users who are similar to a user id. This can be directly used or used as a subquery to find items liked by similar users.
 - **Real-time Updates via Triggers**: Whenever a user's behavior changes or a new rating arrives, a trigger can update the user's embedding in real time.
 
 ## Trade-offs: The Landscape
@@ -217,33 +217,30 @@ No architecture is perfect. While the "In-Database" approach offers unbeatable s
 
 ### 1. In Application Layer Inference (Python/Node.js)
 
-The most common alternative is fetching data and re-ranking it in your application code (or a dedicated microservice).
+Fetch data and re-rank it in your application code or a dedicated microservice.
 
-- **Pro**: **Maximum Flexibility**. You can use arbitrary logic and complex machine learning models (PyTorch/TensorFlow) that might be hard to express in SQL. (Though note: standard A/B testing is still easy in Postgres since you just generate different SQL queries or swap the "User Embedding" table in your application logic).
-- **Con**: **The "Data Transfer Tax"**. You have to ship thousands of candidate rows over the network to your application just to discard most of them. This adds significant latency and serialization overhead.
+- **Pro**: **Maximum Flexibility**. Use arbitrary logic and complex ML models (PyTorch/TensorFlow) that might be hard to express in SQL.
+- **Con**: **The "Data Transfer Tax"**. You ship thousands of candidate rows over the network just to discard most of them, adding latency and serialization overhead.
 
 ### 2. Dedicated Inference Platforms (e.g. Ray Serve, NVIDIA Triton)
 
-For the most advanced use cases, companies perform retrieval in a database and then send candidate IDs to a dedicated inference cluster running models like BERT or DLRM.
+Perform retrieval in a database, then send candidate IDs to a dedicated inference cluster for GPU-accelerated reranking.
 
-- **Pro**: **State-of-the-Art Accuracy**. You can run massive, GPU-accelerated deep learning models that are too heavy for a standard database.
-- **Con**: **Infrastructure Sprawl**. You are now managing a database _and_ a high-availability ML cluster. You also pay a latency penalty for every request as data hops from disk -> app -> inference server -> app.
+- **Pro**: **State-of-the-Art Accuracy**. Run massive deep learning models too heavy for a standard database.
+- **Con**: **Infrastructure Sprawl**. You're managing a database _and_ an ML cluster, plus paying latency for every network hop.
 
 ### 3. The "Cross-Encoder" Approach (e.g. Cohere Re-ranker)
 
-A powerful alternative is using a **Cross-Encoder**. Our in-database approach uses a **Bi-Encoder**, which calculates embeddings for the query and document _independently_ and compares the distance between them. A Cross-Encoder, by contrast, feeds _both_ the query and document into the model simultaneously.
+Instead of comparing pre-computed embeddings (a Bi-Encoder), a Cross-Encoder feeds _both_ query and document into the model simultaneously.
 
-- **Pro**: **Maximum Accuracy**. Cross-encoders are more advanced because they understand the interaction between words in the query and words in the document, though they are generally considered a black box for most users.
-- **Con**: **The Latency & Cost Cliff**. You cannot pre-compute a Cross-Encoder score. You must run this heavy model _at query time (inference time)_ for every single candidate. This typically adds 200ms–500ms of latency per search and requires sending your sensitive user data to a third-party API.
+- **Pro**: **Maximum Accuracy**. Cross-encoders understand word interactions between query and document.
+- **Con**: **The Latency & Cost Cliff**. You must run this heavy model at query time for every candidate — typically 200-500ms extra latency, plus third-party API costs and privacy concerns.
 
 ### The ParadeDB Sweet Spot
 
-**When to use which?**
+The landscape above shows a spectrum: application-layer reranking offers flexibility but adds latency; dedicated inference platforms offer accuracy but add infrastructure; cross-encoders offer precision but add cost and privacy concerns.
 
-- **Use in-database Bi-Encoder**: For most use cases where you want "good enough" and fast personalization (&lt;100ms latency), data privacy, and zero operational complexity. Having no network hop reduces distributed systems issues like high tail latencies.
-- **Use Cross-Encoder approach**: For the 5% of use cases where squeezing out the final drops of relevance is worth the extra latency, vendor cost, and privacy trade-offs.
-
-The architecture we built at ParadeDB hits a "Sweet Spot" for 95% of use cases. It gives you **hybrid search** and **personalization** with **zero added infrastructure**. You aren't managing separate inference clusters (like Ray), paying for Re-ranker API calls, or maintaining ETL pipelines. You just have Postgres.
+The in-database approach hits a sweet spot for 95% of use cases. You get hybrid search and personalization with **zero added infrastructure**. No inference clusters, no reranker API calls, no ETL pipelines. Just Postgres. For the 5% of cases where squeezing out the final drops of relevance is worth the extra latency and vendor cost, a cross-encoder may be the right choice.
 
 The main consideration? **Resource Management**. Because search runs on your database, it shares CPU and RAM with your transactional workload. For most applications, this is a non-issue given Postgres's efficiency. For high-scale deployments, you can run search on a **dedicated read replica** to isolate inference load from your primary writes. ParadeDB supports two approaches:
 
