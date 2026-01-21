@@ -245,7 +245,12 @@ A powerful alternative is using a **Cross-Encoder**. Our in-database approach us
 
 The architecture we built at ParadeDB hits a "Sweet Spot" for 95% of use cases. It gives you **hybrid search** and **personalization** with **zero added infrastructure**. You aren't managing separate inference clusters (like Ray), paying for Re-ranker API calls, or maintaining ETL pipelines. You just have Postgres.
 
-The main consideration? **Resource Management**. Because search runs on your database, it shares CPU and RAM with your transactional workload. For most applications, this is a non-issue given Postgres's efficiency. For high-scale deployments, you can simply run this on a **dedicated read replica** to isolate inference load from your primary writes.
+The main consideration? **Resource Management**. Because search runs on your database, it shares CPU and RAM with your transactional workload. For most applications, this is a non-issue given Postgres's efficiency. For high-scale deployments, you can run search on a **dedicated read replica** to isolate inference load from your primary writes. ParadeDB supports two approaches:
+
+- **Physical replication**: The BM25 index exists on the primary. Small write cost, but read queries can be routed to specific full replicas.
+- **Logical replication**: The BM25 index is isolated to a replica subset only. No transactionality guarantees, but proper workload isolation.
+
+The best approach depends on your infrastructure and requirements.
 
 ## Conclusion
 
