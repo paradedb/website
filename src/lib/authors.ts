@@ -3,6 +3,7 @@ import {
   PhilHeadshot,
   MingHeadshot,
   StuHeadshot,
+  AnkitHeadshot,
 } from "./blog-assets";
 
 export interface Author {
@@ -27,5 +28,9 @@ export const AUTHORS: Record<string, Author> = {
   "Stu Hood": {
     name: "Stu Hood",
     headshot: StuHeadshot,
+  },
+  "Ankit Mittal": {
+    name: "Ankit Mittal",
+    headshot: AnkitHeadshot,
   },
 };
