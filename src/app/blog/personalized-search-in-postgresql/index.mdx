@@ -6,7 +6,7 @@ import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
 import reranking from "./images/reranking.png";
 import pgconf from "./images/pgconf.JPG";
-import  { Note }  from "@/components/mdx/Callouts";
+import { Note } from "@/components/mdx/Callouts";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
@@ -25,7 +25,10 @@ I first presented this approach at [PGConf NYC 2023](https://postgresql.us/event
 In this post, we'll build a personalized movie search engine using **ParadeDB**. We'll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
 
 <Note>
-This post is based on a [functional prototype concept](https://github.com/ankitml/paradedb-reranker) I created which demonstrates in-database personalization patterns. If you're the type who reads the last page of a novel first, feel free to start there.
+  This post is based on a [functional prototype
+  concept](https://github.com/ankitml/paradedb-reranker) I created which
+  demonstrates in-database personalization patterns. If you're the type who
+  reads the last page of a novel first, feel free to start there.
 </Note>
 
 ## The Architecture: Retrieve & Rerank
@@ -42,8 +45,8 @@ Why this approach? Because running vector similarity search on your _entire_ dat
 Before we look at code, it helps to understand _why_ this works.
 
 <Image
-    src={reranking}
-    alt="Diagram showing the Retrieve and Rerank pipeline: BM25 retrieval finds keyword matches, then vector similarity reranks results based on user preferences"
+  src={reranking}
+  alt="Diagram showing the Retrieve and Rerank pipeline: BM25 retrieval finds keyword matches, then vector similarity reranks results based on user preferences"
 />
 
 Traditional search matches **keywords**. If you search for "King", a keyword engine simply looks for the string "King" in titles. It returns _The Return of the King_, _The King's Speech_, and _The Lion King_ with equal confidence, but it has no way to know which one _you_ want.
@@ -258,4 +261,3 @@ This pattern isn't just a PostgreSQL trick; it's a fundamental optimization prin
 ParadeDB applies this same principle to search: **Move the compute to the data, not the data to the compute.** Treat personalization as a database query rather than an application workflow. You simplify the stack, reduce latency, and get a unified engine for both search and recommendations.
 
 Have a recommender workload you'd like to see in Postgres? Write to us in the [ParadeDB Slack community](https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh0tU6Z5GxFGMfQ).
-
