@@ -6,33 +6,36 @@ import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
 import reranking from "./images/reranking.png";
 import pgconf from "./images/pgconf.JPG";
+import  { Note }  from "@/components/mdx/Callouts";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-When I search for "King", I’m looking for LOTR- _The Return of the King_. You might be looking for _The King's Speech_. A generic search engine returns the same results for both of us, likely a mix of Fantasy and Drama, which means it fails both of us.
+When I search for "King", I'm looking for LOTR- _The Return of the King_. You might be looking for _The King's Speech_. A generic search engine returns the same results for both of us, likely a mix of Fantasy and Drama, which means it fails both of us.
 
 Personalization can take a "good enough" search experience to a magical one. Traditionally, building personalized search involved a complex Rube Goldberg machine: syncing data to Elasticsearch, building a separate ML recommendation service, dragging data to Python workers for re-ranking, then stitching it all back together. It works, but the cost is high: architectural complexity, network latency, and data synchronization nightmares.
 
-This isn't a new concept. I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/), where I spoke about using Postgres as a personalization engine. Today we'll build it in standard Postgres so you can too.
+What if you could build a FAANG-quality personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
+
+I first presented this approach at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/). Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how these distributed pipelines crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040).
 
 <Image src={pgconf} alt="Presenting at PGConf NYC 2023" />
 
-What if you could build a FAANG-quality personalized search engine _entirely_ within Postgres? No new infrastructure. No network hops. Just SQL.
+In this post, we'll build a personalized movie search engine using **ParadeDB**. We'll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
 
-In this post, we’ll build a personalized movie search engine using **ParadeDB**. We’ll implement a "Retrieve and Rerank" pipeline that combines the speed of BM25 full-text search with the intelligence of vector-based personalization, all without the data ever leaving PostgreSQL.
-
-This architectural simplicity is a superpower. Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how "Rube Goldberg" pipelines crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040), and today, we'll build it in standard Postgres.
+<Note>
+This post is based on a [functional prototype concept](https://github.com/ankitml/paradedb-reranker) I created which demonstrates in-database personalization patterns. If you're the type who reads the last page of a novel first, feel free to start there.
+</Note>
 
 ## The Architecture: Retrieve & Rerank
 
-**Retrieve and Rerank approach** breaks the problem into two stages, utilizing the strengths of different algorithms:
+**The Retrieve and Rerank approach** breaks the problem into two stages, utilizing the strengths of different algorithms:
 
-1. **Retrieval** We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates (100 here) matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
-2. **Reranking** : We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) on just those 100 candidates to re-order them based on the user's personal profile.
+1. **Retrieval**: We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates (100 here) matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and Pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
+2. **Reranking**: We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) on just those 100 candidates to re-order them based on the user's personal profile.
 
-Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For a n=100 items (or even 1000), we would not need any vector index and instead brute force our way out.
+Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For $$n=100$$ items (or even 1000), we would be better to ignore vector indexes, and instead brute force our way to a result.
 
 ## The Intuition: Vectors Match Vibes
 
@@ -40,13 +43,12 @@ Before we look at code, it helps to understand _why_ this works.
 
 <Image
     src={reranking}
-    alt="tbc"
-
+    alt="Diagram showing the Retrieve and Rerank pipeline: BM25 retrieval finds keyword matches, then vector similarity reranks results based on user preferences"
 />
 
 Traditional search matches **keywords**. If you search for "King", a keyword engine simply looks for the string "King" in titles. It returns _The Return of the King_, _The King's Speech_, and _The Lion King_ with equal confidence, but it has no way to know which one _you_ want.
 
-A **Uer Vector** represents aggregated taste. It can be built from **explicit signals** (like the 5-star ratings we look at in this post) or **implicit signals** (like clickstream data or watch time).
+A **User Vector** represents aggregated taste. It can be built from **explicit signals** (like the 5-star ratings we look at in this post) or **implicit signals** (like clickstream data or watch time).
 
 In our example, if a user dislikes _The King's Speech_ but loves _Star Wars_, we steer their vector _towards_ fantasy and _away_ from drama in the embedding space.
 
@@ -67,11 +69,17 @@ CREATE EXTENSION IF NOT EXISTS vector;
 
 -- The content we want to search
 CREATE TABLE movies (
-    movie_id BIGINT PRIMARY KEY,
-    title TEXT NOT NULL,
+    movie_id INTEGER PRIMARY KEY,
+    title VARCHAR(500) NOT NULL,
+    year SMALLINT,
     genres TEXT[],
-    -- Embedding representing the movie's semantic content (e.g. from OpenRouter/HuggingFace) We used a small model all-MiniLM-L12-v2 that has 384 dims
-    content_embedding vector(384)
+    imdb_id VARCHAR(20),
+    tmdb_id INTEGER,
+    -- Embedding representing the movie's semantic content
+    -- (e.g. from OpenRouter/HuggingFace)
+    -- We used all-MiniLM-L12-v2 which has 384 dims
+    content_embedding vector(384),
+    created_at TIMESTAMP DEFAULT now()
 );
 
 -- The user profiles
@@ -83,7 +91,7 @@ CREATE TABLE users (
 
 ```
 
-Movies get a ParadeDB’s BM25 index.
+Movies get a ParadeDB BM25 index.
 
 ```sql
 CREATE INDEX movies_search_idx ON movies
@@ -96,7 +104,7 @@ We use Pgvector’s vector column to store movie and users embeddings. Movie emb
 
 ### 2. Generating User Profiles
 
-How do we get a vector that represents a user's taste? In a complex stack, you'd have a background worker processing datastreams in Python. We can do that too, but since all our movie embeddings are already being streamed into Postgres we can use standard SQL aggregation to get user embeddings.
+How do we get a vector that represents a user's taste? In a complex stack, you'd have a background worker processing datastreams in Python. We can do that too, but since all our movie embeddings are already in Postgres, we can use standard SQL aggregation to get user embeddings.
 
 ```sql
 -- Generate a user's profile vector:
@@ -197,10 +205,8 @@ This composable approach allows you to tune the knobs. Want personalization to m
 
 There are few more workloads that can be supported in a similar way inside Postgres.
 
-1. Collaborative filtering → **Users Like Me**
-   1. Find other users who are similar to a user id. This can be directly used or used as subquery to find `items liked by similar users`.
-2. Real time Updates via Triggers
-   1. Whenever a users’ behaviour changes, a new rating arrives a trigger can update user’s embeddings in real time.
+- **Collaborative filtering → Users Like Me**: Find other users who are similar to a user id. This can be directly used or used as a subquery to find `items liked by similar users`.
+- **Real-time Updates via Triggers**: Whenever a user's behavior changes or a new rating arrives, a trigger can update the user's embedding in real time.
 
 ## Trade-offs: The Landscape
 
@@ -224,14 +230,14 @@ For the most advanced use cases, companies perform retrieval in a database and t
 
 A powerful alternative is using a **Cross-Encoder**. Our in-database approach uses a **Bi-Encoder**, which calculates embeddings for the query and document _independently_ and compares the distance between them. A Cross-Encoder, by contrast, feeds _both_ the query and document into the model simultaneously.
 
-- **Pro**: **Maximum Accuracy**. Cross-encoders are more advanced because they understand the interaction between words in the query and words in the document. Although they are generally considered blackbox for most users
+- **Pro**: **Maximum Accuracy**. Cross-encoders are more advanced because they understand the interaction between words in the query and words in the document, though they are generally considered a black box for most users.
 - **Con**: **The Latency & Cost Cliff**. You cannot pre-compute a Cross-Encoder score. You must run this heavy model _at query time (inference time)_ for every single candidate. This typically adds 200ms–500ms of latency per search and requires sending your sensitive user data to a third-party API.
 
 ### The ParadeDB Sweet Spot
 
 **When to use which?**
 
-- **Use in database Bi-Encoder**: For most use cases where you want "Good Enough" and fast personalization (&lt;100ms latency), data privacy, and zero operational complexity. Having no network hop reduces distributed systems issues like high tail latencies.
+- **Use in-database Bi-Encoder**: For most use cases where you want "good enough" and fast personalization (&lt;100ms latency), data privacy, and zero operational complexity. Having no network hop reduces distributed systems issues like high tail latencies.
 - **Use Cross-Encoder approach**: For the 5% of use cases where squeezing out the final drops of relevance is worth the extra latency, vendor cost, and privacy trade-offs.
 
 The architecture we built at ParadeDB hits a "Sweet Spot" for 95% of use cases. It gives you **hybrid search** and **personalization** with **zero added infrastructure**. You aren't managing separate inference clusters (like Ray), paying for Re-ranker API calls, or maintaining ETL pipelines. You just have Postgres.
@@ -251,8 +257,5 @@ This pattern isn't just a PostgreSQL trick; it's a fundamental optimization prin
 
 ParadeDB applies this same principle to search: **Move the compute to the data, not the data to the compute.** Treat personalization as a database query rather than an application workflow. You simplify the stack, reduce latency, and get a unified engine for both search and recommendations.
 
-Have a recommender workload you'd like to see in Postgres? Write to us in the ParadeDB community.
+Have a recommender workload you'd like to see in Postgres? Write to us in the [ParadeDB Slack community](https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh0tU6Z5GxFGMfQ).
 
----
-
-_This post is based on a [functional prototype concept](https://github.com/ankitml/paradedb-reranker) demonstrating in-database personalization patterns._

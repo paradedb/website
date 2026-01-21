@@ -1,7 +1,7 @@
 {
-  "title": "Personalized Search in PostgresQL",
+  "title": "Personalized Search in PostgreSQL",
   "date": "2026-01-20T00:00:00.000Z",
   "author": "Ankit Mittal",
-  "description": "",
+  "description": "Build a FAANG-quality personalized search engine entirely within Postgres using BM25 retrieval and vector-based reranking — no external infrastructure required.",
   "categories": ["search", "paradedb", "postgresql"]
 }
