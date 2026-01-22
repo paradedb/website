@@ -12,9 +12,9 @@ import { Note } from "@/components/mdx/Callouts";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-When I search for "King", I'm looking for LOTR- _The Return of the King_. You might be looking for _The King's Speech_. A generic search engine returns the same results for both of us, likely a mix of Fantasy and Drama, which means it fails both of us.
+When I search for "King", I'm looking for _LOTR - The Return of the King_. You might be looking for _The King's Speech_. A generic search engine returns the same results for both of us, likely a mix of Fantasy and Drama, which means it fails both of us.
 
-I first presented a solution to this issue at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/). Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand how these distributed pipelines crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040).
+I first presented a solution to this issue at [PGConf NYC 2023](https://postgresql.us/events/pgconfnyc2023/schedule/session/1412-postgres-as-personalization-engine/). Having [engineered search infrastructure systems at **Instacart**](https://tech.instacart.com/how-instacart-built-a-modern-search-infrastructure-on-postgres-c528fa601d54), I've seen firsthand complex search systems crumble under their own weight. Similar patterns power search at giants like [Target](https://cloud.google.com/blog/topics/retail/from-query-to-cart-inside-targets-search-bar-overhaul-with-alloydb-ai) and [Alibaba](https://www.alibabacloud.com/blog/learn-how-alibaba-engineers-accommodated-for-face-masks-in-their-face-recognition-algorithms_596040).
 
 <Image src={pgconf} alt="Presenting at PGConf NYC 2023" />
 
@@ -35,10 +35,10 @@ In this post, we'll build a personalized movie search engine using just Postgres
 
 **The Retrieve and Rerank approach** breaks the problem into two stages, utilizing the strengths of different algorithms:
 
-1. **Retrieval**: We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates (100 here) matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset. You can [combine BM25 and pgvector for a hybrid retrieval](https://www.paradedb.com/learn/search-concepts/hybrid-search).
-2. **Reranking**: We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) on just those 100 candidates to re-order them based on the user's personal profile.
+1. **Retrieval**: We use [**BM25**](https://www.paradedb.com/learn/search-concepts/bm25) (standard full-text search) for lexical search to find the top N candidates (100 here) matching the user's query. This is extremely fast and computationally cheap, filtering millions of rows down to a relevant subset.
+2. **Reranking**: We use Cosine Similarity and [semantic / vector search](https://www.paradedb.com/learn/search-concepts/vector-search) to re-rank those 100 candidates ordering them based on the user's personal profile.
 
-Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For $$n=100$$ items (or even 1000), we would be better to ignore vector indexes, and instead brute force our way to a result.
+Why this approach? Because running vector similarity search on your _entire_ dataset for every query is overkill. For $$n=100$$ items (or even 1000), it would be better to ignore vector indexes, and instead brute force our way to a result.
 
 ## The Intuition: Vectors Match Vibes
 
