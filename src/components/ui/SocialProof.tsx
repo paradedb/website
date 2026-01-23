@@ -97,7 +97,7 @@ export default function SocialProof() {
               <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900">
                 <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
                   <CaseStudyCard
-                    href="#"
+                    href="/blog/case-study-bilt"
                     logo={
                       <Logos.BiltRewards className="h-4 w-auto dark:brightness-0 dark:invert opacity-80" />
                     }
@@ -111,7 +111,7 @@ export default function SocialProof() {
 
                 <div>
                   <CaseStudyCard
-                    href="#"
+                    href="/blog/case-study-alibaba"
                     logo={
                       <Logos.Alibaba className="h-8 w-auto dark:brightness-0 dark:invert opacity-80" />
                     }
