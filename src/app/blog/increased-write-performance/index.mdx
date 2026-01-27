@@ -114,7 +114,7 @@ Our write optimizations delivered significant improvements across multiple bench
 - **Reduced replication lag** in logical replica configurations
 - **Lower resource utilization** during high-write periods
 
-As we've mentioned in previous blog posts the difference between v0.18.0 (no mutable segments, primarily foreground merging), v0.19.0 (mutable segments and background merging), and v0.20.0 (small improvements, and both features on by default) is large. The following test runs batched updates in a single thread at the same time as inserts and TopN queries to simulate a realistic workload (see [https://github.com/paradedb/paradedb/tree/main/stressgres](https://github.com/paradedb/paradedb/tree/main/stressgres)).
+As we've mentioned in previous blog posts the difference between v0.18.0 (no mutable segments, primarily foreground merging), v0.19.0 (mutable segments and background merging), and v0.20.0 (small improvements, and both features on by default) is large. The following test runs batched updates in a single thread at the same time as inserts and TopN queries to simulate a realistic workload (see [Stressgres, our load testing tool](https://github.com/paradedb/paradedb/tree/main/stressgres)).
 
 <BarChartCard
 title="Updates Per Second on a Wide Table with a BM25 index"
