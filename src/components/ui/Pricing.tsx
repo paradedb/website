@@ -109,7 +109,7 @@ export default function Pricing() {
                     "Community support",
                   ]}
                   buttonText="Get Started"
-                  buttonLink="https://docs.paradedb.com"
+                  buttonLink="https://docs.paradedb.com/documentation/getting-started/install"
                   buttonVariant="light"
                 />
                 <PricingCard
