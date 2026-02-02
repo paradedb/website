@@ -64,7 +64,7 @@ Tailwind CSS v4 with `@tailwindcss/postcss`. Theme variables, animations, and cu
 ## Key Conventions
 
 - Package manager is **pnpm**
-- PR target branch is **dev**
+- PR target branch is **main**
 - Prettier uses **double quotes**
 - Routes use **kebab-case** (e.g., `search-concepts`, `hybrid-search`)
 - Server components by default; `"use client"` only for interactive components
