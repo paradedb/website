@@ -1,5 +1,5 @@
 {
-  "title": "Postgres as a Search Engine: The Write-Performance Problem",
+  "title": "Postgres as a Search Engine: The Write Performance Problem",
   "date": "2025-12-15T00:00:00.000Z",
   "author": ["Ming Ying", "James Blackwood-Sewell"],
   "description": "How ParadeDB achieved 10x improved write throughput through searchable buffers, background merging, and handling Postgres HOT chains.",
