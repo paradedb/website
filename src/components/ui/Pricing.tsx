@@ -4,7 +4,7 @@ import { Badge } from "./Badge";
 import { Button } from "../Button";
 import Link from "next/link";
 import { RiCheckLine } from "@remixicon/react";
-import { social } from "@/lib/links";
+import { documentation, social } from "@/lib/links";
 
 const PricingCard = ({
   planName,
@@ -109,7 +109,7 @@ export default function Pricing() {
                     "Community support",
                   ]}
                   buttonText="Get Started"
-                  buttonLink="https://docs.paradedb.com/documentation/getting-started/install"
+                  buttonLink={documentation.GETTING_STARTED}
                   buttonVariant="light"
                 />
                 <PricingCard

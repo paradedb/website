@@ -47,7 +47,9 @@ export function Navigation() {
           const data = await response.json();
           setStars(data.stargazers_count);
         }
-      } catch (error) {}
+      } catch {
+        // Non-critical: star count is decorative
+      }
     }
 
     fetchStars();

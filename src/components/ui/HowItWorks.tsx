@@ -151,7 +151,6 @@ const Table = ({
           {Icon && (
             <Icon className="h-4 w-auto text-indigo-400 dark:text-indigo-500" />
           )}
-          {/* @ts-ignore */}
           <span className="text-xs uppercase tracking-wide">{title}</span>
         </div>
       )}

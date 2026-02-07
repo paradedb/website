@@ -1,5 +1,6 @@
 "use client";
 
+import { siteConfig } from "@/app/siteConfig";
 import { GoogleTagManager } from "@next/third-parties/google";
 import { useEffect, useState } from "react";
 import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
@@ -17,7 +18,7 @@ export default function CookieConsentBanner() {
 
   return (
     <>
-      {consentGiven && <GoogleTagManager gtmId="GTM-KMGRG564" />}
+      {consentGiven && <GoogleTagManager gtmId={siteConfig.gtmId} />}
       <CookieConsent
         cookieName="paradedb_cookie_consent"
         disableStyles
