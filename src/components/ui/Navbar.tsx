@@ -52,7 +52,17 @@ export function Navigation() {
       }
     }
 
-    fetchStars();
+    // Defer non-critical fetch to avoid competing with initial render
+    const schedule =
+      typeof requestIdleCallback === "function"
+        ? requestIdleCallback
+        : (cb: () => void) => setTimeout(cb, 2000);
+    const id = schedule(() => fetchStars());
+    return () => {
+      if (typeof cancelIdleCallback === "function") {
+        cancelIdleCallback(id as number);
+      }
+    };
   }, []);
 
   return (

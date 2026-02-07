@@ -3,10 +3,9 @@ import { Navigation } from "@/components/ui/Navbar";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
-import CookieConsentBanner from "@/components/CookieConsentBanner";
+import CookieConsentLoader from "@/components/CookieConsentLoader";
 import { siteConfig } from "./siteConfig";
 
-import "highlight.js/styles/github-dark.css";
 import "./globals.css";
 
 const inter = Inter({
@@ -80,7 +79,7 @@ export default function RootLayout({
           </div>
           {children}
           <Footer />
-          <CookieConsentBanner />
+          <CookieConsentLoader />
         </ThemeProvider>
       </body>
     </html>

@@ -3,6 +3,8 @@ import { getResourcesBySection } from "@/lib/resources";
 import { generateSectionMetadata } from "@/lib/blog-metadata";
 import ResourcesLayoutClient from "./layout-client";
 
+import "highlight.js/styles/github-dark.css";
+
 export const metadata: Metadata = generateSectionMetadata({
   title: "Learn Search Concepts",
   description:
