@@ -600,7 +600,7 @@ export default function HowItWorks() {
   return (
     <div
       ref={sectionRef}
-      className="w-full relative opacity-0 animate-fade-in delay-1400 bg-transparent"
+      className="w-full relative bg-transparent"
     >
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         {/* Global Vertical Lines */}

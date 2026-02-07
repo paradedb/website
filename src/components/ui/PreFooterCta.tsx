@@ -21,7 +21,7 @@ export default function PreFooterCta() {
   }, []);
 
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-2200">
+    <div className="w-full relative">
       {/* White Grid Divider Section - Full Width Background */}
       <div className="hidden sm:block w-full bg-white dark:bg-slate-950 relative border-t border-slate-200 dark:border-slate-900">
         <div className="max-w-[1440px] mx-auto relative px-4 md:px-12">
