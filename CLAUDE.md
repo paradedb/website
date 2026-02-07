@@ -61,12 +61,12 @@ The `layout.tsx` and `page.tsx` files are boilerplate — every post uses the sa
 - **TypeScript**: Strict mode, no unused variables/parameters
 - **Styling**: Tailwind utility classes only (no CSS modules). Dark mode via class-based `next-themes`.
 - **Package manager**: pnpm
-- **Default branch**: `dev` (not `main`)
+- **Default branch**: `main`
 
 ## CI Checks (on PRs)
 
 - Prettier formatting on `src/**/*.{ts,tsx}`
-- Markdown linting on `**/*.{md,mdx}`
+- Markdown linting on `**/*.{md,mdx}` (fenced code blocks must have a language specifier)
 - Line ending validation (no CRLF), trailing whitespace, file-ending newlines
 - Typo checking (codespell)
 - YAML linting
