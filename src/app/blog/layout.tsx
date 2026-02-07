@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { getBlogLinks } from "@/lib/blog";
+import { getBlogLinksByCategory } from "@/lib/blog";
 import BlogLayoutClient from "./layout-client";
 import { siteConfig } from "../siteConfig";
 
@@ -32,7 +32,9 @@ export default async function BlogLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const blogLinks = await getBlogLinks();
+  const blogSections = await getBlogLinksByCategory();
 
-  return <BlogLayoutClient blogLinks={blogLinks}>{children}</BlogLayoutClient>;
+  return (
+    <BlogLayoutClient blogSections={blogSections}>{children}</BlogLayoutClient>
+  );
 }
