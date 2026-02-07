@@ -103,6 +103,13 @@ export interface BlogLink {
   categories?: string[];
 }
 
+export async function getCaseStudyLinks(): Promise<BlogLink[]> {
+  const links = await getBlogLinks();
+  return links.filter(
+    (link) => link.categories && link.categories.includes("case-study"),
+  );
+}
+
 export async function getBlogLinks(): Promise<BlogLink[]> {
   const posts = await getAllPosts();
   return posts.map((post) => ({
