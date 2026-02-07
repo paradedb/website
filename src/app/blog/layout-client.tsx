@@ -183,7 +183,7 @@ export default function BlogLayoutClient({
           </div>
 
           <div className="flex relative z-20 w-full px-4 md:px-12">
-            <div className="hidden lg:flex lg:w-80 lg:shrink-0 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900 pt-8">
+            <div className="hidden lg:flex lg:w-80 lg:shrink-0 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900">
               {/* Sidebar component - Sticky positioning */}
               <div className="sticky top-0 max-h-screen overflow-y-auto flex flex-col gap-y-5 px-6 pt-8 pb-10">
                 <nav className="flex flex-1 flex-col text-slate-900 dark:text-white">
