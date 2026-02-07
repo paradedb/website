@@ -49,7 +49,7 @@ export function AuthorSection({
 
   // Format author names for display
   const formatAuthorNames = (
-    authorList: { name: string; headshot: string | null }[],
+    authorList: { name: string; headshot: unknown }[],
   ) => {
     if (authorList.length === 1) {
       return authorList[0].name;

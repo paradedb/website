@@ -12,22 +12,32 @@ export default function TableOfContents() {
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
-    // Wait for content to load, then scan for headings
+    let observer: IntersectionObserver | null = null;
+    const clickHandlers = new Map<Element, () => void>();
+
     const scanHeadings = () => {
+      // Clean up previous observer and listeners
+      if (observer) {
+        observer.disconnect();
+      }
+      clickHandlers.forEach((handler, el) => {
+        el.removeEventListener("click", handler);
+      });
+      clickHandlers.clear();
+
       const headingElements = document.querySelectorAll("h1, h2");
       const headingItems: TOCItem[] = Array.from(headingElements).map(
         (heading) => {
-          // If heading doesn't have an id, generate one from the text
           let id = heading.id;
           if (!id) {
             const text = heading.textContent?.replace("#", "").trim() || "";
             id = text
               .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
-              .replace(/\s+/g, "-") // Replace spaces with hyphens
-              .replace(/-+/g, "-") // Replace multiple hyphens with single
-              .replace(/^-|-$/g, ""); // Remove leading/trailing hyphens
-            heading.id = id; // Set the id on the element
+              .replace(/[^a-z0-9\s-]/g, "")
+              .replace(/\s+/g, "-")
+              .replace(/-+/g, "-")
+              .replace(/^-|-$/g, "");
+            heading.id = id;
           }
 
           return {
@@ -37,12 +47,10 @@ export default function TableOfContents() {
         },
       );
 
-      // Filter out headings without valid ids
       const validHeadings = headingItems.filter((h) => h.id && h.text);
       setHeadings(validHeadings);
 
-      // Intersection Observer to track which heading is active
-      const observer = new IntersectionObserver(
+      observer = new IntersectionObserver(
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
@@ -56,30 +64,35 @@ export default function TableOfContents() {
       );
 
       headingElements.forEach((heading) => {
-        observer.observe(heading);
+        observer!.observe(heading);
 
-        // Add click handler to heading to update URL
         (heading as HTMLElement).style.cursor = "pointer";
-        heading.addEventListener("click", () => {
+        const handler = () => {
           window.history.pushState(null, "", `#${heading.id}`);
-        });
+        };
+        heading.addEventListener("click", handler);
+        clickHandlers.set(heading, handler);
       });
-
-      return () => observer.disconnect();
     };
+
+    // Use MutationObserver to detect when content is loaded
+    const content = document.querySelector("article") ?? document.body;
+    const mutationObserver = new MutationObserver(() => {
+      scanHeadings();
+    });
+    mutationObserver.observe(content, { childList: true, subtree: true });
 
     // Initial scan
     scanHeadings();
 
-    // Retry multiple times to catch dynamically loaded content
-    const timeout1 = setTimeout(scanHeadings, 500);
-    const timeout2 = setTimeout(scanHeadings, 1500);
-    const timeout3 = setTimeout(scanHeadings, 3000);
-
     return () => {
-      clearTimeout(timeout1);
-      clearTimeout(timeout2);
-      clearTimeout(timeout3);
+      mutationObserver.disconnect();
+      if (observer) {
+        observer.disconnect();
+      }
+      clickHandlers.forEach((handler, el) => {
+        el.removeEventListener("click", handler);
+      });
     };
   }, []);
 
