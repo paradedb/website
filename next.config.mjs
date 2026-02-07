@@ -27,6 +27,17 @@ const nextConfig = {
         destination: "https://www.paradedb.com/blog/:path*",
         permanent: true,
       },
+      // --- legacy legal page redirects ---
+      {
+        source: "/privacy",
+        destination: "/legal/privacy",
+        permanent: true,
+      },
+      {
+        source: "/terms",
+        destination: "/legal/terms",
+        permanent: true,
+      },
       // --- specific post renames ---
       {
         source: "/blog/introducing_lakehouse",

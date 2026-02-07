@@ -43,13 +43,13 @@ export default function PreFooterCta() {
 
           <div className="relative flex flex-col items-center justify-center pt-24 md:pt-32 pb-4 md:pb-8 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
-              <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
                 Elastic-quality search <br className="hidden sm:block" />{" "}
                 without the{" "}
                 <span className="text-highlight-blink !text-white after:!bg-white/10 after:!bg-gradient-to-r after:!from-white/20 after:!to-transparent">
                   complexity
                 </span>
-              </h1>
+              </h2>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
                 <Button
                   asChild
