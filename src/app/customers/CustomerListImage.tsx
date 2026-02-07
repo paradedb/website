@@ -1,6 +1,6 @@
 "use client";
 
-import { HeroImage } from "@/components/HeroImage";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 interface CustomerListImageProps {
@@ -50,10 +50,11 @@ export default function CustomerListImage({
   }
 
   return (
-    <HeroImage
+    <Image
       src={heroImage}
       alt={title}
-      className="w-full h-full object-cover object-top rounded-t-lg"
+      fill
+      className="object-cover object-top rounded-t-lg"
     />
   );
 }
