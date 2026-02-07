@@ -22,7 +22,7 @@ prettier --check "src/**/*.{ts,tsx}"  # Format check (CI runs this)
 
 Blog posts and learn resources are file-based MDX. Each piece of content lives in its own directory with a standard structure:
 
-```
+```text
 src/app/blog/<slug>/
 ├── index.mdx           # Content (supports React components via MDX)
 ├── metadata.json       # title, date, author, description, categories
