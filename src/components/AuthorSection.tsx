@@ -78,6 +78,8 @@ export function AuthorSection({
             <Image
               src={author.headshot}
               alt={`${author.name} headshot`}
+              width={28}
+              height={28}
               className="h-7 w-7 rounded-full flex-shrink-0 border-2 border-white dark:border-slate-950"
             />
           </div>
