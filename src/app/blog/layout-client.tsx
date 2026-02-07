@@ -4,7 +4,7 @@ import { Button } from "@/components/Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import CodeBlockEnhancer from "@/components/CodeBlockEnhancer";
 import { BlogLink } from "@/lib/blog";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "../siteConfig";
@@ -112,7 +112,7 @@ export default function BlogLayoutClient({
                             <li key={item.href}>
                               <a
                                 href={`${siteConfig.baseLinks.blog}/${item.href}`}
-                                className={classNames(
+                                className={cx(
                                   pathname.endsWith(item.href)
                                     ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-semibold"
                                     : "text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-900 hover:text-indigo-600 dark:hover:text-indigo-400",
@@ -133,7 +133,7 @@ export default function BlogLayoutClient({
 
             {/* Blog content */}
             <main
-              className={classNames(
+              className={cx(
                 "relative flex flex-col",
                 isBlogIndex
                   ? "w-full px-0"
@@ -141,7 +141,7 @@ export default function BlogLayoutClient({
               )}
             >
               <div
-                className={classNames(
+                className={cx(
                   "w-full mx-auto",
                   isBlogIndex ? "" : "max-w-none",
                 )}

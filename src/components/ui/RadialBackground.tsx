@@ -1,4 +1,4 @@
-import classNameFunc from "classnames";
+import { cx } from "@/lib/utils";
 
 export default function RadialBackground({
   className,
@@ -7,7 +7,7 @@ export default function RadialBackground({
 }) {
   return (
     <div
-      className={classNameFunc(
+      className={cx(
         "mask pointer-events-none absolute -z-10 select-none bg-indigo-200 bg-opacity-70",
         className,
       )}

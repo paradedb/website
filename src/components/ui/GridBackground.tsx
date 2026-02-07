@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 
 function GridSquare() {
   const [pos, setPos] = useState<{ col: number; row: number } | null>(null);
@@ -47,7 +47,7 @@ function GridSquare() {
 export function GridBackground({ className }: { className?: string }) {
   return (
     <div
-      className={classNames(
+      className={cx(
         "absolute inset-0 -z-10 h-full w-full bg-grid-pattern bg-[size:24px_24px] bg-[position:center_top] [mask-image:radial-gradient(ellipse_40%_25%_at_50%_25%,#000_0%,transparent_100%)]",
         className,
       )}

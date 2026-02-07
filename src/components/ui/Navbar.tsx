@@ -3,7 +3,7 @@
 import { siteConfig } from "@/app/siteConfig";
 import { documentation, github, social } from "@/lib/links";
 import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -55,13 +55,13 @@ export function Navigation() {
 
   return (
     <div
-      className={classNames(
+      className={cx(
         "w-full z-50",
         isHomePage ? "absolute top-0" : "relative h-16 md:h-20",
       )}
     >
       <header
-        className={classNames(
+        className={cx(
           "z-50 flex transform-gpu opacity-0 animate-navbar justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
           "left-4 md:left-12 right-4 md:right-12 absolute border-b",
           isHomePage
@@ -77,7 +77,7 @@ export function Navigation() {
       >
         <div className="w-full flex flex-col justify-start">
           <div
-            className={classNames(
+            className={cx(
               "relative flex items-center justify-between h-16 md:h-20 shrink-0",
               open ? "px-6" : "px-0",
             )}
@@ -85,7 +85,7 @@ export function Navigation() {
             <Link href={siteConfig.baseLinks.home} aria-label="Home">
               <span className="sr-only">Company logo</span>
               <DatabaseLogo
-                className={classNames(
+                className={cx(
                   "w-28 sm:w-32 transition-colors",
                   isHomePage && !open
                     ? "brightness-0 invert"
@@ -96,7 +96,7 @@ export function Navigation() {
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
-                  className={classNames(
+                  className={cx(
                     "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.blog)
                       ? "text-indigo-600 dark:text-white"
@@ -112,7 +112,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                  className={classNames(
+                  className={cx(
                     "px-2 py-1 transition-colors",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
@@ -125,7 +125,7 @@ export function Navigation() {
                   Documentation
                 </Link>
                 <Link
-                  className={classNames(
+                  className={cx(
                     "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.resources)
                       ? "text-indigo-600 dark:text-white"
@@ -141,7 +141,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   target="_blank"
-                  className={classNames(
+                  className={cx(
                     "px-2 py-1 transition-colors",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
@@ -164,14 +164,14 @@ export function Navigation() {
               <Link
                 href={github.REPO}
                 target="_blank"
-                className={classNames(
+                className={cx(
                   "items-center justify-center space-x-2 transition-all duration-300",
                   stars && !open ? "flex opacity-100" : "hidden opacity-0",
                 )}
               >
                 <RiGithubFill
                   aria-hidden="true"
-                  className={classNames(
+                  className={cx(
                     "size-6 shrink-0 transition-colors",
                     isHomePage && !open
                       ? "text-white"
@@ -179,7 +179,7 @@ export function Navigation() {
                   )}
                 />
                 <div
-                  className={classNames(
+                  className={cx(
                     "text-sm font-medium transition-colors",
                     isHomePage && !open
                       ? "text-white"
@@ -190,7 +190,7 @@ export function Navigation() {
                 </div>
               </Link>
               <Button
-                className={classNames(
+                className={cx(
                   "hidden px-4 md:flex rounded-none transition-all",
                   isHomePage && !open
                     ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
@@ -205,7 +205,7 @@ export function Navigation() {
                 <Button
                   onClick={() => setOpen(!open)}
                   variant="ghost"
-                  className={classNames(
+                  className={cx(
                     "aspect-square p-2 transition-colors border-0 hover:bg-transparent",
                     isHomePage && !open
                       ? "text-white hover:text-white/80"
@@ -222,7 +222,7 @@ export function Navigation() {
             </div>
           </div>
           <nav
-            className={classNames(
+            className={cx(
               "flex flex-col md:hidden",
               open ? "pb-8" : "hidden",
             )}
@@ -232,7 +232,7 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   href={documentation.BASE}
-                  className={classNames(
+                  className={cx(
                     "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
@@ -243,7 +243,7 @@ export function Navigation() {
               <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   href={siteConfig.baseLinks.blog}
-                  className={classNames(
+                  className={cx(
                     "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
@@ -254,7 +254,7 @@ export function Navigation() {
               <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   href={siteConfig.baseLinks.resources}
-                  className={classNames(
+                  className={cx(
                     "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
@@ -266,7 +266,7 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   href={social.SLACK}
-                  className={classNames(
+                  className={cx(
                     "block w-full py-5 text-lg tracking-tight",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}

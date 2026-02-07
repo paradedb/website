@@ -3,7 +3,7 @@
 import { RiComputerLine, RiMoonLine, RiSunLine } from "@remixicon/react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 
 export function ThemeToggle({
   variant = "default",
@@ -32,7 +32,7 @@ export function ThemeToggle({
 
   return (
     <div
-      className={classNames(
+      className={cx(
         "flex items-center gap-0.5 rounded-full p-0.5 border backdrop-blur-sm transition-colors",
         isWhite
           ? "bg-white/10 border-white/20"
@@ -46,7 +46,7 @@ export function ThemeToggle({
           <button
             key={option.value}
             onClick={() => setTheme(option.value)}
-            className={classNames(
+            className={cx(
               "flex h-7 w-7 items-center justify-center rounded-full transition-all duration-200",
               isActive
                 ? isWhite

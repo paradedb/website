@@ -66,7 +66,6 @@ const buttonVariants = tv({
         "bg-transparent hover:bg-gray-100 dark:hover:bg-slate-800",
         // disabled
         "disabled:text-gray-400 dark:disabled:text-gray-600",
-        "disabled:",
       ],
       destructive: [
         // text color
@@ -79,7 +78,6 @@ const buttonVariants = tv({
         "hover:bg-red-700",
         // disabled
         "disabled:bg-red-300 disabled:text-white",
-        "disabled: disabled:",
       ],
     },
   },
