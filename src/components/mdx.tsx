@@ -1,9 +1,9 @@
-import clsx from "clsx";
 import Image, { ImageProps } from "next/image";
 import Link from "next/link";
 import React from "react";
+import { cx } from "@/lib/utils";
 
-export default function slugify(str: string) {
+function slugify(str: string) {
   return str
     .toString()
     .toLowerCase()
@@ -20,7 +20,7 @@ function CustomHeading(props: any) {
     `h${props.level}`,
     {
       id: slug,
-      className: clsx(
+      className: cx(
         "scroll-mt-36 md:scroll-mt-24 group relative",
         props.className,
       ),
@@ -72,7 +72,7 @@ export const Bold = (props: React.HTMLAttributes<HTMLSpanElement>) => (
 
 export function CustomLink(props: any) {
   let href = props.href;
-  const style = "text-indigo-600 font-medium hover:text-indigo-500  hover:";
+  const style = "text-indigo-600 font-medium hover:text-indigo-500";
   if (href.startsWith("/")) {
     return (
       <Link className={style} href={href} {...props}>
@@ -131,10 +131,3 @@ export const ChangelogImage = ({
   />
 );
 
-// Import headshots for shared use
-
-export const mdxComponents = {
-  h1: H1,
-  h2: H2,
-  h3: H3,
-};
