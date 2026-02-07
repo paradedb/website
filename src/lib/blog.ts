@@ -114,3 +114,52 @@ export async function getBlogLinks(): Promise<BlogLink[]> {
     categories: post.categories,
   }));
 }
+
+export interface BlogSection {
+  name: string;
+  links: BlogLink[];
+}
+
+const BLOG_CATEGORY_MAP: Record<string, string> = {
+  "case-study": "Case Studies",
+  announcement: "Announcements",
+  release: "Announcements",
+};
+
+const BLOG_SECTION_ORDER: Record<string, number> = {
+  Engineering: 1,
+  "Case Studies": 2,
+  Announcements: 3,
+};
+
+export async function getBlogLinksByCategory(): Promise<BlogSection[]> {
+  const links = await getBlogLinks();
+  const sectionMap = new Map<string, BlogLink[]>();
+
+  for (const link of links) {
+    let sectionName = "Engineering";
+    if (link.categories) {
+      for (const category of link.categories) {
+        if (BLOG_CATEGORY_MAP[category]) {
+          sectionName = BLOG_CATEGORY_MAP[category];
+          break;
+        }
+      }
+    }
+    if (!sectionMap.has(sectionName)) {
+      sectionMap.set(sectionName, []);
+    }
+    sectionMap.get(sectionName)!.push(link);
+  }
+
+  return Array.from(sectionMap.entries())
+    .map(([name, links]) => ({ name, links }))
+    .sort((a, b) => {
+      const orderA = BLOG_SECTION_ORDER[a.name] ?? 999;
+      const orderB = BLOG_SECTION_ORDER[b.name] ?? 999;
+      if (orderA !== orderB) {
+        return orderA - orderB;
+      }
+      return a.name.localeCompare(b.name);
+    });
+}
