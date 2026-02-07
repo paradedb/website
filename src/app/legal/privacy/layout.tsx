@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Use",
+  title: "Privacy Policy",
   description:
-    "ParadeDB Website Terms of Use — the legally binding terms and conditions that govern your use of paradedb.com.",
-  alternates: { canonical: "/terms" },
+    "ParadeDB Privacy Policy — how we collect, use, and safeguard the information you provide to us.",
+  alternates: { canonical: "/legal/privacy" },
 };
 
 export default function Layout({ children }: { children: React.ReactNode }) {

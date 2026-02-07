@@ -17,8 +17,8 @@ export const documentation = {
 };
 
 export const legal = {
-  TERMS: "/terms",
-  PRIVACY: "/privacy",
+  TERMS: "/legal/terms",
+  PRIVACY: "/legal/privacy",
 };
 
 export const github = {
