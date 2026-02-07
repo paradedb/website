@@ -110,7 +110,7 @@ export default function BlogLayoutClient({
                         <ul role="list" className="-mx-2 space-y-1">
                           {blogLinks.map((item) => (
                             <li key={item.href}>
-                              <a
+                              <Link
                                 href={`${siteConfig.baseLinks.blog}/${item.href}`}
                                 className={cx(
                                   pathname.endsWith(item.href)
@@ -120,7 +120,7 @@ export default function BlogLayoutClient({
                                 )}
                               >
                                 {item.name}
-                              </a>
+                              </Link>
                             </li>
                           ))}
                         </ul>

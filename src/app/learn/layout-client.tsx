@@ -159,7 +159,7 @@ export default function ResourcesLayoutClient({
                             <ul role="list" className="mt-2 space-y-1 pl-4">
                               {section.resources.map((item) => (
                                 <li key={item.href}>
-                                  <a
+                                  <Link
                                     href={`${siteConfig.baseLinks.resources}/${item.href}`}
                                     className={cx(
                                       pathname.endsWith(item.href)
@@ -176,7 +176,7 @@ export default function ResourcesLayoutClient({
                                         {item.type}
                                       </span>
                                     </div>
-                                  </a>
+                                  </Link>
                                 </li>
                               ))}
                             </ul>
@@ -206,13 +206,13 @@ export default function ResourcesLayoutClient({
                 {/* Mobile back navigation */}
                 {!isLearnIndex && currentResource && (
                   <nav className="lg:hidden mb-8">
-                    <a
+                    <Link
                       href="/learn"
                       className="flex items-center text-sm font-semibold text-slate-600 dark:text-slate-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                     >
                       <span className="mr-2 text-indigo-500">←</span>
                       Back to Learn
-                    </a>
+                    </Link>
                   </nav>
                 )}
 
