@@ -3,6 +3,41 @@ import { siteConfig } from "@/app/siteConfig";
 import { readFileSync, existsSync } from "fs";
 import { join, sep } from "path";
 
+/**
+ * Generate metadata for section index pages (/blog, /learn, /customers).
+ */
+export function generateSectionMetadata({
+  title,
+  description,
+  path,
+}: {
+  title: string;
+  description: string;
+  path: string;
+}): Metadata {
+  const url = `${siteConfig.url}${path}`;
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url,
+      siteName: siteConfig.name,
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      creator: "@paradedb",
+    },
+    alternates: {
+      canonical: url,
+    },
+  };
+}
+
 interface BlogMetadata {
   title: string;
   description: string;

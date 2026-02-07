@@ -1,3 +1,4 @@
+import { ContentListHeader } from "@/components/ContentListHeader";
 import { getBlogLinks } from "@/lib/blog";
 import { siteConfig } from "../siteConfig";
 import Link from "next/link";
@@ -8,16 +9,10 @@ export default async function Blog() {
 
   return (
     <div className="w-full">
-      <div className="relative border-b border-slate-200 dark:border-slate-900">
-        <div className="pt-8 pb-10 md:py-12 px-4 md:px-12 relative">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-            Latest Posts
-          </h1>
-          <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl">
-            Stay up to date with the latest news and updates from ParadeDB.
-          </p>
-        </div>
-      </div>
+      <ContentListHeader
+        title="Latest Posts"
+        subtitle="Stay up to date with the latest news and updates from ParadeDB."
+      />
 
       <div className="md:py-12 px-4 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
