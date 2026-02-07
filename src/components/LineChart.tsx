@@ -536,7 +536,6 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
     const paddingValue =
       (!showXAxis && !showYAxis) || (startEndOnly && !showYAxis) ? 0 : 20;
     const [legendHeight, setLegendHeight] = React.useState(60);
-    console.log(legendHeight);
     const [activeDot, setActiveDot] = React.useState<ActiveDot | undefined>(
       undefined,
     );
