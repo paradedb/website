@@ -598,10 +598,7 @@ export default function HowItWorks() {
   }, []);
 
   return (
-    <div
-      ref={sectionRef}
-      className="w-full relative bg-transparent"
-    >
+    <div ref={sectionRef} className="w-full relative bg-transparent">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         {/* Global Vertical Lines */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
