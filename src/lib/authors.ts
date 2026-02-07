@@ -1,3 +1,4 @@
+import type { StaticImageData } from "next/image";
 import {
   JamesHeadshot,
   PhilHeadshot,
@@ -8,7 +9,7 @@ import {
 
 export interface Author {
   name: string;
-  headshot: any;
+  headshot: StaticImageData;
   bio?: string;
 }
 
