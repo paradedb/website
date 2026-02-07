@@ -39,8 +39,8 @@ const navigation = {
     { name: "Support", href: email.SUPPORT, external: false },
   ],
   legal: [
-    { name: "Privacy", href: legal.PRIVACY, external: true },
-    { name: "Terms", href: legal.TERMS, external: true },
+    { name: "Privacy", href: legal.PRIVACY, external: false },
+    { name: "Terms", href: legal.TERMS, external: false },
   ],
 };
 
