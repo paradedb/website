@@ -30,93 +30,93 @@ const nextConfig = {
       // --- specific post renames ---
       {
         source: "/blog/introducing_lakehouse",
-        destination: "https://www.paradedb.com/blog/introducing-search",
+        destination: "/blog/introducing-search",
         permanent: true,
       },
       {
         source: "/blog/introducing_analytics",
-        destination: "https://www.paradedb.com/blog/introducing-search",
+        destination: "/blog/introducing-search",
         permanent: true,
       },
       {
         source: "/blog/block_storage_part_one",
-        destination: "https://www.paradedb.com/blog/block-storage-part-one",
+        destination: "/blog/block-storage-part-one",
         permanent: true,
       },
       {
         source: "/blog/case_study_alibaba",
-        destination: "https://www.paradedb.com/customers/case-study-alibaba",
+        destination: "/customers/case-study-alibaba",
         permanent: true,
       },
       {
         source: "/blog/case_study_bilt",
-        destination: "https://www.paradedb.com/customers/case-study-bilt",
+        destination: "/customers/case-study-bilt",
         permanent: true,
       },
       {
         source: "/blog/case_study_insa",
-        destination: "https://www.paradedb.com/customers/case-study-insa",
+        destination: "/customers/case-study-insa",
         permanent: true,
       },
       {
         source: "/blog/case_study_sweetspot",
-        destination: "https://www.paradedb.com/customers/case-study-sweetspot",
+        destination: "/customers/case-study-sweetspot",
         permanent: true,
       },
       // Redirect old /blog/case-study-* URLs to /customers/case-study-*
       {
         source: "/blog/case-study-alibaba",
-        destination: "https://www.paradedb.com/customers/case-study-alibaba",
+        destination: "/customers/case-study-alibaba",
         permanent: true,
       },
       {
         source: "/blog/case-study-bilt",
-        destination: "https://www.paradedb.com/customers/case-study-bilt",
+        destination: "/customers/case-study-bilt",
         permanent: true,
       },
       {
         source: "/blog/case-study-insa",
-        destination: "https://www.paradedb.com/customers/case-study-insa",
+        destination: "/customers/case-study-insa",
         permanent: true,
       },
       {
         source: "/blog/case-study-sweetspot",
-        destination: "https://www.paradedb.com/customers/case-study-sweetspot",
+        destination: "/customers/case-study-sweetspot",
         permanent: true,
       },
       {
         source: "/blog/elasticsearch_vs_postgres",
-        destination: "https://www.paradedb.com/blog/elasticsearch-vs-postgres",
+        destination: "/blog/elasticsearch-vs-postgres",
         permanent: true,
       },
       {
         source: "/blog/etl_vs_logical_replication",
-        destination: "https://www.paradedb.com/blog/etl-vs-logical-replication",
+        destination: "/blog/etl-vs-logical-replication",
         permanent: true,
       },
       {
         source: "/blog/introducing_paradedb",
-        destination: "https://www.paradedb.com/blog/introducing-paradedb",
+        destination: "/blog/introducing-paradedb",
         permanent: true,
       },
       {
         source: "/blog/introducing_search",
-        destination: "https://www.paradedb.com/blog/introducing-search",
+        destination: "/blog/introducing-search",
         permanent: true,
       },
       {
         source: "/blog/introducing_sparse",
-        destination: "https://www.paradedb.com/blog/introducing-sparse",
+        destination: "/blog/introducing-sparse",
         permanent: true,
       },
       {
         source: "/blog/lsm_trees_in_postgres",
-        destination: "https://www.paradedb.com/blog/lsm-trees-in-postgres",
+        destination: "/blog/lsm-trees-in-postgres",
         permanent: true,
       },
       {
         source: "/blog/series_a_announcement",
-        destination: "https://www.paradedb.com/blog/series-a-announcement",
+        destination: "/blog/series-a-announcement",
         permanent: true,
       },
     ];

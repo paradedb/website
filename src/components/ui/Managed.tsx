@@ -60,7 +60,7 @@ export default function SearchAnalytics() {
               <div className="rounded-xl bg-white ring-1 ring-indigo-900/5 h-full">
                 <div className="relative rounded-t-xl bg-indigo-100 h-full">
                   <Link
-                    href={`/blog/${study.link}`}
+                    href={`/customers/${study.link}`}
                     target="_blank"
                     className="h-full block"
                   >
