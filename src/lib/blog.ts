@@ -104,9 +104,35 @@ export interface BlogLink {
 }
 
 export async function getCaseStudyLinks(): Promise<BlogLink[]> {
-  const links = await getBlogLinks();
-  return links.filter(
-    (link) => link.categories && link.categories.includes("case-study"),
+  const customersDir = path.join(process.cwd(), "src/app/customers");
+  const links: BlogLink[] = [];
+
+  if (fs.existsSync(customersDir)) {
+    const dirs = fs
+      .readdirSync(customersDir, { withFileTypes: true })
+      .filter((d) => d.isDirectory())
+      .map((d) => d.name);
+
+    for (const slug of dirs) {
+      const metadataPath = path.join(customersDir, slug, "metadata.json");
+      const mdxPath = path.join(customersDir, slug, "index.mdx");
+
+      if (fs.existsSync(metadataPath) && fs.existsSync(mdxPath)) {
+        const metadata = JSON.parse(fs.readFileSync(metadataPath, "utf8"));
+        links.push({
+          name: metadata.title,
+          href: slug,
+          date: metadata.date,
+          author: metadata.author,
+          description: metadata.description,
+          categories: metadata.categories,
+        });
+      }
+    }
+  }
+
+  return links.sort(
+    (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
   );
 }
 
@@ -128,15 +154,13 @@ export interface BlogSection {
 }
 
 const BLOG_CATEGORY_MAP: Record<string, string> = {
-  "case-study": "Case Studies",
   announcement: "Announcements",
   release: "Announcements",
 };
 
 const BLOG_SECTION_ORDER: Record<string, number> = {
   Engineering: 1,
-  "Case Studies": 2,
-  Announcements: 3,
+  Announcements: 2,
 };
 
 export async function getBlogLinksByCategory(): Promise<BlogSection[]> {

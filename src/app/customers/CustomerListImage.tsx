@@ -18,16 +18,16 @@ export default function CustomerListImage({
   useEffect(() => {
     const loadHeroImage = async () => {
       try {
-        const pngImage = await import(`../blog/${slug}/images/hero.png`);
+        const pngImage = await import(`./${slug}/images/hero.png`);
         setHeroImage(pngImage.default);
       } catch {
         try {
-          const svgImage = await import(`../blog/${slug}/images/hero.svg`);
+          const svgImage = await import(`./${slug}/images/hero.svg`);
           setHeroImage(svgImage.default);
         } catch {
           try {
             const ogImage = await import(
-              `../blog/${slug}/images/opengraph-image.png`
+              `./${slug}/images/opengraph-image.png`
             );
             setHeroImage(ogImage.default);
           } catch {

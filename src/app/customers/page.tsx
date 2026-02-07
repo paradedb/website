@@ -19,7 +19,7 @@ export default async function Customers() {
           {caseStudies.map((post) => (
             <Link
               key={post.href}
-              href={`${siteConfig.baseLinks.blog}/${post.href}`}
+              href={`${siteConfig.baseLinks.customers}/${post.href}`}
               className="group"
             >
               <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-lg">

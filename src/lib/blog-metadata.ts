@@ -52,21 +52,24 @@ interface BlogMetadata {
  * Generate metadata for both /blog/* and /learn/* content.
  */
 export function generateBlogMetadata(dirPath: string): Metadata {
-  // Find the last occurrence of either /blog/ or /learn/ in the path
-  // This handles edge cases where the path might contain both patterns
+  // Find the last occurrence of /blog/, /learn/, or /customers/ in the path
   const blogIndex = dirPath.lastIndexOf(`${sep}blog${sep}`);
   const learnIndex = dirPath.lastIndexOf(`${sep}learn${sep}`);
+  const customersIndex = dirPath.lastIndexOf(`${sep}customers${sep}`);
 
   // Determine baseUrl and extract slug based on which pattern appears last
   let baseUrl: string;
   let slug: string;
 
-  if (learnIndex > blogIndex) {
-    // /learn/ appears later (or blog doesn't exist)
+  const maxIndex = Math.max(blogIndex, learnIndex, customersIndex);
+
+  if (maxIndex === customersIndex && customersIndex >= 0) {
+    baseUrl = "/customers";
+    slug = dirPath.split(`${sep}customers${sep}`).slice(-1)[0];
+  } else if (maxIndex === learnIndex && learnIndex >= 0) {
     baseUrl = "/learn";
     slug = dirPath.split(`${sep}learn${sep}`).slice(-1)[0];
-  } else if (blogIndex > learnIndex) {
-    // /blog/ appears later (or learn doesn't exist)
+  } else if (maxIndex === blogIndex && blogIndex >= 0) {
     baseUrl = "/blog";
     slug = dirPath.split(`${sep}blog${sep}`).slice(-1)[0];
   } else {

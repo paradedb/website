@@ -21,7 +21,7 @@ export default function CustomersLayoutClient({
       name: "Case Studies",
       items: caseStudies.map((study) => ({
         key: study.href,
-        href: `${siteConfig.baseLinks.blog}/${study.href}`,
+        href: `${siteConfig.baseLinks.customers}/${study.href}`,
         label: study.name,
       })),
     },

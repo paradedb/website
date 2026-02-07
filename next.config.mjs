@@ -45,22 +45,43 @@ const nextConfig = {
       },
       {
         source: "/blog/case_study_alibaba",
-        destination: "https://www.paradedb.com/blog/case-study-alibaba",
+        destination: "https://www.paradedb.com/customers/case-study-alibaba",
         permanent: true,
       },
       {
         source: "/blog/case_study_bilt",
-        destination: "https://www.paradedb.com/blog/case-study-bilt",
+        destination: "https://www.paradedb.com/customers/case-study-bilt",
         permanent: true,
       },
       {
         source: "/blog/case_study_insa",
-        destination: "https://www.paradedb.com/blog/case-study-insa",
+        destination: "https://www.paradedb.com/customers/case-study-insa",
         permanent: true,
       },
       {
         source: "/blog/case_study_sweetspot",
-        destination: "https://www.paradedb.com/blog/case-study-sweetspot",
+        destination: "https://www.paradedb.com/customers/case-study-sweetspot",
+        permanent: true,
+      },
+      // Redirect old /blog/case-study-* URLs to /customers/case-study-*
+      {
+        source: "/blog/case-study-alibaba",
+        destination: "https://www.paradedb.com/customers/case-study-alibaba",
+        permanent: true,
+      },
+      {
+        source: "/blog/case-study-bilt",
+        destination: "https://www.paradedb.com/customers/case-study-bilt",
+        permanent: true,
+      },
+      {
+        source: "/blog/case-study-insa",
+        destination: "https://www.paradedb.com/customers/case-study-insa",
+        permanent: true,
+      },
+      {
+        source: "/blog/case-study-sweetspot",
+        destination: "https://www.paradedb.com/customers/case-study-sweetspot",
         permanent: true,
       },
       {
