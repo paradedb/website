@@ -17,10 +17,8 @@ export const documentation = {
 };
 
 export const legal = {
-  TERMS:
-    "https://paradedb.notion.site/Terms-of-Use-d17c9916a5b746fab86c274feb35da75",
-  PRIVACY:
-    "https://paradedb.notion.site/Privacy-Policy-a7ce333c45c8478fb03250dff7e573b7?pvs=4",
+  TERMS: "/terms",
+  PRIVACY: "/privacy",
 };
 
 export const github = {

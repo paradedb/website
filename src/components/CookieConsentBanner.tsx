@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
 
 import { legal } from "@/lib/links";
+import Link from "next/link";
 
 export default function CookieConsentBanner() {
   const [consentGiven, setConsentGiven] = useState(false);
@@ -35,14 +36,9 @@ export default function CookieConsentBanner() {
         onAccept={() => setConsentGiven(true)}
       >
         We use cookies to analyze site usage and improve your experience.{" "}
-        <a
-          href={legal.PRIVACY}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="underline hover:text-white"
-        >
+        <Link href={legal.PRIVACY} className="underline hover:text-white">
           Privacy Policy
-        </a>
+        </Link>
       </CookieConsent>
     </>
   );
