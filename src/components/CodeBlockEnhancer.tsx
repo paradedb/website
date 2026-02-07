@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { createRoot } from "react-dom/client";
 import CopyToClipboard from "./CopyToClipboard";
 
 export default function CodeBlockEnhancer() {
@@ -30,10 +31,8 @@ export default function CodeBlockEnhancer() {
           wrapper.appendChild(buttonContainer);
           preElement.appendChild(wrapper);
 
-          import("react-dom/client").then(({ createRoot }) => {
-            const root = createRoot(buttonContainer);
-            root.render(<CopyToClipboard code={code} />);
-          });
+          const root = createRoot(buttonContainer);
+          root.render(<CopyToClipboard code={code} />);
         }
       });
     };
