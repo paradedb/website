@@ -1,5 +1,3 @@
-"use client";
-
 import { Logos } from "./Logos";
 import Link from "next/link";
 import { RiArrowRightLine } from "@remixicon/react";

@@ -1,5 +1,3 @@
-"use client";
-
 import Link from "next/link";
 import { RiArrowRightLine, RiGithubFill } from "@remixicon/react";
 import { Badge } from "./Badge";

@@ -73,17 +73,6 @@ const AnimatedCell = ({
 
   return (
     <div className="relative w-full h-full overflow-hidden">
-      <style>{`
-          @keyframes slideOutTop {
-            0% { transform: translateY(0); opacity: 1; }
-            100% { transform: translateY(-100%); opacity: 0; }
-          }
-          @keyframes slideInBottom {
-            0% { transform: translateY(100%); opacity: 0; }
-            100% { transform: translateY(0); opacity: 1; }
-          }
-        `}</style>
-
       {display.prev && (
         <div
           className={cx(
@@ -133,16 +122,6 @@ const Table = ({
   isExiting?: boolean;
 }) => (
   <div className="w-full bg-white/90 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 overflow-hidden text-sm z-10 relative ring-3 ring-slate-50 dark:ring-slate-950 shadow-xl">
-    <style>{`
-      @keyframes slideInRow {
-        0% { transform: translateY(100%); opacity: 0; }
-        100% { transform: translateY(0); opacity: 1; }
-      }
-      @keyframes slideOutRow {
-        0% { transform: translateY(0); opacity: 1; }
-        100% { transform: translateY(100%); opacity: 0; }
-      }
-    `}</style>
     <div className="bg-slate-50 dark:bg-slate-950/50 px-3 py-2 border-b border-slate-200 dark:border-slate-800 font-medium text-slate-600 dark:text-slate-400 flex justify-between items-center">
       {customHeader ? (
         <div className="w-full">{customHeader}</div>
@@ -235,7 +214,7 @@ const SelfHostedHeader = () => (
   </div>
 );
 
-function SelfHostedDemo() {
+function SelfHostedDemo({ isActive = true }: { isActive?: boolean }) {
   const ANIMAL_DATA = [
     { id: 1, name: "Polar Bear", weight: "450" },
     { id: 2, name: "Grizzly Bear", weight: "270" },
@@ -273,6 +252,8 @@ function SelfHostedDemo() {
 
   // Typing animation loop
   useEffect(() => {
+    if (!isActive) return;
+
     let mounted = true;
     const QUERIES = ["bear", "shark", "whale"];
     let queryIdx = 0;
@@ -332,7 +313,7 @@ function SelfHostedDemo() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [isActive]);
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-transparent flex flex-col">
@@ -350,12 +331,6 @@ function SelfHostedDemo() {
                 </span>
                 <span className="w-0.5 h-5 bg-indigo-500 animate-[blink_1s_infinite] ml-0.5" />
               </div>
-              <style>{`
-                @keyframes blink {
-                  0%, 100% { opacity: 1; }
-                  50% { opacity: 0; }
-                }
-              `}</style>
             </div>
           </div>
 
@@ -373,7 +348,7 @@ function SelfHostedDemo() {
   );
 }
 
-function AnimationDemo() {
+function AnimationDemo({ isActive = true }: { isActive?: boolean }) {
   const ELEPHANT_DATA = [
     { name: "Asian Elephant", weight: "4000" },
     { name: "African Bush Elephant", weight: "6000" },
@@ -402,6 +377,8 @@ function AnimationDemo() {
   >("idle");
 
   useEffect(() => {
+    if (!isActive) return;
+
     let mounted = true;
 
     const runAnimation = async () => {
@@ -481,16 +458,10 @@ function AnimationDemo() {
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [isActive]);
 
   return (
     <div className="w-full h-full relative overflow-hidden bg-transparent flex flex-col">
-      <style>{`
-        @keyframes scan {
-          0% { mask-position: 0 -100%; -webkit-mask-position: 0 -100%; }
-          100% { mask-position: 0 300%; -webkit-mask-position: 0 300%; }
-        }
-      `}</style>
       <div className="flex-1 flex flex-col justify-center items-center px-0 sm:px-4 relative z-10">
         <div className="flex flex-col items-stretch w-full sm:max-w-[420px] mx-auto">
           {/* Primary Table */}
@@ -673,7 +644,7 @@ export default function HowItWorks() {
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
                 <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
                   <div className="w-full">
-                    <AnimationDemo />
+                    <AnimationDemo isActive={activeTab === "managed"} />
                   </div>
                 </div>
               </AccordionItem>
@@ -693,7 +664,7 @@ export default function HowItWorks() {
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
                 <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
                   <div className="w-full">
-                    <SelfHostedDemo />
+                    <SelfHostedDemo isActive={activeTab === "selfHosted"} />
                   </div>
                 </div>
               </AccordionItem>
