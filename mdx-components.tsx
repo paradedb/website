@@ -15,7 +15,7 @@ import { ChangelogImage } from "@/components/mdx";
 import { BarChartCard } from "@/components/charts/BarChartCard";
 import { LineChartCard } from "@/components/charts/LineChartCard";
 
-let customComponents = {
+const customComponents = {
   h1: H1,
   h2: H2,
   h3: H3,

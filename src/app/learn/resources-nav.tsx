@@ -1,7 +1,7 @@
 "use client";
 
 import { ResourceSection } from "@/lib/resources";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { siteConfig } from "../siteConfig";
@@ -38,7 +38,7 @@ export function ResourcesNav({ resourceSections }: ResourcesNavProps) {
             >
               <span>{section.name}</span>
               <svg
-                className={classNames(
+                className={cx(
                   "h-4 w-4 transform transition-transform",
                   collapsedSections.has(section.name)
                     ? "rotate-0"
@@ -60,7 +60,7 @@ export function ResourcesNav({ resourceSections }: ResourcesNavProps) {
                   <li key={item.href}>
                     <Link
                       href={`${siteConfig.baseLinks.resources}/${item.href}`}
-                      className={classNames(
+                      className={cx(
                         pathname.endsWith(item.href)
                           ? "bg-gray-50 dark:bg-indigo-900 text-indigo-600 dark:text-indigo-400"
                           : "text-gray-700 dark:text-indigo-200 hover:bg-gray-50 dark:hover:bg-indigo-900 hover:text-indigo-600 dark:hover:text-indigo-400",

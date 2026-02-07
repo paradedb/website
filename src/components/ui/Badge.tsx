@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 
 export function Badge({
   children,
@@ -10,7 +10,7 @@ export function Badge({
 }) {
   return (
     <span
-      className={classNames(
+      className={cx(
         "inline-flex items-center border px-3 py-1 text-xs font-medium uppercase tracking-wider transition-colors",
         "bg-slate-50 dark:bg-slate-800 border-slate-300 dark:border-slate-700 text-slate-600 dark:text-slate-200",
         className,

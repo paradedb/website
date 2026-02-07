@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 import { RiSearchLine, RiFlashlightFill } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
 import Link from "next/link";
@@ -15,7 +15,7 @@ const ParadeDBIcon = (props: React.SVGProps<SVGSVGElement>) => (
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
     {...props}
-    className={classNames(props.className, "scale-75")}
+    className={cx(props.className, "scale-75")}
   >
     <path
       fillRule="evenodd"
@@ -86,7 +86,7 @@ const AnimatedCell = ({
 
       {display.prev && (
         <div
-          className={classNames(
+          className={cx(
             "absolute inset-0 flex items-center",
             "text-emerald-600 font-medium",
           )}
@@ -97,7 +97,7 @@ const AnimatedCell = ({
       )}
 
       <div
-        className={classNames(
+        className={cx(
           "absolute inset-0 flex items-center",
           isHighlighted
             ? "text-emerald-600 font-medium"
@@ -179,7 +179,7 @@ const Table = ({
           rows.map((row, i) => (
             <div
               key={row.id}
-              className={classNames(
+              className={cx(
                 "grid grid-cols-[30px_1fr_80px] px-3 py-2 transition-colors duration-300 items-center opacity-0",
                 highlightIdx === i
                   ? "bg-indigo-50 dark:bg-indigo-900/20"
@@ -509,7 +509,7 @@ function AnimationDemo() {
 
             {/* Active Dashed Line (Lighting up) */}
             <div
-              className={classNames(
+              className={cx(
                 "absolute top-0 h-full w-0 border-l-2 border-dashed border-indigo-500 drop-shadow-[0_0_3px_#818cf8] transition-opacity",
                 packetState === "moving"
                   ? "opacity-100 duration-75"
@@ -571,7 +571,7 @@ const AccordionItem = ({
       className="w-full py-6 flex items-start text-left group transition-all justify-between lg:cursor-pointer cursor-default"
     >
       <h3
-        className={classNames(
+        className={cx(
           "text-lg font-semibold transition-colors duration-300 flex-1",
           "text-indigo-950 dark:text-white lg:text-slate-500 lg:dark:text-slate-400",
           isActive
@@ -582,7 +582,7 @@ const AccordionItem = ({
         {title}
       </h3>
       <span
-        className={classNames(
+        className={cx(
           "font-mono text-md ml-6 transition-colors duration-300",
           "text-indigo-600 dark:text-indigo-400 lg:text-slate-400 lg:dark:text-slate-500",
           isActive
@@ -595,7 +595,7 @@ const AccordionItem = ({
     </button>
 
     <div
-      className={classNames(
+      className={cx(
         "overflow-hidden transition-all duration-500 ease-in-out",
         "max-h-[2000px] opacity-100", // Always open on mobile
         "lg:max-h-0 lg:opacity-0", // Closed by default on desktop
@@ -707,7 +707,7 @@ export default function HowItWorks() {
             <div className="flex w-full border-b border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
               <button
                 onClick={() => setActiveTab("managed")}
-                className={classNames(
+                className={cx(
                   "flex-1 flex items-center justify-center gap-3 py-4 text-sm font-medium transition-all border-b-2 outline-none",
                   activeTab === "managed"
                     ? "border-indigo-600 text-indigo-900 dark:text-white"
@@ -715,7 +715,7 @@ export default function HowItWorks() {
                 )}
               >
                 <span
-                  className={classNames(
+                  className={cx(
                     "text-[10px] font-mono font-semibold",
                     activeTab === "managed"
                       ? "text-indigo-600 dark:text-indigo-400"
@@ -731,7 +731,7 @@ export default function HowItWorks() {
               <div className="w-px bg-slate-200 dark:bg-slate-900" />
               <button
                 onClick={() => setActiveTab("selfHosted")}
-                className={classNames(
+                className={cx(
                   "flex-1 flex items-center justify-center gap-3 py-4 text-sm font-medium transition-all border-b-2 outline-none",
                   activeTab === "selfHosted"
                     ? "border-indigo-600 text-indigo-900 dark:text-white"
@@ -739,7 +739,7 @@ export default function HowItWorks() {
                 )}
               >
                 <span
-                  className={classNames(
+                  className={cx(
                     "text-[10px] font-mono font-semibold",
                     activeTab === "selfHosted"
                       ? "text-indigo-600 dark:text-indigo-400"

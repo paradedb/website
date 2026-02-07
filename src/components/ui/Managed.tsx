@@ -6,7 +6,7 @@ import { Button } from "../Button";
 import { ArrowAnimated } from "./ArrowAnimated";
 import Bilt from "./logos/Bilt";
 import Alibaba from "./logos/Alibaba";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 
 const caseStudies = [
   {
@@ -65,7 +65,7 @@ export default function SearchAnalytics() {
                     className="h-full block"
                   >
                     <div
-                      className={classNames(
+                      className={cx(
                         "rounded-lg relative overflow-hidden h-full",
                         study.bgStyle,
                         "hover:cursor-pointer duration-300",
@@ -73,7 +73,7 @@ export default function SearchAnalytics() {
                     >
                       <div className="relative z-10 h-full flex flex-col bg-white">
                         <div
-                          className={classNames(
+                          className={cx(
                             "border-b border-indigo-200 py-12 md:py-20 px-8 flex justify-between",
                             study.imageBgStyle,
                           )}
@@ -89,7 +89,7 @@ export default function SearchAnalytics() {
                           </p>
                           <p className="mt-2 text-gray-600">{study.title}</p>
                           <Button
-                            className={classNames(
+                            className={cx(
                               "group mt-4 bg-transparent hover:bg-transparent px-0 text-indigo-600 justify-start",
                             )}
                             variant="light"

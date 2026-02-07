@@ -28,7 +28,6 @@
     "@tailwindcss/typography": "^0.5.19",
     "@tremor/react": "^3.18.7",
     "@types/mdx": "^2.0.13",
-    "classnames": "^2.5.1",
     "clsx": "^2.1.1",
     "highlight.js": "^11.11.1",
     "katex": "^0.16.27",

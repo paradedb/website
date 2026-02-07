@@ -20,13 +20,12 @@ const inputStyles = tv({
     "bg-white",
     // disabled
     "disabled:border-gray-300 disabled:bg-gray-100 disabled:text-gray-400",
-    "disabled: disabled: disabled:",
     // file
     [
       "file:-my-2 file:-ml-2.5 file:cursor-pointer file:rounded-l-[5px] file:rounded-r-none file:border-0 file:px-3 file:py-2 file:outline-none focus:outline-none disabled:pointer-events-none file:disabled:pointer-events-none",
-      "file: file: file:hover: file:disabled: file:border-solid file:border-gray-300 file:bg-gray-50 file:text-gray-500 file:hover:bg-gray-100",
+      "file:border-solid file:border-gray-300 file:bg-gray-50 file:text-gray-500 file:hover:bg-gray-100",
       "file:[border-inline-end-width:1px] file:[margin-inline-end:0.75rem]",
-      "file:disabled: file:disabled:bg-gray-100 file:disabled:text-gray-500",
+      "file:disabled:bg-gray-100 file:disabled:text-gray-500",
     ],
     // focus
     focusInput,
@@ -115,7 +114,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
                 // text
                 "text-gray-400",
                 // hover
-                "hover: hover:text-gray-500",
+                "hover:text-gray-500",
                 focusRing,
               )}
               type="button"

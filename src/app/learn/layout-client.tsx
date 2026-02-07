@@ -1,7 +1,7 @@
 "use client";
 
 import { ResourceSection } from "@/lib/resources";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { siteConfig } from "../siteConfig";
@@ -139,7 +139,7 @@ export default function ResourcesLayoutClient({
                           >
                             <span>{section.name}</span>
                             <svg
-                              className={classNames(
+                              className={cx(
                                 "h-4 w-4 transform transition-transform text-slate-400",
                                 collapsedSections.has(section.name)
                                   ? "rotate-0"
@@ -161,7 +161,7 @@ export default function ResourcesLayoutClient({
                                 <li key={item.href}>
                                   <a
                                     href={`${siteConfig.baseLinks.resources}/${item.href}`}
-                                    className={classNames(
+                                    className={cx(
                                       pathname.endsWith(item.href)
                                         ? "bg-indigo-50/50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 font-semibold"
                                         : "text-slate-600 dark:text-slate-400 hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:text-indigo-600 dark:hover:text-indigo-400",
@@ -190,7 +190,7 @@ export default function ResourcesLayoutClient({
             )}
 
             <main
-              className={classNames(
+              className={cx(
                 "relative flex flex-col",
                 isLearnIndex
                   ? "w-full px-0"
@@ -198,7 +198,7 @@ export default function ResourcesLayoutClient({
               )}
             >
               <div
-                className={classNames(
+                className={cx(
                   "mx-auto w-full",
                   isLearnIndex ? "" : "max-w-none",
                 )}

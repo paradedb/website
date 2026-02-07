@@ -2,7 +2,7 @@
 
 import * as Tabs from "@radix-ui/react-tabs";
 import { ReactNode } from "react";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 import { Badge } from "./Badge";
 
 interface Feature {
@@ -46,7 +46,7 @@ export default function SearchFeaturesClient({
                   <Tabs.Trigger
                     key={feature.value}
                     value={feature.value}
-                    className={classNames(
+                    className={cx(
                       "group relative flex-shrink-0 sm:flex-1 flex items-center justify-center gap-3 px-6 sm:px-6 py-4 sm:py-5 text-sm font-medium transition-all outline-none border-b-2 border-transparent whitespace-nowrap",
                       "data-[state=active]:border-indigo-600 data-[state=active]:text-indigo-900 dark:data-[state=active]:text-white",
                       "text-gray-500 hover:text-indigo-700 dark:hover:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-900",

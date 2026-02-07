@@ -15,7 +15,7 @@ import { DatabaseLogo } from "./DatabaseLogo";
 import { Button } from "../Button";
 import { ThemeToggle } from "./ThemeToggle";
 import { usePathname } from "next/navigation";
-import classNames from "classnames";
+import { cx } from "@/lib/utils";
 
 const navigation = {
   // ... (rest of navigation object remains the same)
@@ -50,14 +50,14 @@ export default function Footer() {
 
   return (
     <div
-      className={classNames(
+      className={cx(
         "w-full relative opacity-0 animate-fade-in delay-2200",
         isHomePage ? "bg-indigo-600" : "bg-white dark:bg-slate-950",
       )}
     >
       <footer
         id="footer"
-        className={classNames(
+        className={cx(
           "relative w-full overflow-hidden max-w-[1440px] mx-auto",
           isHomePage
             ? "bg-indigo-600 text-white"
@@ -65,13 +65,13 @@ export default function Footer() {
         )}
       >
         <div
-          className={classNames(
+          className={cx(
             "absolute inset-y-0 left-4 md:left-12 w-px z-30 pointer-events-none",
             isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
           )}
         />
         <div
-          className={classNames(
+          className={cx(
             "absolute inset-y-0 right-4 md:right-12 w-px z-30 pointer-events-none",
             isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
           )}
@@ -79,7 +79,7 @@ export default function Footer() {
 
         {/* Horizontal Line constrained to vertical lines */}
         <div
-          className={classNames(
+          className={cx(
             "absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px z-30",
             isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
           )}
@@ -91,7 +91,7 @@ export default function Footer() {
               <div className="space-y-8">
                 <Link href={siteConfig.baseLinks.home}>
                   <DatabaseLogo
-                    className={classNames(
+                    className={cx(
                       "w-32 transition-colors",
                       isHomePage
                         ? "brightness-0 invert"
@@ -100,7 +100,7 @@ export default function Footer() {
                   />
                 </Link>
                 <p
-                  className={classNames(
+                  className={cx(
                     "mt-4 md:mt-8 text-sm leading-6 max-w-xs",
                     isHomePage
                       ? "text-indigo-50"
@@ -112,7 +112,7 @@ export default function Footer() {
                 <div className="md:pt-4">
                   <Button
                     asChild
-                    className={classNames(
+                    className={cx(
                       "h-10 rounded-none shadow-none font-semibold",
                       isHomePage
                         ? "bg-white text-indigo-600 ring-2 ring-white/50 border-1 border-white hover:bg-indigo-50"
@@ -130,7 +130,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2 gap-8">
                   <div>
                     <h3
-                      className={classNames(
+                      className={cx(
                         "text-sm font-semibold leading-6",
                         isHomePage
                           ? "text-white"
@@ -143,7 +143,7 @@ export default function Footer() {
                       {navigation.company.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
-                            className={classNames(
+                            className={cx(
                               "flex rounded-md text-sm transition",
                               isHomePage
                                 ? "text-indigo-100 hover:text-white"
@@ -158,7 +158,7 @@ export default function Footer() {
                             <span>{item.name}</span>
                             {item.external && (
                               <div
-                                className={classNames(
+                                className={cx(
                                   "ml-1 aspect-square size-3 rounded-full p-px",
                                   isHomePage
                                     ? "bg-white/10"
@@ -167,7 +167,7 @@ export default function Footer() {
                               >
                                 <RiArrowRightUpLine
                                   aria-hidden="true"
-                                  className={classNames(
+                                  className={cx(
                                     "size-full shrink-0",
                                     isHomePage
                                       ? "text-white"
@@ -183,7 +183,7 @@ export default function Footer() {
                   </div>
                   <div>
                     <h3
-                      className={classNames(
+                      className={cx(
                         "text-sm font-semibold leading-6",
                         isHomePage
                           ? "text-white"
@@ -196,7 +196,7 @@ export default function Footer() {
                       {navigation.connect.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
-                            className={classNames(
+                            className={cx(
                               "flex rounded-md text-sm transition",
                               isHomePage
                                 ? "text-indigo-100 hover:text-white"
@@ -211,7 +211,7 @@ export default function Footer() {
                             <span>{item.name}</span>
                             {item.external && (
                               <div
-                                className={classNames(
+                                className={cx(
                                   "ml-0.5 aspect-square size-3 rounded-full p-px",
                                   isHomePage
                                     ? "bg-white/10"
@@ -220,7 +220,7 @@ export default function Footer() {
                               >
                                 <RiArrowRightUpLine
                                   aria-hidden="true"
-                                  className={classNames(
+                                  className={cx(
                                     "size-full shrink-0",
                                     isHomePage
                                       ? "text-white"
@@ -238,7 +238,7 @@ export default function Footer() {
                 <div className="grid grid-cols-2 gap-8">
                   <div>
                     <h3
-                      className={classNames(
+                      className={cx(
                         "text-sm font-semibold leading-6",
                         isHomePage
                           ? "text-white"
@@ -251,7 +251,7 @@ export default function Footer() {
                       {navigation.resources.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
-                            className={classNames(
+                            className={cx(
                               "flex rounded-md text-sm transition",
                               isHomePage
                                 ? "text-indigo-100 hover:text-white"
@@ -266,7 +266,7 @@ export default function Footer() {
                             <span>{item.name}</span>
                             {item.external && (
                               <div
-                                className={classNames(
+                                className={cx(
                                   "ml-1 aspect-square size-3 rounded-full p-px",
                                   isHomePage
                                     ? "bg-white/10"
@@ -275,7 +275,7 @@ export default function Footer() {
                               >
                                 <RiArrowRightUpLine
                                   aria-hidden="true"
-                                  className={classNames(
+                                  className={cx(
                                     "size-full shrink-0",
                                     isHomePage
                                       ? "text-white"
@@ -291,7 +291,7 @@ export default function Footer() {
                   </div>
                   <div>
                     <h3
-                      className={classNames(
+                      className={cx(
                         "text-sm font-semibold leading-6",
                         isHomePage
                           ? "text-white"
@@ -304,7 +304,7 @@ export default function Footer() {
                       {navigation.legal.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
-                            className={classNames(
+                            className={cx(
                               "flex rounded-md text-sm transition",
                               isHomePage
                                 ? "text-indigo-100 hover:text-white"
@@ -319,7 +319,7 @@ export default function Footer() {
                             <span>{item.name}</span>
                             {item.external && (
                               <div
-                                className={classNames(
+                                className={cx(
                                   "ml-1 aspect-square size-3 rounded-full p-px",
                                   isHomePage
                                     ? "bg-white/10"
@@ -328,7 +328,7 @@ export default function Footer() {
                               >
                                 <RiArrowRightUpLine
                                   aria-hidden="true"
-                                  className={classNames(
+                                  className={cx(
                                     "size-full shrink-0",
                                     isHomePage
                                       ? "text-white"
@@ -349,14 +349,14 @@ export default function Footer() {
 
           <div className="relative mt-16 md:mt-24">
             <div
-              className={classNames(
+              className={cx(
                 "absolute top-0 left-0 right-0 h-px z-30",
                 isHomePage ? "bg-white/20" : "bg-slate-200 dark:bg-slate-900",
               )}
             />
             <div className="w-full px-6 md:px-12 pt-8 sm:pt-4 pb-4 flex flex-col items-center justify-between gap-6 sm:flex-row">
               <p
-                className={classNames(
+                className={cx(
                   "text-sm leading-5",
                   isHomePage
                     ? "text-indigo-100"
