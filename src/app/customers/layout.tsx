@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { getCaseStudyLinks } from "@/lib/blog";
+import CustomersLayoutClient from "./layout-client";
 import { siteConfig } from "../siteConfig";
 
 export const metadata: Metadata = {
@@ -25,10 +27,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function CustomersLayout({
+export default async function CustomersLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const caseStudies = await getCaseStudyLinks();
+
+  return (
+    <CustomersLayoutClient caseStudies={caseStudies}>
+      {children}
+    </CustomersLayoutClient>
+  );
 }
