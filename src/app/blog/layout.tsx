@@ -1,31 +1,14 @@
 import type { Metadata } from "next";
 import { getBlogLinksByCategory } from "@/lib/blog";
+import { generateSectionMetadata } from "@/lib/blog-metadata";
 import BlogLayoutClient from "./layout-client";
-import { siteConfig } from "../siteConfig";
 
-export const metadata: Metadata = {
-  title: "Blog", // → becomes "Blog | ParadeDB" via global template
+export const metadata: Metadata = generateSectionMetadata({
+  title: "Blog",
   description:
     "Engineering deep dives, product and company announcements, and guides from the ParadeDB team.",
-  openGraph: {
-    title: "Blog",
-    description:
-      "Engineering deep dives, product and company announcements, and guides from the ParadeDB team.",
-    url: `${siteConfig.url}/blog`,
-    siteName: siteConfig.name,
-    type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Blog",
-    description:
-      "Engineering deep dives, product and company announcements, and guides from the ParadeDB team.",
-    creator: "@paradedb",
-  },
-  alternates: {
-    canonical: `${siteConfig.url}/blog`,
-  },
-};
+  path: "/blog",
+});
 
 export default async function BlogLayout({
   children,

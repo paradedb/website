@@ -20,6 +20,11 @@ import { cx } from "@/lib/utils";
 const navigation = {
   // ... (rest of navigation object remains the same)
   company: [
+    {
+      name: "Customers",
+      href: siteConfig.baseLinks.customers,
+      external: false,
+    },
     { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
     { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
     { name: "Documentation", href: documentation.BASE, external: true },

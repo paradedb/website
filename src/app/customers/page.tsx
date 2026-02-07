@@ -1,3 +1,4 @@
+import { ContentListHeader } from "@/components/ContentListHeader";
 import { getCaseStudyLinks } from "@/lib/blog";
 import { siteConfig } from "../siteConfig";
 import Link from "next/link";
@@ -8,23 +9,17 @@ export default async function Customers() {
 
   return (
     <div className="w-full">
-      <div className="relative border-b border-slate-200 dark:border-slate-900">
-        <div className="pt-8 pb-10 md:py-12 px-4 md:px-12 relative">
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-slate-900 dark:text-white mb-4">
-            Customers
-          </h1>
-          <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl">
-            See how companies use ParadeDB to power search in Postgres.
-          </p>
-        </div>
-      </div>
+      <ContentListHeader
+        title="Customers"
+        subtitle="See how companies use ParadeDB to power search in Postgres."
+      />
 
       <div className="md:py-12 px-4 md:px-12">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {caseStudies.map((post) => (
             <Link
               key={post.href}
-              href={`${siteConfig.baseLinks.blog}/${post.href}`}
+              href={`${siteConfig.baseLinks.customers}/${post.href}`}
               className="group"
             >
               <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-lg">
