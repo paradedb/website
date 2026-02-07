@@ -1,9 +1,9 @@
 import Footer from "@/components/ui/Footer";
 import { Navigation } from "@/components/ui/Navbar";
-import { GoogleTagManager } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
+import CookieConsentBanner from "@/components/CookieConsentBanner";
 import { siteConfig } from "./siteConfig";
 
 import "highlight.js/styles/github-dark.css";
@@ -67,7 +67,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <GoogleTagManager gtmId="GTM-KMGRG564" />
       <body
         className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-background text-foreground selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-700 dark:selection:text-indigo-300`}
       >
@@ -81,6 +80,7 @@ export default function RootLayout({
           </div>
           {children}
           <Footer />
+          <CookieConsentBanner />
         </ThemeProvider>
       </body>
     </html>
