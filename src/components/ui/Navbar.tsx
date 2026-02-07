@@ -278,6 +278,17 @@ export function Navigation() {
               </li>
               <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
+                  href={siteConfig.baseLinks.customers}
+                  className={cx(
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Customers
+                </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
                   href={siteConfig.baseLinks.resources}
                   className={cx(
                     "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
