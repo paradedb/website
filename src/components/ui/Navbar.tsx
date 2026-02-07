@@ -98,19 +98,18 @@ export function Navigation() {
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
+                  target="_blank"
                   className={cx(
                     "px-2 py-1 transition-colors",
-                    pathname.startsWith(siteConfig.baseLinks.blog)
-                      ? "text-indigo-600 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white/90 hover:text-white"
-                        : isHomePage && open
-                          ? "text-slate-900 dark:text-white"
-                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                    isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                        ? "text-slate-900 dark:text-white"
+                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
-                  href={siteConfig.baseLinks.blog}
+                  href={documentation.BASE}
                 >
-                  Blog
+                  Documentation
                 </Link>
                 <Link
                   className={cx(
@@ -128,18 +127,19 @@ export function Navigation() {
                   Customers
                 </Link>
                 <Link
-                  target="_blank"
                   className={cx(
                     "px-2 py-1 transition-colors",
-                    isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : isHomePage && open
-                        ? "text-slate-900 dark:text-white"
-                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                    pathname.startsWith(siteConfig.baseLinks.blog)
+                      ? "text-indigo-600 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
-                  href={documentation.BASE}
+                  href={siteConfig.baseLinks.blog}
                 >
-                  Documentation
+                  Blog
                 </Link>
                 <Link
                   className={cx(
@@ -256,17 +256,6 @@ export function Navigation() {
               </li>
               <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
-                  href={siteConfig.baseLinks.blog}
-                  className={cx(
-                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
-                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
-                  )}
-                >
-                  Blog
-                </Link>
-              </li>
-              <li onClick={() => setOpen(false)} className="w-full px-6">
-                <Link
                   href={siteConfig.baseLinks.customers}
                   className={cx(
                     "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
@@ -274,6 +263,17 @@ export function Navigation() {
                   )}
                 >
                   Customers
+                </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  href={siteConfig.baseLinks.blog}
+                  className={cx(
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Blog
                 </Link>
               </li>
               <li onClick={() => setOpen(false)} className="w-full px-6">
