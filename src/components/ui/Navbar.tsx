@@ -222,10 +222,7 @@ export function Navigation() {
             </div>
           </div>
           <nav
-            className={cx(
-              "flex flex-col md:hidden",
-              open ? "pb-8" : "hidden",
-            )}
+            className={cx("flex flex-col md:hidden", open ? "pb-8" : "hidden")}
           >
             <ul className="flex flex-col font-semibold w-full">
               <li onClick={() => setOpen(false)} className="w-full px-6">
