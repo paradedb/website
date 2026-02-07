@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import { documentation, social } from "@/lib/links";
 import Link from "next/link";
@@ -7,17 +5,13 @@ import { Button } from "../Button";
 import LogoCloud from "./LogoCloud";
 import { siteConfig } from "@/app/siteConfig";
 import { HeroVisual } from "./HeroVisual";
-import { useTheme } from "next-themes";
+import { DarkModeOverlay } from "./DarkModeOverlay";
 
 export default function HeroV3() {
-  const { resolvedTheme } = useTheme();
-
   return (
     <div className="w-full bg-indigo-600 relative">
       {/* Alpha overlay for dark mode */}
-      {resolvedTheme === "dark" && (
-        <div className="absolute inset-0 bg-black/5 pointer-events-none" />
-      )}
+      <DarkModeOverlay />
 
       <section
         aria-labelledby="hero-title"

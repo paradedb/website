@@ -1,5 +1,3 @@
-"use client";
-
 import { Badge } from "./Badge";
 import { Button } from "../Button";
 import Link from "next/link";
