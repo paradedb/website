@@ -28,7 +28,7 @@ const navigation = {
   connect: [
     { name: "Slack Community", href: social.SLACK, external: true },
     { name: "GitHub", href: github.REPO, external: true },
-    { name: "Twitter", href: social.TWITTER, external: true },
+    { name: "Twitter / X", href: social.TWITTER, external: true },
     { name: "LinkedIn", href: social.LINKEDIN, external: true },
     { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
   ],
@@ -36,7 +36,7 @@ const navigation = {
     { name: "Careers", href: company.CAREERS, external: true },
     { name: "Contact", href: social.CALENDLY, external: true },
     { name: "Sales", href: social.CALENDLY, external: true },
-    { name: "Support", href: email.SUPPORT, external: false },
+    { name: "Support", href: email.SUPPORT, external: true },
   ],
   legal: [
     { name: "Privacy", href: legal.PRIVACY, external: false },
