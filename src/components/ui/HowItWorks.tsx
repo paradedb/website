@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { cx } from "@/lib/utils";
 import { RiSearchLine, RiFlashlightFill } from "@remixicon/react";
 import PostgresLogo from "./PostgresLogo";
@@ -582,9 +582,26 @@ export default function HowItWorks() {
   const [activeTab, setActiveTab] = useState<"managed" | "selfHosted">(
     "managed",
   );
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsVisible(entry.isIntersecting),
+      { rootMargin: "100px" },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-1400 bg-transparent">
+    <div
+      ref={sectionRef}
+      className="w-full relative opacity-0 animate-fade-in delay-1400 bg-transparent"
+    >
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         {/* Global Vertical Lines */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
@@ -644,7 +661,9 @@ export default function HowItWorks() {
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
                 <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
                   <div className="w-full">
-                    <AnimationDemo isActive={activeTab === "managed"} />
+                    <AnimationDemo
+                      isActive={activeTab === "managed" && isVisible}
+                    />
                   </div>
                 </div>
               </AccordionItem>
@@ -664,7 +683,9 @@ export default function HowItWorks() {
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
                 <div className="flex lg:hidden justify-center w-full mt-4 mb-8">
                   <div className="w-full">
-                    <SelfHostedDemo isActive={activeTab === "selfHosted"} />
+                    <SelfHostedDemo
+                      isActive={activeTab === "selfHosted" && isVisible}
+                    />
                   </div>
                 </div>
               </AccordionItem>
@@ -727,11 +748,11 @@ export default function HowItWorks() {
             <div className="sticky top-24 h-[640px] w-full overflow-hidden">
               {activeTab === "managed" ? (
                 <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
-                  <AnimationDemo />
+                  <AnimationDemo isActive={isVisible} />
                 </div>
               ) : (
                 <div className="w-full h-full animate-in fade-in zoom-in-95 duration-500">
-                  <SelfHostedDemo />
+                  <SelfHostedDemo isActive={isVisible} />
                 </div>
               )}
             </div>

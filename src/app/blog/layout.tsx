@@ -3,6 +3,8 @@ import { getBlogLinksByCategory } from "@/lib/blog";
 import { generateSectionMetadata } from "@/lib/blog-metadata";
 import BlogLayoutClient from "./layout-client";
 
+import "highlight.js/styles/github-dark.css";
+
 export const metadata: Metadata = generateSectionMetadata({
   title: "Blog",
   description:
