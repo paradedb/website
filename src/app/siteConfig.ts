@@ -8,6 +8,7 @@ export const siteConfig = {
     home: "/",
     pricing: "/pricing",
     blog: "/blog",
+    customers: "/customers",
     resources: "/learn",
   },
 };

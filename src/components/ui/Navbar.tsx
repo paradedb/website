@@ -113,6 +113,21 @@ export function Navigation() {
                   Blog
                 </Link>
                 <Link
+                  className={cx(
+                    "px-2 py-1 transition-colors",
+                    pathname.startsWith(siteConfig.baseLinks.customers)
+                      ? "text-indigo-600 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                  )}
+                  href={siteConfig.baseLinks.customers}
+                >
+                  Customers
+                </Link>
+                <Link
                   target="_blank"
                   className={cx(
                     "px-2 py-1 transition-colors",
@@ -248,6 +263,17 @@ export function Navigation() {
                   )}
                 >
                   Blog
+                </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  href={siteConfig.baseLinks.customers}
+                  className={cx(
+                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Customers
                 </Link>
               </li>
               <li onClick={() => setOpen(false)} className="w-full px-6">
