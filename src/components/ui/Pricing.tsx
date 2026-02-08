@@ -68,7 +68,7 @@ const PricingCard = ({
 
 export default function Pricing() {
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-2000 bg-white dark:bg-slate-950">
+    <div className="w-full relative bg-white dark:bg-slate-950">
       <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         {/* Main Layout Vertical Borders */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />

@@ -7,7 +7,7 @@ import { documentation, github } from "@/lib/links";
 
 export default function CommunityProof() {
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-1800 bg-transparent">
+    <div className="w-full relative bg-transparent">
       <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />

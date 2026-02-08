@@ -56,7 +56,7 @@ export default function Footer() {
   return (
     <div
       className={cx(
-        "w-full relative opacity-0 animate-fade-in delay-2200",
+        "w-full relative",
         isHomePage ? "bg-indigo-600" : "bg-white dark:bg-slate-950",
       )}
     >

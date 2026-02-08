@@ -22,7 +22,7 @@ export default function SearchFeaturesClient({
   features: Feature[];
 }) {
   return (
-    <div className="w-full relative opacity-0 animate-fade-in delay-1200 bg-white dark:bg-slate-950">
+    <div className="w-full relative bg-white dark:bg-slate-950">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         <section className="py-12 md:py-20 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
           <Badge className="mb-6">Features</Badge>

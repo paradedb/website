@@ -1,11 +1,10 @@
-import dynamic from "next/dynamic";
 import HeroV3 from "@/components/ui/HeroV3";
 import SearchFeatures from "@/components/ui/SearchFeatures";
 import SocialProof from "@/components/ui/SocialProof";
 import CommunityProof from "@/components/ui/CommunityProof";
 import Pricing from "@/components/ui/Pricing";
-const HowItWorks = dynamic(() => import("@/components/ui/HowItWorks"));
-const PreFooterCta = dynamic(() => import("@/components/ui/PreFooterCta"));
+import HowItWorks from "@/components/ui/HowItWorks";
+import PreFooterCta from "@/components/ui/PreFooterCta";
 
 export default async function Home() {
   return (

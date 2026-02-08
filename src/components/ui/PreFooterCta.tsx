@@ -85,7 +85,7 @@ export default function PreFooterCta() {
           </div>
 
           {/* Dither wave upright at the bottom, matching hero style */}
-          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden opacity-0 animate-fade-in delay-300">
+          <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden">
             {mounted && (
               <div className="absolute inset-0 pointer-events-none">
                 <Dithering
