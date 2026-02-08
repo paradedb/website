@@ -29,4 +29,4 @@ Chart components use vendored utilities from [`Tremor Raw`](https://raw.tremor.s
 
 ## License
 
-Apache-2.0
+Apache-2.0 License - see [LICENSE](LICENSE) for details.
