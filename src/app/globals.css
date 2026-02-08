@@ -358,33 +358,6 @@
     animation-delay: 700ms;
   }
 
-  .delay-1000 {
-    animation-delay: 1000ms;
-  }
-
-  .delay-\[1000ms\] {
-    animation-delay: 1000ms;
-  }
-
-  .delay-\[1100ms\] {
-    animation-delay: 1100ms;
-  }
-
-  .delay-\[1200ms\] {
-    animation-delay: 1200ms;
-  }
-
-  .delay-\[1300ms\] {
-    animation-delay: 1300ms;
-  }
-
-  .delay-\[1400ms\] {
-    animation-delay: 1400ms;
-  }
-
-  .delay-\[1500ms\] {
-    animation-delay: 1500ms;
-  }
 }
 
 @layer base {
@@ -827,6 +800,10 @@ a {
 }
 
 @layer utilities {
+  .animate-hero-wrapper {
+    animation: fade-in 500ms ease-out both;
+  }
+
   .animate-navbar {
     animation:
       fade-in 1000ms ease-out both,
@@ -874,26 +851,5 @@ a {
   }
   .delay-700 {
     animation-delay: 700ms;
-  }
-  .delay-1000 {
-    animation-delay: 1000ms;
-  }
-  .delay-1200 {
-    animation-delay: 1200ms;
-  }
-  .delay-1400 {
-    animation-delay: 1400ms;
-  }
-  .delay-1600 {
-    animation-delay: 1600ms;
-  }
-  .delay-1800 {
-    animation-delay: 1800ms;
-  }
-  .delay-2000 {
-    animation-delay: 2000ms;
-  }
-  .delay-2200 {
-    animation-delay: 2200ms;
   }
 }

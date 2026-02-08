@@ -9,7 +9,7 @@ import { DarkModeOverlay } from "./DarkModeOverlay";
 
 export default function HeroV3() {
   return (
-    <div className="w-full bg-indigo-600 relative">
+    <div className="w-full bg-indigo-600 relative opacity-0 animate-hero-wrapper">
       {/* Alpha overlay for dark mode */}
       <DarkModeOverlay />
 
@@ -40,7 +40,6 @@ export default function HeroV3() {
               <h1
                 id="hero-title"
                 className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl opacity-0 animate-hero-title"
-                style={{ animationDuration: "1000ms" }}
               >
                 Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
                 <span className="text-white/90">Search</span> for Postgres
