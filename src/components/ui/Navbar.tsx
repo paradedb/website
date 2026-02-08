@@ -74,7 +74,7 @@ export function Navigation() {
     >
       <header
         className={cx(
-          "z-50 flex transform-gpu opacity-0 animate-navbar justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
+          "z-50 flex transform-gpu justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
           "left-4 md:left-12 right-4 md:right-12 absolute border-b",
           isHomePage
             ? "border-white/20"

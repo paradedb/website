@@ -800,43 +800,8 @@ a {
 }
 
 @layer utilities {
-  .animate-navbar {
-    animation:
-      fade-in 1000ms ease-out both,
-      slide-in-from-top 1000ms ease-out both;
-  }
-
-  .animate-hero-pill {
-    animation:
-      fade-in 1000ms ease-out both,
-      slide-in-from-bottom 1000ms ease-out both;
-    animation-delay: 300ms;
-  }
-
-  .animate-hero-title {
-    animation:
-      fade-in 1000ms ease-out both,
-      slide-in-from-bottom-large 1000ms ease-out both;
-    animation-delay: 500ms;
-  }
-
-  .animate-hero-content {
-    animation:
-      fade-in 1000ms ease-out both,
-      slide-in-from-bottom-large 1000ms ease-out both;
-    animation-delay: 700ms;
-  }
-
-  .animate-logo {
-    animation: fade-in 1000ms ease-out both;
-  }
-
   .animate-fade-in {
     animation: fade-in 1000ms ease-out both;
-  }
-
-  .fill-mode-both {
-    animation-fill-mode: both;
   }
 
   .delay-300 {
@@ -844,8 +809,5 @@ a {
   }
   .delay-500 {
     animation-delay: 500ms;
-  }
-  .delay-700 {
-    animation-delay: 700ms;
   }
 }

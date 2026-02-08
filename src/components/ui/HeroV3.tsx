@@ -30,7 +30,7 @@ export default function HeroV3() {
             <div className="flex flex-col items-center w-full relative z-20">
               <Link
                 href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
-                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border border-white/20 bg-white/10 px-1 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20 opacity-0 animate-hero-pill"
+                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border border-white/20 bg-white/10 px-1 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20"
               >
                 <span className="mr-2 flex h-2 w-2">
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
@@ -39,8 +39,7 @@ export default function HeroV3() {
               </Link>
               <h1
                 id="hero-title"
-                className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl opacity-0 animate-hero-title"
-                style={{ animationDuration: "1000ms" }}
+                className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl"
               >
                 Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
                 <span className="text-white/90">Search</span> for Postgres
@@ -48,7 +47,7 @@ export default function HeroV3() {
             </div>
 
             {/* Bottom Content - In front of everything */}
-            <div className="relative z-20 mt-auto flex flex-col items-center opacity-0 animate-hero-content">
+            <div className="relative z-20 mt-auto flex flex-col items-center">
               <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4">
                 You want better search, not the burden of Elasticsearch.{" "}
                 <br className="hidden sm:block" /> ParadeDB is the modern
