@@ -557,8 +557,8 @@ a {
 /* Mintlify Callout icon vertical alignment to first text line */
 .mt-callout-icon-wrapper {
   display: flex;
-  align-items: flex-start !important;
-  padding-top: 18px; /* nudges icon down to align with text baseline */
+  align-items: center !important;
+  padding-top: 0;
   flex-shrink: 0;
 }
 
@@ -585,6 +585,7 @@ a {
   background-color: #f8fcff !important;
   border-color: #e5e7eb !important;
   color: #0b4a6e !important;
+  align-items: center;
   gap: 0.75rem;
 }
 
@@ -616,6 +617,49 @@ a {
 .mt-callout b {
   color: #0b4a6e !important;
   font-weight: 600;
+}
+
+.dark .mt-callout,
+.dark .mt-callout-info,
+.dark .mt-callout-note,
+.dark .mt-callout-warning,
+.dark .mt-callout-success,
+.dark .mt-callout-danger,
+.dark .mt-callout-tip {
+  --callout-bg: #1e1b4b !important;
+  --callout-border: #4338ca !important;
+  --callout-text: #a5b4fc !important;
+  --callout-icon-color: #818cf8 !important;
+  background: linear-gradient(120deg, #1e1b4b 0%, #312e81 100%) !important;
+  border-color: #4338ca !important;
+  color: #a5b4fc !important;
+}
+
+.dark .mt-callout-body,
+.dark .mt-callout p,
+.dark .mt-callout span,
+.dark .mt-callout div,
+.dark .mt-callout li {
+  color: #a5b4fc !important;
+}
+
+.dark .mt-callout a {
+  color: #c7d2fe !important;
+}
+
+.dark .mt-callout a:hover {
+  color: #e0e7ff !important;
+}
+
+.dark .mt-callout strong,
+.dark .mt-callout b {
+  color: #c7d2fe !important;
+}
+
+.dark .mt-callout :not(pre) > code {
+  background-color: #312e81 !important;
+  color: #c7d2fe !important;
+  border: 1px solid #4338ca !important;
 }
 
 .text-scanlines {
