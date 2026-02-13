@@ -9,7 +9,7 @@ import { HeroImage } from "@/components/HeroImage";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-In databases, *Top K* means “give me the *K* best rows, ordered by some column or value.” Commonly than means “the most recent rows,” “the highest scores,” or “the largest values.”
+In databases, _Top K_ means “give me the _K_ best rows, ordered by some column or value.” Commonly than means “the most recent rows,” “the highest scores,” or “the largest values.”
 
 It feels like a basic problem that Postgres should solve. After all, can’t we just create an index? Yet in many production Postgres deployments, Top K is deceptively hard. This post examines where Postgres’ Top K optimizations shine, where they falter, and why search libraries like Lucene/Tantivy or databases like ParadeDB that specialize in Top K take a fundamentally different approach.
 
@@ -46,7 +46,13 @@ CREATE INDEX ON benchmark_logs (timestamp);
 B-Trees are ideal for Top K queries because they are sorted structures, so the retrieval of Top K results is trivially O(K). Easy and done, right? Our query drops to an impressive 5ms.
 
 <Note>
-Under the hood, a B-tree is a hierarchy of Postgres pages (think of pages as nodes). Upper pages guide navigation, while the actual indexed values live in the leaf pages at the bottom in sorted order. To answer “give me the top K largest rows,” Postgres jumps from the root down to the leaf with the largest value and then walks backward through the linked leaves, reading entries until it has collected K rows. Because a B-tree is a balanced tree, the path from the root to any leaf is short and predictable.
+  Under the hood, a B-tree is a hierarchy of Postgres pages (think of pages as
+  nodes). Upper pages guide navigation, while the actual indexed values live in
+  the leaf pages at the bottom in sorted order. To answer “give me the top K
+  largest rows,” Postgres jumps from the root down to the leaf with the largest
+  value and then walks backward through the linked leaves, reading entries until
+  it has collected K rows. Because a B-tree is a balanced tree, the path from
+  the root to any leaf is short and predictable.
 </Note>
 
 ## But Wait, We Need Filters Too
@@ -207,7 +213,7 @@ Current score threshold: 8.5
 
 For queries that are ordered by a relevance score (i.e. a BM25 score), Tantivy goes one step further with an optimization called Block WAND. Conceptually, this means skipping the evaluation of entire chunks of documents unless they have a mathematical possibility of entering the Top K.
 
-Block WAND works by maintaining an upper bound on how much score any document within a  block of document IDs could possibly achieve. As the engine fills its Top K heap, it establishes a threshold: the lowest score currently in the heap. Before evaluating a block, the engine checks the block’s maximum score. If that maximum is below the threshold, the entire block is skipped without scoring individual documents.
+Block WAND works by maintaining an upper bound on how much score any document within a block of document IDs could possibly achieve. As the engine fills its Top K heap, it establishes a threshold: the lowest score currently in the heap. Before evaluating a block, the engine checks the block’s maximum score. If that maximum is below the threshold, the entire block is skipped without scoring individual documents.
 
 ## A Recent Improvement to ParadeDB's Top K Performance
 
@@ -219,13 +225,11 @@ WHERE message === 'research' AND country === 'Canada'
 ORDER BY severity, timestamp LIMIT 10;
 ```
 
-<Note>
-`===` is ParadeDB's term search operator.
-</Note>
+<Note>`===` is ParadeDB's term search operator.</Note>
 
 This improvement was thanks to an upstream change in [Tantivy](https://github.com/quickwit-oss/tantivy), which changes how doc ID iterators are advanced when executing a boolean query.
 
-Previously, in order to determine if a doc ID was present in all clauses of a boolean `AND`, Tantivy had to advance all iterators to the *next* matching document using `seek` .  For instance, consider two doc ID iterators:
+Previously, in order to determine if a doc ID was present in all clauses of a boolean `AND`, Tantivy had to advance all iterators to the _next_ matching document using `seek` . For instance, consider two doc ID iterators:
 
 ```ini
 Iterator A (country = 'United States'): [100, 101, 102, 103, ...]
@@ -251,4 +255,3 @@ And please don’t hesitate to [give our open-source project](https://github.com
 <hr />
 
 1. Based on our [benchmarks](https://github.com/paradedb/paradedb/tree/main/benchmarks) of 100M rows, published [here](https://paradedb.github.io/paradedb/benchmarks/). See the `logs (100M rows)` results.
-
