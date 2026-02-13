@@ -226,8 +226,7 @@ ORDER BY severity, timestamp LIMIT 10;
 ```
 
 <Note>
-  `===` is ParadeDB's [term
-  search](https://docs.paradedb.com/documentation/full-text/term) operator.
+  `===` is ParadeDB's [term search](https://docs.paradedb.com/documentation/full-text/term) operator.
 </Note>
 
 This improvement was thanks to an upstream change in [Tantivy](https://github.com/quickwit-oss/tantivy), which changes how doc ID iterators are advanced when executing a boolean query.
