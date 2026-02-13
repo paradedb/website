@@ -31,10 +31,8 @@ export default async function Code({
   return (
     <div className={cx("relative w-full", className)}>
       {copy && (
-        <div className="absolute right-0 h-full">
-          <div className="absolute right-3 top-3">
-            <CopyToClipboard code={code} />
-          </div>
+        <div className="absolute right-3 top-3 z-10">
+          <CopyToClipboard code={code} />
         </div>
       )}
       <div
