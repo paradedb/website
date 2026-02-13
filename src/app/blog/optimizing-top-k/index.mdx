@@ -1,0 +1,254 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+import heroImage from "./images/hero.svg";
+import { HeroImage } from "@/components/HeroImage";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+In databases, *Top K* means “give me the *K* best rows, ordered by some column or value.” Commonly than means “the most recent rows,” “the highest scores,” or “the largest values.”
+
+It feels like a basic problem that Postgres should solve. After all, can’t we just create an index? Yet in many production Postgres deployments, Top K is deceptively hard. This post examines where Postgres’ Top K optimizations shine, where they falter, and why search libraries like Lucene/Tantivy or databases like ParadeDB that specialize in Top K take a fundamentally different approach.
+
+## Postgres' Solution: A Sorted B-Tree
+
+Let’s begin with a single table containing 100M rows.
+
+```sql
+CREATE TABLE benchmark_logs (
+    id SERIAL PRIMARY KEY,
+    message TEXT,
+    country VARCHAR(255),
+    severity INTEGER,
+    timestamp TIMESTAMP,
+    metadata JSONB
+);
+```
+
+We want to return the top 10 most recent rows by `timestamp`:
+
+```sql
+SELECT *
+FROM benchmark_logs
+ORDER BY timestamp DESC
+LIMIT 10;
+```
+
+Without an index, this query takes 15 seconds. To accelerate it, we can create a B-Tree index on `timestamp`.
+
+```sql
+CREATE INDEX ON benchmark_logs (timestamp);
+```
+
+B-Trees are ideal for Top K queries because they are sorted structures, so the retrieval of Top K results is trivially O(K). Easy and done, right? Our query drops to an impressive 5ms.
+
+<Note>
+Under the hood, a B-tree is a hierarchy of Postgres pages (think of pages as nodes). Upper pages guide navigation, while the actual indexed values live in the leaf pages at the bottom in sorted order. To answer “give me the top K largest rows,” Postgres jumps from the root down to the leaf with the largest value and then walks backward through the linked leaves, reading entries until it has collected K rows. Because a B-tree is a balanced tree, the path from the root to any leaf is short and predictable.
+</Note>
+
+## But Wait, We Need Filters Too
+
+There’s a constraint hiding in the example above: it only works when the index fully matches the query shape. The moment you add filters that aren’t part of the index, things get complicated.
+
+Consider a more realistic query with the filter `WHERE severity < 3`:
+
+```sql
+SELECT *
+FROM benchmark_logs
+WHERE severity < 3
+ORDER BY timestamp DESC
+LIMIT 10;
+```
+
+Now Postgres faces a dilemma. It can use the B-tree index on `timestamp` to get rows in the right `timestamp` order, but it has no way to skip directly to “US” rows. It must walk the index one entry at a time, checking the country for each row and discarding most of them. In the worst case, this means walking the entire index. Or it can scan rows that match `severity < 3` first, but then it loses the ordering and must sort the results afterward.
+
+Either way, Postgres ends up scanning far more rows than K, doing extra work to filter or sort, and suddenly we’re back to queries taking up to 15 seconds in the worst case.
+
+## Sorting and Filtering = Combinatorial Explosion
+
+A natural response is to add a composite B-tree index on both `severity` and `timestamp`.
+
+```sql
+CREATE INDEX ON benchmark_logs (severity, timestamp);
+```
+
+A composite B-tree is still a sorted tree, but now entries are ordered first by `severity`, and then by `timestamp` within each `severity` value. This works great for this query shape: Postgres can jump directly to the portion of the tree matching `severity < 3` and then walk the timestamps in descending order to get the top K rows.
+
+The problem is that this solution doesn’t generalize. For instance, imagine we now also want to filter by `country`:
+
+```sql
+SELECT *
+FROM benchmark_logs
+WHERE country = 'United States'
+AND severity < 3
+ORDER BY timestamp DESC
+LIMIT 10;
+```
+
+Or, if we change the sort columns:
+
+```sql
+SELECT *
+FROM benchmark_logs
+WHERE country = 'United States'
+ORDER BY severity ASC, timestamp DESC
+LIMIT 10;
+```
+
+Supporting every realistic combination of filters and sort orders requires a growing set of indexes. These indexes cause storage bloat, slower writes, and query plans that are hard to reason about.
+
+## Postgres’ Top K Falls Apart with Search
+
+Everything so far assumed that filters are simple predicates that can be expressed as equality or range conditions inside a B-tree. Full text search breaks that assumption.
+
+Consider a query that combines Postgres’ native text search (which performs token matching instead of full string matching) with a range filter and ordering:
+
+```sql
+SELECT *
+FROM benchmark_logs
+WHERE
+    to_tsvector('english', message) @@ plainto_tsquery('english', 'query string')
+AND severity < 3
+ORDER BY timestamp DESC
+LIMIT 10;
+```
+
+This query may look similar to the earlier examples: filter rows, then return the top 10 by timestamp. But internally, Postgres has no single structure that can satisfy all of these constraints at once.
+
+Postgres can use a GIN (generalized inverted) index for the `tsvector` predicate and a B-tree for ordering or numeric filters. But because GIN does not preserve ordering and Postgres cannot combine ordering guarantees across different indexes, the planner must decompose the query into phases:
+
+1. Use the GIN index to produce a (potentially large) set of matching row IDs
+2. Fetch those rows from the “heap” (i.e. the underlying table storage)
+3. Apply additional filters like `severity < 3`
+4. Sort the surviving rows
+5. Return the top 10 results
+
+If the result set produced by GIN is large, the repeated heap fetches in Step 2 become very expensive.
+
+## Search Databases Think About Top K Differently
+
+The problem with Postgres B-trees is that they force you to pre-commit to a query shape, which is at odds with the idea of ad-hoc Top K queries.
+
+Search databases like ParadeDB take a fundamentally different approach. Rather than requiring many tailored indexes, they use a single compound index that contains all fields required for Top K filtering and sorting.
+Unlike a B-tree, this index is not necessarily sorted. This means that the goal isn't to beat a B-tree optimized for one specific query — it's to make all
+shapes of Top K queries, including those with text search and scoring, reasonably fast with low variance across different shapes<sup>1</sup>.
+
+Additionally, because the sort keys are not known up front, we must accept that large candidate sets are inevitable. The optimization target becomes making the actual work of scanning and filtering extremely cheap, and to prune aggressively when selecting the Top K to avoid extra work.
+
+## The Basic Data Structures: Inverted Index and Columnar Arrays
+
+ParadeDB's index, like most search indexes, is built on two core structures. The first is an inverted index, which maps each term (i.e. “research”) to a “posting list” — a sorted list of document IDs that contain that term.
+
+```ini
+Documents                     Inverted Index
+[1]: "us research"            research → [1, 2]
+[2]: "ca research"            us       → [1, 3]
+[3]: "us database"            ca       → [2]
+                              database → [3]
+```
+
+The second is a columnar layout, which stores a single field in a contiguous, compact array. Columnar arrays are well known for accelerating analytical queries, but they are also a natural fit for Top K queries because they allow for cheap, cache-friendly lookups.
+
+```ini
+Row Store
++------------------------------+
+|  id | country | severity     |
+| [1] | [US]    | [2]          |
+| [2] | [CA]    | [9]          |
+| [3] | [US]    | [1]          |
++------------------------------+
+
+Column Store
++------------------------------+
+| id:       [1][2][3]          |
+| country:  [US][CA][US]       |
+| severity: [2][9][1]          |
++------------------------------+
+```
+
+In ParadeDB, these structures are provided by [Tantivy](https://github.com/quickwit-oss/tantivy), the Rust-based search library inspired by Lucene.
+
+## A Compound Index Eliminates Expensive Row Lookups
+
+In Postgres, every indexed row contains a pointer to where the row lives in the table. If a Top K filter cannot be fully answered by the index, Postgres must follow that pointer and materialize the entire row from the underlying table storage. This operation is expensive and prone to cache misses when performed for millions of candidates.
+
+ParadeDB solves this by storing all searchable, filterable, and sortable fields inside a single index. Every indexed row is assigned a compact internal `u32` identifier called a document ID, and every data structure in the index refers to that same ID.
+
+This document ID design is very efficient for boolean queries (i.e. multiple `WHERE` clauses). For example, consider the boolean `WHERE country = 'United States' AND severity < 3`. The text condition produces a stream of document IDs from the inverted index, while the range filter becomes a direct lookup into a columnar array at that same ID. Evaluating the `AND` condition reduces to intersecting `u32` streams without materializing any intermediate rows.
+
+## Columnar Arrays Make Filters Cheap
+
+Because candidates produced by the text search index may not be in sequential order, columnar arrays must have true O(1) random access. In Tantivy’s columnar format, this is achieved by setting the row ID of a columnar value to its ordinal (i.e. its position in the array). So accessing a value from a column to evaluate a filter is simply:
+
+```rust
+value = column[row_id]
+```
+
+Additionally, columns are annotated with minimum and maximum value metadata. This allows range filters like `severity < 3` to skip entire columns that cannot satisfy the filter. For columns that do overlap the range, values are processed in batches instead of individually. By applying comparisons to vectors of values instead of scalars, the engine can use SIMD instructions to evaluate many values in a single CPU operation.
+
+## Block WAND Enables Early Pruning
+
+```ini
+Current score threshold: 8.5
+
++-------------------+   max_score=12 → Evaluate
+| Block A           |
+| docs: [1 2 3 4]   |
++-------------------+
+
++-------------------+   max_score=7 → Skip
+| Block B           |
+| docs: [5 6 7 8]   |
++-------------------+
+```
+
+For queries that are ordered by a relevance score (i.e. a BM25 score), Tantivy goes one step further with an optimization called Block WAND. Conceptually, this means skipping the evaluation of entire chunks of documents unless they have a mathematical possibility of entering the Top K.
+
+Block WAND works by maintaining an upper bound on how much score any document within a  block of document IDs could possibly achieve. As the engine fills its Top K heap, it establishes a threshold: the lowest score currently in the heap. Before evaluating a block, the engine checks the block’s maximum score. If that maximum is below the threshold, the entire block is skipped without scoring individual documents.
+
+## A Recent Improvement to ParadeDB's Top K Performance
+
+In `0.21.0` Top K performance improved by up to 30% for certain benchmarked Top K queries. For instance, the following Top K query dropped from 90ms to 70ms over a 100M row dataset:
+
+```sql
+SELECT * FROM benchmark_logs
+WHERE message === 'research' AND country === 'Canada'
+ORDER BY severity, timestamp LIMIT 10;
+```
+
+<Note>
+`===` is ParadeDB's term search operator.
+</Note>
+
+This improvement was thanks to an upstream change in [Tantivy](https://github.com/quickwit-oss/tantivy), which changes how doc ID iterators are advanced when executing a boolean query.
+
+Previously, in order to determine if a doc ID was present in all clauses of a boolean `AND`, Tantivy had to advance all iterators to the *next* matching document using `seek` .  For instance, consider two doc ID iterators:
+
+```ini
+Iterator A (country = 'United States'): [100, 101, 102, 103, ...]
+Iterator B (country = 'Canada'): [50, 10000, ...]
+```
+
+Let’s assume iterator `B` is currently positioned on `50`, and iterator `A` is positioned on `100`. In order to determine if `100` is in `B`, we have to advance `B` to `10000` . This can be an expensive operation because advancing to the next match may require scanning several blocks containing values between `50` and `10000`.
+
+With this change, Tantivy can instead perform a cheaper membership check for a specific doc ID without actually advancing the iterator.
+
+## Wrapping Up
+
+Postgres' Top K approach is a bit like all or nothing — the happy path is nearly instant, but the worst case can take seconds or even minutes.
+ParadeDB, on the other hand, is designed to make any Top K query reasonably fast as long as all filters and sort keys are present in the index.
+
+Moving forward, we still see meaningful headroom to optimize our Top K performance by pruning work earlier in the execution pipeline. One direction is index partitioning and segment-level ordering, where data is physically grouped or sorted by commonly queried dimensions (such as time ranges or coarse score buckets). With this layout, entire segments whose maximum possible score or ordering value cannot beat the current Top K threshold can be skipped.
+
+We're also currently working on optimizing Top K joins — i.e. "search and filter over multiple tables, join the results, and return the Top K."
+If this kind of work excites you, [we’re hiring](https://paradedb.notion.site/?pvs=143) for engineers who enjoy solving these kinds of database internals problems.
+
+And please don’t hesitate to [give our open-source project](https://github.com/paradedb/paradedb) a star!
+
+<hr />
+
+1. Based on our [benchmarks](https://github.com/paradedb/paradedb/tree/main/benchmarks) of 100M rows, published [here](https://paradedb.github.io/paradedb/benchmarks/). See the `logs (100M rows)` results.
+

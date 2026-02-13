@@ -41,19 +41,25 @@ export async function getAllPosts(): Promise<BlogPostMetadata[]> {
       const mdxPath = path.join(contentDirectory, slug, "index.mdx");
 
       if (fs.existsSync(metadataPath) && fs.existsSync(mdxPath)) {
-        const metadataContents = fs.readFileSync(metadataPath, "utf8");
-        const metadata = JSON.parse(metadataContents);
+        try {
+          const metadataContents = fs.readFileSync(metadataPath, "utf8");
+          const metadata = JSON.parse(metadataContents);
 
-        posts.push({
-          slug,
-          title: metadata.title,
-          date: metadata.date,
-          author: metadata.author,
-          description: metadata.description,
-          categories: metadata.categories,
-          image: metadata.image,
-          canonical: metadata.canonical,
-        });
+          posts.push({
+            slug,
+            title: metadata.title,
+            date: metadata.date,
+            author: metadata.author,
+            description: metadata.description,
+            categories: metadata.categories,
+            image: metadata.image,
+            canonical: metadata.canonical,
+          });
+        } catch {
+          // During local editing, files can be transiently invalid while being saved.
+          // Skip this post for the current render instead of failing the whole blog layout.
+          continue;
+        }
       }
     }
   }
@@ -72,21 +78,25 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
     return null;
   }
 
-  const metadataContents = fs.readFileSync(metadataPath, "utf8");
-  const metadata = JSON.parse(metadataContents);
-  const content = fs.readFileSync(mdxPath, "utf8");
+  try {
+    const metadataContents = fs.readFileSync(metadataPath, "utf8");
+    const metadata = JSON.parse(metadataContents);
+    const content = fs.readFileSync(mdxPath, "utf8");
 
-  return {
-    slug,
-    title: metadata.title,
-    date: metadata.date,
-    author: metadata.author,
-    description: metadata.description,
-    categories: metadata.categories,
-    image: metadata.image,
-    canonical: metadata.canonical,
-    content,
-  };
+    return {
+      slug,
+      title: metadata.title,
+      date: metadata.date,
+      author: metadata.author,
+      description: metadata.description,
+      categories: metadata.categories,
+      image: metadata.image,
+      canonical: metadata.canonical,
+      content,
+    };
+  } catch {
+    return null;
+  }
 }
 
 export async function getAllSlugs(): Promise<string[]> {
