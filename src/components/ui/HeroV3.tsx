@@ -7,6 +7,7 @@ import { siteConfig } from "@/app/siteConfig";
 import { HeroVisual } from "./HeroVisual";
 import { DarkModeOverlay } from "./DarkModeOverlay";
 import Code from "@/components/Code";
+import { CopyButton } from "@/components/CopyButton";
 
 const dockerCode = `docker run --name paradedb -e POSTGRES_PASSWORD=password paradedb/paradedb
 docker exec -it paradedb psql -U postgres`;
@@ -82,11 +83,15 @@ export default async function HeroV3() {
                 </Button>
               </div>
               <div className="w-full max-w-2xl mb-2 sm:mb-4">
-                <div className="rounded-lg bg-white/10 backdrop-blur-sm border border-white/20 overflow-hidden">
+                <div className="bg-white/10 backdrop-blur-sm border border-white/20 overflow-hidden">
+                  <div className="h-6 w-full bg-diagonal-hatch-white border-b border-white/20 bg-indigo-700/20 opacity-60 flex items-center justify-end px-1">
+                    <CopyButton code={dockerCode} />
+                  </div>
                   <Code
                     code={dockerCode}
                     lang="bash"
-                    className="text-left [&_pre]:!bg-transparent [&_.shiki]:!bg-transparent [&>div>div]:!bg-transparent dark:[&_pre]:!bg-transparent dark:[&_.shiki]:!bg-transparent dark:[&>div>div]:!bg-transparent [&_code]:text-white/90 [&_.line]:text-white/90 [&_span]:!text-white/90 [&>div:first-child]:!top-auto [&>div:first-child]:!bottom-1 [&>div:first-child]:!right-1"
+                    copy={false}
+                    className="text-left [&_pre]:!bg-transparent [&_.shiki]:!bg-transparent [&>div>div]:!bg-transparent dark:[&_pre]:!bg-transparent dark:[&_.shiki]:!bg-transparent dark:[&>div>div]:!bg-transparent [&_code]:text-white/90 [&_.line]:text-white/90 [&_span]:!text-white/90"
                   />
                 </div>
               </div>
