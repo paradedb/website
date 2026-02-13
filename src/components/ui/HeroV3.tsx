@@ -91,7 +91,7 @@ export default async function HeroV3() {
                     code={dockerCode}
                     lang="bash"
                     copy={false}
-                    className="text-left [&_pre]:!bg-transparent [&_.shiki]:!bg-transparent [&>div>div]:!bg-transparent dark:[&_pre]:!bg-transparent dark:[&_.shiki]:!bg-transparent dark:[&>div>div]:!bg-transparent [&_code]:text-white/90 [&_.line]:text-white/90 [&_span]:!text-white/90"
+                    className="text-left [&_pre]:!bg-transparent [&_.shiki]:!bg-transparent [&>div>div]:!bg-transparent dark:[&_pre]:!bg-transparent dark:[&_.shiki]:!bg-transparent dark:[&>div>div]:!bg-transparent [&_code]:text-white/90 [&_.line]:text-white/90 [&_span]:!text-white/90 [&_.line::before]:!text-white/60"
                   />
                 </div>
               </div>

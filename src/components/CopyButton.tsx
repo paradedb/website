@@ -21,7 +21,7 @@ export function CopyButton({ code }: { code: string }) {
   return (
     <button
       onClick={copyToClipboard}
-      className="text-sm text-white font-mono font-medium hover:text-white/80 transition-colors"
+      className="text-xs text-white font-mono font-medium hover:text-white/80 transition-colors"
     >
       [{copied ? "copied" : "copy"}]
     </button>
