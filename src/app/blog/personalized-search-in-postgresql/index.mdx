@@ -91,7 +91,6 @@ CREATE TABLE users (
     -- A vector representing the user's taste
     embedding vector(384)
 );
-
 ```
 
 Movies get a ParadeDB BM25 index.
@@ -100,7 +99,6 @@ Movies get a ParadeDB BM25 index.
 CREATE INDEX movies_search_idx ON movies
   USING bm25 (movie_id, title, year, imdb_id, tmdb_id, genres)
   WITH (key_field='movie_id');
-
 ```
 
 We use pgvector’s vector column to store movie and users embeddings. Movie embeddings can be created by calling OpenRouter or Huggingface APIs. For the demo we used `sentence-transformers/all-minilm-l12-v2` model.
@@ -125,7 +123,6 @@ UPDATE users SET embedding = (
     WHERE r.user_id = users.user_id
     AND (r.rating >= 4.0 OR r.rating < 3.0) -- Ignore mediocre ratings
 );
-
 ```
 
 This is the power of "In-Database AI". You don't need a separate pipeline to keep user profiles up to date. You can update them transactionally as ratings come in.
@@ -165,7 +162,6 @@ normalization AS (
         NULLIF(MAX(bm25_score) OVER() - MIN(bm25_score) OVER(), 0) as normalized_bm25
     FROM first_pass_retrieval
 ),
-
 ```
 
 ### Step 3: The Personalization (Smart)
@@ -185,7 +181,6 @@ personalized_ranking AS (
     CROSS JOIN users u
     WHERE u.user_id = 12345 -- The Current User
 )
-
 ```
 
 ### Step 4: The Fusion (Final Polish)
@@ -199,7 +194,6 @@ SELECT
 FROM personalized_ranking
 ORDER BY final_score DESC
 LIMIT 10;
-
 ```
 
 This composable approach allows you to tune the knobs. Want personalization to matter more? Change the `0.5` weight. Want to filter candidates differently? Change the `first_pass` CTE. It's just SQL.
