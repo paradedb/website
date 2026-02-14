@@ -1,13 +1,17 @@
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
-import { documentation, social } from "@/lib/links";
+import { documentation } from "@/lib/links";
 import Link from "next/link";
 import { Button } from "../Button";
 import LogoCloud from "./LogoCloud";
 import { siteConfig } from "@/app/siteConfig";
 import { HeroVisual } from "./HeroVisual";
 import { DarkModeOverlay } from "./DarkModeOverlay";
+import Code from "@/components/Code";
+import CopyToClipboard from "@/components/CopyToClipboard";
 
-export default function HeroV3() {
+const installCommand = `curl paradedb.com | sh`;
+
+export default async function HeroV3() {
   return (
     <div className="w-full bg-indigo-600 relative opacity-0 animate-hero-wrapper">
       {/* Alpha overlay for dark mode */}
@@ -53,10 +57,10 @@ export default function HeroV3() {
                 <br className="hidden sm:block" /> ParadeDB is the modern
                 Elastic alternative built as a Postgres extension.
               </p>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-8 sm:mb-12 sm:px-0">
+              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center mb-6 sm:mb-8 sm:px-0">
                 <Button className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none">
-                  <Link target="_blank" href={social.CALENDLY}>
-                    Book a Demo
+                  <Link target="_blank" href={documentation.GETTING_STARTED}>
+                    Get Started
                   </Link>
                 </Button>
                 <Button
@@ -76,6 +80,19 @@ export default function HeroV3() {
                     />
                   </Link>
                 </Button>
+              </div>
+              <div className="w-full max-w-lg mb-2 sm:mb-4">
+                <div className="relative bg-indigo-950/70 backdrop-blur-md border border-white/10 overflow-hidden rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.3),inset_0_1px_0_rgba(255,255,255,0.08)]">
+                  <div className="absolute right-3 top-3 z-10">
+                    <CopyToClipboard code={installCommand} />
+                  </div>
+                  <Code
+                    code={installCommand}
+                    lang="bash"
+                    copy={false}
+                    className="text-left [&_pre]:!bg-transparent [&_.shiki]:!bg-transparent [&>div>div]:!bg-transparent dark:[&_pre]:!bg-transparent dark:[&_.shiki]:!bg-transparent dark:[&>div>div]:!bg-transparent [&_code]:text-white [&_.line]:text-white [&_span]:!text-white [&_.line::before]:!hidden [&_pre]:!py-5 [&_pre]:!pl-5 [&_pre]:!pr-12"
+                  />
+                </div>
               </div>
             </div>
           </div>
