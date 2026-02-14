@@ -19,7 +19,7 @@ echo "Connecting to ParadeDB..."
 docker exec -it "$CONTAINER_NAME" psql -U postgres
 `;
 
-export default async function proxy(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const userAgent = request.headers.get("user-agent") || "";
 
   if (userAgent.startsWith("curl/")) {
@@ -30,6 +30,8 @@ export default async function proxy(request: NextRequest) {
       },
     });
   }
+
+  return NextResponse.next();
 }
 
 export const config = {
