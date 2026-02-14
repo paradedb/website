@@ -7,6 +7,24 @@ CONTAINER_NAME="paradedb"
 IMAGE="paradedb/paradedb"
 PASSWORD="password"
 
+spinner() {
+  MSG="$1"
+  PID="$2"
+  i=0
+  while kill -0 "$PID" 2>/dev/null; do
+    dots=$(( i % 3 + 1 ))
+    case $dots in
+      1) printf "\\r%s.  " "$MSG" ;;
+      2) printf "\\r%s.. " "$MSG" ;;
+      3) printf "\\r%s..." "$MSG" ;;
+    esac
+    i=$(( i + 1 ))
+    sleep 0.4
+  done
+  wait "$PID"
+  printf "\\r%s... done!\\n" "$MSG"
+}
+
 if ! command -v docker > /dev/null 2>&1; then
   echo "Error: Docker is not installed. Install it from https://docs.docker.com/get-docker/" >&2
   exit 1
@@ -17,20 +35,15 @@ if ! docker info > /dev/null 2>&1; then
   exit 1
 fi
 
-echo "Starting ParadeDB..."
-if ! docker run -d --name "$CONTAINER_NAME" -e POSTGRES_PASSWORD="$PASSWORD" "$IMAGE" > /dev/null 2>&1; then
-  echo "Error: Failed to start container. A container named '$CONTAINER_NAME' may already exist." >&2
-  echo "Run 'docker rm -f $CONTAINER_NAME' to remove it, then try again." >&2
-  exit 1
-fi
+docker run -d --name "$CONTAINER_NAME" -e POSTGRES_PASSWORD="$PASSWORD" "$IMAGE" > /dev/null 2>&1 &
+spinner "Starting ParadeDB" $!
 
-echo "Waiting for PostgreSQL to be ready..."
 until docker exec "$CONTAINER_NAME" pg_isready -U postgres > /dev/null 2>&1; do
   sleep 1
 done
 
-echo "Connecting to ParadeDB..."
-docker exec -it "$CONTAINER_NAME" psql -U postgres
+echo ""
+docker exec -it "$CONTAINER_NAME" psql -U postgres </dev/tty
 `;
 
 export function proxy(request: NextRequest) {
