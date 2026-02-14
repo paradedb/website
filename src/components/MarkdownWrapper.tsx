@@ -1,9 +1,11 @@
 "use client";
 
+import { MDXProvider } from "@mdx-js/react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import TableOfContents from "@/components/TableOfContents";
 import ArticleActions from "@/components/ArticleActions";
+import PreBlock from "@/components/mdx/PreBlock";
 
 interface MarkdownWrapperProps {
   children: React.ReactNode;
@@ -32,7 +34,7 @@ export default function MarkdownWrapper({ children }: MarkdownWrapperProps) {
   return (
     <div className="flex items-start gap-8 w-full px-0 pt-0 opacity-0 animate-fade-in delay-500">
       <article className="prose dark:prose-invert flex-1 min-w-0 pt-0 max-w-none">
-        {children}
+        <MDXProvider components={{ pre: PreBlock }}>{children}</MDXProvider>
       </article>
       {contentLoaded && (
         <aside className="hidden xl:block w-64 shrink-0 sticky top-8">
