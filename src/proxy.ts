@@ -1,13 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readFile } from "fs/promises";
+import { join } from "path";
 
 export default async function proxy(request: NextRequest) {
   const userAgent = request.headers.get("user-agent") || "";
 
   if (userAgent.startsWith("curl/")) {
-    const response = await fetch(
-      "https://raw.githubusercontent.com/paradedb/paradedb/refs/heads/main/install.sh",
+    const scriptContent = await readFile(
+      join(process.cwd(), "public", "install.sh"),
+      "utf-8",
     );
-    const scriptContent = await response.text();
     return new NextResponse(scriptContent, {
       status: 200,
       headers: {
