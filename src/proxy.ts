@@ -4,8 +4,10 @@ const INSTALL_SCRIPT = `#!/bin/sh
 set -e
 
 CONTAINER_NAME="paradedb"
-IMAGE="paradedb/paradedb"
-PASSWORD="password"
+IMAGE="paradedb/paradedb:latest"
+USER="myuser"
+PASSWORD="mypassword"
+DATABASE="paradedb"
 
 spinner() {
   MSG="$1"
@@ -35,15 +37,27 @@ if ! docker info > /dev/null 2>&1; then
   exit 1
 fi
 
-docker run -d --name "$CONTAINER_NAME" -e POSTGRES_PASSWORD="$PASSWORD" "$IMAGE" > /dev/null 2>&1 &
-spinner "Starting ParadeDB" $!
+if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
+  if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
+    echo "ParadeDB is already running."
+  else
+    docker start "$CONTAINER_NAME" > /dev/null 2>&1
+    echo "Starting existing ParadeDB container..."
+  fi
+else
+  docker pull "$IMAGE" > /dev/null 2>&1 &
+  spinner "Pulling ParadeDB" $!
 
-until docker exec "$CONTAINER_NAME" pg_isready -U postgres > /dev/null 2>&1; do
+  docker run -d --name "$CONTAINER_NAME" -e POSTGRES_USER="$USER" -e POSTGRES_PASSWORD="$PASSWORD" -e POSTGRES_DB="$DATABASE" -v paradedb_data:/var/lib/postgresql/ -p 5432:5432 "$IMAGE" > /dev/null 2>&1 &
+  spinner "Starting ParadeDB" $!
+fi
+
+until docker exec "$CONTAINER_NAME" pg_isready -U "$USER" -d "$DATABASE" > /dev/null 2>&1; do
   sleep 1
 done
 
 echo ""
-docker exec -it "$CONTAINER_NAME" psql -U postgres </dev/tty
+docker exec -it "$CONTAINER_NAME" psql -U "$USER" -d "$DATABASE" </dev/tty
 `;
 
 export function proxy(request: NextRequest) {
