@@ -1,4 +1,3 @@
-import CodeBlockEnhancer from "@/components/CodeBlockEnhancer";
 import { cx } from "@/lib/utils";
 
 interface ContentLayoutShellProps {
@@ -61,7 +60,6 @@ export function ContentLayoutShell({
             <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-t border-x border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
           </div>
         </section>
-        <CodeBlockEnhancer />
       </div>
     </div>
   );

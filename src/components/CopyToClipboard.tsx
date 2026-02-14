@@ -1,21 +1,15 @@
 "use client";
 
 import { RiCheckLine, RiFileCopyLine } from "@remixicon/react";
-import React from "react";
+import copy from "copy-to-clipboard";
+import { useState } from "react";
 
 export default function CopyToClipboard({ code }: { code: string }) {
-  const [copied, setCopied] = React.useState(false);
-  const copyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(code);
-      setCopied(true);
-    } catch (error) {
-      console.error("Error copying to clipboard", error);
-    } finally {
-      setTimeout(() => {
-        setCopied(false);
-      }, 1500);
-    }
+  const [copied, setCopied] = useState(false);
+  const copyToClipboard = () => {
+    copy(code);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 1500);
   };
 
   return (
