@@ -37,6 +37,8 @@ if ! docker info > /dev/null 2>&1; then
   exit 1
 fi
 
+echo ""
+
 if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
     echo "ParadeDB is already running."
@@ -46,13 +48,17 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   fi
 else
   docker pull "$IMAGE" > /dev/null 2>&1 &
-  spinner "Pulling ParadeDB" $!
+  spinner "Pulling ParadeDB Docker image" $!
 
   docker run -d --name "$CONTAINER_NAME" -e POSTGRES_USER="$USER" -e POSTGRES_PASSWORD="$PASSWORD" -e POSTGRES_DB="$DATABASE" -v paradedb_data:/var/lib/postgresql/ -p 5432:5432 "$IMAGE" > /dev/null 2>&1 &
   spinner "Starting ParadeDB" $!
 fi
 
 until docker exec "$CONTAINER_NAME" pg_isready -U "$USER" -d "$DATABASE" > /dev/null 2>&1; do
+  sleep 1
+done
+
+until docker exec "$CONTAINER_NAME" psql -U "$USER" -d "$DATABASE" -c "SELECT 1" > /dev/null 2>&1; do
   sleep 1
 done
 
