@@ -9,7 +9,7 @@ import { DarkModeOverlay } from "./DarkModeOverlay";
 import Code from "@/components/Code";
 import CopyToClipboard from "@/components/CopyToClipboard";
 
-const installCommand = `curl paradedb.com | sh`;
+const installCommand = `curl https://paradedb.com | sh`;
 
 export default async function HeroV3() {
   return (
