@@ -163,7 +163,6 @@ facets | {
        |         { "key": "story",   "doc_count": 2   }
        |     ],
        | }
-
 ```
 
 The faceting information is added alongside the search query using a JSONB column. JSON is the perfect wrapper for the faceting information: it's structured, self-contained, and easy to parse on the client. Today we attach this to all rows, but in the future, we may optimize this further by returning the facet JSON only on the first row instead of duplicating it.

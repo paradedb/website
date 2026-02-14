@@ -56,7 +56,6 @@ Getting started with ParadeDB is straightforward. Once you have the extension in
 </Note>
 
 ```sql
-
 CREATE EXTENSION pg_search IF NOT EXISTS;
 
 CREATE TABLE documents (
@@ -83,7 +82,6 @@ WHERE
  title   ||| 'postgresql search'::boost(2) OR
  content ||| 'postgresql search'
 ORDER BY bm25_score DESC;
-
 ```
 
 The `|||` operator above is for match disjunction, but many other options are available. Conjunction, phrase matching, highlighting, more like this, regex queries and word proximity are all supported. ParadeDB is also smart about query optimization. It can push down `WHERE` clauses and faceting aggregations into the BM25 index where possible, making complex filtered searches much faster than traditional approaches.
@@ -201,7 +199,6 @@ JOIN documents AS m USING (id)
 GROUP BY m.id, m.content
 ORDER BY score DESC
 LIMIT 5;
-
 ```
 
 <Note>
