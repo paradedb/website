@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # ---------------------------------------------------------
 # Hi, savvy user! Thanks for reading the source.
 #
@@ -6,7 +7,7 @@
 # It will:
 #   1. Check that Docker is installed and running
 #   2. Pull the latest ParadeDB image (or reuse an existing one)
-#   3. Start a container with a persistent volume
+#   3. Start a container with a persistent volume (paradedb_data)
 #   4. Wait for Postgres to be ready
 #   5. Drop you straight into a psql session
 #
@@ -19,7 +20,7 @@ set -Eeuo pipefail
 
 CONTAINER_NAME="paradedb"
 IMAGE="paradedb/paradedb:latest"
-PG_USER="myuser"
+PG_USER="paradedb"
 PG_PASSWORD="mypassword"
 PG_DATABASE="paradedb"
 
@@ -47,7 +48,7 @@ if ! command -v docker > /dev/null 2>&1; then
 fi
 
 if ! docker info > /dev/null 2>&1; then
-  echo "Error: Docker is not running. Please start Docker and try again to install ParadeDB." >&2
+  echo "Error: Docker is not running. Please start Docker and try again." >&2
   exit 1
 fi
 
