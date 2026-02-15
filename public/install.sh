@@ -1,6 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
-
-const INSTALL_SCRIPT = `#!/bin/sh
+#!/bin/sh
 set -e
 
 CONTAINER_NAME="paradedb"
@@ -16,15 +14,15 @@ spinner() {
   while kill -0 "$PID" 2>/dev/null; do
     dots=$(( i % 3 + 1 ))
     case $dots in
-      1) printf "\\r%s.  " "$MSG" ;;
-      2) printf "\\r%s.. " "$MSG" ;;
-      3) printf "\\r%s..." "$MSG" ;;
+      1) printf "\r%s.  " "$MSG" ;;
+      2) printf "\r%s.. " "$MSG" ;;
+      3) printf "\r%s..." "$MSG" ;;
     esac
     i=$(( i + 1 ))
     sleep 0.4
   done
   wait "$PID"
-  printf "\\r%s... done!\\n" "$MSG"
+  printf "\r%s... done!\n" "$MSG"
 }
 
 if ! command -v docker > /dev/null 2>&1; then
@@ -64,23 +62,3 @@ done
 
 echo ""
 docker exec -it "$CONTAINER_NAME" psql -U "$USER" -d "$DATABASE" </dev/tty
-`;
-
-export function proxy(request: NextRequest) {
-  const userAgent = request.headers.get("user-agent") || "";
-
-  if (userAgent.startsWith("curl/")) {
-    return new NextResponse(INSTALL_SCRIPT, {
-      status: 200,
-      headers: {
-        "Content-Type": "text/plain",
-      },
-    });
-  }
-
-  return NextResponse.next();
-}
-
-export const config = {
-  matcher: "/",
-};
