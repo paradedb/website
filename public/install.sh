@@ -66,8 +66,15 @@ else
   spinner "Starting ParadeDB" $!
 fi
 
-until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" -d "$PG_DATABASE" > /dev/null 2>&1; do
-  sleep 1
+RETRIES=0
+MAX_RETRIES=10
+until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" > /dev/null 2>&1; do
+  RETRIES=$((RETRIES + 1))
+  if [ "$RETRIES" -ge "$MAX_RETRIES" ]; then
+    echo "Error: PostgreSQL did not become ready after ${MAX_RETRIES} attempts." >&2
+    exit 1
+  fi
+  sleep 3
 done
 
 docker exec -it "$CONTAINER_NAME" psql -U "$PG_USER" -d "$PG_DATABASE" </dev/tty
