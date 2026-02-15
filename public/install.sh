@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ---------------------------------------------------------
 # Hi, savvy user! Thanks for reading the source.
@@ -43,7 +43,7 @@ spinner() {
   printf "\r%s... done!\n" "$MSG"
 }
 
-echo "Welcome to ParadeDB! This script will set up a local instance of ParadeDB using Docker.
+echo "Welcome to ParadeDB! This script will set up a local instance of ParadeDB using Docker."
 
 if ! command -v docker > /dev/null 2>&1; then
   echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
