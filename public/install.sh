@@ -42,21 +42,21 @@ spinner() {
 }
 
 if ! command -v docker > /dev/null 2>&1; then
-  echo "Error: Docker is not installed. Install it from https://docs.docker.com/get-docker/" >&2
+  echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
   exit 1
 fi
 
 if ! docker info > /dev/null 2>&1; then
-  echo "Error: Docker is not running. Please start Docker and try again." >&2
+  echo "Error: Docker is not running. Please start Docker and try again to install ParadeDB." >&2
   exit 1
 fi
 
 if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    echo "ParadeDB is already running."
+    echo "ParadeDB is already running, connecting to existing container..."
   else
     docker start "$CONTAINER_NAME" > /dev/null 2>&1
-    echo "Starting existing ParadeDB container..."
+    echo "Found existing ParadeDB container, starting and connecting..."
   fi
 else
   docker pull "$IMAGE" > /dev/null 2>&1 &
