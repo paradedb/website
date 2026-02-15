@@ -13,7 +13,9 @@
 # Nothing is installed on your system outside of Docker.
 # To uninstall, just run: docker rm -f paradedb
 # ---------------------------------------------------------
-set -e
+
+# Exit on subcommand errors
+set -Eeuo pipefail
 
 CONTAINER_NAME="paradedb"
 IMAGE="paradedb/paradedb:latest"
