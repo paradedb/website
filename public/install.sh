@@ -22,7 +22,7 @@ set -Eeuo pipefail
 CONTAINER_NAME="paradedb"
 IMAGE="paradedb/paradedb:latest"
 PG_USER="paradedb"
-PG_PASSWORD="mypassword"
+PG_PASSWORD="paradedb"
 PG_DATABASE="paradedb"
 
 spinner() {
@@ -42,6 +42,8 @@ spinner() {
   wait "$PID"
   printf "\r%s... done!\n" "$MSG"
 }
+
+echo "Welcome to ParadeDB! This script will set up a local instance of ParadeDB using Docker.
 
 if ! command -v docker > /dev/null 2>&1; then
   echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
