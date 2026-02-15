@@ -1,4 +1,18 @@
 #!/bin/sh
+# ---------------------------------------------------------
+# Hi, savvy user! Thanks for reading the source.
+#
+# This script spins up ParadeDB locally via Docker.
+# It will:
+#   1. Check that Docker is installed and running
+#   2. Pull the latest ParadeDB image (or reuse an existing one)
+#   3. Start a container with a persistent volume
+#   4. Wait for Postgres to be ready
+#   5. Drop you straight into a psql session
+#
+# Nothing is installed on your system outside of Docker.
+# To uninstall, just run: docker rm -f paradedb
+# ---------------------------------------------------------
 set -e
 
 CONTAINER_NAME="paradedb"
