@@ -11,8 +11,9 @@
 #   4. Wait for Postgres to be ready
 #   5. Drop you straight into a psql session
 #
-# Nothing is installed on your system outside of Docker.
-# To uninstall, just run: docker rm -f paradedb
+# Nothing is installed on your system outside of the ParadeDB
+# Docker image and associated volume.
+# To uninstall, just run: docker rm -f paradedb && docker volume rm paradedb_data
 # ---------------------------------------------------------
 
 # Exit on subcommand errors
@@ -54,11 +55,11 @@ fi
 
 if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    echo "ParadeDB is already running, connecting to existing container..."
+    echo "ParadeDB is already running, exiting..."
   else
-    docker start "$CONTAINER_NAME" > /dev/null 2>&1
-    echo "Found existing ParadeDB container, starting and connecting..."
+    echo "Found existing ParadeDB container, exiting..."
   fi
+  exit 0
 else
   docker pull "$IMAGE" > /dev/null 2>&1 &
   spinner "Pulling ParadeDB Docker image" $!
