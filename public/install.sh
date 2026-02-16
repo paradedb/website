@@ -62,18 +62,18 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
     echo "Found existing ParadeDB container, exiting..."
   fi
   exit 0
+else
+  if docker volume ls --format '{{.Name}}' | grep -q "^paradedb_data$"; then
+    echo "Found existing paradedb_data volume, exiting..."
+    exit 0
+  fi
+
+  docker pull "$IMAGE" > /dev/null 2>&1 &
+  spinner "Pulling ParadeDB Docker image" $!
+
+  docker run -d --name "$CONTAINER_NAME" -e POSTGRES_USER="$PG_USER" -e POSTGRES_PASSWORD="$PG_PASSWORD" -e POSTGRES_DB="$PG_DATABASE" -v paradedb_data:/var/lib/postgresql/ -p 5432:5432 "$IMAGE" > /dev/null 2>&1 &
+  spinner "Starting ParadeDB" $!
 fi
-
-if docker volume ls --format '{{.Name}}' | grep -q "^paradedb_data$"; then
-  echo "Found existing paradedb_data volume, exiting..."
-  exit 0
-fi
-
-docker pull "$IMAGE" > /dev/null 2>&1 &
-spinner "Pulling ParadeDB Docker image" $!
-
-docker run -d --name "$CONTAINER_NAME" -e POSTGRES_USER="$PG_USER" -e POSTGRES_PASSWORD="$PG_PASSWORD" -e POSTGRES_DB="$PG_DATABASE" -v paradedb_data:/var/lib/postgresql/ -p 5432:5432 "$IMAGE" > /dev/null 2>&1 &
-spinner "Starting ParadeDB" $!
 
 RETRIES=0
 MAX_RETRIES=10
