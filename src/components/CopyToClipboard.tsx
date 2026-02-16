@@ -15,7 +15,7 @@ export default function CopyToClipboard({ code }: { code: string }) {
   return (
     <button
       onClick={copyToClipboard}
-      className="select-none rounded-md border border-white/10 bg-slate-900/40 dark:bg-white/20 p-1.5 transition-colors hover:bg-slate-900/60 dark:hover:bg-white/30 shadow-sm"
+      className="select-none cursor-pointer rounded-md border border-white/20 bg-transparent p-1.5 transition-colors hover:text-white/90 shadow-sm"
     >
       {!copied ? (
         <RiFileCopyLine aria-hidden="true" className="size-4 text-white" />

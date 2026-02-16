@@ -20,7 +20,7 @@ export default function PreBlock(props: React.ComponentProps<"pre">) {
       {props.children}
       <button
         onClick={handleCopy}
-        className="absolute right-3 top-3 select-none rounded-md border border-white/10 bg-slate-900/40 p-1.5 shadow-sm transition-colors hover:bg-slate-900/60 dark:bg-white/20 dark:hover:bg-white/30"
+        className="absolute right-3 top-3 select-none cursor-pointer rounded-md border border-white/20 bg-transparent p-1.5 shadow-sm transition-colors hover:text-white/90"
       >
         {!copied ? (
           <RiFileCopyLine aria-hidden="true" className="size-4 text-white" />
