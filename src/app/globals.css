@@ -461,7 +461,7 @@ pre code {
 pre code .line::before {
   content: counter(step);
   counter-increment: step;
-  @apply mr-4 inline-block w-4 text-right text-gray-600;
+  @apply mr-4 inline-block w-4 text-right text-gray-600 text-sm leading-snug align-baseline;
 }
 
 /* Inline code styling (single backticks in markdown) */
