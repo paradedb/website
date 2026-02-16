@@ -21,7 +21,7 @@ set -Eeuo pipefail
 
 CONTAINER_NAME="paradedb"
 IMAGE="paradedb/paradedb:latest"
-PG_USER="paradedb"
+PG_USER="postgres"
 PG_PASSWORD="paradedb"
 PG_DATABASE="paradedb"
 
@@ -63,6 +63,11 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   fi
   exit 0
 else
+  if docker volume ls --format '{{.Name}}' | grep -q "^paradedb_data$"; then
+    echo "Found existing paradedb_data volume, exiting..."
+    exit 0
+  fi
+
   docker pull "$IMAGE" > /dev/null 2>&1 &
   spinner "Pulling ParadeDB Docker image" $!
 
