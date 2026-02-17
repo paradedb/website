@@ -1,5 +1,5 @@
 import { ContentListHeader } from "@/components/ContentListHeader";
-import { getBlogLinks } from "@/lib/blog";
+import { getBlogLinks, getBlogSectionName } from "@/lib/blog";
 import { siteConfig } from "../siteConfig";
 import Link from "next/link";
 import BlogListImage from "./BlogListImage";
@@ -22,7 +22,7 @@ export default async function Blog() {
               href={`${siteConfig.baseLinks.blog}/${post.href}`}
               className="group"
             >
-              <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-lg">
+              <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-none">
                 <div className="relative w-full aspect-video">
                   <BlogListImage slug={post.href} title={post.name} />
                 </div>
@@ -35,11 +35,9 @@ export default async function Blog() {
                         year: "numeric",
                       })}
                     </time>
-                    {post.categories && post.categories.length > 0 && (
-                      <span className="text-xs text-indigo-500 rounded-lg bg-indigo-50 dark:bg-indigo-900/50 py-1 px-2 capitalize">
-                        {post.categories[0]}
-                      </span>
-                    )}
+                    <span className="text-xs text-indigo-500 rounded-lg bg-indigo-50 dark:bg-indigo-900/50 py-1 px-2">
+                      {getBlogSectionName(post.categories)}
+                    </span>
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200 mb-2">
                     {post.name}

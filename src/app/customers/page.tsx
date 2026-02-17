@@ -22,7 +22,7 @@ export default async function Customers() {
               href={`${siteConfig.baseLinks.customers}/${post.href}`}
               className="group"
             >
-              <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-lg">
+              <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-none">
                 <div className="relative w-full aspect-video">
                   <CustomerListImage slug={post.href} title={post.name} />
                 </div>

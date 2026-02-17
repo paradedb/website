@@ -54,7 +54,7 @@ export default function CustomerListImage({
       src={heroImage}
       alt={title}
       fill
-      className="object-cover object-top rounded-t-lg"
+      className="object-cover object-top rounded-none"
     />
   );
 }

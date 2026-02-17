@@ -173,20 +173,23 @@ const BLOG_SECTION_ORDER: Record<string, number> = {
   Announcements: 2,
 };
 
+export function getBlogSectionName(categories?: string[]): string {
+  if (categories) {
+    for (const category of categories) {
+      if (BLOG_CATEGORY_MAP[category]) {
+        return BLOG_CATEGORY_MAP[category];
+      }
+    }
+  }
+  return "Engineering";
+}
+
 export async function getBlogLinksByCategory(): Promise<BlogSection[]> {
   const links = await getBlogLinks();
   const sectionMap = new Map<string, BlogLink[]>();
 
   for (const link of links) {
-    let sectionName = "Engineering";
-    if (link.categories) {
-      for (const category of link.categories) {
-        if (BLOG_CATEGORY_MAP[category]) {
-          sectionName = BLOG_CATEGORY_MAP[category];
-          break;
-        }
-      }
-    }
+    const sectionName = getBlogSectionName(link.categories);
     if (!sectionMap.has(sectionName)) {
       sectionMap.set(sectionName, []);
     }
