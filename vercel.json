@@ -7,6 +7,22 @@
       ],
       "destination": "https://paradedb.com/blog/:path*",
       "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        { "type": "host", "value": "learn.paradedb.com" }
+      ],
+      "destination": "https://paradedb.com/learn/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        { "type": "host", "value": "customers.paradedb.com" }
+      ],
+      "destination": "https://paradedb.com/customers/:path*",
+      "permanent": true
     }
   ]
 }
