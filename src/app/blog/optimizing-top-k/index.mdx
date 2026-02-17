@@ -9,7 +9,7 @@ import { HeroImage } from "@/components/HeroImage";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-In databases, _Top K_ means “give me the _K_ best rows, ordered by some column or value.” Commonly than means “the most recent rows,” “the highest scores,” or “the largest values.”
+In databases, _Top K_ means “give me the _K_ best rows, ordered by some column or value.” Commonly that means “the most recent rows,” “the highest scores,” or “the largest values.”
 
 It feels like a basic problem that Postgres should solve. After all, can’t we just create an index? Yet in many production Postgres deployments, Top K is deceptively hard. This post examines where Postgres’ Top K optimizations shine, where they falter, and why search libraries like Lucene/Tantivy or databases like ParadeDB that specialize in Top K take a fundamentally different approach.
 
