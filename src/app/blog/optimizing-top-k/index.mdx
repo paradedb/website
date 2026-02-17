@@ -150,7 +150,7 @@ Next, we'll create a GIN index on the generated column:
 CREATE INDEX ON benchmark_logs USING gin (message_fts);
 ```
 
-Finally, we'll replace the `tsvector` expressions in our query with the generated column:
+Finally, we'll replace the `to_tsvector` expressions in our query with the generated column:
 
 ```sql
 SELECT *,
@@ -270,7 +270,7 @@ LIMIT 10;
 ```
 
 <Note>
-  `===` is ParadeDB's [match
+  `|||` is ParadeDB's [match
   disjunction](https://docs.paradedb.com/documentation/full-text/match)
   operator.
 </Note>
