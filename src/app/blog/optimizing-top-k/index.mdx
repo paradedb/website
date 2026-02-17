@@ -110,21 +110,23 @@ Supporting every realistic combination of filters and sort orders requires a gro
 
 Everything so far assumed that filters are simple predicates that can be expressed as equality or range conditions inside a B-tree. Full text search breaks that assumption.
 
-Consider a query that combines Postgres’ native text search (which performs token matching instead of full string matching) with a range filter and ordering:
+Consider a query that combines Postgres’ native text search (which performs token matching instead of full string matching) with a range filter, and then
+returns results sorted by relevance (i.e. a [TF-IDF](https://en.wikipedia.org/wiki/Tf%E2%80%93idf)-like score):
 
 ```sql
-SELECT *
-FROM benchmark_logs
-WHERE
-    to_tsvector('english', message) @@ plainto_tsquery('english', 'query string')
-AND severity < 3
-ORDER BY timestamp DESC
+SELECT *,
+       ts_rank(to_tsvector('english', message), q) AS rank
+FROM benchmark_logs,
+     plainto_tsquery('english', 'research team') AS q
+WHERE to_tsvector('english', message) @@ q
+  AND severity < 3
+ORDER BY rank DESC
 LIMIT 10;
 ```
 
-This query may look similar to the earlier examples: filter rows, then return the top 10 by timestamp. But internally, Postgres has no single structure that can satisfy all of these constraints at once.
+This query may look similar to the earlier examples: filter rows, then return the top 10 by score. But internally, Postgres has no single structure that can satisfy all of these constraints at once.
 
-Postgres can use a GIN (generalized inverted) index for the `tsvector` predicate and a B-tree for ordering or numeric filters. But because GIN does not preserve ordering and Postgres cannot combine ordering guarantees across different indexes, the planner must decompose the query into phases:
+Postgres can use a GIN (generalized inverted) index for the `tsvector` text search predicate and a B-tree for ordering or numeric filters. But because GIN does not preserve ordering and Postgres cannot combine ordering guarantees across different indexes, the planner must decompose the query into phases:
 
 1. Use the GIN index to produce a (potentially large) set of matching row IDs
 2. Fetch those rows from the “heap” (i.e. the underlying table storage)
@@ -132,15 +134,58 @@ Postgres can use a GIN (generalized inverted) index for the `tsvector` predicate
 4. Sort the surviving rows
 5. Return the top 10 results
 
-If the result set produced by GIN is large, the repeated heap fetches in Step 2 become very expensive.
+If the result set produced by GIN is large, the repeated heap fetches in Step 2 become very expensive. To demonstrate,
+let's see how well this query can perform if we optimize it as much as possible. First, we'll precompute the
+`to_tsvector` expression, which avoids some query-time overhead and helps the Postgres planner collect better statistics:
+
+```sql
+ALTER TABLE benchmark_logs
+ADD COLUMN message_fts tsvector
+GENERATED ALWAYS AS (to_tsvector('english', coalesce(message,''))) STORED;
+```
+
+Next, we'll create a GIN index on the generated column:
+
+```sql
+CREATE INDEX ON benchmark_logs USING gin (message_fts);
+```
+
+Finally, we'll replace the `tsvector` expressions in our query with the generated column:
+
+```sql
+SELECT *,
+       ts_rank(message_fts, q) AS rank
+FROM benchmark_logs,
+     plainto_tsquery('english', 'research team') AS q
+WHERE message_fts @@ q
+  AND severity < 3
+ORDER BY rank DESC
+LIMIT 10;
+```
+
+With our GIN index in place, this query still takes 37 seconds to execute, largely because the query `research team`
+returns millions of matches that must be checked against the filter and sorted.
+
+As an additional optimization, we can create a partial GIN index on the predicate `severity < 3`.
+
+```sql
+CREATE INDEX ON benchmark_logs USING gin (message_fts) WHERE severity < 3;
+```
+
+Unfortunately, the query still takes roughly the same amount of time (33 seconds) because a large candidate set is still being returned
+even with `severity < 3` predicate<sup>1</sup>. Achieving further improvements would require altering the query itself to make it more selective
+— which may or may not be feasible in real-world scenarios.
 
 ## Search Databases Think About Top K Differently
 
-The problem with Postgres B-trees is that they force you to pre-commit to a query shape, which is at odds with the idea of ad-hoc Top K queries.
+These examples highlight two problems with Top K in Postgres:
 
-Search databases like ParadeDB take a fundamentally different approach. Rather than requiring many tailored indexes, they use a single compound index that contains all fields required for Top K filtering and sorting.
+1. B-trees force you to pre-commit to a query shape, which is at odds with the idea of ad-hoc Top K queries.
+2. B-trees don't play well with text search queries/GIN indexes, especially when the Top K candidate sets are large.
+
+Search databases like ParadeDB take a fundamentally different approach. Rather than requiring many tailored indexes, we use a single compound index that contains all fields required for Top K filtering and sorting.
 Unlike a B-tree, this index is not necessarily sorted. This means that the goal isn't to beat a B-tree optimized for one specific query — it's to make all
-shapes of Top K queries, including those with text search and scoring, reasonably fast with low variance across different shapes<sup>1</sup>.
+shapes of Top K queries, including those with text search and scoring, reasonably fast with low variance across different shapes<sup>2</sup>.
 
 Additionally, because the sort keys are not known up front, we must accept that large candidate sets are inevitable. The optimization target becomes making the actual work of scanning and filtering extremely cheap, and to prune aggressively when selecting the Top K to avoid extra work.
 
@@ -187,7 +232,7 @@ This document ID design is very efficient for boolean queries (i.e. multiple `WH
 
 ## Columnar Arrays Make Filters Cheap
 
-Because candidates produced by the text search index may not be in sequential order, columnar arrays must have true O(1) random access. In Tantivy’s columnar format, this is achieved by setting the row ID of a columnar value to its ordinal (i.e. its position in the array). So accessing a value from a column to evaluate a filter is simply:
+Because candidates produced by the text search index may not be in contiguous order, columnar arrays must have true O(1) random access. In Tantivy’s columnar format, this is achieved by setting the row ID of a columnar value to its ordinal (i.e. its position in the array). So accessing a value from a column to evaluate a filter is simply:
 
 ```rust
 value = column[row_id]
@@ -215,6 +260,23 @@ For queries that are ordered by a relevance score (i.e. a BM25 score), Tantivy g
 
 Block WAND works by maintaining an upper bound on how much score any document within a block of document IDs could possibly achieve. As the engine fills its Top K heap, it establishes a threshold: the lowest score currently in the heap. Before evaluating a block, the engine checks the block’s maximum score. If that maximum is below the threshold, the entire block is skipped without scoring individual documents.
 
+In ParadeDB, the analagous query to the relevance-sorted query above would be:
+
+```sql
+SELECT *, pdb.score(id) FROM benchmark_logs
+WHERE severity < 3 AND message ||| 'research team'
+ORDER BY pdb.score(id) DESC
+LIMIT 10;
+```
+
+<Note>
+  `===` is ParadeDB's [match
+  disjunction](https://docs.paradedb.com/documentation/full-text/match)
+  operator.
+</Note>
+
+This query now drops to a very reasonable 300ms<sup>4</sup>.
+
 ## A Recent Improvement to ParadeDB's Top K Performance
 
 In `0.21.0` Top K performance improved by up to 30% for certain benchmarked Top K queries. For instance, the following Top K query dropped from 90ms to 70ms over a 100M row dataset:
@@ -226,7 +288,8 @@ ORDER BY severity, timestamp LIMIT 10;
 ```
 
 <Note>
-  `===` is ParadeDB's [term search](https://docs.paradedb.com/documentation/full-text/term) operator.
+  `===` is ParadeDB's [term
+  search](https://docs.paradedb.com/documentation/full-text/term) operator.
 </Note>
 
 This improvement was thanks to an upstream change in [Tantivy](https://github.com/quickwit-oss/tantivy), which changes how doc ID iterators are advanced when executing a boolean query.
@@ -256,4 +319,60 @@ And please don’t hesitate to [give our open-source project](https://github.com
 
 <hr />
 
-1. Based on our [benchmarks](https://github.com/paradedb/paradedb/tree/main/benchmarks) of 100M rows, published [here](https://paradedb.github.io/paradedb/benchmarks/). See the `logs (100M rows)` results.
+1. The `EXPLAIN ANALYZE` output:
+
+```sql
+                                                                               QUERY PLAN
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=22944.38..22944.41 rows=10 width=289) (actual time=33747.662..33747.667 rows=10.00 loops=1)
+   Buffers: shared hit=11851 read=5890349
+   ->  Sort  (cost=22944.38..22946.87 rows=995 width=289) (actual time=33747.660..33747.664 rows=10.00 loops=1)
+         Sort Key: (ts_rank(benchmark_logs.message_fts, '''research'' & ''team'''::tsquery)) DESC
+         Sort Method: top-N heapsort  Memory: 35kB
+         Buffers: shared hit=11851 read=5890349
+         ->  Bitmap Heap Scan on benchmark_logs  (cost=18964.29..22922.88 rows=995 width=289) (actual time=4791.339..25655.017 rows=10000000.00 loops=1)
+               Recheck Cond: ((message_fts @@ '''research'' & ''team'''::tsquery) AND (severity < 3))
+               Heap Blocks: exact=5882353
+               Buffers: shared hit=11851 read=5890349
+               ->  Bitmap Index Scan on benchmark_logs_message_fts_idx  (cost=0.00..18964.04 rows=995 width=0) (actual time=3669.878..3669.881 rows=10000000.00 loops=1)
+                     Index Cond: (message_fts @@ '''research'' & ''team'''::tsquery)
+                     Index Searches: 1
+                     Buffers: shared hit=11851 read=7996
+ Planning:
+   Buffers: shared read=2
+ Planning Time: 1.342 ms
+ Execution Time: 33813.810 ms
+(18 rows)
+```
+
+2. See our [benchmarks](https://github.com/paradedb/paradedb/tree/main/benchmarks) of 100M rows, published [here](https://paradedb.github.io/paradedb/benchmarks/). See the `logs (100M rows)` results.
+3. ParadeDB uses BM25 instead of TF-IDF for relevance scoring. BM25 is generally considered to be a more accurate relevance score.
+4. The `EXPLAIN ANALYZE` output:
+
+```sql
+    QUERY PLAN
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=1010.12..1011.35 rows=10 width=257) (actual time=297.430..298.912 rows=10.00 loops=1)
+   Buffers: shared hit=20920 read=13732
+   ->  Gather Merge  (cost=1010.12..4877326.97 rows=39806668 width=257) (actual time=297.428..298.910 rows=10.00 loops=1)
+         Workers Planned: 7
+         Workers Launched: 7
+         Buffers: shared hit=20920 read=13732
+         ->  Parallel Custom Scan (ParadeDB Scan) on benchmark_logs  (cost=10.00..10.02 rows=1 width=257) (actual time=249.554..249.605 rows=10.00 loops=8)
+               Table: benchmark_logs
+               Index: benchmark_logs_idx
+               Segment Count: 8
+               Heap Fetches: 10
+               Exec Method: TopNScanExecState
+               Scores: true
+                  TopN Order By: pdb.score() desc
+                  TopN Limit: 10
+                  Queries: 8
+               Tantivy Query: {"boolean":{"must":[{"range":{"field":"severity","lower_bound":null,"upper_bound":{"excluded":3},"is_datetime":false}},{"with_index":{"query":{"match":{"field":"message","value":"research team","tokenizer":null,"distance":null,"transposition_cost_one":null,"prefix":null,"conjunction_mode":false}}}}]}}
+               Buffers: shared hit=20856 read=13732
+ Planning:
+   Buffers: shared hit=576 read=7
+ Planning Time: 5.927 ms
+ Execution Time: 299.393 ms
+(22 rows)
+```
