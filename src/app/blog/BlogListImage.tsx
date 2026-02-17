@@ -50,7 +50,7 @@ export default function BlogListImage({ slug, title }: BlogListImageProps) {
     <HeroImage
       src={heroImage}
       alt={title}
-      className="w-full h-full object-cover object-top rounded-t-lg"
+      className="w-full h-full object-cover object-top rounded-none"
     />
   );
 }
