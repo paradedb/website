@@ -173,7 +173,9 @@ export function Navigation() {
                   <div
                     className={cx(
                       "ml-1 aspect-square size-3 rounded-full p-px",
-                      isHomePage ? "bg-white/10" : "bg-gray-100 dark:bg-slate-800",
+                      isHomePage
+                        ? "bg-white/10"
+                        : "bg-gray-100 dark:bg-slate-800",
                     )}
                   >
                     <RiArrowRightUpLine
@@ -203,7 +205,9 @@ export function Navigation() {
                   <div
                     className={cx(
                       "ml-1 aspect-square size-3 rounded-full p-px",
-                      isHomePage ? "bg-white/10" : "bg-gray-100 dark:bg-slate-800",
+                      isHomePage
+                        ? "bg-white/10"
+                        : "bg-gray-100 dark:bg-slate-800",
                     )}
                   >
                     <RiArrowRightUpLine
