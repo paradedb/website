@@ -319,7 +319,7 @@ And please don’t hesitate to [give our open-source project](https://github.com
 
 <hr />
 
-1. The `EXPLAIN ANALYZE` output:
+1. The `EXPLAIN ANALYZE` output of the Top K text search query with GIN:
 
 ```sql
                                                                                QUERY PLAN
@@ -347,7 +347,7 @@ And please don’t hesitate to [give our open-source project](https://github.com
 
 2. See our [benchmarks](https://github.com/paradedb/paradedb/tree/main/benchmarks) of 100M rows, published [here](https://paradedb.github.io/paradedb/benchmarks/). See the `logs (100M rows)` results.
 3. ParadeDB uses BM25 instead of TF-IDF for relevance scoring. BM25 is generally considered to be a more accurate relevance score.
-4. The `EXPLAIN ANALYZE` output:
+4. The `EXPLAIN ANALYZE` output of the Top K text search query with ParadeDB:
 
 ```sql
     QUERY PLAN
