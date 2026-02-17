@@ -712,31 +712,8 @@ a {
 }
 
 .text-highlight-blink {
-  position: relative;
   display: inline;
   color: #4f46e5;
-  padding: 0 2px;
-}
-
-.text-highlight-blink::before {
-  content: "";
-  position: absolute;
-  left: -2px;
-  top: 0.1em;
-  bottom: 0.1em;
-  width: 2px;
-  background-color: currentColor;
-  animation: blink 1s step-end infinite;
-}
-
-.text-highlight-blink::after {
-  content: "";
-  position: absolute;
-  inset: 0.1em -4px;
-  background: linear-gradient(to right, rgba(224, 231, 255, 0.5), transparent);
-  pointer-events: none;
-  z-index: -10;
-  border-radius: 2px;
 }
 
 .bg-grid-pattern {
@@ -788,14 +765,6 @@ a {
 
   .text-highlight-blink {
     color: #818cf8;
-  }
-
-  .text-highlight-blink::after {
-    background: linear-gradient(
-      to right,
-      rgba(129, 140, 248, 0.2),
-      transparent
-    );
   }
 
   * {

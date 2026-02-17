@@ -2,7 +2,12 @@
 
 import { siteConfig } from "@/app/siteConfig";
 import { documentation, github, social } from "@/lib/links";
-import { RiCloseLine, RiGithubFill, RiMenuLine } from "@remixicon/react";
+import {
+  RiArrowRightUpLine,
+  RiCloseLine,
+  RiGithubFill,
+  RiMenuLine,
+} from "@remixicon/react";
 import { cx } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -108,18 +113,19 @@ export function Navigation() {
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
-                  target="_blank"
                   className={cx(
                     "px-2 py-1 transition-colors",
-                    isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : isHomePage && open
-                        ? "text-slate-900 dark:text-white"
-                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                    pathname.startsWith(siteConfig.baseLinks.blog)
+                      ? "text-indigo-600 dark:text-white"
+                      : isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                   )}
-                  href={documentation.BASE}
+                  href={siteConfig.baseLinks.blog}
                 >
-                  Documentation
+                  Blog
                 </Link>
                 <Link
                   className={cx(
@@ -139,21 +145,6 @@ export function Navigation() {
                 <Link
                   className={cx(
                     "px-2 py-1 transition-colors",
-                    pathname.startsWith(siteConfig.baseLinks.blog)
-                      ? "text-indigo-600 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white/90 hover:text-white"
-                        : isHomePage && open
-                          ? "text-slate-900 dark:text-white"
-                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
-                  )}
-                  href={siteConfig.baseLinks.blog}
-                >
-                  Blog
-                </Link>
-                <Link
-                  className={cx(
-                    "px-2 py-1 transition-colors",
                     pathname.startsWith(siteConfig.baseLinks.resources)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -169,7 +160,37 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   className={cx(
-                    "px-2 py-1 transition-colors",
+                    "px-2 py-1 transition-colors inline-flex items-center gap-1",
+                    isHomePage && !open
+                      ? "text-white/90 hover:text-white"
+                      : isHomePage && open
+                        ? "text-slate-900 dark:text-white"
+                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                  )}
+                  href={documentation.BASE}
+                >
+                  Documentation
+                  <div
+                    className={cx(
+                      "ml-1 aspect-square size-3 rounded-full p-px",
+                      isHomePage ? "bg-white/10" : "bg-gray-100 dark:bg-slate-800",
+                    )}
+                  >
+                    <RiArrowRightUpLine
+                      aria-hidden="true"
+                      className={cx(
+                        "size-full shrink-0 -translate-y-px",
+                        isHomePage
+                          ? "text-white"
+                          : "text-gray-900 dark:text-slate-100",
+                      )}
+                    />
+                  </div>
+                </Link>
+                <Link
+                  target="_blank"
+                  className={cx(
+                    "px-2 py-1 transition-colors inline-flex items-center gap-1",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
@@ -179,6 +200,22 @@ export function Navigation() {
                   href={social.SLACK}
                 >
                   Community
+                  <div
+                    className={cx(
+                      "ml-1 aspect-square size-3 rounded-full p-px",
+                      isHomePage ? "bg-white/10" : "bg-gray-100 dark:bg-slate-800",
+                    )}
+                  >
+                    <RiArrowRightUpLine
+                      aria-hidden="true"
+                      className={cx(
+                        "size-full shrink-0 -translate-y-px",
+                        isHomePage
+                          ? "text-white"
+                          : "text-gray-900 dark:text-slate-100",
+                      )}
+                    />
+                  </div>
                 </Link>
               </div>
             </nav>
@@ -254,14 +291,13 @@ export function Navigation() {
             <ul className="flex flex-col font-semibold w-full">
               <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
-                  target="_blank"
-                  href={documentation.BASE}
+                  href={siteConfig.baseLinks.blog}
                   className={cx(
                     "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
-                  Documentation
+                  Blog
                 </Link>
               </li>
               <li onClick={() => setOpen(false)} className="w-full px-6">
@@ -273,17 +309,6 @@ export function Navigation() {
                   )}
                 >
                   Customers
-                </Link>
-              </li>
-              <li onClick={() => setOpen(false)} className="w-full px-6">
-                <Link
-                  href={siteConfig.baseLinks.blog}
-                  className={cx(
-                    "block w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight",
-                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
-                  )}
-                >
-                  Blog
                 </Link>
               </li>
               <li onClick={() => setOpen(false)} className="w-full px-6">
@@ -300,13 +325,37 @@ export function Navigation() {
               <li onClick={() => setOpen(false)} className="w-full px-6">
                 <Link
                   target="_blank"
+                  href={documentation.BASE}
+                  className={cx(
+                    "w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight inline-flex items-center gap-1",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  Documentation
+                  <div className="ml-1 aspect-square size-3 rounded-full p-px bg-gray-100 dark:bg-slate-800">
+                    <RiArrowRightUpLine
+                      aria-hidden="true"
+                      className="size-full shrink-0 -translate-y-px text-gray-900 dark:text-slate-100"
+                    />
+                  </div>
+                </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  target="_blank"
                   href={social.SLACK}
                   className={cx(
-                    "block w-full py-5 text-lg tracking-tight",
+                    "w-full py-5 text-lg tracking-tight inline-flex items-center gap-1",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
                   Community
+                  <div className="ml-1 aspect-square size-3 rounded-full p-px bg-gray-100 dark:bg-slate-800">
+                    <RiArrowRightUpLine
+                      aria-hidden="true"
+                      className="size-full shrink-0 -translate-y-px text-gray-900 dark:text-slate-100"
+                    />
+                  </div>
                 </Link>
               </li>
               <li className="pt-6 px-6">
