@@ -27,6 +27,30 @@ const nextConfig = {
         destination: "https://www.paradedb.com/blog/:path*",
         permanent: true,
       },
+      {
+        source: "/",
+        has: [{ type: "host", value: "learn.paradedb.com" }],
+        destination: "https://www.paradedb.com/learn",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "learn.paradedb.com" }],
+        destination: "https://www.paradedb.com/learn/:path*",
+        permanent: true,
+      },
+      {
+        source: "/",
+        has: [{ type: "host", value: "customers.paradedb.com" }],
+        destination: "https://www.paradedb.com/customers",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "customers.paradedb.com" }],
+        destination: "https://www.paradedb.com/customers/:path*",
+        permanent: true,
+      },
       // --- legacy legal page redirects ---
       {
         source: "/privacy",
