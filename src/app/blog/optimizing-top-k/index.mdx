@@ -260,7 +260,7 @@ For queries that are ordered by a relevance score (i.e. a BM25 score), Tantivy g
 
 Block WAND works by maintaining an upper bound on how much score any document within a block of document IDs could possibly achieve. As the engine fills its Top K heap, it establishes a threshold: the lowest score currently in the heap. Before evaluating a block, the engine checks the block’s maximum score. If that maximum is below the threshold, the entire block is skipped without scoring individual documents.
 
-In ParadeDB, the analagous query to the relevance-sorted query above would be:
+In ParadeDB, the analogous query to the relevance-sorted query above would be:
 
 ```sql
 SELECT *, pdb.score(id) FROM benchmark_logs
