@@ -1,0 +1,7 @@
+{
+  "title": "How We Optimized Top K in Postgres",
+  "date": "2026-02-13T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How ParadeDB uses principles from search engines to optimize Postgres' Top K performance.",
+  "categories": ["postgres", "engineering", "top k"]
+}
