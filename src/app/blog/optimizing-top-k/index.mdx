@@ -173,7 +173,7 @@ CREATE INDEX ON benchmark_logs USING gin (message_fts) WHERE severity < 3;
 ```
 
 Unfortunately, the query still takes roughly the same amount of time (33 seconds) because a large candidate set is still being returned
-even with `severity < 3` predicate<sup>1</sup>. Achieving further improvements would require altering the query itself to make it more selective
+even with the `severity < 3` predicate<sup>1</sup>. Achieving further improvements would require altering the query itself to make it more selective
 — which may or may not be feasible in real-world scenarios.
 
 ## Search Databases Think About Top K Differently
