@@ -4,6 +4,7 @@ import { Title } from "@/components/Title";
 import { Note } from "@/components/mdx/Callouts";
 import heroImage from "./images/hero.svg";
 import { HeroImage } from "@/components/HeroImage";
+import TopKComparisonChart from "./TopKComparisonChart";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
@@ -276,6 +277,8 @@ LIMIT 10;
 </Note>
 
 This query now drops to a very reasonable 300ms<sup>4</sup>.
+
+<TopKComparisonChart />
 
 ## A Recent Improvement to ParadeDB's Top K Performance
 
