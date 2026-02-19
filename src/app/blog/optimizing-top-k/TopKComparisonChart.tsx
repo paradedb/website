@@ -27,7 +27,7 @@ export default function TopKComparisonChart() {
   return (
     <div className="topk-comparison-chart my-6 p-2 sm:p-4 bg-transparent">
       <h3 className="text-base sm:text-lg font-semibold text-slate-700 dark:text-slate-100">
-        Top K Query Time: ParadeDB vs Postgres GIN
+        Top K Text Search Query Time: ParadeDB vs Postgres GIN
       </h3>
       <div className="mt-4 h-72 w-full select-none pointer-events-none">
         <ResponsiveContainer width="100%" height="100%">
