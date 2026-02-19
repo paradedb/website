@@ -50,7 +50,9 @@ export default function TopKComparisonChart() {
             <YAxis
               tickLine={false}
               axisLine={false}
-              tickFormatter={(value: number) => `${value.toLocaleString("en-US")} ms`}
+              tickFormatter={(value: number) =>
+                `${value.toLocaleString("en-US")} ms`
+              }
               tick={{ fill: "var(--topk-tick)", fontSize: 12 }}
               width={90}
             />
