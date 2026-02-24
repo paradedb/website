@@ -3,6 +3,8 @@ import { Navigation } from "@/components/ui/Navbar";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
+import Script from "next/script";
+import { GoogleTagManager } from "@next/third-parties/google";
 import CookieConsentLoader from "@/components/CookieConsentLoader";
 import { siteConfig } from "./siteConfig";
 
@@ -69,6 +71,30 @@ export default function RootLayout({
       <body
         className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-background text-foreground selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-700 dark:selection:text-indigo-300`}
       >
+        <Script
+          id="gtag-consent-defaults"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              window.gtag = function(){dataLayer.push(arguments);};
+
+              gtag('consent', 'default', {
+                'analytics_storage': 'granted',
+                'ad_storage': 'denied',
+                'ad_user_data': 'denied',
+                'ad_personalization': 'denied'
+              });
+
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
+                'wait_for_update': 500,
+                'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO']
+              });
+            `,
+          }}
+        />
+        <GoogleTagManager gtmId={siteConfig.gtmId} />
         <ThemeProvider
           defaultTheme="system"
           attribute="class"
