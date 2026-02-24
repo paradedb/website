@@ -170,11 +170,16 @@ export function LogoDownload({ open }: LogoDownloadProps) {
     function handleEscape(e: KeyboardEvent) {
       if (e.key === "Escape") setShowPopover(false);
     }
+    function handleScroll() {
+      setShowPopover(false);
+    }
     document.addEventListener("mousedown", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
       document.removeEventListener("keydown", handleEscape);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [showPopover]);
 
