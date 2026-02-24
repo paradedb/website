@@ -22,9 +22,9 @@ set -Eeuo pipefail
 
 SILENT=false
 for arg in "$@"; do
-    case "$arg" in
-        -y|--yes) SILENT=true ;;
-    esac
+  case "$arg" in
+    -y|--yes) SILENT=true ;;
+  esac
 done
 
 CONTAINER_NAME="paradedb"
@@ -38,30 +38,30 @@ LOG=$(mktemp)
 trap 'rm -f "$LOG"' EXIT
 
 run_with_spinner() {
-    MSG="$1"
-    shift
-    "$@" > "$LOG" 2>&1 &
-    PID=$!
-    i=0
-    while kill -0 "$PID" 2>/dev/null; do
-        dots=$(( i % 3 + 1 ))
-        case $dots in
-            1) printf "\r  %s.  " "$MSG" ;;
-            2) printf "\r  %s.. " "$MSG" ;;
-            3) printf "\r  %s..." "$MSG" ;;
-        esac
-        i=$(( i + 1 ))
-        sleep 0.4
-    done
-    if wait "$PID"; then
-        printf "\r  %s... done!\n" "$MSG"
-    else
-        printf "\r  %s... failed!\n" "$MSG"
-        echo ""
-        echo "  Error: $MSG failed. Details:" >&2
-        sed 's/^/    /' "$LOG" >&2
-        exit 1
-    fi
+  MSG="$1"
+  shift
+  "$@" > "$LOG" 2>&1 &
+  PID=$!
+  i=0
+  while kill -0 "$PID" 2>/dev/null; do
+    dots=$(( i % 3 + 1 ))
+    case $dots in
+      1) printf "\r  %s.  " "$MSG" ;;
+      2) printf "\r  %s.. " "$MSG" ;;
+      3) printf "\r  %s..." "$MSG" ;;
+    esac
+    i=$(( i + 1 ))
+    sleep 0.4
+  done
+  if wait "$PID"; then
+    printf "\r  %s... done!\n" "$MSG"
+  else
+    printf "\r  %s... failed!\n" "$MSG"
+    echo ""
+    echo "  Error: $MSG failed. Details:" >&2
+    sed 's/^/    /' "$LOG" >&2
+    exit 1
+  fi
 }
 
 cat << 'BANNER'
@@ -103,53 +103,53 @@ echo "  Tip: Run with -y or --yes to skip this prompt next time."
 echo ""
 
 if [ "$SILENT" = false ]; then
-    printf "  Continue? [Y/n] "
-    read -r REPLY </dev/tty
-    case "$REPLY" in
-        [nN]*) echo "Aborted."; exit 0 ;;
-    esac
-    echo
+  printf "  Continue? [Y/n] "
+  read -r REPLY </dev/tty
+  case "$REPLY" in
+    [nN]*) echo "Aborted."; exit 0 ;;
+  esac
+  echo
 fi
 
 if ! command -v docker > /dev/null 2>&1; then
-    echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
-    exit 1
+  echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
+  exit 1
 fi
 
 if ! docker info > /dev/null 2>&1; then
-    echo "Error: Docker is not running. Please start Docker and try again." >&2
-    exit 1
+  echo "Error: Docker is not running. Please start Docker and try again." >&2
+  exit 1
 fi
 
 if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-        echo "ParadeDB is already running, exiting..."
-    else
-        echo "Found existing ParadeDB container, exiting..."
-    fi
-    exit 0
+  if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
+    echo "ParadeDB is already running, exiting..."
+  else
+    echo "Found existing ParadeDB container, exiting..."
+  fi
+  exit 0
 else
-    if docker volume ls --format '{{.Name}}' | grep -q "^$VOLUME_NAME$"; then
-        echo "Found existing $VOLUME_NAME volume, exiting..."
-        exit 0
-    fi
+  if docker volume ls --format '{{.Name}}' | grep -q "^$VOLUME_NAME$"; then
+    echo "Found existing $VOLUME_NAME volume, exiting..."
+    exit 0
+  fi
 
-    run_with_spinner "Pulling ParadeDB Docker image" docker pull "$IMAGE"
+  run_with_spinner "Pulling ParadeDB Docker image" docker pull "$IMAGE"
 
-    run_with_spinner "Starting ParadeDB" docker run -d --name "$CONTAINER_NAME" -e POSTGRES_USER="$PG_USER" -e POSTGRES_PASSWORD="$PG_PASSWORD" -e POSTGRES_DB="$PG_DATABASE" -v "$VOLUME_NAME:/var/lib/postgresql/" -p 5432:5432 "$IMAGE"
+  run_with_spinner "Starting ParadeDB" docker run -d --name "$CONTAINER_NAME" -e POSTGRES_USER="$PG_USER" -e POSTGRES_PASSWORD="$PG_PASSWORD" -e POSTGRES_DB="$PG_DATABASE" -v "$VOLUME_NAME:/var/lib/postgresql/" -p 5432:5432 "$IMAGE"
 fi
 
 wait_for_postgres() {
-    local retries=0
-    local max_retries=10
-    until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" -d "$PG_DATABASE" > /dev/null 2>&1; do
-        retries=$((retries + 1))
-        if [ "$retries" -ge "$max_retries" ]; then
-            echo "PostgreSQL did not become ready after ${max_retries} attempts."
-            return 1
-        fi
-        sleep 3
-    done
+  local retries=0
+  local max_retries=10
+  until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" -d "$PG_DATABASE" > /dev/null 2>&1; do
+    retries=$((retries + 1))
+    if [ "$retries" -ge "$max_retries" ]; then
+      echo "PostgreSQL did not become ready after ${max_retries} attempts."
+      return 1
+    fi
+    sleep 3
+  done
 }
 
 run_with_spinner "Waiting for PostgreSQL to be ready" wait_for_postgres
