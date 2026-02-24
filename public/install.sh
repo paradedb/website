@@ -71,7 +71,7 @@ cat << 'BANNER'
                                                                                         
 
 BANNER
-echo "  Welcome to ParadeDB!"
+echo "  Welcome to ParadeDB (https://paradedb.com)!"
 echo ""
 echo "  We bring you simple, Elastic-quality search for Postgres."
 echo "  That includes everything you expect from a search engine: full-text, hybrid, and faceted search."
