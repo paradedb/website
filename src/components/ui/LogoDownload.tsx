@@ -142,11 +142,10 @@ function LogoVariantCard({
 }
 
 interface LogoDownloadProps {
-  isHomePage: boolean;
   open: boolean;
 }
 
-export function LogoDownload({ isHomePage, open }: LogoDownloadProps) {
+export function LogoDownload({ open }: LogoDownloadProps) {
   const [showPopover, setShowPopover] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
   const triggerRef = React.useRef<HTMLDivElement>(null);
@@ -190,9 +189,7 @@ export function LogoDownload({ isHomePage, open }: LogoDownloadProps) {
         <DatabaseLogo
           className={cx(
             "w-28 sm:w-32 transition-colors",
-            isHomePage && !open
-              ? "brightness-0 invert"
-              : "dark:brightness-0 dark:invert",
+            !open ? "brightness-0 invert" : "dark:brightness-0 dark:invert",
           )}
         />
       </button>
@@ -201,9 +198,7 @@ export function LogoDownload({ isHomePage, open }: LogoDownloadProps) {
           "absolute -bottom-5 left-0 text-[10px] font-medium tracking-wide transition-all duration-200 pointer-events-none whitespace-nowrap",
           "opacity-0 group-hover:opacity-100 translate-y-0.5 group-hover:translate-y-0",
           showPopover && "!opacity-0",
-          isHomePage && !open
-            ? "text-white/60"
-            : "text-indigo-400/60 dark:text-white/40",
+          !open ? "text-white/60" : "text-indigo-400/60 dark:text-white/40",
         )}
       >
         [ Brand Assets ]
@@ -252,7 +247,7 @@ export function LogoDownload({ isHomePage, open }: LogoDownloadProps) {
                   filenamePrefix="paradedb-logo-light"
                 />
                 <LogoVariantCard
-                  label="Dark"
+                  label="White"
                   svgPath="/brand/paradedb-logo-dark.svg"
                   bgClass="bg-slate-950"
                   logoWidth={639}
