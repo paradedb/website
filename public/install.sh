@@ -13,11 +13,19 @@
 #
 # Nothing is installed on your system outside of the ParadeDB
 # Docker image and associated volume.
-# To uninstall, just run: docker rm -f paradedb && docker volume rm paradedb_data
+#
+# To uninstall, just run: docker rm -f paradedb -v
 # ---------------------------------------------------------
 
 # Exit on subcommand errors
 set -Eeuo pipefail
+
+SILENT=false
+for arg in "$@"; do
+  case "$arg" in
+    -y|--yes) SILENT=true ;;
+  esac
+done
 
 CONTAINER_NAME="paradedb"
 IMAGE="paradedb/paradedb:latest"
@@ -43,7 +51,52 @@ spinner() {
   printf "\r%s... done!\n" "$MSG"
 }
 
-echo "Welcome to ParadeDB! This script will set up a local instance of ParadeDB using Docker."
+cat << 'BANNER'
+                                            
+  |||||||| |||||||| |||||||| |||||           
+  |||||||| |||||||| |||||||| |||||||         
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||        
+  |||||||| |||||||| |||||||| ||||||||||||||| 
+  |||||||| |||||||| ||||||||  |||||||||||||| 
+  |||||||| |||||||| ||||||||   ||||||||||||| 
+  |||||||| |||||||| ||||||||     ||||||||||| 
+  |||||||| |||||||| ||||||||           ||||| 
+                                                                                        
+
+BANNER
+echo "  Welcome to ParadeDB!"
+echo ""
+echo "  We bring you simple, Elastic-quality search for Postgres."
+echo "  That includes everything you expect from a search engine: full-text, hybrid, and faceted search."
+echo "  All right inside Postgres with no extra infrastructure, and no ETL pipelines."
+echo ""
+echo "  This script will:"
+echo "    1. Pull the latest ParadeDB Docker image"
+echo "    2. Start a container named '$CONTAINER_NAME' with a persistent volume (paradedb_data)"
+echo "    3. Expose PostgreSQL on port 5432"
+echo "    4. Drop you into a psql session"
+echo ""
+echo "  Nothing is installed on your system outside of Docker."
+echo "  To uninstall later: docker rm -f paradedb -v"
+echo ""
+echo "  Tip: Run with -y or --yes to skip this prompt."
+echo ""
+
+if [ "$SILENT" = false ]; then
+  printf "  Continue? [Y/n] "
+  read -r REPLY </dev/tty
+  case "$REPLY" in
+    [nN]*) echo "Aborted."; exit 0 ;;
+  esac
+  echo
+fi
 
 if ! command -v docker > /dev/null 2>&1; then
   echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
