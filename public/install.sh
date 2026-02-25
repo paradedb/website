@@ -154,4 +154,5 @@ wait_for_postgres() {
 
 run_with_spinner "Waiting for PostgreSQL to be ready" wait_for_postgres
 
+echo ""
 docker exec -it "$CONTAINER_NAME" psql -U "$PG_USER" -d "$PG_DATABASE" </dev/tty
