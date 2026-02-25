@@ -34,8 +34,29 @@ PG_USER="postgres"
 PG_PASSWORD="paradedb"
 PG_DATABASE="paradedb"
 
+# Color support
+if [ -t 1 ] && [ "$(tput colors 2>/dev/null)" -ge 8 ] 2>/dev/null; then
+  RED=$'\033[0;31m'
+  GREEN=$'\033[0;32m'
+  CYAN=$'\033[0;36m'
+  PURPLE=$'\033[38;5;99m'
+  BOLD=$'\033[1m'
+  RESET=$'\033[0m'
+else
+  RED=''
+  GREEN=''
+  CYAN=''
+  PURPLE=''
+  BOLD=''
+  RESET=''
+fi
+
 LOG=$(mktemp)
 trap 'rm -f "$LOG"' EXIT
+
+print_connect_cmd() {
+  printf "    ${CYAN}docker exec -it $CONTAINER_NAME psql -U $PG_USER -d $PG_DATABASE${RESET}\n"
+}
 
 run_with_spinner() {
   MSG="$1"
@@ -54,9 +75,9 @@ run_with_spinner() {
     sleep 0.4
   done
   if wait "$PID"; then
-    printf "\r  %s... done!\n" "$MSG"
+    printf "\r  %s... ${GREEN}done!${RESET}\n" "$MSG"
   else
-    printf "\r  %s... failed!\n" "$MSG"
+    printf "\r  %s... ${RED}failed!${RESET}\n" "$MSG"
     echo ""
     echo "  Error: $MSG failed. Details:" >&2
     sed 's/^/    /' "$LOG" >&2
@@ -64,6 +85,7 @@ run_with_spinner() {
   fi
 }
 
+printf "${PURPLE}${BOLD}"
 cat << 'BANNER'
 
   |||||||| |||||||| |||||||| |||||
@@ -82,9 +104,9 @@ cat << 'BANNER'
   |||||||| |||||||| ||||||||     |||||||||||
   |||||||| |||||||| ||||||||           |||||
 
-
 BANNER
-echo "  Welcome to ParadeDB (https://paradedb.com)!"
+printf "${RESET}"
+printf "  ${BOLD}Welcome to ParadeDB${RESET} (${CYAN}https://paradedb.com${RESET})!\n"
 echo ""
 echo "  We bring you simple, Elastic-quality search for Postgres."
 echo "  That includes everything you expect from a search engine: full-text, hybrid, and faceted search."
@@ -100,6 +122,9 @@ echo "  Nothing is installed on your system outside of Docker."
 echo "  To uninstall later: docker rm -f $CONTAINER_NAME && docker volume rm $VOLUME_NAME"
 echo ""
 echo "  Tip: Run with -y or --yes to skip this prompt next time."
+echo ""
+printf "  ${BOLD}If you find ParadeDB useful, a star on GitHub means the world to us:${RESET}\n"
+printf "  ${CYAN}https://github.com/paradedb/paradedb${RESET}\n"
 echo ""
 
 if [ "$SILENT" = false ]; then
@@ -123,14 +148,19 @@ fi
 
 if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    echo "ParadeDB is already running, exiting..."
+    printf "  ${GREEN}ParadeDB is already running.${RESET}\n"
+    echo ""
+    echo "  To connect, run:"
+    print_connect_cmd
+    echo ""
   else
-    echo "Found existing ParadeDB container, exiting..."
+    printf "  ${BOLD}Found existing ParadeDB container.${RESET}\n"
+    echo "  To start it, run: docker start $CONTAINER_NAME"
   fi
   exit 0
 else
   if docker volume ls --format '{{.Name}}' | grep -q "^$VOLUME_NAME$"; then
-    echo "Found existing $VOLUME_NAME volume, exiting..."
+    printf "  ${BOLD}Found existing $VOLUME_NAME volume, exiting...${RESET}\n"
     exit 0
   fi
 
@@ -154,5 +184,15 @@ wait_for_postgres() {
 
 run_with_spinner "Waiting for PostgreSQL to be ready" wait_for_postgres
 
+echo ""
+printf "  ${GREEN}${BOLD}ParadeDB is ready!${RESET}\n"
+echo ""
+echo "  To reconnect later, run:"
+print_connect_cmd
+echo ""
+printf "  Get started with the docs: ${CYAN}https://docs.paradedb.com${RESET}\n"
+echo ""
+printf "  ${BOLD}Launching psql...${RESET}\n"
+echo ""
 echo ""
 docker exec -it "$CONTAINER_NAME" psql -U "$PG_USER" -d "$PG_DATABASE" </dev/tty
