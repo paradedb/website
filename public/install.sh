@@ -79,7 +79,7 @@ run_with_spinner() {
   else
     printf "\r  %s... ${RED}failed!${RESET}\n" "$MSG"
     echo ""
-    echo "  Error: $MSG failed. Details:" >&2
+    printf "  ${RED}Error: $MSG failed.${RESET} Details:\n" >&2
     sed 's/^/    /' "$LOG" >&2
     exit 1
   fi
@@ -137,12 +137,12 @@ if [ "$SILENT" = false ]; then
 fi
 
 if ! command -v docker > /dev/null 2>&1; then
-  echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
+  printf "  ${RED}Error: Docker is not installed.${RESET} To use ParadeDB, install it from https://docs.docker.com/get-docker/\n" >&2
   exit 1
 fi
 
 if ! docker info > /dev/null 2>&1; then
-  echo "Error: Docker is not running. Please start Docker and try again." >&2
+  printf "  ${RED}Error: Docker is not running.${RESET} Please start Docker and try again.\n" >&2
   exit 1
 fi
 
@@ -156,12 +156,14 @@ if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   else
     printf "  ${BOLD}Found existing ParadeDB container.${RESET}\n"
     echo "  To start it, run: docker start $CONTAINER_NAME"
+    echo ""
   fi
   exit 0
 else
   if docker volume ls --format '{{.Name}}' | grep -q "^$VOLUME_NAME$"; then
-    printf "  ${BOLD}Found existing $VOLUME_NAME volume, exiting...${RESET}\n"
-    exit 0
+    printf "  ${RED}Error: Found existing $VOLUME_NAME volume, exiting...${RESET}\n" >&2
+    echo ""
+    exit 1
   fi
 
   run_with_spinner "Pulling ParadeDB Docker image" docker pull "$IMAGE"
