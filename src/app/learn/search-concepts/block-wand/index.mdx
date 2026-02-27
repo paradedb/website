@@ -94,7 +94,7 @@ Benchmarks across academic and industry implementations show consistent results:
 - Greatest impact on **disjunctive (OR) queries** with high-frequency terms, where the most documents can be skipped
 - Benefits scale with collection size; larger indexes see proportionally more pruning
 
-The algorithm is most effective when you need only the TopK results (not exhaustive counts) and when queries contain common terms with long posting lists.
+The algorithm only applies to TopK queries, not exhaustive counts, since it relies on a threshold from the result heap to make pruning decisions. The speedup is greatest when queries contain common terms with long posting lists, where most blocks can be skipped.
 
 ## Scoring Constraints
 
