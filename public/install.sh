@@ -55,7 +55,7 @@ LOG=$(mktemp)
 trap 'rm -f "$LOG"' EXIT
 
 print_connect_cmd() {
-  printf "    ${CYAN}docker exec -it $CONTAINER_NAME psql -U $PG_USER -d $PG_DATABASE${RESET}\n"
+  printf "    %sdocker exec -it %s psql -U %s -d %s%s\n" "$CYAN" "$CONTAINER_NAME" "$PG_USER" "$PG_DATABASE" "$RESET"
 }
 
 run_with_spinner() {
@@ -75,17 +75,17 @@ run_with_spinner() {
     sleep 0.4
   done
   if wait "$PID"; then
-    printf "\r  %s... ${GREEN}done!${RESET}\n" "$MSG"
+    printf "\r  %s... %sdone!%s\n" "$MSG" "$GREEN" "$RESET"
   else
-    printf "\r  %s... ${RED}failed!${RESET}\n" "$MSG"
+    printf "\r  %s... %sfailed!%s\n" "$MSG" "$RED" "$RESET"
     echo ""
-    echo "  Error: $MSG failed. Details:" >&2
+    printf "  %sError: %s failed.%s Details:\n" "$RED" "$MSG" "$RESET" >&2
     sed 's/^/    /' "$LOG" >&2
     exit 1
   fi
 }
 
-printf "${PURPLE}${BOLD}"
+printf "%s%s" "$PURPLE" "$BOLD"
 cat << 'BANNER'
 
   |||||||| |||||||| |||||||| |||||
@@ -105,8 +105,8 @@ cat << 'BANNER'
   |||||||| |||||||| ||||||||           |||||
 
 BANNER
-printf "${RESET}"
-printf "  ${BOLD}Welcome to ParadeDB${RESET} (${CYAN}https://paradedb.com${RESET})!\n"
+printf "%s" "$RESET"
+printf "  %sWelcome to ParadeDB%s (%shttps://paradedb.com%s)!\n" "$BOLD" "$RESET" "$CYAN" "$RESET"
 echo ""
 echo "  We bring you simple, Elastic-quality search for Postgres."
 echo "  That includes everything you expect from a search engine: full-text, hybrid, and faceted search."
@@ -123,8 +123,8 @@ echo "  To uninstall later: docker rm -f $CONTAINER_NAME && docker volume rm $VO
 echo ""
 echo "  Tip: Run with -y or --yes to skip this prompt next time."
 echo ""
-printf "  ${BOLD}If you find ParadeDB useful, a star on GitHub means the world to us:${RESET}\n"
-printf "  ${CYAN}https://github.com/paradedb/paradedb${RESET}\n"
+printf "  %sIf you find ParadeDB useful, a star on GitHub means the world to us:%s\n" "$BOLD" "$RESET"
+printf "  %shttps://github.com/paradedb/paradedb%s\n" "$CYAN" "$RESET"
 echo ""
 
 if [ "$SILENT" = false ]; then
@@ -137,31 +137,33 @@ if [ "$SILENT" = false ]; then
 fi
 
 if ! command -v docker > /dev/null 2>&1; then
-  echo "Error: Docker is not installed. To use ParadeDB, install it from https://docs.docker.com/get-docker/" >&2
+  printf "  %sError: Docker is not installed.%s To use ParadeDB, install it from https://docs.docker.com/get-docker/\n" "$RED" "$RESET" >&2
   exit 1
 fi
 
 if ! docker info > /dev/null 2>&1; then
-  echo "Error: Docker is not running. Please start Docker and try again." >&2
+  printf "  %sError: Docker is not running.%s Please start Docker and try again.\n" "$RED" "$RESET" >&2
   exit 1
 fi
 
 if docker ps -a --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
   if docker ps --format '{{.Names}}' | grep -q "^$CONTAINER_NAME$"; then
-    printf "  ${GREEN}ParadeDB is already running.${RESET}\n"
+    printf "  %sParadeDB is already running.%s\n" "$GREEN" "$RESET"
     echo ""
     echo "  To connect, run:"
     print_connect_cmd
     echo ""
   else
-    printf "  ${BOLD}Found existing ParadeDB container.${RESET}\n"
+    printf "  %sFound existing ParadeDB container.%s\n" "$BOLD" "$RESET"
     echo "  To start it, run: docker start $CONTAINER_NAME"
+    echo ""
   fi
   exit 0
 else
   if docker volume ls --format '{{.Name}}' | grep -q "^$VOLUME_NAME$"; then
-    printf "  ${BOLD}Found existing $VOLUME_NAME volume, exiting...${RESET}\n"
-    exit 0
+    printf "  %sError: Found existing %s volume, exiting...%s\n" "$RED" "$VOLUME_NAME" "$RESET" >&2
+    echo ""
+    exit 1
   fi
 
   run_with_spinner "Pulling ParadeDB Docker image" docker pull "$IMAGE"
@@ -185,14 +187,14 @@ wait_for_postgres() {
 run_with_spinner "Waiting for PostgreSQL to be ready" wait_for_postgres
 
 echo ""
-printf "  ${GREEN}${BOLD}ParadeDB is ready!${RESET}\n"
+printf "  %s%sParadeDB is ready!%s\n" "$GREEN" "$BOLD" "$RESET"
 echo ""
 echo "  To reconnect later, run:"
 print_connect_cmd
 echo ""
-printf "  Get started with the docs: ${CYAN}https://docs.paradedb.com${RESET}\n"
+printf "  Get started with the docs: %shttps://docs.paradedb.com%s\n" "$CYAN" "$RESET"
 echo ""
-printf "  ${BOLD}Launching psql...${RESET}\n"
+printf "  %sLaunching psql...%s\n" "$BOLD" "$RESET"
 echo ""
 echo ""
 docker exec -it "$CONTAINER_NAME" psql -U "$PG_USER" -d "$PG_DATABASE" </dev/tty
