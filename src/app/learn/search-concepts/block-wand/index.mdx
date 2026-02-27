@@ -1,0 +1,111 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+Block-Max WAND (BMW) is a dynamic pruning algorithm that accelerates TopK document retrieval in search engines, the kind of query you express in SQL as `ORDER BY score DESC LIMIT k`. It works with scoring functions like [BM25](/learn/search-concepts/bm25) by dividing inverted index posting lists into fixed-size blocks, precomputing the maximum possible score within each block, and using those scores to skip entire blocks of documents that cannot appear in the final results. The algorithm returns exactly the same results as exhaustive scoring; it trades no accuracy for speed.
+
+The technique was introduced by [Shuai Ding and Torsten Suel in 2011](https://dl.acm.org/doi/10.1145/2009916.2010048) and has since been adopted by [Apache Lucene](https://github.com/apache/lucene), [Tantivy](https://github.com/quickwit-oss/tantivy), and other search engines as a core query optimization.
+
+## From WAND to Block WAND
+
+Block WAND builds on two earlier pruning techniques:
+
+- **MaxScore** ([Turtle & Flood, 1995](https://www.sciencedirect.com/science/article/abs/pii/030645739500020H)) stores a single global maximum score per term across the entire posting list. It uses this to classify terms as "essential" or "non-essential" and skip documents that cannot beat the current threshold.
+- **WAND** ([Broder et al., 2003](https://dl.acm.org/doi/10.1145/956863.956944)) introduces a pivot mechanism that sorts term pointers by document ID and calculates whether the combined upper-bound scores of aligned terms can exceed the threshold. If not, it advances past those documents without scoring them.
+
+Both techniques rely on a single global upper bound per term: the highest score that term produces across the entire index. This bound can be inflated by a single outlier document, making it loose and limiting how aggressively documents can be skipped.
+
+Block WAND is not a different algorithm; it is WAND with finer-grained upper bounds. Instead of one maximum score for a posting list of millions of documents, it records the maximum score for each block of typically 128 documents. These tighter bounds plug directly into WAND's existing pivot mechanism, allowing far more aggressive pruning.
+
+## How Block WAND Works
+
+### Index Structure
+
+During indexing, each posting list is divided into fixed-size blocks. For each block, the index stores:
+
+- The **block-max score**: the highest score any document in this block can contribute for this term
+- The **maximum document ID** in the block
+
+These values are stored alongside the compressed posting data with minimal overhead, typically 5-8% additional index size.
+
+<Note>
+  In Apache Lucene's implementation, the index stores the term frequency and
+  document length values that produce the maximum score rather than the score
+  itself. This allows you to change the scoring function (e.g., from
+  [BM25](/learn/search-concepts/bm25) to TF-IDF) at query time without
+  rebuilding the index.
+</Note>
+
+### Query Processing
+
+When you execute a query for the TopK results, the algorithm maintains a result heap and a threshold: the minimum score needed to enter the current TopK. Processing follows these steps:
+
+1. **Sort term pointers** by their current document ID, smallest first.
+2. **Select a pivot** by walking through the sorted pointers and accumulating block-max scores for terms aligned at or beyond the candidate document ID. The pivot is the point where the cumulative upper bound first exceeds the threshold.
+3. **Check block bounds**: for each term's posting list, check whether that term's block-max score for the current block can contribute enough to the pivot. If a term's block cannot contribute, advance that term's iterator to its next block. Different terms may skip different blocks.
+4. **Score the document**: if the combined block-max bounds survive the check, fully score the pivot document. If it exceeds the threshold, insert it into the TopK heap and update the threshold.
+5. **Repeat** until all posting lists are exhausted.
+
+As higher-scoring documents are found, the threshold rises, and pruning becomes more aggressive; the algorithm accelerates as it runs.
+
+### Why Per-Block Bounds Matter
+
+Consider a common term like "the" with a posting list spanning millions of documents. Its global maximum score might be 3.5 (from one short document where "the" appears disproportionately often). In most blocks of 128 documents, the actual maximum contribution is much lower, perhaps 0.8. Using 0.8 instead of 3.5 as the upper bound allows the algorithm to skip far more blocks.
+
+This effect compounds across multiple query terms. When every term has a tighter bound, the combined upper-bound estimate drops substantially, and entire regions of the index are eliminated without decompressing a single document ID.
+
+## Example: Block WAND in Action
+
+Suppose you search for **"machine learning algorithms"** and want the top 10 results. The index contains 500,000 documents matching "machine", 300,000 matching "learning", and 200,000 matching "algorithms".
+
+Without pruning, the engine scores every matching document, up to a million scoring operations.
+
+With Block WAND, the process looks different:
+
+```text
+Block 1: sum = 8.2, threshold = 0.0
+  -> Score documents
+  -> Threshold rises to 5.3
+
+Block 2: sum = 4.1, threshold = 5.3
+  -> Skip (4.1 < 5.3)
+
+Block 3: sum = 7.9, threshold = 5.3
+  -> Score documents
+  -> Threshold rises to 6.8
+
+Block 4: sum = 3.2, threshold = 6.8
+  -> Skip (3.2 < 6.8)
+```
+
+In practice, Block WAND typically scores only 10-40% of matching documents, with the rest pruned at the block level.
+
+## Performance
+
+Benchmarks across academic and industry implementations show consistent results:
+
+- **3x to 7x speedup** on standard term queries compared to exhaustive scoring ([Grand et al., ECIR 2020](https://link.springer.com/chapter/10.1007/978-3-030-45442-5_3))
+- Greatest impact on **disjunctive (OR) queries** with high-frequency terms, where the most documents can be skipped
+- Benefits scale with collection size; larger indexes see proportionally more pruning
+
+The algorithm is most effective when you need only the TopK results (not exhaustive counts) and when queries contain common terms with long posting lists.
+
+## Scoring Constraints
+
+Block WAND's pruning is safe only when the scoring function is additive across terms and each term's contribution is non-negative. This holds for [BM25](/learn/search-concepts/bm25), TF-IDF, and most classical retrieval functions. Scoring models that produce negative term contributions or non-additive scores (such as some neural rerankers) cannot use Block WAND for safe pruning, since a negative contribution could make a skipped document score higher than the upper bound suggests.
+
+## Adoption in Search Engines
+
+- **Apache Lucene 8.0** (2019) adopted Block WAND for TopK disjunctive queries, bringing the optimization to [Elasticsearch](https://github.com/elastic/elasticsearch) and [Solr](https://github.com/apache/solr)
+- **[Tantivy](https://github.com/quickwit-oss/tantivy)** implements Block WAND for boolean queries with `should` clauses, inherited by [Quickwit](https://github.com/quickwit-oss/quickwit) and [ParadeDB](https://github.com/paradedb/paradedb)
+
+
+## Summary
+
+Block WAND accelerates TopK retrieval by replacing loose global score bounds with tight per-block bounds, allowing the search engine to skip large portions of the index without sacrificing result quality. It processes the same query with a fraction of the scoring work, and the speedup grows as the threshold tightens during execution. For search engines handling disjunctive queries over large collections, it is one of the most effective optimizations available.

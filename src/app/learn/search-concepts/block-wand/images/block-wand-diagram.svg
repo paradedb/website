@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 390" font-family="system-ui, -apple-system, sans-serif">
+  <style>
+    text { font-size: 12px; fill: #374151; }
+    .label { font-size: 11px; fill: #6b7280; }
+    .term-label { font-size: 13px; font-weight: 600; fill: #1f2937; }
+    .doc-range { font-size: 10px; fill: #6b7280; }
+    .title { font-size: 11px; font-weight: 600; fill: #6b7280; letter-spacing: 0.05em; text-transform: uppercase; }
+    .scored { fill: #dbeafe; stroke: #3b82f6; stroke-width: 1.5; }
+    .skipped { fill: #f3f4f6; stroke: #d1d5db; stroke-width: 1; stroke-dasharray: 4 2; }
+    .threshold-line { stroke: #ef4444; stroke-width: 1.5; stroke-dasharray: 6 3; }
+    .threshold-label { font-size: 11px; fill: #ef4444; font-weight: 600; }
+    .legend-text { font-size: 11px; fill: #4b5563; }
+    .block-score { font-size: 10px; fill: #1f2937; font-weight: 500; }
+    .sum-scored { font-size: 12px; font-weight: 600; fill: #2563eb; }
+    .sum-skipped { font-size: 12px; font-weight: 600; fill: #9ca3af; }
+    .verdict-scored { font-size: 11px; font-weight: 600; fill: #2563eb; }
+    .verdict-skipped { font-size: 11px; font-weight: 600; fill: #9ca3af; }
+    .skip-x { stroke: #b0b8c4; stroke-width: 1.5; }
+  </style>
+
+  <!-- Title -->
+  <text x="360" y="24" text-anchor="middle" class="title">Block WAND: Skipping Blocks Below the Threshold</text>
+
+  <!-- Column headers -->
+  <text x="142" y="52" text-anchor="middle" class="label">Block 1</text>
+  <text x="252" y="52" text-anchor="middle" class="label">Block 2</text>
+  <text x="362" y="52" text-anchor="middle" class="label">Block 3</text>
+  <text x="472" y="52" text-anchor="middle" class="label">Block 4</text>
+  <text x="582" y="52" text-anchor="middle" class="label">Block 5</text>
+
+  <!-- Doc ID ranges -->
+  <text x="142" y="66" text-anchor="middle" class="doc-range">docs 1-128</text>
+  <text x="252" y="66" text-anchor="middle" class="doc-range">docs 129-256</text>
+  <text x="362" y="66" text-anchor="middle" class="doc-range">docs 257-384</text>
+  <text x="472" y="66" text-anchor="middle" class="doc-range">docs 385-512</text>
+  <text x="582" y="66" text-anchor="middle" class="doc-range">docs 513-640</text>
+
+  <!-- Skipped column overlays for blocks 2, 4, 5 -->
+  <rect x="199" y="76" width="106" height="176" rx="6" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4 2" />
+  <line x1="205" y1="82" x2="299" y2="246" class="skip-x" />
+  <line x1="299" y1="82" x2="205" y2="246" class="skip-x" />
+
+  <rect x="419" y="76" width="106" height="176" rx="6" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4 2" />
+  <line x1="425" y1="82" x2="519" y2="246" class="skip-x" />
+  <line x1="519" y1="82" x2="425" y2="246" class="skip-x" />
+
+  <rect x="529" y="76" width="106" height="176" rx="6" fill="#f9fafb" stroke="#e5e7eb" stroke-width="1" stroke-dasharray="4 2" />
+  <line x1="535" y1="82" x2="629" y2="246" class="skip-x" />
+  <line x1="629" y1="82" x2="535" y2="246" class="skip-x" />
+
+  <!-- Term: "machine" -->
+  <text x="62" y="106" text-anchor="middle" class="term-label">"machine"</text>
+
+  <rect x="92" y="86" width="100" height="32" rx="4" class="scored" />
+  <text x="142" y="106" text-anchor="middle" class="block-score">max: 3.1</text>
+
+  <rect x="202" y="86" width="100" height="32" rx="4" class="skipped" />
+  <text x="252" y="106" text-anchor="middle" class="block-score">max: 0.4</text>
+
+  <rect x="312" y="86" width="100" height="32" rx="4" class="scored" />
+  <text x="362" y="106" text-anchor="middle" class="block-score">max: 2.8</text>
+
+  <rect x="422" y="86" width="100" height="32" rx="4" class="skipped" />
+  <text x="472" y="106" text-anchor="middle" class="block-score">max: 0.6</text>
+
+  <rect x="532" y="86" width="100" height="32" rx="4" class="skipped" />
+  <text x="582" y="106" text-anchor="middle" class="block-score">max: 0.3</text>
+
+  <!-- Term: "learning" -->
+  <text x="62" y="156" text-anchor="middle" class="term-label">"learning"</text>
+
+  <rect x="92" y="136" width="100" height="32" rx="4" class="scored" />
+  <text x="142" y="156" text-anchor="middle" class="block-score">max: 2.7</text>
+
+  <rect x="202" y="136" width="100" height="32" rx="4" class="skipped" />
+  <text x="252" y="156" text-anchor="middle" class="block-score">max: 2.9</text>
+
+  <rect x="312" y="136" width="100" height="32" rx="4" class="scored" />
+  <text x="362" y="156" text-anchor="middle" class="block-score">max: 2.4</text>
+
+  <rect x="422" y="136" width="100" height="32" rx="4" class="skipped" />
+  <text x="472" y="156" text-anchor="middle" class="block-score">max: 0.8</text>
+
+  <rect x="532" y="136" width="100" height="32" rx="4" class="skipped" />
+  <text x="582" y="156" text-anchor="middle" class="block-score">max: 0.5</text>
+
+  <!-- Term: "algorithms" -->
+  <text x="62" y="206" text-anchor="middle" class="term-label">"algorithms"</text>
+
+  <rect x="92" y="186" width="100" height="32" rx="4" class="scored" />
+  <text x="142" y="206" text-anchor="middle" class="block-score">max: 0.5</text>
+
+  <rect x="202" y="186" width="100" height="32" rx="4" class="skipped" />
+  <text x="252" y="206" text-anchor="middle" class="block-score">max: 0.7</text>
+
+  <rect x="312" y="186" width="100" height="32" rx="4" class="scored" />
+  <text x="362" y="206" text-anchor="middle" class="block-score">max: 3.2</text>
+
+  <rect x="422" y="186" width="100" height="32" rx="4" class="skipped" />
+  <text x="472" y="206" text-anchor="middle" class="block-score">max: 2.1</text>
+
+  <rect x="532" y="186" width="100" height="32" rx="4" class="skipped" />
+  <text x="582" y="206" text-anchor="middle" class="block-score">max: 0.2</text>
+
+  <!-- Column sums -->
+  <text x="142" y="272" text-anchor="middle" class="sum-scored">Σ = 6.3</text>
+  <text x="252" y="272" text-anchor="middle" class="sum-skipped">Σ = 4.0</text>
+  <text x="362" y="272" text-anchor="middle" class="sum-scored">Σ = 8.4</text>
+  <text x="472" y="272" text-anchor="middle" class="sum-skipped">Σ = 3.5</text>
+  <text x="582" y="272" text-anchor="middle" class="sum-skipped">Σ = 1.0</text>
+
+  <!-- Threshold line -->
+  <line x1="82" y1="286" x2="642" y2="286" class="threshold-line" />
+  <text x="660" y="290" class="threshold-label">θ = 6.1</text>
+
+  <!-- Verdict row -->
+  <text x="142" y="310" text-anchor="middle" class="verdict-scored">Σ > θ  Score</text>
+  <text x="252" y="310" text-anchor="middle" class="verdict-skipped">Σ &lt; θ  Skip</text>
+  <text x="362" y="310" text-anchor="middle" class="verdict-scored">Σ > θ  Score</text>
+  <text x="472" y="310" text-anchor="middle" class="verdict-skipped">Σ &lt; θ  Skip</text>
+  <text x="582" y="310" text-anchor="middle" class="verdict-skipped">Σ &lt; θ  Skip</text>
+
+  <!-- Annotation -->
+  <text x="360" y="342" text-anchor="middle" class="label">The sum of block-max scores across all terms is compared against the current threshold (θ).</text>
+  <text x="360" y="358" text-anchor="middle" class="label">If the sum cannot exceed θ, no document in that block range can enter the top-k — skip the entire block.</text>
+
+  <!-- Legend -->
+  <rect x="182" y="374" width="24" height="12" rx="3" class="scored" />
+  <text x="212" y="384" class="legend-text">Evaluated</text>
+
+  <rect x="310" y="374" width="24" height="12" rx="3" class="skipped" />
+  <text x="340" y="384" class="legend-text">Skipped</text>
+
+  <line x1="430" y1="380" x2="460" y2="380" class="threshold-line" />
+  <text x="468" y="384" class="legend-text">Current threshold (θ)</text>
+</svg>
