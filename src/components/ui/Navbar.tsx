@@ -12,8 +12,9 @@ import { cx } from "@/lib/utils";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
-import { DatabaseLogo } from "./DatabaseLogo";
 import { Button } from "../Button";
+import { DatabaseLogo } from "./DatabaseLogo";
+import { LogoDownload } from "./LogoDownload";
 import { ThemeToggle } from "./ThemeToggle";
 
 const formatStarCount = (count: number) => {
@@ -99,17 +100,13 @@ export function Navigation() {
               open ? "px-6" : "px-0",
             )}
           >
-            <Link href={siteConfig.baseLinks.home} aria-label="Home">
-              <span className="sr-only">Company logo</span>
-              <DatabaseLogo
-                className={cx(
-                  "w-28 sm:w-32 transition-colors",
-                  isHomePage && !open
-                    ? "brightness-0 invert"
-                    : "dark:brightness-0 dark:invert",
-                )}
-              />
-            </Link>
+            {isHomePage ? (
+              <LogoDownload open={open} />
+            ) : (
+              <Link href="/">
+                <DatabaseLogo className="w-28 sm:w-32 transition-colors dark:brightness-0 dark:invert" />
+              </Link>
+            )}
             <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
               <div className="flex items-center gap-6 text-sm font-medium">
                 <Link
