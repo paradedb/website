@@ -23,6 +23,14 @@
       ],
       "destination": "https://paradedb.com/customers/:path*",
       "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        { "type": "host", "value": "slack.paradedb.com" }
+      ],
+      "destination": "https://paradedb.com/slack",
+      "permanent": true
     }
   ]
 }
