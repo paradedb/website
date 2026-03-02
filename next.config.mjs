@@ -51,6 +51,18 @@ const nextConfig = {
         destination: "https://www.paradedb.com/customers/:path*",
         permanent: true,
       },
+      {
+        source: "/",
+        has: [{ type: "host", value: "slack.paradedb.com" }],
+        destination: "https://www.paradedb.com/slack",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "slack.paradedb.com" }],
+        destination: "https://www.paradedb.com/slack",
+        permanent: true,
+      },
       // --- external service redirects ---
       {
         source: "/slack",
