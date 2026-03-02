@@ -29,8 +29,7 @@ export const github = {
 export const social = {
   TWITTER: "https://x.com/paradedb",
   LINKEDIN: "https://www.linkedin.com/company/paradedb",
-  SLACK:
-    "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw",
+  SLACK: "/slack",
   CALENDLY: "https://calendly.com/paradedb",
 };
 

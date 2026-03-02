@@ -51,6 +51,13 @@ const nextConfig = {
         destination: "https://www.paradedb.com/customers/:path*",
         permanent: true,
       },
+      // --- external service redirects ---
+      {
+        source: "/slack",
+        destination:
+          "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw",
+        permanent: false,
+      },
       // --- legacy legal page redirects ---
       {
         source: "/privacy",
