@@ -12,6 +12,15 @@ const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
+  async rewrites() {
+    return [
+      {
+        source: "/install.sh",
+        destination: "/api/install",
+      },
+    ];
+  },
+
   async redirects() {
     return [
       // --- host-based redirects (put first) ---
