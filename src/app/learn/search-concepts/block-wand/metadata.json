@@ -1,0 +1,9 @@
+{
+  "title": "What is Block WAND?",
+  "date": "2026-02-27T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Learn about Block-Max WAND, the dynamic pruning algorithm that accelerates top-k document retrieval in search engines.",
+  "order": 8,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}
