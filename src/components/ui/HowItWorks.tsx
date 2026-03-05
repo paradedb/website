@@ -216,19 +216,38 @@ const SelfHostedHeader = () => (
   </div>
 );
 
-function SelfHostedDemo({ isActive = true }: { isActive?: boolean }) {
-  const ANIMAL_DATA = [
-    { id: 1, name: "Polar Bear", weight: "450" },
-    { id: 2, name: "Grizzly Bear", weight: "270" },
-    { id: 3, name: "Black Bear", weight: "135" },
-    { id: 4, name: "Great White Shark", weight: "1100" },
-    { id: 5, name: "Tiger Shark", weight: "600" },
-    { id: 6, name: "Hammerhead Shark", weight: "230" },
-    { id: 7, name: "Blue Whale", weight: "140000" },
-    { id: 8, name: "Humpback Whale", weight: "30000" },
-    { id: 9, name: "Killer Whale", weight: "6000" },
-  ];
+const ANIMAL_DATA = [
+  { id: 1, name: "Polar Bear", weight: "450" },
+  { id: 2, name: "Grizzly Bear", weight: "270" },
+  { id: 3, name: "Black Bear", weight: "135" },
+  { id: 4, name: "Great White Shark", weight: "1100" },
+  { id: 5, name: "Tiger Shark", weight: "600" },
+  { id: 6, name: "Hammerhead Shark", weight: "230" },
+  { id: 7, name: "Blue Whale", weight: "140000" },
+  { id: 8, name: "Humpback Whale", weight: "30000" },
+  { id: 9, name: "Killer Whale", weight: "6000" },
+];
 
+const ELEPHANT_DATA = [
+  { name: "Asian Elephant", weight: "4000" },
+  { name: "African Bush Elephant", weight: "6000" },
+  { name: "Forest Elephant", weight: "2700" },
+  { name: "Savanna Elephant", weight: "7500" },
+  { name: "Indian Elephant", weight: "3500" },
+  { name: "Sri Lankan Elephant", weight: "4500" },
+  { name: "Sumatran Elephant", weight: "2000" },
+  { name: "Borneo Elephant", weight: "1900" },
+  { name: "Pygmy Elephant", weight: "1800" },
+  { name: "Mammoth (Extinct)", weight: "8000" },
+];
+
+const INITIAL_ELEPHANT_ROWS = [
+  { id: 1, name: "Asian Elephant", weight: "4000" },
+  { id: 2, name: "African Bush Elephant", weight: "6000" },
+  { id: 3, name: "Forest Elephant", weight: "2700" },
+];
+
+function SelfHostedDemo({ isActive = true }: { isActive?: boolean }) {
   const [query, setQuery] = useState("");
   const [rows, setRows] = useState(ANIMAL_DATA.slice(0, 3));
   const [isLoading, setIsLoading] = useState(false);
@@ -351,27 +370,8 @@ function SelfHostedDemo({ isActive = true }: { isActive?: boolean }) {
 }
 
 function AnimationDemo({ isActive = true }: { isActive?: boolean }) {
-  const ELEPHANT_DATA = [
-    { name: "Asian Elephant", weight: "4000" },
-    { name: "African Bush Elephant", weight: "6000" },
-    { name: "Forest Elephant", weight: "2700" },
-    { name: "Savanna Elephant", weight: "7500" },
-    { name: "Indian Elephant", weight: "3500" },
-    { name: "Sri Lankan Elephant", weight: "4500" },
-    { name: "Sumatran Elephant", weight: "2000" },
-    { name: "Borneo Elephant", weight: "1900" },
-    { name: "Pygmy Elephant", weight: "1800" },
-    { name: "Mammoth (Extinct)", weight: "8000" },
-  ];
-
-  const INITIAL_ROWS = [
-    { id: 1, name: "Asian Elephant", weight: "4000" },
-    { id: 2, name: "African Bush Elephant", weight: "6000" },
-    { id: 3, name: "Forest Elephant", weight: "2700" },
-  ];
-
-  const [primaryRows, setPrimaryRows] = useState(INITIAL_ROWS);
-  const [replicaRows, setReplicaRows] = useState(INITIAL_ROWS);
+  const [primaryRows, setPrimaryRows] = useState(INITIAL_ELEPHANT_ROWS);
+  const [replicaRows, setReplicaRows] = useState(INITIAL_ELEPHANT_ROWS);
   const [highlightPrimary, setHighlightPrimary] = useState(-1);
   const [highlightReplica, setHighlightReplica] = useState(-1);
   const [packetState, setPacketState] = useState<
@@ -384,7 +384,6 @@ function AnimationDemo({ isActive = true }: { isActive?: boolean }) {
     let mounted = true;
 
     const runAnimation = async () => {
-      let cycleCount = 0;
       let nameIndex = 3;
       let rowUpdateIndex = 0;
 
@@ -450,8 +449,6 @@ function AnimationDemo({ isActive = true }: { isActive?: boolean }) {
 
         // 4. Hold
         await new Promise((r) => setTimeout(r, 1700));
-
-        cycleCount++;
       }
     };
 

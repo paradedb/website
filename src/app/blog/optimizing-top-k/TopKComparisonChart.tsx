@@ -9,6 +9,7 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
+import { useEffect, useState } from "react";
 
 const data = [
   {
@@ -24,55 +25,65 @@ const data = [
 ];
 
 export default function TopKComparisonChart() {
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
   return (
     <div className="topk-comparison-chart my-6 p-2 sm:p-4 bg-transparent">
       <h3 className="text-base sm:text-lg font-semibold text-slate-700 dark:text-slate-100">
         Top K Text Search Query Time: ParadeDB vs Postgres GIN
       </h3>
       <div className="mt-4 h-72 w-full select-none pointer-events-none">
-        <ResponsiveContainer width="100%" height="100%">
-          <BarChart
-            data={data}
-            margin={{ top: 24, right: 8, left: 8, bottom: 8 }}
-            accessibilityLayer={false}
-          >
-            <CartesianGrid
-              stroke="var(--topk-grid)"
-              strokeDasharray="4 4"
-              vertical={false}
-            />
-            <XAxis
-              dataKey="engine"
-              tickLine={false}
-              axisLine={false}
-              tick={{ fill: "var(--topk-tick)", fontSize: 14 }}
-            />
-            <YAxis
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value: number) =>
-                `${value.toLocaleString("en-US")} ms`
-              }
-              tick={{ fill: "var(--topk-tick)", fontSize: 12 }}
-              width={90}
-            />
-            <Bar
-              dataKey="timeMs"
-              fill="var(--topk-bar)"
-              radius={[0, 0, 0, 0]}
-              isAnimationActive={false}
-              activeBar={false}
+        {!isMounted ? (
+          <div className="h-full w-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50" />
+        ) : (
+          <ResponsiveContainer width="100%" height="100%" minWidth={0}>
+            <BarChart
+              data={data}
+              margin={{ top: 24, right: 8, left: 8, bottom: 8 }}
+              accessibilityLayer={false}
             >
-              <LabelList
-                dataKey="label"
-                position="top"
-                fill="var(--topk-label)"
-                fontSize={12}
-                fontWeight={600}
+              <CartesianGrid
+                stroke="var(--topk-grid)"
+                strokeDasharray="4 4"
+                vertical={false}
               />
-            </Bar>
-          </BarChart>
-        </ResponsiveContainer>
+              <XAxis
+                dataKey="engine"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fill: "var(--topk-tick)", fontSize: 14 }}
+              />
+              <YAxis
+                tickLine={false}
+                axisLine={false}
+                tickFormatter={(value: number) =>
+                  `${value.toLocaleString("en-US")} ms`
+                }
+                tick={{ fill: "var(--topk-tick)", fontSize: 12 }}
+                width={90}
+              />
+              <Bar
+                dataKey="timeMs"
+                fill="var(--topk-bar)"
+                radius={[0, 0, 0, 0]}
+                isAnimationActive={false}
+                activeBar={false}
+              >
+                <LabelList
+                  dataKey="label"
+                  position="top"
+                  fill="var(--topk-label)"
+                  fontSize={12}
+                  fontWeight={600}
+                />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        )}
       </div>
       <style jsx global>{`
         .topk-comparison-chart {

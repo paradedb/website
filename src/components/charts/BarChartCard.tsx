@@ -1,6 +1,7 @@
 "use client";
 
 import { BarChart, Card, Subtitle, Bold } from "@tremor/react";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface BarChartCardProps {
@@ -135,13 +136,14 @@ export function BarChartCard({
         style={{ position: "relative" }}
       >
         {!isMounted ? (
-          <img
+          <Image
             src={imageSrc}
             alt={alt}
+            width={800}
+            height={400}
+            unoptimized
             className={`w-full ${chartHeight} object-contain`}
             style={{ display: "block", width: "100%" }}
-            aria-hidden="false"
-            role="img"
           />
         ) : (
           <BarChart

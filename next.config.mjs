@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 import createMDX from "@next/mdx";
-import path from "path";
 import rehypeHighlight from "rehype-highlight";
 import rehypeSlug from "rehype-slug";
 import rehypeKatex from "rehype-katex";

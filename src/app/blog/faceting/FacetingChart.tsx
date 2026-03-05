@@ -1,6 +1,7 @@
 "use client";
 
 import { Card, Title, BarChart } from "@tremor/react";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 
 let facetingChartStyleAdded = false;
@@ -265,13 +266,14 @@ export default function FacetingChart({
             </div>
           )}
           {!isMounted ? (
-            <img
+            <Image
               src={imageSrc}
               alt={alt}
+              width={800}
+              height={600}
+              unoptimized
               className="w-full h-[340px] md:h-[500px] mt-4 md:mt-6 object-contain"
               style={{ display: "block", width: "100%" }}
-              aria-hidden="false"
-              role="img"
             />
           ) : (
             <BarChart

@@ -3,6 +3,7 @@
 import { Card, Subtitle, Bold } from "@tremor/react";
 import { LineChart } from "@/components/LineChart";
 import { AvailableChartColorsKeys } from "@/lib/chartUtils";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
 interface LineChartCardProps {
@@ -129,13 +130,14 @@ export function LineChartCard({
         style={{ minHeight: responsiveMinHeight }}
       >
         {!isMounted ? (
-          <img
+          <Image
             src={imageSrc}
             alt={alt}
+            width={800}
+            height={400}
+            unoptimized
             className="w-full h-96 object-contain"
             style={{ display: "block", width: "100%" }}
-            aria-hidden="false"
-            role="img"
           />
         ) : (
           <LineChart
