@@ -4,6 +4,7 @@ import { ContentLayoutShell } from "@/components/ContentLayoutShell";
 import { useContentSidebar, SidebarSection } from "@/components/ContentSidebar";
 import { PrevNextBar } from "@/components/PrevNextBar";
 import { ResourceSection } from "@/lib/resources";
+import { isSamePath } from "@/lib/path-utils";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "../siteConfig";
 
@@ -19,7 +20,7 @@ export default function ResourcesLayoutClient({
 
   const allResources = resourceSections.flatMap((section) => section.resources);
   const currentResourceIdx = allResources.findIndex((item) =>
-    pathname.endsWith(item.href),
+    isSamePath(pathname, `${siteConfig.baseLinks.resources}/${item.href}`),
   );
   const canGoBackward = !isLearnIndex && currentResourceIdx > 0;
   const canGoForward =

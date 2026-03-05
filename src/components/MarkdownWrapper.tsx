@@ -17,12 +17,13 @@ export default function MarkdownWrapper({ children }: MarkdownWrapperProps) {
 
   useEffect(() => {
     // Ensure content is fully loaded before showing TOC
+    setContentLoaded(false);
     const timer = setTimeout(() => {
       setContentLoaded(true);
     }, 100);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [pathname]);
 
   // Extract basePath and slug from pathname
   // e.g. /blog/introducing-paradedb → basePath="blog", slug="introducing-paradedb"

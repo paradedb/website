@@ -1,6 +1,7 @@
 "use client";
 
 import { cx } from "@/lib/utils";
+import { isSamePath } from "@/lib/path-utils";
 import Link from "next/link";
 import { useState } from "react";
 
@@ -89,7 +90,7 @@ function CollapsibleSection({
             <SidebarLink
               key={item.key}
               href={item.href}
-              isActive={pathname.endsWith(item.key)}
+              isActive={isSamePath(pathname, item.href)}
               label={item.label}
               onClick={onLinkClick}
             />
@@ -160,7 +161,7 @@ export function useContentSidebar({
                     <SidebarLink
                       key={item.key}
                       href={item.href}
-                      isActive={pathname.endsWith(item.key)}
+                      isActive={isSamePath(pathname, item.href)}
                       label={item.label}
                       onClick={() => setMobileNavOpen(false)}
                     />
@@ -200,7 +201,7 @@ export function useContentSidebar({
                   <SidebarLink
                     key={item.key}
                     href={item.href}
-                    isActive={pathname.endsWith(item.key)}
+                    isActive={isSamePath(pathname, item.href)}
                     label={item.label}
                   />
                 )),

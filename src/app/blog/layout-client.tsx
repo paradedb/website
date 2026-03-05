@@ -4,6 +4,7 @@ import { ContentLayoutShell } from "@/components/ContentLayoutShell";
 import { useContentSidebar, SidebarSection } from "@/components/ContentSidebar";
 import { PrevNextBar } from "@/components/PrevNextBar";
 import { BlogSection } from "@/lib/blog";
+import { isSamePath } from "@/lib/path-utils";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "../siteConfig";
 
@@ -19,7 +20,7 @@ export default function BlogLayoutClient({
 
   const allLinks = blogSections.flatMap((section) => section.links);
   const currentPageIdx = allLinks.findIndex((item) =>
-    pathname.endsWith(item.href),
+    isSamePath(pathname, `${siteConfig.baseLinks.blog}/${item.href}`),
   );
   const canGoBackward = !isBlogIndex && currentPageIdx > 0;
   const canGoForward = !isBlogIndex && currentPageIdx < allLinks.length - 1;

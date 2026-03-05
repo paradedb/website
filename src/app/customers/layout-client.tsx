@@ -4,6 +4,7 @@ import { ContentLayoutShell } from "@/components/ContentLayoutShell";
 import { useContentSidebar, SidebarSection } from "@/components/ContentSidebar";
 import { PrevNextBar } from "@/components/PrevNextBar";
 import { BlogLink } from "@/lib/blog";
+import { isSamePath } from "@/lib/path-utils";
 import { usePathname } from "next/navigation";
 import { siteConfig } from "../siteConfig";
 
@@ -18,7 +19,7 @@ export default function CustomersLayoutClient({
   const isCustomersIndex = pathname === siteConfig.baseLinks.customers;
 
   const currentPageIdx = caseStudies.findIndex((item) =>
-    pathname.endsWith(item.href),
+    isSamePath(pathname, `${siteConfig.baseLinks.customers}/${item.href}`),
   );
   const canGoBackward = !isCustomersIndex && currentPageIdx > 0;
   const canGoForward =

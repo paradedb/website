@@ -7,45 +7,59 @@ interface TOCItem {
   text: string;
 }
 
+function toHeadingSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 export default function TableOfContents() {
   const [headings, setHeadings] = useState<TOCItem[]>([]);
   const [activeId, setActiveId] = useState<string>("");
 
   useEffect(() => {
     let observer: IntersectionObserver | null = null;
-    const clickHandlers = new Map<Element, () => void>();
+    const content = document.querySelector("article");
+
+    if (!content) {
+      setHeadings([]);
+      return;
+    }
 
     const scanHeadings = () => {
-      // Clean up previous observer and listeners
+      // Clean up previous observer
       if (observer) {
         observer.disconnect();
       }
-      clickHandlers.forEach((handler, el) => {
-        el.removeEventListener("click", handler);
-      });
-      clickHandlers.clear();
 
-      const headingElements = document.querySelectorAll("h1, h2");
-      const headingItems: TOCItem[] = Array.from(headingElements).map(
-        (heading) => {
-          let id = heading.id;
-          if (!id) {
-            const text = heading.textContent?.replace("#", "").trim() || "";
-            id = text
-              .toLowerCase()
-              .replace(/[^a-z0-9\s-]/g, "")
-              .replace(/\s+/g, "-")
-              .replace(/-+/g, "-")
-              .replace(/^-|-$/g, "");
-            heading.id = id;
-          }
-
-          return {
-            id,
-            text: heading.textContent?.replace("#", "").trim() || "",
-          };
-        },
+      const headingElements = Array.from(
+        content.querySelectorAll<HTMLHeadingElement>("h1, h2"),
       );
+      const usedIds = new Set<string>();
+      const headingItems: TOCItem[] = headingElements.map((heading, index) => {
+        const text = heading.textContent?.replace("#", "").trim() || "";
+        const baseId = heading.id || toHeadingSlug(text) || `section-${index + 1}`;
+
+        let uniqueId = baseId;
+        let suffix = 2;
+        while (usedIds.has(uniqueId)) {
+          uniqueId = `${baseId}-${suffix}`;
+          suffix += 1;
+        }
+
+        if (heading.id !== uniqueId) {
+          heading.id = uniqueId;
+        }
+        usedIds.add(uniqueId);
+
+        return {
+          id: uniqueId,
+          text,
+        };
+      });
 
       const validHeadings = headingItems.filter((h) => h.id && h.text);
       setHeadings(validHeadings);
@@ -65,18 +79,10 @@ export default function TableOfContents() {
 
       headingElements.forEach((heading) => {
         observer!.observe(heading);
-
-        (heading as HTMLElement).style.cursor = "pointer";
-        const handler = () => {
-          window.history.pushState(null, "", `#${heading.id}`);
-        };
-        heading.addEventListener("click", handler);
-        clickHandlers.set(heading, handler);
       });
     };
 
     // Use MutationObserver to detect when content is loaded
-    const content = document.querySelector("article") ?? document.body;
     const mutationObserver = new MutationObserver(() => {
       scanHeadings();
     });
@@ -90,9 +96,6 @@ export default function TableOfContents() {
       if (observer) {
         observer.disconnect();
       }
-      clickHandlers.forEach((handler, el) => {
-        el.removeEventListener("click", handler);
-      });
     };
   }, []);
 
