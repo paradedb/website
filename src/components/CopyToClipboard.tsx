@@ -15,6 +15,7 @@ export default function CopyToClipboard({ code }: { code: string }) {
   return (
     <button
       onClick={copyToClipboard}
+      aria-label={copied ? "Copied" : "Copy code"}
       className="select-none cursor-pointer rounded-md border border-white/20 bg-transparent p-1.5 transition-colors hover:text-white/90 shadow-sm"
     >
       {!copied ? (

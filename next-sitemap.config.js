@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 const fs = require("fs");
 const path = require("path");
 
@@ -25,6 +24,14 @@ function getContentLastMod(urlPath) {
     } else if (urlPath.startsWith("/learn/")) {
       const slug = urlPath.replace("/learn/", "");
       contentPath = path.join(ROOT_DIR, "src/app/learn", slug, "metadata.json");
+    } else if (urlPath.startsWith("/customers/")) {
+      const slug = urlPath.replace("/customers/", "");
+      contentPath = path.join(
+        ROOT_DIR,
+        "src/app/customers",
+        slug,
+        "metadata.json",
+      );
     } else {
       return nowISO();
     }
@@ -154,13 +161,23 @@ module.exports = {
       };
     }
 
-    // Pricing
-    if (path === "/pricing") {
+    // Customer case studies
+    if (path.startsWith("/customers/") && path !== "/customers") {
       return {
         loc: path,
-        changefreq: "weekly",
-        priority: 0.6,
-        lastmod: nowISO(),
+        changefreq: "daily",
+        priority: 0.7,
+        lastmod: getContentLastMod(path),
+      };
+    }
+
+    // Customers landing page
+    if (path === "/customers") {
+      return {
+        loc: path,
+        changefreq: "daily",
+        priority: 0.7,
+        lastmod: getMostRecentContentDate("customers"),
       };
     }
 

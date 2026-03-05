@@ -6,7 +6,6 @@ export const siteConfig = {
   gtmId: "GTM-KMGRG564",
   baseLinks: {
     home: "/",
-    pricing: "/pricing",
     blog: "/blog",
     customers: "/customers",
     resources: "/learn",

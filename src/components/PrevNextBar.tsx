@@ -26,34 +26,36 @@ export function PrevNextBar({
       >
         <div className="flex items-center">
           {previousHref && (
-            <Link href={previousHref}>
-              <Button
-                className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
-                variant="light"
-              >
+            <Button
+              asChild
+              className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
+              variant="light"
+            >
+              <Link href={previousHref}>
                 <ArrowAnimated
                   className="relative right-3 rotate-180 transform stroke-gray-600 dark:stroke-slate-400"
                   aria-hidden="true"
                 />
                 <div>{previousLabel}</div>
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
         <div className="flex items-center">
           {nextHref && (
-            <Link href={nextHref}>
-              <Button
-                className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
-                variant="light"
-              >
+            <Button
+              asChild
+              className="group bg-transparent px-0 text-gray-600 dark:text-slate-400 hover:bg-transparent dark:bg-transparent dark:hover:bg-transparent"
+              variant="light"
+            >
+              <Link href={nextHref}>
                 {nextLabel}
                 <ArrowAnimated
                   className="stroke-gray-600 dark:stroke-slate-400"
                   aria-hidden="true"
                 />
-              </Button>
-            </Link>
+              </Link>
+            </Button>
           )}
         </div>
       </div>

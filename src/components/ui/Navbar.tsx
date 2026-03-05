@@ -271,6 +271,7 @@ export function Navigation() {
                 </div>
               </Link>
               <Button
+                asChild
                 className={cx(
                   "hidden px-4 md:flex rounded-none transition-all",
                   isHomePage && !open
@@ -278,7 +279,7 @@ export function Navigation() {
                     : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
                 )}
               >
-                <Link target="_blank" href={social.CALENDLY}>
+                <Link href={social.CALENDLY} target="_blank">
                   Book a Demo
                 </Link>
               </Button>
