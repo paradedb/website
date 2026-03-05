@@ -57,13 +57,13 @@ The most common approach for English text is simple whitespace and punctuation t
 
 Generally speaking there are three classes of tokenizers:
 
-1. **Word oriented tokenizers** break text into individual words at word boundaries. This includes simple whitespace tokenizers that split on spaces, as well as more sophisticated language-aware tokenizers that understand non-English character sets[^2] . These work well for most search applications where you want to match whole words.
+1. **Word oriented tokenizers** break text into individual words at word boundaries. This includes simple whitespace tokenizers that split on spaces, as well as more sophisticated language-aware tokenizers that understand non-English character sets[^2]. These work well for most search applications where you want to match whole words.
 
 2. **Partial Word Tokenizers** split words into smaller fragments, useful for matching parts of words or handling compound terms. [N-gram](https://en.wikipedia.org/wiki/N-gram) tokenizers create overlapping character sequences, while edge n-gram tokenizers focus on prefixes or suffixes. These are powerful for autocomplete features and fuzzy matching but can create noise in search results.
 
 3. **Structured Text Tokenizers** are designed for specific data formats like URLs, email addresses, file paths, or structured data. They preserve meaningful delimiters and handle domain-specific patterns that would be mangled by general-purpose tokenizers. These can be essential when your content contains non-prose text that needs special handling.
 
-For our example we will be using a simple tokenizer, but you can also toggle to a trigram (an n-gram with a length of 3) tokenizer below to get a feel for how different the output would be (don't forget you can change the text in the top box to play round).
+For our example we will be using a simple tokenizer, but you can also toggle to a trigram (an n-gram with a length of 3) tokenizer below to get a feel for how different the output would be (don't forget you can change the text in the top box to play around).
 
 <TokenizerDemo
   mode="tokenization"
@@ -121,14 +121,14 @@ Every search engine invests heavily here because everything else (scoring, ranki
 
 [^1]: Which is better? That depends: `it's` seems more correct and skips storing a useless `s` token, but it wouldn't match on a search for `it`.
 
-[^2]: General purpose morphological libraries like [Jieba](https://github.com/fxsjy/jieba) and [Lindera](https://github.com/lindera/lindera) are often used to provide tokenizers that can deal with Chinese, Korean, Japanese and characters.
+[^2]: General-purpose morphological libraries like [Jieba](https://github.com/fxsjy/jieba) and [Lindera](https://github.com/lindera/lindera) are often used to provide tokenizers that can deal with Chinese, Korean, and Japanese characters.
 
-[^3]: When we remove stopwords we still keep the original position of each token in the document. This allows positional queries ("find `cat` within five words of `dog`" even though we have discarded words.
+[^3]: When we remove stopwords we still keep the original position of each token in the document. This allows positional queries ("find `cat` within five words of `dog`"), even though we have discarded words.
 
-[^4]: Lucene and Tantivy both have stopwords off by default, and when enabled for English they use the same default list: `[a, an, and, are, as, at, be, but, by, for, if, in,into, is, it, no, not, of, on, or, such, that, the, their, then, there, these, they, this, to, was, will, with]`
+[^4]: Lucene and Tantivy both have stopwords off by default, and when enabled for English they use the same default list: `[a, an, and, are, as, at, be, but, by, for, if, in, into, is, it, no, not, of, on, or, such, that, the, their, then, there, these, they, this, to, was, will, with]`
 
 [^5]: Another method is vector search, which trades lexical stemming for searching over semantic meaning.
 
-[^6]: Words can also be overstemmed, consider `university` and `universe` which both stem to `univers`, but have very different meanings.
+[^6]: Words can also be overstemmed. Consider `university` and `universe`, which both stem to `univers`, but have very different meanings.
 
-[^7]: [Lemmatization](https://en.wikipedia.org/wiki/Lemmatization) uses actual word lists to make sure it only makes real words. To do this it accurately it needs to know the "part of speech" the source word is (noun, verb, etc..).
+[^7]: [Lemmatization](https://en.wikipedia.org/wiki/Lemmatization) uses actual word lists to make sure it only produces real words. To do this accurately, it needs to know the source word's part of speech (noun, verb, etc.).

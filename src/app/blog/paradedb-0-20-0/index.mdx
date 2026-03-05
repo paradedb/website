@@ -21,9 +21,9 @@ ParadeDB `0.20.0` delivers on three fronts that matter for real applications: se
 
 Modern applications often require more than just search: they need [facets](/learn/search-concepts/faceting), counts, histograms, and other analytics on their search results. While dedicated search engines excel at aggregations, when you're building on a transactional database you often need to do a bit of gymnastics with the query planner to get things working without visiting your indexes twice.
 
-We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen.
+We've had fast aggregations on top of search queries for a while now, but it's not something we've talked about much. With `0.20.0` we've overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen.
 
-Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
+Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function that can be used in two ways:
 
 - as an aggregate function, running a search query and providing aggregate results
 - as a window function, running a search query and providing aggregate results **alongside** the TopN search result
@@ -75,7 +75,7 @@ This can also be done with a window function, which adds an extra column contain
 
 ```sql
 SELECT id, description,
-       count(*) OVER (),
+       count(*) OVER ()
 FROM mock_items
 WHERE description ||| 'shoes'
 ORDER BY rating DESC
@@ -103,7 +103,7 @@ LIMIT 2;
   3 | Sleek running shoes | {"buckets": [{"key": 4, "doc_count": 1},
                                          {"key": 5, "doc_count": 1},
                                          {"key": 3, "doc_count": 1} ]}
-  3 | Generic shoes       | {"buckets": [{"key": 4, "doc_count": 1},
+  5 | Generic shoes       | {"buckets": [{"key": 4, "doc_count": 1},
                                          {"key": 5, "doc_count": 1},
                                          {"key": 3, "doc_count": 1} ]}
 (2 rows)
@@ -207,7 +207,7 @@ Since we first introduced these features in `0.19.0` we've increased single row 
   alt="Bar chart showing write performance improvements across ParadeDB versions: v0.20.0 achieves 2016 updates per second, v0.19.0 achieves 1857 updates per second, and v0.18.0 achieves 120 updates per second, demonstrating over 16x improvement from v0.18.0 to v0.20.0"
 />
 
-Again, you can expect a follow up post with all the gory data-structure details.
+Again, you can expect a follow-up post with all the gory data-structure details.
 
 ## Why This Matters
 
