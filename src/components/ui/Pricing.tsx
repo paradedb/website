@@ -1,5 +1,5 @@
 import { Badge } from "./Badge";
-import { Button } from "../Button";
+import { Button, type ButtonProps } from "../Button";
 import Link from "next/link";
 import { RiCheckLine } from "@remixicon/react";
 import { documentation, social } from "@/lib/links";
@@ -18,7 +18,7 @@ const PricingCard = ({
   features: string[];
   buttonText: string;
   buttonLink: string;
-  buttonVariant?: "primary" | "secondary" | "light";
+  buttonVariant?: ButtonProps["variant"];
   badgeText: string;
 }) => (
   <div className="flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-slate-900/50 text-left items-start">
@@ -51,7 +51,7 @@ const PricingCard = ({
     <Button
       asChild
       className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
-      variant={buttonVariant as any}
+      variant={buttonVariant}
     >
       <Link
         href={buttonLink}

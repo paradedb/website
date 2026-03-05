@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import type { StaticImageData } from "next/image";
 import { useState, useEffect } from "react";
 
 interface CustomerListImageProps {
@@ -12,7 +13,9 @@ export default function CustomerListImage({
   slug,
   title,
 }: CustomerListImageProps) {
-  const [heroImage, setHeroImage] = useState<any>(null);
+  const [heroImage, setHeroImage] = useState<StaticImageData | string | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

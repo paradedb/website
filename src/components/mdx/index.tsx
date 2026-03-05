@@ -14,16 +14,19 @@ function slugify(str: string) {
     .replace(/\-\-+/g, "-"); // Replace multiple - with single -
 }
 
-function CustomHeading(props: any) {
-  let slug = slugify(props.children);
+type CustomHeadingProps = {
+  level: 1 | 2 | 3 | 4 | 5 | 6;
+  className?: string;
+  children?: React.ReactNode;
+};
+
+function CustomHeading({ level, className, children }: CustomHeadingProps) {
+  const slug = slugify(children ? String(children) : "");
   return React.createElement(
-    `h${props.level}`,
+    `h${level}`,
     {
       id: slug,
-      className: cx(
-        "scroll-mt-36 md:scroll-mt-24 group relative",
-        props.className,
-      ),
+      className: cx("scroll-mt-36 md:scroll-mt-24 group relative", className),
     },
     [
       React.createElement("a", {
@@ -31,7 +34,7 @@ function CustomHeading(props: any) {
         key: `link-${slug}`,
         className: "anchor-link",
       }),
-      props.children,
+      children,
     ],
   );
 }
@@ -70,23 +73,43 @@ export const Bold = (props: React.HTMLAttributes<HTMLSpanElement>) => (
   <span className="font-semibold text-gray-900 dark:text-white" {...props} />
 );
 
-export function CustomLink(props: any) {
-  let href = props.href;
-  const style = "text-indigo-600 font-medium hover:text-indigo-500";
+type CustomLinkProps = React.AnchorHTMLAttributes<HTMLAnchorElement> & {
+  href: string;
+};
+
+export function CustomLink({
+  href,
+  children,
+  className,
+  ...props
+}: CustomLinkProps) {
+  const style = cx("text-indigo-600 font-medium hover:text-indigo-500", className);
   if (href.startsWith("/")) {
     return (
       <Link className={style} href={href} {...props}>
-        {props.children}
+        {children}
       </Link>
     );
   }
 
   if (href.startsWith("#")) {
-    return <a {...props} className={style} />;
+    return (
+      <a href={href} className={style} {...props}>
+        {children}
+      </a>
+    );
   }
 
   return (
-    <a className={style} target="_blank" rel="noopener noreferrer" {...props} />
+    <a
+      href={href}
+      className={style}
+      target="_blank"
+      rel="noopener noreferrer"
+      {...props}
+    >
+      {children}
+    </a>
   );
 }
 
@@ -97,7 +120,7 @@ export const ChangelogEntry = ({
 }: {
   version: string;
   date: string;
-  children: any;
+  children: React.ReactNode;
 }) => (
   <div className="relative my-20 flex flex-col justify-center gap-x-14 border-b border-gray-200 md:flex-row">
     <div className="mb-4 md:mb-10 md:w-1/3">

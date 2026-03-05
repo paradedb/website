@@ -2,6 +2,7 @@
 
 import { HeroImage } from "@/components/HeroImage";
 import { useState, useEffect } from "react";
+import type { StaticImageData } from "next/image";
 
 interface BlogListImageProps {
   slug: string;
@@ -9,7 +10,9 @@ interface BlogListImageProps {
 }
 
 export default function BlogListImage({ slug, title }: BlogListImageProps) {
-  const [heroImage, setHeroImage] = useState<any>(null);
+  const [heroImage, setHeroImage] = useState<StaticImageData | string | null>(
+    null,
+  );
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

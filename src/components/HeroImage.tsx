@@ -1,14 +1,16 @@
-import Image from "next/image";
+import Image, { type StaticImageData } from "next/image";
+
+type HeroImageSource = string | StaticImageData;
 
 interface HeroImageProps {
-  src?: any; // Next.js imported image
+  src?: HeroImageSource;
   alt?: string;
   className?: string;
   metadata?: {
     title?: string;
     hideHeroImage?: boolean;
   };
-  heroImage?: any; // Hero image passed from content loader
+  heroImage?: HeroImageSource;
 }
 
 export function HeroImage({

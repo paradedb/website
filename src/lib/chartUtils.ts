@@ -111,15 +111,15 @@ export const getYAxisDomain = (
 // Tremor Raw hasOnlyOneValueForKey [v0.1.0]
 
 export function hasOnlyOneValueForKey(
-  array: any[],
+  array: Array<Record<string, unknown>>,
   keyToCheck: string,
 ): boolean {
-  const val: any[] = [];
+  let valueCount = 0;
 
   for (const obj of array) {
     if (Object.prototype.hasOwnProperty.call(obj, keyToCheck)) {
-      val.push(obj[keyToCheck]);
-      if (val.length > 1) {
+      valueCount += 1;
+      if (valueCount > 1) {
         return false;
       }
     }
