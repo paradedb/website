@@ -4,8 +4,8 @@ import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { GoogleTagManager } from "@next/third-parties/google";
 import CookieConsentLoader from "@/components/CookieConsentLoader";
-import AnalyticsLoader from "@/components/AnalyticsLoader";
 import { siteConfig } from "./siteConfig";
 
 import "./globals.css";
@@ -80,16 +80,21 @@ export default function RootLayout({
               window.gtag = function(){dataLayer.push(arguments);};
 
               gtag('consent', 'default', {
-                'analytics_storage': 'denied',
+                'analytics_storage': 'granted',
                 'ad_storage': 'denied',
                 'ad_user_data': 'denied',
-                'ad_personalization': 'denied',
+                'ad_personalization': 'denied'
+              });
+
+              gtag('consent', 'default', {
+                'analytics_storage': 'denied',
                 'wait_for_update': 500,
+                'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO']
               });
             `,
           }}
         />
-        <AnalyticsLoader gtmId={siteConfig.gtmId} />
+        <GoogleTagManager gtmId={siteConfig.gtmId} />
         <ThemeProvider
           defaultTheme="system"
           attribute="class"

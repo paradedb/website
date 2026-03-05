@@ -4,10 +4,6 @@ import { useEffect } from "react";
 import CookieConsent, { getCookieConsentValue } from "react-cookie-consent";
 import { legal } from "@/lib/links";
 import Link from "next/link";
-import {
-  COOKIE_CONSENT_COOKIE_NAME,
-  COOKIE_CONSENT_EVENT,
-} from "@/lib/cookieConsent";
 
 declare global {
   interface Window {
@@ -15,13 +11,7 @@ declare global {
   }
 }
 
-function notifyConsentChange(granted: boolean) {
-  window.dispatchEvent(
-    new CustomEvent(COOKIE_CONSENT_EVENT, {
-      detail: { analyticsGranted: granted },
-    }),
-  );
-}
+const COOKIE_NAME = "paradedb_cookie_consent";
 
 function updateConsent(granted: boolean) {
   if (typeof window.gtag === "function") {
@@ -29,13 +19,11 @@ function updateConsent(granted: boolean) {
       analytics_storage: granted ? "granted" : "denied",
     });
   }
-
-  notifyConsentChange(granted);
 }
 
 export default function CookieConsentBanner() {
   useEffect(() => {
-    const cookieValue = getCookieConsentValue(COOKIE_CONSENT_COOKIE_NAME);
+    const cookieValue = getCookieConsentValue(COOKIE_NAME);
     if (cookieValue === "true") {
       updateConsent(true);
     } else if (cookieValue === "false") {
@@ -45,7 +33,7 @@ export default function CookieConsentBanner() {
 
   return (
     <CookieConsent
-      cookieName={COOKIE_CONSENT_COOKIE_NAME}
+      cookieName={COOKIE_NAME}
       disableStyles
       location="bottom"
       containerClasses="fixed bottom-0 left-0 right-0 z-[9999] flex flex-col items-center justify-between gap-4 bg-slate-900 px-6 py-4 text-sm text-slate-200 shadow-lg sm:flex-row sm:gap-6"
