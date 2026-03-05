@@ -25,7 +25,7 @@ const formatStarCount = (count: number) => {
 };
 
 export function Navigation() {
-  const [stars, setStars] = React.useState();
+  const [stars, setStars] = React.useState<number | null>(null);
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
   const isHomePage = pathname === siteConfig.baseLinks.home;
@@ -50,22 +50,35 @@ export function Navigation() {
         const response = await fetch(github.API);
         if (response.ok) {
           const data = await response.json();
-          setStars(data.stargazers_count);
+          if (typeof data.stargazers_count === "number") {
+            setStars(data.stargazers_count);
+          }
         }
       } catch {
         // Non-critical: star count is decorative
       }
     }
 
-    // Defer non-critical fetch to avoid competing with initial render
-    const schedule =
-      typeof requestIdleCallback === "function"
-        ? requestIdleCallback
-        : (cb: () => void) => setTimeout(cb, 2000);
-    const id = schedule(() => fetchStars());
+    let idleId: number | undefined;
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+    if (typeof requestIdleCallback === "function") {
+      idleId = requestIdleCallback(() => {
+        void fetchStars();
+      });
+    } else {
+      timeoutId = setTimeout(() => {
+        void fetchStars();
+      }, 2000);
+    }
+
     return () => {
-      if (typeof cancelIdleCallback === "function") {
-        cancelIdleCallback(id as number);
+      if (idleId !== undefined && typeof cancelIdleCallback === "function") {
+        cancelIdleCallback(idleId);
+      }
+
+      if (timeoutId !== undefined) {
+        clearTimeout(timeoutId);
       }
     };
   }, []);

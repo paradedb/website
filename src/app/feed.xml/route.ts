@@ -18,11 +18,15 @@ export async function GET() {
   blogLinks.forEach((post) => {
     // normalize any leading slashes
     const slug = String(post.href).replace(/^\/+/, "");
+    const author = Array.isArray(post.author)
+      ? post.author.join(", ")
+      : post.author;
+
     feed.item({
       title: post.name,
       url: new URL(`/blog/${slug}`, siteConfig.url).toString(), // canonical
       date: post.date,
-      author: post.author,
+      author,
       description: post.description,
       categories: post.categories || [],
     });

@@ -12,7 +12,7 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack && next-sitemap",
     "start": "next start",
-    "lint": "next lint ."
+    "lint": "eslint ."
   },
   "dependencies": {
     "@headlessui/react": "^2.2.9",

@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { AUTHORS } from "@/lib/authors";
+import { AUTHORS, type Author } from "@/lib/authors";
 
 interface AuthorSectionProps {
   authorName?: string | string[];
@@ -35,22 +35,21 @@ export function AuthorSection({
     : [finalAuthorName];
 
   // Get author info for each author
-  const authors = authorNames.map(
-    (name) =>
-      AUTHORS[name] || {
-        name: name,
-        headshot: null, // No headshot - will use fallback
-      },
+  const authors: Author[] = authorNames.map(
+    (name) => AUTHORS[name] || { name },
   );
 
   // Filter to only authors with headshots
-  const authorsWithHeadshots = authors.filter((author) => author.headshot);
+  const authorsWithHeadshots = authors.filter(
+    (
+      author,
+    ): author is Author & { headshot: NonNullable<Author["headshot"]> } =>
+      Boolean(author.headshot),
+  );
   const authorsWithoutHeadshots = authors.length - authorsWithHeadshots.length;
 
   // Format author names for display
-  const formatAuthorNames = (
-    authorList: { name: string; headshot: unknown }[],
-  ) => {
+  const formatAuthorNames = (authorList: Author[]) => {
     if (authorList.length === 1) {
       return authorList[0].name;
     } else if (authorList.length === 2) {

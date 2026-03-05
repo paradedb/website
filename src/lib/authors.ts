@@ -9,7 +9,7 @@ import {
 
 export interface Author {
   name: string;
-  headshot: StaticImageData;
+  headshot?: StaticImageData;
   bio?: string;
 }
 
