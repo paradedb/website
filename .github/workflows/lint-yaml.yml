@@ -22,7 +22,6 @@ jobs:
   lint-yaml:
     name: Lint YAML Files
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
       - name: Checkout Git Repository
@@ -35,4 +34,4 @@ jobs:
         run: npm install -g prettier
 
       - name: Check YAML Formatting
-        run: prettier --check "**/*.{yml,yaml}" --ignore-path .prettierignore
+        run: prettier --check "**/*.{yml,yaml}"

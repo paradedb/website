@@ -18,19 +18,10 @@ jobs:
   lint-format:
     name: Lint File Endings & Trailing Whitespaces
     runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
 
     steps:
       - name: Checkout Git Repository
         uses: actions/checkout@v6
-
-      - name: Install fd Search Tool
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fd-find
-          mkdir -p "$HOME/.local/bin"
-          sudo ln -s $(which fdfind) "$HOME/.local/bin/fd"
-          echo "$HOME/.local/bin" >> $GITHUB_PATH
 
       - name: Check for CRLF Files
         run: |
@@ -43,7 +34,12 @@ jobs:
 
       - name: Check for Trailing Whitespaces
         run: |
-          FILES=$(git grep -Ilr '[[:blank:]]$' -- ':(exclude)*.sql' ':(exclude)*.rs' || true)
+          FILES=$(git grep -Ilr '[[:blank:]]$' -- \
+            ':(exclude)*.nix' \
+            ':(exclude)*.sql' \
+            ':(exclude)*.out' \
+            ':(exclude)*.rs' \
+            ':(exclude)docker/manifests/**' || true)
           if [[ ! -z "$FILES" ]]; then
             echo "The following files have trailing whitespaces:"
             echo "$FILES"
