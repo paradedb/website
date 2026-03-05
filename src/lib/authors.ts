@@ -9,7 +9,7 @@ import {
 
 export interface Author {
   name: string;
-  headshot: StaticImageData;
+  headshot?: StaticImageData;
   bio?: string;
 }
 
@@ -33,5 +33,11 @@ export const AUTHORS: Record<string, Author> = {
   "Ankit Mittal": {
     name: "Ankit Mittal",
     headshot: AnkitHeadshot,
+  },
+  "Mathew Pregasen": {
+    name: "Mathew Pregasen",
+  },
+  "Olive Ratliff": {
+    name: "Olive Ratliff",
   },
 };

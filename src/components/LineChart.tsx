@@ -546,6 +546,11 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
 
     const yAxisDomain = getYAxisDomain(autoMinValue, minValue, maxValue);
     const hasOnValueChange = !!onValueChange;
+
+    const startEndTicks =
+      startEndOnly && data.length > 0
+        ? [data[0][index], data[data.length - 1][index]]
+        : undefined;
     const prevActiveRef = React.useRef<boolean | undefined>(undefined);
     const prevLabelRef = React.useRef<string | undefined>(undefined);
 
@@ -636,11 +641,7 @@ const LineChart = React.forwardRef<HTMLDivElement, LineChartProps>(
               dataKey={index}
               interval={startEndOnly ? "preserveStartEnd" : intervalType}
               tick={{ transform: "translate(0, 6)" }}
-              ticks={
-                startEndOnly
-                  ? [data[0][index], data[data.length - 1][index]]
-                  : undefined
-              }
+              ticks={startEndTicks}
               fill=""
               stroke=""
               className={cx(

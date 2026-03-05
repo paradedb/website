@@ -7,7 +7,7 @@ export interface BlogPost {
   slug: string;
   title: string;
   date: string;
-  author: string;
+  author: string | string[];
   description: string;
   categories?: string[];
   image?: string;
@@ -19,11 +19,28 @@ export interface BlogPostMetadata {
   slug: string;
   title: string;
   date: string;
-  author: string;
+  author: string | string[];
   description: string;
   categories?: string[];
   image?: string;
   canonical?: string;
+}
+
+function normalizeAuthor(author: unknown): string | string[] {
+  if (Array.isArray(author)) {
+    const authors = author.filter(
+      (value): value is string =>
+        typeof value === "string" && value.trim().length > 0,
+    );
+
+    return authors.length > 0 ? authors : "ParadeDB Team";
+  }
+
+  if (typeof author === "string" && author.trim().length > 0) {
+    return author;
+  }
+
+  return "ParadeDB Team";
 }
 
 export async function getAllPosts(): Promise<BlogPostMetadata[]> {
@@ -49,7 +66,7 @@ export async function getAllPosts(): Promise<BlogPostMetadata[]> {
             slug,
             title: metadata.title,
             date: metadata.date,
-            author: metadata.author,
+            author: normalizeAuthor(metadata.author),
             description: metadata.description,
             categories: metadata.categories,
             image: metadata.image,
@@ -87,7 +104,7 @@ export async function getPostBySlug(slug: string): Promise<BlogPost | null> {
       slug,
       title: metadata.title,
       date: metadata.date,
-      author: metadata.author,
+      author: normalizeAuthor(metadata.author),
       description: metadata.description,
       categories: metadata.categories,
       image: metadata.image,
@@ -108,7 +125,7 @@ export interface BlogLink {
   name: string;
   href: string;
   date: string;
-  author: string;
+  author: string | string[];
   description: string;
   categories?: string[];
 }
@@ -133,7 +150,7 @@ export async function getCaseStudyLinks(): Promise<BlogLink[]> {
           name: metadata.title,
           href: slug,
           date: metadata.date,
-          author: metadata.author,
+          author: normalizeAuthor(metadata.author),
           description: metadata.description,
           categories: metadata.categories,
         });

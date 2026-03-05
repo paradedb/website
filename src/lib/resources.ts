@@ -3,6 +3,14 @@ import path from "path";
 
 const contentDirectory = path.join(process.cwd(), "src/app/learn");
 
+function normalizeResourceType(type: unknown): string {
+  if (typeof type === "string" && type.trim().length > 0) {
+    return type;
+  }
+
+  return "guide";
+}
+
 export interface Resource {
   slug: string;
   title: string;
@@ -95,7 +103,7 @@ export async function getAllResources(): Promise<ResourceMetadata[]> {
             author: metadata.author,
             description: metadata.description,
             categories: metadata.categories,
-            type: metadata.type,
+            type: normalizeResourceType(metadata.type),
             section: sectionDisplay,
             order: metadata.order,
             image: metadata.image,
@@ -138,7 +146,7 @@ export async function getResourceBySlug(
     author: metadata.author,
     description: metadata.description,
     categories: metadata.categories,
-    type: metadata.type,
+    type: normalizeResourceType(metadata.type),
     section: sectionDisplay,
     order: metadata.order,
     image: metadata.image,

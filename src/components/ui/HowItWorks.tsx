@@ -58,9 +58,11 @@ const AnimatedCell = ({
     },
   );
 
-  if (text !== display.curr) {
-    setDisplay({ curr: text, prev: display.curr });
-  }
+  useEffect(() => {
+    if (text !== display.curr) {
+      setDisplay({ curr: text, prev: display.curr });
+    }
+  }, [text, display.curr]);
 
   useEffect(() => {
     if (display.prev) {
