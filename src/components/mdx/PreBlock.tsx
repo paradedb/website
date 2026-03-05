@@ -20,6 +20,7 @@ export default function PreBlock(props: React.ComponentProps<"pre">) {
       {props.children}
       <button
         onClick={handleCopy}
+        aria-label={copied ? "Copied" : "Copy code"}
         className="absolute right-3 top-3 select-none cursor-pointer rounded-md border border-white/20 bg-transparent p-1.5 shadow-sm transition-colors hover:text-white/90"
       >
         {!copied ? (

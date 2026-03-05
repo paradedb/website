@@ -53,7 +53,6 @@ The `layout.tsx` and `page.tsx` files are boilerplate — every post uses the sa
 ### Path Aliases
 
 - `@/*` → `./src/*`
-- `@markdown/*` → `./src/app/markdown/*`
 
 ## Conventions
 

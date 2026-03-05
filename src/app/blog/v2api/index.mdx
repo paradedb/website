@@ -20,7 +20,7 @@ With the core now stable and fast, we can finally fix the surface.
 
 The v2 API gives ParadeDB a clearer, more predictable model for defining indexes and writing search queries. Field definitions, tokenization, and ranking live in SQL. We have different operators to do different things. Aggregations stay familiar thanks to a light touch of Elasticsearch’s DSL where it helps.
 
-In this post, we’ll walk through what’s new, and how the v2 API brings ParadeDB’s developer experience up to the standard of its engine, but before we start here's a side by side comparison our legacy and v2 APIs for a non-trivial `CREATE INDEX` statement.
+In this post, we’ll walk through what’s new, and how the v2 API brings ParadeDB’s developer experience up to the standard of its engine. Before we start, here’s a side-by-side comparison of our legacy and v2 APIs for a non-trivial `CREATE INDEX` statement.
 
 <Image
   src={compare}
@@ -32,7 +32,7 @@ In this post, we’ll walk through what’s new, and how the v2 API brings Parad
 
 The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have.
 
-All the code examples in this post will be using the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/quickstart).
+All the code examples in this post use the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/quickstart)).
 
 ```ini
 Table "public.mock_items"
@@ -69,7 +69,7 @@ This single statement creates a comprehensive search index without requiring you
 
 ## Understanding Tokenization
 
-One of the features we're most excited about in the v2 API is making [tokenization](https://docs.paradedb.com/documentation/tokenizers/overview) transparent and testable. We believe [understanding how text gets processed](/blog/when-tokenization-becomes-token) is crucial for building effective search experiences. The v2 API allows you to cast text to a tokenizer, then to a text array (`text[]`) to see exactly it be processed before you commit to an index configuration.
+One of the features we're most excited about in the v2 API is making [tokenization](https://docs.paradedb.com/documentation/tokenizers/overview) transparent and testable. We believe [understanding how text gets processed](/blog/when-tokenization-becomes-token) is crucial for building effective search experiences. The v2 API allows you to cast text to a tokenizer, then to a text array (`text[]`) to see exactly how it will be processed before you commit to an index configuration.
 
 ```sql
 SELECT 'Wireless noise-cancelling headphones'::pdb.unicode_words::text[];
@@ -226,7 +226,7 @@ Each operator has a specific semantic meaning:
 
 [Proximity search](https://docs.paradedb.com/documentation/full-text/proximity) is about finding terms that occur near each other, even when they aren't adjacent. This matters in domains like legal or compliance text, where meaning depends on concepts appearing together. For example, contract and obligation appearing within a few words of each other is very different from those words appearing in unrelated parts of a long document.
 
-A simple OR search (`contract ||| obligation`) is too broad here — it returns documents where the terms appear anywhere, not necessarily together."
+A simple OR search (`contract ||| obligation`) is too broad here — it returns documents where the terms appear anywhere, not necessarily together.
 
 The example below uses sleek shoes, which is a lighter example than legal text but illustrates the mechanics:
 
@@ -397,7 +397,7 @@ We'll have a full post coming up on how we built this search aggregations system
 
 ## Advanced Query Types
 
-For applications with sophisticated search requirements, the v2 API includes several [advanced query capabilities](https://docs.paradedb.com/documentation/query-builder/overview) that address complex use cases without requiring external systems or custom development. These features integrate seamlessly with the core search functionality, allowing you to build powerful search experiences using familiar SQL syntax."
+For applications with sophisticated search requirements, the v2 API includes several [advanced query capabilities](https://docs.paradedb.com/documentation/query-builder/overview) that address complex use cases without requiring external systems or custom development. These features integrate seamlessly with the core search functionality, allowing you to build powerful search experiences using familiar SQL syntax.
 
 ```sql
 -- "More Like This" for recommendations like document with an ID of 3

@@ -18,7 +18,6 @@ import { usePathname } from "next/navigation";
 import { cx } from "@/lib/utils";
 
 const navigation = {
-  // ... (rest of navigation object remains the same)
   company: [
     {
       name: "Customers",

@@ -58,8 +58,11 @@ export default async function HeroV3() {
                 Elastic alternative built as a Postgres extension.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-center mb-6 sm:mb-8 sm:px-0">
-                <Button className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none">
-                  <Link target="_blank" href={documentation.GETTING_STARTED}>
+                <Button
+                  asChild
+                  className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
+                >
+                  <Link href={documentation.GETTING_STARTED} target="_blank">
                     Get Started
                   </Link>
                 </Button>
