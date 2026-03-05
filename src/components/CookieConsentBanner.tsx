@@ -49,7 +49,9 @@ export default function CookieConsentBanner() {
       onDecline={() => updateConsent(false)}
     >
       We use cookies to analyze site usage and improve your experience.
-      Declining limits tracking to anonymous, cookieless data.{" "}
+      Declining limits browser-based tracking to anonymous, cookieless data.
+      Some server-side events (such as install script downloads) may still be
+      recorded.{" "}
       <Link href={legal.PRIVACY} className="underline hover:text-white">
         Privacy Policy
       </Link>
