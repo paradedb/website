@@ -34,10 +34,4 @@ export const AUTHORS: Record<string, Author> = {
     name: "Ankit Mittal",
     headshot: AnkitHeadshot,
   },
-  "Mathew Pregasen": {
-    name: "Mathew Pregasen",
-  },
-  "Olive Ratliff": {
-    name: "Olive Ratliff",
-  },
 };
