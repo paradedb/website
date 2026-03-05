@@ -14,6 +14,7 @@ import {
 import { ChangelogImage } from "@/components/mdx";
 import { BarChartCard } from "@/components/charts/BarChartCard";
 import { LineChartCard } from "@/components/charts/LineChartCard";
+import PreBlock from "@/components/mdx/PreBlock";
 
 const customComponents = {
   h1: H1,
@@ -23,6 +24,7 @@ const customComponents = {
   Bold: Bold,
   ul: Ul,
   a: CustomLink,
+  pre: PreBlock,
   ChangelogEntry: ChangelogEntry,
   ChangelogImage: ChangelogImage,
   BarChartCard: BarChartCard,

@@ -1,14 +1,6 @@
-"use client";
+import { ContentMdxPage } from "@/components/ContentMdxPage";
+import Content from "./index.mdx";
 
-import MarkdownWrapper from "@/components/MarkdownWrapper";
-
-// Import the MDX content directly
-import ResourceContent from "./index.mdx";
-
-export default function Resource() {
-  return (
-    <MarkdownWrapper>
-      <ResourceContent />
-    </MarkdownWrapper>
-  );
+export default function Page() {
+  return <ContentMdxPage Content={Content} />;
 }

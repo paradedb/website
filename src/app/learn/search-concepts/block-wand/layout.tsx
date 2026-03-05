@@ -1,10 +1,8 @@
-import type { Metadata } from "next";
-import { generateBlogMetadata } from "@/lib/blog-metadata";
+import {
+  ContentLayout,
+  createContentMetadataGenerator,
+} from "@/lib/content-layout";
 
-export async function generateMetadata(): Promise<Metadata> {
-  return generateBlogMetadata(__dirname);
-}
+export const generateMetadata = createContentMetadataGenerator(__dirname);
 
-export default function Layout({ children }: { children: React.ReactNode }) {
-  return children;
-}
+export default ContentLayout;

@@ -189,7 +189,6 @@ const nextConfig = {
 const withMDX = createMDX({
   extension: /\.(md|mdx)$/,
   options: {
-    providerImportSource: "@mdx-js/react",
     remarkPlugins: [
       [
         remarkMath,
