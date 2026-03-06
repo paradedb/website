@@ -66,7 +66,7 @@ pgrx includes a CLI tool, `cargo-pgrx`, that manages the full lifecycle:
 # Install the pgrx toolchain
 cargo install cargo-pgrx
 
-# Download and compile supported PostgreSQL versions (13-18) for testing
+# Download and compile the last five PostgreSQL versions for testing
 cargo pgrx init
 
 # Create a new extension project
@@ -120,7 +120,7 @@ This coverage means most extensions that could be written in C can be written in
 Several production extensions use pgrx:
 
 - [ParadeDB](https://github.com/paradedb/paradedb): search and analytics extension for PostgreSQL, built on Tantivy
-- [pgvectorscale](https://github.com/timescale/pgvectorscale): disk-based vector indexing from Timescale
+- [pgrag](https://github.com/neondatabase/pgrag): RAG pipeline extensions from Neon
 - [pg_graphql](https://github.com/supabase/pg_graphql): GraphQL query engine embedded in PostgreSQL, from Supabase
 - [pg_jsonschema](https://github.com/supabase/pg_jsonschema): JSON Schema validation as a PostgreSQL function
 
@@ -130,7 +130,7 @@ pgrx has also been adopted by major cloud and data platforms, including Microsof
 
 pgrx was created by [Eric Ridge](https://github.com/eeeebbbbrrrr), who had been building PostgreSQL extensions in C since version 8.0. The framework grew out of his work on [ZomboDB](https://github.com/zombodb/zombodb), an Elasticsearch-backed indexing extension (now deprecated) — after years of writing C extensions, he built pgrx to present PostgreSQL's internals through Rust's idioms instead. The project was originally named "pgx" and [renamed to pgrx](https://github.com/pgcentralfoundation/pgrx/issues/1106) in April 2023.
 
-pgrx is now maintained by the [PgCentral Foundation](https://pgcentral.org/), a 501(c)(3) nonprofit that provides the project with a community-governed home independent of any single company.
+The project lives under the [PgCentral Foundation](https://pgcentral.org/), a 501(c)(3) nonprofit, though day-to-day development is still led by Ridge and other core maintainers.
 
 ## When to Use pgrx
 
