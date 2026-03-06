@@ -35,12 +35,7 @@ jobs:
 
       - name: Check for Trailing Whitespaces
         run: |
-          FILES=$(git grep -Ilr '[[:blank:]]$' -- \
-            ':(exclude)*.nix' \
-            ':(exclude)*.sql' \
-            ':(exclude)*.out' \
-            ':(exclude)*.rs' \
-            ':(exclude)docker/manifests/**' || true)
+          FILES=$(git grep -Ilr '[[:blank:]]$' -- ':(exclude)*.sql' ':(exclude)*.rs' || true)
           if [[ ! -z "$FILES" ]]; then
             echo "The following files have trailing whitespaces:"
             echo "$FILES"
