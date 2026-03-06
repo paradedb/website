@@ -1,0 +1,9 @@
+{
+  "title": "What is pgrx?",
+  "date": "2026-02-24T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Learn about pgrx, the Rust framework for building PostgreSQL extensions with memory safety and modern tooling.",
+  "order": 2,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}

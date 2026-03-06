@@ -1,0 +1,143 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+PostgreSQL extensions have traditionally been written in C, which gives full access to the database's internals but requires manual memory management and careful handling of allocation contexts. A bug in a C extension can crash the entire database server. [pgrx](https://github.com/pgcentralfoundation/pgrx) is a Rust framework that changes this: you write Rust functions annotated with macros, and pgrx handles the FFI bindings, type conversions, SQL generation, and memory management. Memory errors, null pointer dereferences, and data races are caught at compile time rather than in production.
+
+## How pgrx Works
+
+pgrx sits between your Rust code and PostgreSQL's C extension API. When you annotate a function with `#[pg_extern]`, pgrx generates the C-compatible wrapper function, the SQL `CREATE FUNCTION` statement, and the type conversion logic at compile time.
+
+A minimal example:
+
+```rust
+use pgrx::prelude::*;
+
+// Tells PostgreSQL this is a loadable extension
+pgrx::pg_module_magic!();
+
+// Exposed to PostgreSQL as: CREATE FUNCTION hello(name text) RETURNS text
+#[pg_extern]
+fn hello(name: &str) -> String {
+    format!("Hello, {}!", name)
+}
+```
+
+After building and installing the extension, this function is callable from SQL:
+
+```sql
+SELECT hello('world');
+-- Returns: Hello, world!
+```
+
+The `#[pg_extern]` macro handles converting PostgreSQL's `text` datum to a Rust `&str` on input and a Rust `String` back to a `text` datum on output. This type mapping extends to integers, floats, arrays, JSON, composite types, and custom types you define.
+
+## Memory Safety Across the Boundary
+
+PostgreSQL manages memory through a hierarchy of memory contexts: short-lived contexts for individual expressions, transaction-scoped contexts, and long-lived contexts for cached data. C extensions must allocate in the correct context and avoid holding references across context resets, or risk use-after-free bugs.
+
+pgrx maps these contexts to Rust's ownership model. When a pgrx function returns a value, the framework allocates the result in the appropriate PostgreSQL memory context. Rust's borrow checker prevents you from holding references to data that PostgreSQL might free. If your Rust code panics, pgrx catches it at the FFI boundary and converts it into a PostgreSQL error, aborting the current transaction cleanly instead of crashing the server.
+
+For expected error conditions, pgrx functions can return a `Result`. The `Err` variant is converted into a PostgreSQL `ERROR`, rolling back the current transaction:
+
+```rust
+#[pg_extern]
+fn safe_divide(a: f64, b: f64) -> Result<f64, &'static str> {
+    if b == 0.0 {
+        // Becomes a PostgreSQL ERROR, rolling back the transaction
+        Err("division by zero")
+    } else {
+        Ok(a / b)
+    }
+}
+```
+
+## Development Workflow
+
+pgrx includes a CLI tool, `cargo-pgrx`, that manages the full lifecycle:
+
+```bash
+# Install the pgrx toolchain
+cargo install cargo-pgrx
+
+# Download and compile supported PostgreSQL versions (13-18) for testing
+cargo pgrx init
+
+# Create a new extension project
+cargo pgrx new my_extension
+
+# Compile, install, and open a psql session with the extension loaded
+cargo pgrx run pg18
+
+# Run tests against a real PostgreSQL instance
+cargo pgrx test
+```
+
+`cargo pgrx run` compiles the extension, installs it into a local PostgreSQL instance, and drops you into a `psql` session where the extension is already loaded. `cargo pgrx test` runs your test suite against a real PostgreSQL instance, not a mock, so tests exercise the actual extension behavior including SQL generation and type conversions.
+
+```rust
+#[cfg(any(test, feature = "pg_test"))]
+#[pg_schema]
+mod tests {
+    use pgrx::prelude::*;
+
+    #[pg_test]
+    fn test_hello() {
+        // Runs inside a real PostgreSQL transaction
+        let result = Spi::get_one::<String>("SELECT hello('world')");
+        assert_eq!(result, Ok(Some("Hello, world!".to_string())));
+    }
+}
+```
+
+<Note>
+  pgrx tests start a real PostgreSQL instance and execute queries against it.
+  This catches issues that unit tests with mocked interfaces would miss, like
+  incorrect SQL generation or type conversion errors.
+</Note>
+
+## Beyond Simple Functions
+
+pgrx supports the full range of PostgreSQL extension capabilities:
+
+- **Custom types** via `#[derive(PostgresType)]`, which generates the input/output functions and type definitions
+- **Custom operators** via `#[pg_operator]`, letting you define new SQL operators backed by Rust functions
+- **Set-returning functions** that yield rows one at a time using Rust iterators
+- **SPI access** for executing SQL queries from within extension functions
+- **Aggregate functions** with custom state types and transition logic
+- **Background workers** for long-running processes managed by PostgreSQL
+
+This coverage means most extensions that could be written in C can be written in pgrx instead, with the same level of PostgreSQL integration.
+
+## Extensions Built with pgrx
+
+Several production extensions use pgrx:
+
+- [ParadeDB](https://github.com/paradedb/paradedb): search and analytics extension for PostgreSQL, built on Tantivy
+- [pgvectorscale](https://github.com/timescale/pgvectorscale): disk-based vector indexing from Timescale
+- [pg_graphql](https://github.com/supabase/pg_graphql): GraphQL query engine embedded in PostgreSQL, from Supabase
+- [pg_jsonschema](https://github.com/supabase/pg_jsonschema): JSON Schema validation as a PostgreSQL function
+
+pgrx has also been adopted by major cloud and data platforms, including Microsoft, Amazon, Databricks, and Snowflake.
+
+## History and Governance
+
+pgrx was created by [Eric Ridge](https://github.com/eeeebbbbrrrr), who had been building PostgreSQL extensions in C since version 8.0. The framework grew out of his work on [ZomboDB](https://github.com/zombodb/zombodb), an Elasticsearch-backed indexing extension (now deprecated) — after years of writing C extensions, he built pgrx to present PostgreSQL's internals through Rust's idioms instead. The project was originally named "pgx" and [renamed to pgrx](https://github.com/pgcentralfoundation/pgrx/issues/1106) in April 2023.
+
+pgrx is now maintained by the [PgCentral Foundation](https://pgcentral.org/), a 501(c)(3) nonprofit that provides the project with a community-governed home independent of any single company.
+
+## When to Use pgrx
+
+pgrx is a good fit when you need to extend PostgreSQL with logic that benefits from Rust's performance or safety characteristics. Compute-heavy functions, custom index types, integrations with Rust libraries, and any extension where a crash would be unacceptable are natural candidates.
+
+For simpler logic (data validation, lightweight transformations, glue code), PL/pgSQL may be sufficient and easier to deploy, since it doesn't require compiling native code.
+
+## Summary
+
+pgrx lets you write PostgreSQL extensions in Rust instead of C, providing memory safety, automatic type conversion, SQL generation, and an integrated test workflow. It covers the full PostgreSQL extension API (functions, types, operators, aggregates, SPI, and background workers) while keeping the compile-time safety guarantees that make Rust extensions more reliable than their C equivalents. If your extension needs to be both safe and fast, pgrx is how you get there.
