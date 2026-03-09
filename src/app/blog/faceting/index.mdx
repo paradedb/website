@@ -95,7 +95,7 @@ ORDER BY rank DESC
 LIMIT 5;
 ```
 
-The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT". This window syntax computes both the Top K ranked results and the facet counts in a single pass through the data—exactly the pattern most search applications need.
+The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT". This window syntax computes both the top K ranked results and the facet counts in a single pass through the data—exactly the pattern most search applications need.
 
 The result includes both your search hits alongside the faceting data in a JSONB column (effectively overloading this column to contain all the facets). This approach gives you structured, self-contained aggregation results that are easy to parse on the client side.
 
@@ -145,7 +145,7 @@ ORDER BY score DESC
 LIMIT 10;
 ```
 
-When you see `OVER ()` alongside an `ORDER` and `LIMIT`, it signals: _"compute this aggregation over the entire search result set, not just the Top K rows returned."_ This Top K pattern—showing ranked results with facet counts—is exactly what most search interfaces need.
+When you see `OVER ()` alongside an `ORDER` and `LIMIT`, it signals: _"compute this aggregation over the entire search result set, not just the top K rows returned."_ This Top K pattern—showing ranked results with facet counts—is exactly what most search interfaces need.
 
 This design intentionally bridges two paradigms. It is designed to be familiar to both Elasticsearch (making use of the Elasticsearch DSL) and SQL (with the WINDOW syntax) users. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
 
@@ -253,7 +253,7 @@ This candidate document stream is then passed into a **compound collector**, whi
 
 The **TopDocs collector** is responsible for ranking and limiting the result set. The ranking could be by BM25 score (`pdb.score(id`), or it could be by a column value (which gets looked up from the columnar storage).
 
-Tantivy uses a quickselect buffer to maintain only the Top K highest ordered documents, traversing the document stream and only keeping K records at any one time using a very small amount of memory.
+Tantivy uses a quickselect buffer to maintain only the top K highest ordered documents, traversing the document stream and only keeping K records at any one time using a very small amount of memory.
 
 ### **3. Aggregation Collector (Building Facets)**
 

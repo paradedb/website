@@ -49,7 +49,7 @@ B-Trees are ideal for Top K queries because they are sorted structures, so the r
 <Note>
   Under the hood, a B-tree is a hierarchy of Postgres pages (think of pages as
   nodes). Upper pages guide navigation, while the actual indexed values live in
-  the leaf pages at the bottom in sorted order. To answer “give me the Top K
+  the leaf pages at the bottom in sorted order. To answer “give me the top K
   largest rows,” Postgres jumps from the root down to the leaf with the largest
   value and then walks backward through the linked leaves, reading entries until
   it has collected K rows. Because a B-tree is a balanced tree, the path from
@@ -82,7 +82,7 @@ A natural response is to add a composite B-tree index on both `severity` and `ti
 CREATE INDEX ON benchmark_logs (severity, timestamp);
 ```
 
-A composite B-tree is still a sorted tree, but now entries are ordered first by `severity`, and then by `timestamp` within each `severity` value. This works great for this query shape: Postgres can jump directly to the portion of the tree matching `severity < 3` and then walk the timestamps in descending order to get the Top K rows.
+A composite B-tree is still a sorted tree, but now entries are ordered first by `severity`, and then by `timestamp` within each `severity` value. This works great for this query shape: Postgres can jump directly to the portion of the tree matching `severity < 3` and then walk the timestamps in descending order to get the top K rows.
 
 The problem is that this solution doesn’t generalize. For instance, imagine we now also want to filter by `country`:
 
