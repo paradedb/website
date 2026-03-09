@@ -338,7 +338,7 @@ Modern search applications require more than just returning matching documents. 
 The [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
 
 - As an aggregate function, running a search query and providing aggregate results
-- As a window function, running a search query and providing aggregate results **alongside** the TopN search results
+- As a window function, running a search query and providing aggregate results **alongside** the Top K search results
 
 Both variants push as much work as possible down into the ParadeDB index, eliminating the need for multiple queries, CTEs, or manual aggregations.
 
@@ -370,7 +370,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-These examples demonstrate faceted search using window functions — returning TopN search results while providing analytics for the entire result set:
+These examples demonstrate faceted search using window functions — returning Top K search results while providing analytics for the entire result set:
 
 ```sql
 SELECT id, description,

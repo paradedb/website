@@ -5,7 +5,7 @@ import { Title } from "@/components/Title";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-Block-Max WAND (BMW) is a dynamic pruning algorithm that accelerates TopK document retrieval in search engines, the kind of query you express in SQL as `ORDER BY score DESC LIMIT k`. It works with scoring functions like [BM25](/learn/search-concepts/bm25) by dividing inverted index posting lists into fixed-size blocks, precomputing the maximum possible score within each block, and using those scores to skip entire blocks of documents that cannot appear in the final results. In most implementations, the algorithm returns exactly the same results as exhaustive scoring while doing a fraction of the work.
+Block-Max WAND (BMW) is a dynamic pruning algorithm that accelerates Top K document retrieval in search engines, the kind of query you express in SQL as `ORDER BY score DESC LIMIT k`. It works with scoring functions like [BM25](/learn/search-concepts/bm25) by dividing inverted index posting lists into fixed-size blocks, precomputing the maximum possible score within each block, and using those scores to skip entire blocks of documents that cannot appear in the final results. In most implementations, the algorithm returns exactly the same results as exhaustive scoring while doing a fraction of the work.
 
 The technique was introduced by [Shuai Ding and Torsten Suel in 2011](https://dl.acm.org/doi/10.1145/2009916.2010048) and has since been adopted by [Apache Lucene](https://github.com/apache/lucene), [Tantivy](https://github.com/quickwit-oss/tantivy), and other search engines as a core query optimization.
 
@@ -33,12 +33,12 @@ These values are stored alongside the compressed posting data with minimal overh
 
 ### Query Processing
 
-When you execute a query for the TopK results, the algorithm maintains a result heap and a dynamic threshold: the minimum score needed to enter the current TopK. Processing follows these steps:
+When you execute a query for the Top K results, the algorithm maintains a result heap and a dynamic threshold: the minimum score needed to enter the current Top K. Processing follows these steps:
 
 1. **Sort term pointers** by their current document ID, smallest first.
-2. **Find the pivot document.** Walk through the sorted pointers, accumulating block-max scores until their sum exceeds the threshold. The document where the sum first crosses the threshold is the pivot, the earliest document that could possibly score high enough to enter the TopK.
+2. **Find the pivot document.** Walk through the sorted pointers, accumulating block-max scores until their sum exceeds the threshold. The document where the sum first crosses the threshold is the pivot, the earliest document that could possibly score high enough to enter the Top K.
 3. **Check block bounds**: for each term's posting list, look up the block-max score for the block containing the pivot document. If a term's block-max is too low to help the pivot exceed the threshold, skip that term's iterator ahead to its next block. Different terms may skip different blocks.
-4. **Score the document**: if the combined block-max bounds survive the check, fully score the pivot document. If it exceeds the threshold, insert it into the TopK heap and raise the threshold.
+4. **Score the document**: if the combined block-max bounds survive the check, fully score the pivot document. If it exceeds the threshold, insert it into the Top K heap and raise the threshold.
 5. **Repeat** until all posting lists are exhausted.
 
 As higher-scoring documents are found, the threshold rises, and pruning becomes more aggressive; the algorithm accelerates as it runs.
@@ -86,7 +86,7 @@ Benchmarks across academic and industry implementations show consistent results:
 - Greatest impact on **disjunctive (OR) queries** with high-frequency terms, where the most documents can be skipped
 - Benefits scale with collection size; larger indexes see proportionally more pruning
 
-The algorithm only applies to TopK queries by score, not exhaustive counts or TopK on fast fields, since it relies on a threshold from the result heap to make pruning decisions. The speedup is greatest when queries contain common terms with long posting lists, where most blocks can be skipped.
+The algorithm only applies to Top K queries by score, not exhaustive counts or Top K on fast fields, since it relies on a threshold from the result heap to make pruning decisions. The speedup is greatest when queries contain common terms with long posting lists, where most blocks can be skipped.
 
 ## Scoring Constraints
 
@@ -94,9 +94,9 @@ Block WAND's pruning is safe only when the scoring function is additive across t
 
 ## Adoption in Search Engines
 
-- **Apache Lucene 8.0** (2019) adopted Block WAND for TopK disjunctive queries, bringing the optimization to [Elasticsearch](https://github.com/elastic/elasticsearch) and [Solr](https://github.com/apache/solr)
+- **Apache Lucene 8.0** (2019) adopted Block WAND for Top K disjunctive queries, bringing the optimization to [Elasticsearch](https://github.com/elastic/elasticsearch) and [Solr](https://github.com/apache/solr)
 - **[Tantivy](https://github.com/quickwit-oss/tantivy)** implements Block WAND for boolean queries with `should` clauses, inherited by [Quickwit](https://github.com/quickwit-oss/quickwit) and [ParadeDB](https://github.com/paradedb/paradedb). Tantivy's block-max values are not always exact: in rare cases a block-max may underestimate the true maximum, which can cause a marginally lower-scoring document to be returned instead of the true top result
 
 ## Summary
 
-Block WAND accelerates TopK retrieval by replacing loose global score bounds with tight per-block bounds, allowing the search engine to skip large portions of the index without sacrificing result quality. It processes the same query with a fraction of the scoring work, and the speedup grows as the threshold tightens during execution. For search engines handling disjunctive queries over large collections, it is one of the most effective optimizations available.
+Block WAND accelerates Top K retrieval by replacing loose global score bounds with tight per-block bounds, allowing the search engine to skip large portions of the index without sacrificing result quality. It processes the same query with a fraction of the scoring work, and the speedup grows as the threshold tightens during execution. For search engines handling disjunctive queries over large collections, it is one of the most effective optimizations available.

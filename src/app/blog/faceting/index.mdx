@@ -66,7 +66,7 @@ Both approaches use ParadeDB's BM25 search (PostgreSQL's built-in tsvector simpl
 
 <FacetingChart alt="Bar chart comparing faceting query performance: ParadeDB faceting with MVCC off (orange), ParadeDB faceting (violet), and Manual faceting (blue) across different query result sizes. ParadeDB maintains consistent performance while manual faceting degrades dramatically with larger result sets, showing over an order of magnitude improvement at scale" />
 
-As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's TopN faceting maintains consistent performance by executing both search ranking and aggregation in a single pass through the index. This efficiency comes from making use of ParadeDB's columnar index, which allows fast per-document value lookups during aggregation. At scale, this represents well over an order of magnitude improvement. The orange bar shows ParadeDB with MVCC[^2] disabled, demonstrating that an additional 3× performance gain is possible when strict transactional consistency isn't required for the facets.
+As the chart shows, manual faceting performance degrades dramatically with larger result sets, while ParadeDB's Top K faceting maintains consistent performance by executing both search ranking and aggregation in a single pass through the index. This efficiency comes from making use of ParadeDB's columnar index, which allows fast per-document value lookups during aggregation. At scale, this represents well over an order of magnitude improvement. The orange bar shows ParadeDB with MVCC[^2] disabled, demonstrating that an additional 3× performance gain is possible when strict transactional consistency isn't required for the facets.
 
 So how does ParadeDB achieve these results? Before we jump into planning and execution let's take a look at our syntax.
 
@@ -95,7 +95,7 @@ ORDER BY rank DESC
 LIMIT 5;
 ```
 
-The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT". This window syntax computes both the top-N ranked results and the facet counts in a single pass through the data—exactly the pattern most search applications need.
+The magic is the `OVER ()` syntax: this means "over the entire result set, ignoring the LIMIT". This window syntax computes both the top K ranked results and the facet counts in a single pass through the data—exactly the pattern most search applications need.
 
 The result includes both your search hits alongside the faceting data in a JSONB column (effectively overloading this column to contain all the facets). This approach gives you structured, self-contained aggregation results that are easy to parse on the client side.
 
@@ -145,7 +145,7 @@ ORDER BY score DESC
 LIMIT 10;
 ```
 
-When you see `OVER ()` alongside an `ORDER` and `LIMIT`, it signals: _"compute this aggregation over the entire search result set, not just the top N rows returned."_ This TopN pattern—showing ranked results with facet counts—is exactly what most search interfaces need.
+When you see `OVER ()` alongside an `ORDER` and `LIMIT`, it signals: _"compute this aggregation over the entire search result set, not just the top K rows returned."_ This Top K pattern—showing ranked results with facet counts—is exactly what most search interfaces need.
 
 This design intentionally bridges two paradigms. It is designed to be familiar to both Elasticsearch (making use of the Elasticsearch DSL) and SQL (with the WINDOW syntax) users. PostgreSQL's parser treats it as a standard window function call, allowing us to implement custom aggregation logic within the familiar SQL framework.
 
@@ -234,7 +234,7 @@ PostgreSQL provides a custom scan API that allows extensions to implement their 
 We inject a custom execution node at plan time, intercepting the planning process when we detect a `pdb.agg()` function used as a window. We do this using a combination of planner hooks and the custom scan API in three stages:
 
 1. **Query Interception.** The planner hook scans the query tree for `WindowFunc` nodes using `pdb.agg()`. It replaces them with ParadeDB placeholders _before_ PostgreSQL’s `grouping_planner()` runs. This prevents Postgres from creating real `WindowAgg` nodes we’d later need to undo.
-2. **Custom Scan Injection.** When queries combine full-text search, `ORDER BY`, `LIMIT`, and our placeholder `WindowAgg` node we take over planning. This is the entry point for Top-N faceting queries. The planner swaps in a `PdbScan` node capable of executing both the search and the aggregation in one pass, making sure that the parts of the query that aren’t handled by ParadeDB (non-search WHERE clauses, outer clauses / CTEs, FILTERS) are delegated back to PostgreSQL as normal.
+2. **Custom Scan Injection.** When queries combine full-text search, `ORDER BY`, `LIMIT`, and our placeholder `WindowAgg` node we take over planning. This is the entry point for Top K faceting queries. The planner swaps in a `PdbScan` node capable of executing both the search and the aggregation in one pass, making sure that the parts of the query that aren’t handled by ParadeDB (non-search WHERE clauses, outer clauses / CTEs, FILTERS) are delegated back to PostgreSQL as normal.
 3. **WindowAgg Extraction**. Extracts and converts the `pdb.agg()` placeholder into a form Tantivy (our underlying search library) understands, adding the information to the custom `PdbScan`. This is where we parse the JSONB definition and build the aggregation tree (terms, range, etc.) to run inside the search engine.
 
 The key insight is timing, this integration happens *before* PostgreSQL attempts standard window function execution. By execution time the window function doesn’t exist and PostgreSQL is running what it sees as a normal custom scan node.
@@ -253,7 +253,7 @@ This candidate document stream is then passed into a **compound collector**, whi
 
 The **TopDocs collector** is responsible for ranking and limiting the result set. The ranking could be by BM25 score (`pdb.score(id`), or it could be by a column value (which gets looked up from the columnar storage).
 
-Tantivy uses a quickselect buffer to maintain only the top-N highest ordered documents, traversing the document stream and only keeping N records at any one time using a very small amount of memory.
+Tantivy uses a quickselect buffer to maintain only the top K highest ordered documents, traversing the document stream and only keeping K records at any one time using a very small amount of memory.
 
 ### **3. Aggregation Collector (Building Facets)**
 
