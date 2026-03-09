@@ -26,7 +26,7 @@ white(4);
 
 Facets are additive: a user might check multiple facet values (e.g. `brown shoes` and `cheap shoes`) to cut down search results. Facets can categorize sets of values (e.g. `brown`, `blue`, `white` etc.) and also buckets of ranges (e.g. `$0 to $99`, `$100 to $999`, `+$1,000` etc.).
 
-In practice, facets travel with Top-K searches. Showing facet counts alongside the first N results lets users refine immediately, understand distribution at a glance, and avoid extra round-trips. Executing ranking and aggregation in the same pass keeps latency low and proportional to matches, not the total document set.
+In practice, facets travel with Top K searches. Showing facet counts alongside the first N results lets users refine immediately, understand distribution at a glance, and avoid extra round-trips. Executing ranking and aggregation in the same pass keeps latency low and proportional to matches, not the total document set.
 
 ## Faceted Search Implementations
 

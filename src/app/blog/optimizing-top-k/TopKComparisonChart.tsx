@@ -12,12 +12,12 @@ import {
 
 const data = [
   {
-    engine: "ParadeDB TopK",
+    engine: "ParadeDB Top K",
     timeMs: 300,
     label: "300 ms",
   },
   {
-    engine: "Postgres GIN TopK",
+    engine: "Postgres GIN Top K",
     timeMs: 33000,
     label: "33,000 ms",
   },
