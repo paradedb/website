@@ -26,7 +26,7 @@ white(4);
 
 Facets are additive: a user might check multiple facet values (e.g. `brown shoes` and `cheap shoes`) to cut down search results. Facets can categorize sets of values (e.g. `brown`, `blue`, `white` etc.) and also buckets of ranges (e.g. `$0 to $99`, `$100 to $999`, `+$1,000` etc.).
 
-In practice, facets travel with Top-N searches. Showing facet counts alongside the first N results lets users refine immediately, understand distribution at a glance, and avoid extra round-trips. Executing ranking and aggregation in the same pass keeps latency low and proportional to matches, not the total document set.
+In practice, facets travel with Top-K searches. Showing facet counts alongside the first N results lets users refine immediately, understand distribution at a glance, and avoid extra round-trips. Executing ranking and aggregation in the same pass keeps latency low and proportional to matches, not the total document set.
 
 ## Faceted Search Implementations
 
@@ -34,7 +34,7 @@ At a small scale, faceted search can be computed client-side or with simple SQL 
 
 A **client-side implementation** requires transferring every matching record to the client so counts can be calculated locally. Even a modest search returning tens of thousands of results would quickly become hard to work with.
 
-A **naïve SQL implementation** would need multiple passes over the same data, first running the search query and then running the faceting on the full result set before returning the top N records.
+A **naïve SQL implementation** would need multiple passes over the same data, first running the search query and then running the faceting on the full result set before returning the top K records.
 
 In production systems, faceting is usually performed in tandem with the search query itself. Rather than running separate aggregation queries, search engines compute facet counts during the same index scan that retrieves matching documents. Search databases and search engines such as Elasticsearch, Solr, and ParadeDB do this by maintaining auxiliary data structures (often columnar or bitmap-based) that allow category counts to be aggregated without rereading all documents. Each facet value is mapped to a compact integer ordinal or bitset, so counts can be computed in memory as part of the query execution path.
 

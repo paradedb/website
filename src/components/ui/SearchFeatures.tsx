@@ -155,13 +155,13 @@ export default async function SearchFeatures() {
       ),
     },
     {
-      value: "top-n",
-      label: "Top N",
+      value: "top-k",
+      label: "Top K",
       bullets: [
         {
-          title: "Efficient Top N",
+          title: "Efficient Top K",
           description:
-            "Optimized execution paths for quickly retrieving the Top N most relevant results.",
+            "Optimized execution paths for quickly retrieving the Top K most relevant results.",
           icon: <RiSortAsc className="size-5" />,
         },
         {

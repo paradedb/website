@@ -26,7 +26,7 @@ We have had fast aggregations on top of search queries for a while now, but it's
 Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
 
 - as an aggregate function, running a search query and providing aggregate results
-- as a window function, running a search query and providing aggregate results **alongside** the TopN search result
+- as a window function, running a search query and providing aggregate results **alongside** the TopK search result
 
 Both variants take control of parts of query planning and execution, pushing as much work as possible down into the ParadeDB index. This removes the need for multiple queries, CTEs, or manual aggregations.
 
@@ -88,7 +88,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-A more complex example uses the JSON API to express a terms facet over a TopN query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future). This is useful when you want to display the TopN search results, but also show the distribution of the whole search query, doing this in one efficient index pass is one of the niceties of the Elasticsearch API that we loved and made possible in SQL.
+A more complex example uses the JSON API to express a terms facet over a TopK query, which is then also added as an extra JSON column (this data is duplicated per row, we may optimize this in the future). This is useful when you want to display the TopK search results, but also show the distribution of the whole search query, doing this in one efficient index pass is one of the niceties of the Elasticsearch API that we loved and made possible in SQL.
 
 ```sql
 SELECT id, description,
