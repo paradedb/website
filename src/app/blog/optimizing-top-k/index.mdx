@@ -70,7 +70,7 @@ ORDER BY timestamp DESC
 LIMIT 10;
 ```
 
-Now Postgres faces a dilemma. It can use the B-tree index on `timestamp` to get rows in the right `timestamp` order, but it has no way to skip directly to “US” rows. It must walk the index one entry at a time, checking the country for each row and discarding most of them. In the worst case, this means walking the entire index. Or it can scan rows that match `severity < 3` first, but then it loses the ordering and must sort the results afterward.
+Now Postgres faces a dilemma. It can use the B-tree index on `timestamp` to get rows in the right `timestamp` order, but it has no way to skip directly to rows matching `severity < 3`. It must walk the index one entry at a time, checking the severity for each row and discarding most of them. In the worst case, this means walking the entire index. Or it can scan rows that match `severity < 3` first, but then it loses the ordering and must sort the results afterward.
 
 Either way, Postgres ends up scanning far more rows than K, doing extra work to filter or sort, and suddenly we’re back to queries taking up to 15 seconds in the worst case.
 
@@ -257,7 +257,7 @@ Current score threshold: 8.5
 +-------------------+
 ```
 
-For queries that are ordered by a relevance score (i.e. a BM25 score), Tantivy goes one step further with an optimization called Block WAND. Conceptually, this means skipping the evaluation of entire chunks of documents unless they have a mathematical possibility of entering the Top K.
+For queries that are ordered by a relevance score (i.e. a BM25 score<sup>3</sup>), Tantivy goes one step further with an optimization called Block WAND. Conceptually, this means skipping the evaluation of entire chunks of documents unless they have a mathematical possibility of entering the Top K.
 
 Block WAND works by maintaining an upper bound on how much score any document within a block of document IDs could possibly achieve. As the engine fills its Top K heap, it establishes a threshold: the lowest score currently in the heap. Before evaluating a block, the engine checks the block’s maximum score. If that maximum is below the threshold, the entire block is skipped without scoring individual documents.
 
