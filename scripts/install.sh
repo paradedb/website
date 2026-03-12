@@ -27,12 +27,21 @@ for arg in "$@"; do
   esac
 done
 
-CONTAINER_NAME="paradedb"
-VOLUME_NAME="paradedb_data"
-IMAGE="paradedb/paradedb:latest"
-PG_USER="postgres"
-PG_PASSWORD="paradedb"
-PG_DATABASE="paradedb"
+CONTAINER_NAME="${PDB_CONTAINER_NAME:-paradedb}"
+VOLUME_NAME="${PDB_VOLUME_NAME:-paradedb_data}"
+IMAGE="${PDB_IMAGE:-paradedb/paradedb:latest}"
+PG_USER="${PDB_PG_USER:-postgres}"
+if [ -z "${PDB_PG_PASSWORD:-}" ]; then
+  if [ -f /usr/share/dict/words ]; then
+    SEED=$(od -An -tu4 -N4 /dev/urandom | tr -d ' ')
+    PG_PASSWORD="$(awk -v seed="$SEED" 'BEGIN{srand(seed)} {words[NR]=$1} END{for(i=1;i<=4;i++){idx=int(rand()*NR)+1; w=tolower(words[idx]); printf "%s%s",w,(i<4?"-":"")}}' /usr/share/dict/words)"
+  else
+    PG_PASSWORD="$(dd if=/dev/urandom bs=32 count=1 2>/dev/null | LC_ALL=C tr -dc 'A-Za-z0-9' | head -c 32)"
+  fi
+else
+  PG_PASSWORD="$PDB_PG_PASSWORD"
+fi
+PG_DATABASE="${PDB_PG_DATABASE:-paradedb}"
 
 # Color support
 if [ -t 1 ] && [ "$(tput colors 2>/dev/null)" -ge 8 ] 2>/dev/null; then
@@ -189,8 +198,13 @@ run_with_spinner "Waiting for PostgreSQL to be ready" wait_for_postgres
 echo ""
 printf "  %s%sParadeDB is ready!%s\n" "$GREEN" "$BOLD" "$RESET"
 echo ""
+printf "  Password: %s%s%s\n" "$BOLD" "$PG_PASSWORD" "$RESET"
+printf "  %sSave this password — it won't be shown again.%s\n" "$RED" "$RESET"
+echo ""
 echo "  To reconnect later, run:"
 print_connect_cmd
+echo ""
+printf "  To connect from another tool, use port %s5432%s (you'll need the password above).\n" "$BOLD" "$RESET"
 echo ""
 printf "  Get started with the docs: %shttps://docs.paradedb.com%s\n" "$CYAN" "$RESET"
 echo ""
