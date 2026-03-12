@@ -54,9 +54,9 @@ Today, Tantivy users come in all sizes and shapes. We still sometimes refuse PRs
 
 ## The Benchmark Game
 
-It quickly became apparent that Tantivy was not only competitive with other search engines — in many cases it outperformed them. Under the hood, Tantivy uses finite state transducers for its term dictionary, SIMD-accelerated compression for its inverted index, and a memory-mapped I/O layer that keeps resident memory remarkably low. The result is a library that can handle indexes larger than available RAM without breaking a sweat.
+It quickly became apparent that Tantivy was not only competitive with other search engines, in many cases it outperformed them. Under the hood, Tantivy uses finite state transducers for its term dictionary, SIMD-accelerated compression for its inverted index, and a memory-mapped I/O layer that keeps resident memory remarkably low. The result is a library that can handle indexes larger than available RAM without breaking a sweat.
 
-Jason Wolfe, Paul's manager at Indeed, created [Search Benchmark, the Game](https://github.com/quickwit-oss/search-benchmark-game), a reproducible benchmark suite that showed Tantivy was often 2x faster than Lucene. Over the years the benchmark sparked a genuine back-and-forth between the two projects — Adrien Grand, a Lucene committer, published "[Why is Tantivy Faster than Lucene?](https://jpountz.github.io/2025/04/12/why-is-Tantivy-faster-than-Lucene.html)" and a [follow-up analysis](https://jpountz.github.io/2025/05/12/analysis-of-Search-Benchmark-the-Game.html), and Lucene has since landed patches that close the gap across [most areas](https://tantivy-search.github.io/bench/).
+Jason Wolfe, Paul's manager at Indeed, created [Search Benchmark, the Game](https://github.com/quickwit-oss/search-benchmark-game), a reproducible benchmark suite that showed Tantivy was often 2x faster than Lucene. Over the years the benchmark sparked a genuine back-and-forth between the two projects Adrien Grand, a Lucene committer, published "[Why is Tantivy Faster than Lucene?](https://jpountz.github.io/2025/04/12/why-is-Tantivy-faster-than-Lucene.html)" and a [follow-up analysis](https://jpountz.github.io/2025/05/12/analysis-of-Search-Benchmark-the-Game.html), and Lucene has since landed patches that close the gap across [most areas](https://tantivy-search.github.io/bench/).
 
 <Question>Can you see this game of cat and mouse between Tantivy and Lucene continuing?</Question>
 <Answer>
@@ -146,7 +146,7 @@ To be honest, this was a very difficult decision. One benefit we expected was th
 <Answer>
 Datadog offered to relicense Quickwit under Apache. This allowed four (and probably more) companies to build their products around Quickwit.
 
-That said, the product we're building at Datadog is not open source. We push all improvements to Quickwit and maintain a private fork with the Datadog-specific code. Apart from that, we cannot afford spending much time dealing with support or contributions that aren't aligned with our product's agenda.
+That said, the product we're building at Datadog is not open source. We push all improvements to Quickwit and maintain a private fork with the Datadog-specific code. Apart from that, we cannot afford to spend much time dealing with support or contributions that aren't aligned with our product's agenda.
 </Answer>
 
 It's a pragmatic arrangement, and a generous one by acquisition standards. The open-source projects stay open, the proprietary product stays proprietary, and the line between them is clean. What's more interesting is how working at Datadog's scale has reshaped Paul's thinking about search itself.
