@@ -134,7 +134,7 @@ The project lives under the [PgCentral Foundation](https://pgcentral.org/), a 50
 
 ## When to Use pgrx
 
-pgrx is a good fit when you need to extend PostgreSQL with logic that benefits from Rust's performance or safety characteristics. Compute-heavy functions, custom index types, integrations with Rust libraries, and any extension where a crash would be unacceptable are natural candidates.
+pgrx is a good fit when you need to extend PostgreSQL with logic that benefits from Rust's performance or safety characteristics. Compute-heavy functions, custom index types, integrations with Rust libraries, and any extension where a crash would be unacceptable are natural candidates. You may also choose to use PGRX when you benefit from Rust's ecosystem, one of the reasons ParadeDB choose Rust was because the amazing Tantivy library existed to help with full-text search.
 
 For simpler logic (data validation, lightweight transformations, glue code), PL/pgSQL may be sufficient and easier to deploy, since it doesn't require compiling native code.
 
