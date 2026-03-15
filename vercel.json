@@ -29,7 +29,7 @@
       "has": [
         { "type": "host", "value": "slack.paradedb.com" }
       ],
-      "destination": "https://paradedb.com/slack",
+      "destination": "https://www.paradedb.com/slack",
       "permanent": true
     }
   ]
