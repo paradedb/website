@@ -77,7 +77,7 @@ const nextConfig = {
         source: "/slack",
         destination:
           "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw",
-        permanent: false,
+        permanent: true,
       },
       // --- legacy legal page redirects ---
       {
