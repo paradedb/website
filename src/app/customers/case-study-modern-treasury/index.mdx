@@ -11,7 +11,8 @@ import heroImage from "./images/hero.png";
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
 <b>
-  ParadeDB powers Modern Treasury's core UI and search APIs, eliminating query timeouts and increasing write speeds by 3x.
+  ParadeDB powers Modern Treasury's core UI and search APIs, eliminating query
+  timeouts and increasing write speeds by 3x.
 </b>
 <div className="border-t border-0.5 border-slate-300">
   {/* Desktop Table */}
@@ -63,7 +64,8 @@ Modern Treasury is the payments operations platform for businesses that move mon
 As Modern Treasury's customer base grew, so did the complexity of powering its core product UIs. The platform's flexible filter interfaces allow customers to search, sort, and aggregate across payments, transactions, and ledger entries using any combination of dozens of attributes. With many customers storing over 100M records, the permutations of possible query plans made it impossible to cover every case with traditional B-tree indexes.
 
 <Note>
-Our [Top K in Postgres]() blog post explores why B-tree indexes don't generalize well to workloads that combine many filters with flexible sorting.
+  Our [Top K in Postgres]() blog post explores why B-tree indexes don't
+  generalize well to workloads that combine many filters with flexible sorting.
 </Note>
 
 The team endlessly added B-tree indexes to cover different customer search patterns, but there was no reasonable way to index every permutation without causing write performance degradation. As a workaround, Modern Treasury built summary roll-up tables to support basic aggregations — a common pattern for workloads where Postgres struggles at high record counts. However, these roll-up tables introduced data delays and added significant complexity to the system.
@@ -77,7 +79,8 @@ Modern Treasury needed a backend that could power subsecond responses across its
 <div className="py-2">
   <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
     <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
-      Modern Treasury needed the performance of a search and analytics engine alongside the accuracy of a database.
+      Modern Treasury needed the performance of a search and analytics engine
+      alongside the accuracy of a database.
     </span>
     <span className="pt-2 text-slate-600 dark:text-slate-400 block">
       Matt Higgins, Head of Engineering
@@ -90,8 +93,9 @@ The team evaluated Elasticsearch but concluded that the data consistency challen
 <div className="py-2">
   <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
     <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
-      Built on the solid foundation of Postgres, ParadeDB provides the good parts of Elasticsearch we actually need,
-      without the infrastructure and hassle of data synchronization.
+      Built on the solid foundation of Postgres, ParadeDB provides the good
+      parts of Elasticsearch we actually need, without the infrastructure and
+      hassle of data synchronization.
     </span>
     <span className="pt-2 text-slate-600 dark:text-slate-400 block">
       Matt Higgins, Head of Engineering
