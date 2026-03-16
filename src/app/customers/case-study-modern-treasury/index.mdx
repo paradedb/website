@@ -1,0 +1,117 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+<b>
+  ParadeDB powers Modern Treasury's core UI and search APIs, eliminating query timeouts and increasing write speeds by 3x.
+</b>
+<div className="border-t border-0.5 border-slate-300">
+  {/* Desktop Table */}
+  <table className="table-auto w-full mt-6 hidden md:table">
+    <thead className="border-0">
+      <tr className="text-2xl font-medium border-0">
+        <th className="py-0 px-0">10TB</th>
+        <th className="py-0 px-0">500M+</th>
+        <th className="py-0 px-0">50K/min</th>
+        <th className="py-0 px-0">3x</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="font-light border-0">
+        <td className="py-0 px-0">Data Stored</td>
+        <td className="py-0 px-0">Largest Table Rows</td>
+        <td className="py-0 px-0">Peak Write Rate</td>
+        <td className="py-0 px-0">Write Speed Increase</td>
+      </tr>
+    </tbody>
+  </table>
+  {/* Mobile Vertical List */}
+  <div className="block md:hidden mt-6">
+    <div className="flex justify-between py-2">
+      <span>Data Stored</span>
+      <span className="font-medium">10TB</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Largest Table Rows</span>
+      <span className="font-medium">500M+</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Peak Write Rate</span>
+      <span className="font-medium">50K/min</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Write Speed Increase</span>
+      <span className="font-medium">2-3x</span>
+    </div>
+  </div>
+</div>
+
+### Overview
+
+Modern Treasury is the payments operations platform for businesses that move money at scale. The platform offers APIs, dashboards, and workflow tooling to manage the full lifecycle of payments — from initiation and approval through reconciliation and reporting. Modern Treasury's customers span financial services, fintech, and enterprise, relying on the platform to process high volumes of transactions with accuracy down to the penny.
+
+### The Problem
+
+As Modern Treasury's customer base grew, so did the complexity of powering its core product UIs. The platform's flexible filter interfaces allow customers to search, sort, and aggregate across payments, transactions, and ledger entries using any combination of dozens of attributes. With many customers storing over 100M records, the permutations of possible query plans made it impossible to cover every case with traditional B-tree indexes.
+
+<Note>
+Our [Top K in Postgres]() blog post explores why B-tree indexes don't generalize well to workloads that combine many filters with flexible sorting.
+</Note>
+
+The team endlessly added B-tree indexes to cover different customer search patterns, but there was no reasonable way to index every permutation without causing write performance degradation. As a workaround, Modern Treasury built summary roll-up tables to support basic aggregations — a common pattern for workloads where Postgres struggles at high record counts. However, these roll-up tables introduced data delays and added significant complexity to the system.
+
+The result was a long tail of edge-case query timeouts. Approximately 5% of queries failed entirely due to unoptimized query plans, and the engineering team was stuck in a reactive cycle of adding indexes to patch individual failures.
+
+### The Solution
+
+Modern Treasury needed a backend that could power subsecond responses across its core UIs without requiring a different index for every query pattern. The requirements boiled down to filtering records based on any of dozens of attributes, sorting by any attribute, and returning the top results. Crucially, the system had to be accurate to the penny.
+
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
+      Modern Treasury needed the performance of a search and analytics engine alongside the accuracy of a database.
+    </span>
+    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
+      Matt Higgins, Head of Engineering
+    </span>
+  </div>
+</div>
+
+The team evaluated Elasticsearch but concluded that the data consistency challenges and deployment complexity it would introduce were not worth the trade-off. While Elasticsearch is mature and feature-rich, the value of Postgres replication and SQL-native infrastructure offered by ParadeDB — as a native Postgres extension — outweighed the bells and whistles.
+
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
+      Built on the solid foundation of Postgres, ParadeDB provides the good parts of Elasticsearch we actually need,
+      without the infrastructure and hassle of data synchronization.
+    </span>
+    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
+      Matt Higgins, Head of Engineering
+    </span>
+  </div>
+</div>
+
+Modern Treasury deployed ParadeDB as a logical replica of their primary Postgres across 7 clusters. This meant the team could leverage its existing Postgres knowledge and infrastructure. No new data pipelines, no sync jobs, and no new query language. Implementation required only minor adjustments to existing SQL queries.
+
+### Results
+
+ParadeDB resolved an entire class of edge-case query timeouts for Modern Treasury. The team no longer needs to think about the many permutations of query plans that previously caused failures. The 5% of queries that previously timed out are now subsecond.
+
+ParadeDB's performance on counting and summing operations enabled Modern Treasury to add real-time counts and aggregations to user interfaces that previously could not support them. The platform now powers grouped aggregations and transaction-to-payment reconciliation workflows that were previously too expensive to run inline.
+
+Perhaps most significantly, ParadeDB allowed Modern Treasury to drop a large number of legacy B-tree indexes that the UI no longer depended on. With fewer indexes competing for write throughput, raw write speeds increased by 2-3x on the platform's most important database tables.
+
+Modern Treasury now uses ParadeDB across its payments, transactions, and ledger products, servicing both customer-facing search APIs and internal analytic processes.
+
+### ParadeDB
+
+ParadeDB is the simplest way to add Elastic-quality search to your Postgres. If you have a use case around large scale search in Postgres,
+we'd [love to chat](mailto:hello@paradedb.com).
