@@ -1,0 +1,7 @@
+{
+  "title": "ParadeDB Powers Modern Treasury's Core UI and Search APIs",
+  "date": "2026-03-16T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How Modern Treasury replaced legacy indexes and roll-up tables with ParadeDB, eliminating query timeouts and increasing write speeds by 2-3x.",
+  "categories": ["case-study", "modern-treasury", "performance"]
+}
