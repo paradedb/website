@@ -1,0 +1,97 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+<b>
+  Terrapin Finance deployed ParadeDB inside their self-hosted Postgres to power
+  sub-200ms full-text search across 1.1 billion rows of bond data — a 25x
+  improvement over their previous vanilla Postgres setup.
+</b>
+<div className="border-t border-0.5 border-slate-300">
+  {/* Desktop Table */}
+  <table className="table-auto w-full mt-6 hidden md:table">
+    <thead className="border-0">
+      <tr className="text-2xl font-medium border-0">
+        <th className="py-0 px-0">1.3TB</th>
+        <th className="py-0 px-0">1.1B</th>
+        <th className="py-0 px-0">8K QPS</th>
+        <th className="py-0 px-0">25x</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="font-light border-0">
+        <td className="py-0 px-0">Data Stored</td>
+        <td className="py-0 px-0">Total Rows</td>
+        <td className="py-0 px-0">Peak Read Rate</td>
+        <td className="py-0 px-0">Faster Queries</td>
+      </tr>
+    </tbody>
+  </table>
+  {/* Mobile Vertical List */}
+  <div className="block md:hidden mt-6">
+    <div className="flex justify-between py-2">
+      <span>Data Stored</span>
+      <span className="font-medium">1.3TB</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Total Rows</span>
+      <span className="font-medium">1.1B</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Peak Read Rate</span>
+      <span className="font-medium">8.26K QPS</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Faster Queries</span>
+      <span className="font-medium">25x</span>
+    </div>
+  </div>
+</div>
+
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
+      ParadeDB is the most mature search solution for Postgres available, and it
+      delivered exactly what we needed.
+    </span>
+    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
+      Juozas Norkus, CTO
+    </span>
+  </div>
+</div>
+
+### Overview
+
+Terrapin Finance is a fixed-income data provider specializing in reference and pricing data APIs for US municipal, government, and corporate bonds. The company serves institutional clients who depend on accurate, real-time bond data for trading and analysis. Terrapin is also building a municipal credit intelligence platform that combines document search, credit risk analytics, and AI-driven research tools.
+
+### The Problem
+
+Terrapin's bond reference data APIs serve data derived from massive source tables spanning over a billion rows. A key requirement from their clients is the ability to filter bonds by issuer name, a natural-language field that doesn't lend itself to exact-match lookups. On the product side, Terrapin's credit risk analysis web UI features a type-ahead search bar where users enter a unique identifier or bond issuer name and see matching results as they type.
+
+For a financial data platform, search responsiveness is non-negotiable: analysts expect instant feedback while narrowing down results across millions of securities.
+
+The team initially built this functionality with `pg_trgm`, Postgres' built-in trigram matching extension. While trigram indexes are a common starting point for fuzzy text search in Postgres, they struggled under the weight of Terrapin's data. Search queries routinely took 5 seconds to return results, far too slow for a type-ahead interface. This was also painful for API consumers running batch queries against issuer names.
+
+### The Solution
+
+Terrapin's requirements were straightforward: they needed a search solution that was fast and that didn't require introducing new infrastructure. The team's entire stack was built on Postgres, and they had no interest in bolting on a separate search engine with its own cluster, sync pipeline, and query language.
+
+When evaluating options, ParadeDB stood out as the most mature and complete Postgres-native alternative to `pg_trgm`. Because ParadeDB runs as an extension inside Postgres, Terrapin could deploy it directly into their existing self-hosted instance — no sidecars, no replication targets, and no new operational burden. The migration was surgical: swap out the trigram queries for ParadeDB's full-text search syntax, and the existing tables, schemas, and deployment pipeline stayed exactly as they were.
+
+### Results
+
+The impact was immediate. Search queries that previously took 3 to 5 seconds dropped to 100–200ms, a 25x improvement in query execution time. The type-ahead search bar in Terrapin's credit risk UI went from sluggish to instantaneous, and API consumers saw the same gains across their programmatic queries.
+
+Beyond the core bond data APIs, Terrapin leveraged ParadeDB to build something more [ambitious](https://www.linkedin.com/posts/miguel-jaques-8026ba205_blazingly-fast-municipal-document-search-activity-7363610999263834112-Ys9S?utm_source=share&utm_medium=member_desktop&rcm=ACoAABvY5gUBFGMKpKGjG8yDwIIVOWaX4xRk0_w): a full-text document search engine spanning millions of official statements, corporate actions, and financial disclosures from the municipal bond market. This capability is a cornerstone of Terrapin's upcoming municipal intelligence platform, powering the AI-based research tools their clients will use to surface insights from the vast landscape of municipal bond documentation.
+
+### ParadeDB
+
+ParadeDB is the simplest way to add Elastic-quality search to your Postgres. If you have a use case around large scale search in Postgres,
+we'd [love to chat](mailto:hello@paradedb.com).
