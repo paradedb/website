@@ -3,5 +3,6 @@
   "date": "2024-06-09T00:00:00.000Z",
   "author": "Ming Ying",
   "description": "How SweetSpot leveraged ParadeDB for their search infrastructure.",
-  "categories": ["case-study", "sweetspot"]
+  "categories": ["case-study", "sweetspot"],
+  "hideAuthor": true
 }

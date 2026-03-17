@@ -3,5 +3,6 @@
   "date": "2026-03-17T00:00:00.000Z",
   "author": "Ming Ying",
   "description": "How Terrapin Finance replaced pg_trgm with ParadeDB to power sub-200ms full-text search across 1.1 billion rows of fixed-income data.",
-  "categories": ["case-study", "terrapin-finance", "performance"]
+  "categories": ["case-study", "terrapin-finance", "performance"],
+  "hideAuthor": true
 }
