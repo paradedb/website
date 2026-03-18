@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import * as Tooltip from "@radix-ui/react-tooltip";
 import {
@@ -11,37 +11,28 @@ import {
   RiOpenaiFill,
 } from "@remixicon/react";
 import { Badge } from "./Badge";
+import { PythonIcon } from "./icons/PythonIcon";
+import { RubyIcon } from "./icons/RubyIcon";
 
 const Integrations = [
   {
     name: "Anthropic",
-    className:
-      "bg-white text-slate-950 border-slate-200 dark:bg-slate-900 dark:border-slate-700",
-    icon: (
-      <div className="flex size-[1.5rem] items-center justify-center rounded-full bg-[#d97757] text-white">
-        <RiClaudeFill className="size-[1rem]" />
-      </div>
-    ),
+    className: "text-[#d97757]",
+    icon: <RiClaudeFill className="size-[1.1rem]" />,
   },
   {
     name: "OpenAI",
-    className:
-      "bg-white text-slate-950 border-slate-200 dark:bg-slate-900 dark:border-slate-700",
-    icon: (
-      <div className="flex size-[1.5rem] items-center justify-center rounded-full bg-black text-white">
-        <RiOpenaiFill className="size-[1rem]" />
-      </div>
-    ),
+    className: "text-black dark:text-white",
+    icon: <RiOpenaiFill className="size-[1.1rem]" />,
   },
   {
     name: "Gemini",
-    className:
-      "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-700",
+    className: "",
     icon: (
-      <div className="flex size-[1.5rem] items-center justify-center rounded-full bg-white dark:bg-slate-950">
+      <div className="flex size-[1.1rem] items-center justify-center rounded-full bg-white dark:bg-slate-950">
         <svg
           viewBox="0 0 24 24"
-          className="size-[1.6rem]"
+          className="size-[1.1rem]"
           fill="none"
           aria-hidden="true"
         >
@@ -105,12 +96,11 @@ const Integrations = [
   },
   {
     name: "Cursor",
-    className:
-      "bg-white border-slate-200 text-[#26251e] dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100",
+    className: "text-[#26251e] dark:text-slate-100",
     icon: (
       <svg
         viewBox="0 0 466.73 532.09"
-        className="size-[1.4rem]"
+        className="size-[1.1rem]"
         fill="none"
         aria-hidden="true"
       >
@@ -123,12 +113,11 @@ const Integrations = [
   },
   {
     name: "Windsurf",
-    className:
-      "bg-white border-slate-200 text-[#0B100F] dark:bg-slate-900 dark:border-slate-700 dark:text-slate-100",
+    className: "text-[#0B100F] dark:text-slate-100",
     icon: (
       <svg
         viewBox="0 0 1024 1024"
-        className="size-[1.4rem]"
+        className="size-[1.1rem]"
         fill="none"
         aria-hidden="true"
       >
@@ -140,6 +129,21 @@ const Integrations = [
     ),
   },
 ] as const;
+
+const Frameworks = [
+  {
+    name: "Python",
+    className: "text-slate-900 dark:text-slate-100",
+    url: "https://github.com/paradedb/django-paradedb",
+    icon: <PythonIcon className="size-[1.6rem]" />,
+  },
+  {
+    name: "Ruby",
+    className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
+    url: "https://github.com/paradedb/rails-paradedb",
+    icon: <RubyIcon className="size-[1.4rem]" />,
+  },
+];
 
 const CloudPlatforms = [
   {
@@ -185,7 +189,7 @@ const CloudPlatforms = [
   {
     name: "DigitalOcean",
     className: "text-[#0080ff]",
-    command: "# One click deploy coming soon",
+    docsUrl: "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -201,38 +205,97 @@ const CloudPlatforms = [
   },
 ];
 
+// Shared component for the background grid
+function GridBackground({
+  cols,
+  cellWidth,
+}: {
+  cols: number;
+  cellWidth: string;
+}) {
+  const totalCells = cols * 5;
+  const skipStart = Math.floor(totalCells / 2) - 1;
+  const skipCount = cols > 6 ? 3 : 2; // 3 items for Cloud Platforms, 2 for Frameworks
+
+  return (
+    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none [mask-image:radial-gradient(ellipse_60%_50%_at_center,black_10%,transparent_70%)] z-0">
+      <div
+        className={`grid grid-rows-[repeat(5,3rem)] border-l border-t border-black/[0.06] dark:border-white/[0.06]`}
+        style={{ gridTemplateColumns: `repeat(${cols}, ${cellWidth})` }}
+      >
+        {Array.from({ length: totalCells }).map((_, i) => {
+          if (i > skipStart && i < skipStart + skipCount) return null;
+          if (i === skipStart) {
+            return (
+              <div
+                key={i}
+                className="border-r border-b border-black/[0.06] dark:border-white/[0.06]"
+                style={{ gridColumn: `span ${skipCount}` }}
+              />
+            );
+          }
+          return (
+            <div
+              key={i}
+              className="border-r border-b border-black/[0.06] dark:border-white/[0.06]"
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// Shared component for the corner markers
+function CornerMarkers() {
+  return (
+    <>
+      <svg
+        className="absolute -top-[3px] -left-[3px] w-[6px] h-[6px] text-black/15 dark:text-white/15 z-10 pointer-events-none"
+        viewBox="0 0 6 6"
+        fill="none"
+      >
+        <path d="M3 0V6M0 3H6" stroke="currentColor" strokeWidth="1" />
+      </svg>
+      <svg
+        className="absolute -top-[3px] -right-[3px] w-[6px] h-[6px] text-black/15 dark:text-white/15 z-10 pointer-events-none"
+        viewBox="0 0 6 6"
+        fill="none"
+      >
+        <path d="M3 0V6M0 3H6" stroke="currentColor" strokeWidth="1" />
+      </svg>
+      <svg
+        className="absolute -bottom-[3px] -left-[3px] w-[6px] h-[6px] text-black/15 dark:text-white/15 z-10 pointer-events-none"
+        viewBox="0 0 6 6"
+        fill="none"
+      >
+        <path d="M3 0V6M0 3H6" stroke="currentColor" strokeWidth="1" />
+      </svg>
+      <svg
+        className="absolute -bottom-[3px] -right-[3px] w-[6px] h-[6px] text-black/15 dark:text-white/15 z-10 pointer-events-none"
+        viewBox="0 0 6 6"
+        fill="none"
+      >
+        <path d="M3 0V6M0 3H6" stroke="currentColor" strokeWidth="1" />
+      </svg>
+    </>
+  );
+}
+
 export default function AgentReady() {
   const [selectedCloud, setSelectedCloud] = useState(0);
-  const [osPrefix, setOsPrefix] = useState("open");
+  const [selectedFramework, setSelectedFramework] = useState(0);
   const [copiedAgent, setCopiedAgent] = useState(false);
-  const [copiedCloud, setCopiedCloud] = useState(false);
 
-  const handleCopy = async (text: string, isAgent: boolean) => {
+  const handleCopy = async (text: string) => {
     try {
       await navigator.clipboard.writeText(text);
-      if (isAgent) {
-        setCopiedAgent(true);
-        setTimeout(() => setCopiedAgent(false), 2000);
-      } else {
-        setCopiedCloud(true);
-        setTimeout(() => setCopiedCloud(false), 2000);
-      }
+      setCopiedAgent(true);
+      setTimeout(() => setCopiedAgent(false), 2000);
     } catch (err) {
       console.error("Failed to copy text: ", err);
     }
   };
-
-  useEffect(() => {
-    const platform = window.navigator?.platform?.toLowerCase() || "";
-    const userAgent = window.navigator?.userAgent?.toLowerCase() || "";
-    if (platform.includes("win") || userAgent.includes("windows")) {
-      setOsPrefix("start");
-    } else if (platform.includes("linux") || userAgent.includes("linux")) {
-      setOsPrefix("xdg-open");
-    } else {
-      setOsPrefix("open");
-    }
-  }, []);
 
   return (
     <Tooltip.Provider delayDuration={100}>
@@ -258,68 +321,141 @@ export default function AgentReady() {
                   tools
                 </h2>
                 <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                  Slide ParadeDB seamlessly into your existing stack.
+                  ParadeDB works seamlessly with your existing stack.
                 </p>
               </div>
 
               {/* Nested Cards Container */}
               <div className="relative w-full z-20">
-                <div className="max-w-[1128px] mx-auto grid grid-cols-1 lg:grid-cols-2 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-slate-800 border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+                <div className="max-w-[1128px] mx-auto grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-slate-800 border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+                  {/* Card 2: Cloud Platforms */}
+                  <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">
+                    <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
+                      <div className="w-full max-w-[460px] flex flex-col h-full">
+                        <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
+                          <div className="relative flex items-center justify-center w-[10.5rem] h-[3rem] mx-auto">
+                            <GridBackground cols={7} cellWidth="3.5rem" />
+                            <CornerMarkers />
+
+                            {/* Logos */}
+                            <div className="relative z-20 flex items-center justify-center w-full h-full gap-2">
+                              {CloudPlatforms.map((platform, index) => (
+                                <Tooltip.Root key={platform.name}>
+                                  <Tooltip.Trigger asChild>
+                                    <button
+                                      onClick={() => setSelectedCloud(index)}
+                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 ${
+                                        selectedCloud === index
+                                          ? "opacity-100"
+                                          : "opacity-50 hover:opacity-100"
+                                      } ${platform.className || ""}`}
+                                      aria-label={platform.name}
+                                    >
+                                      {platform.icon}
+                                    </button>
+                                  </Tooltip.Trigger>
+                                  <Tooltip.Portal>
+                                    <Tooltip.Content
+                                      className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 dark:bg-slate-100 dark:text-slate-900 z-50"
+                                      sideOffset={5}
+                                    >
+                                      {platform.name}
+                                      <Tooltip.Arrow className="fill-slate-900 dark:fill-slate-100" />
+                                    </Tooltip.Content>
+                                  </Tooltip.Portal>
+                                </Tooltip.Root>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="flex flex-col text-left flex-1">
+                          <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
+                            Cloud Platforms
+                          </h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                            Run ParadeDB on your preferred cloud platform.
+                            Supports Render, Railway, and DigitalOcean with more
+                            coming soon.
+                          </p>
+                          <Link
+                            href={
+                              CloudPlatforms[selectedCloud].name ===
+                              "DigitalOcean"
+                                ? "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean"
+                                : CloudPlatforms[selectedCloud].url ||
+                                  "https://docs.paradedb.com/deploy/cloud-platforms"
+                            }
+                            target="_blank"
+                            className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                          >
+                            {CloudPlatforms[selectedCloud].name ===
+                            "DigitalOcean"
+                              ? "Read Guide"
+                              : `Deploy to ${CloudPlatforms[selectedCloud].name}`}
+                            <RiArrowRightLine className="size-4" />
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* Card 1: Coding Agents */}
                   <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
-                        <div className="flex flex-wrap items-center justify-center gap-4 mb-8 h-[3rem]">
-                          {Integrations.map((integration) => (
-                            <Tooltip.Root key={integration.name}>
-                              <Tooltip.Trigger asChild>
-                                <div
-                                  className={`flex size-[3rem] items-center justify-center rounded-[0.7rem] border shadow-[0_6px_16px_rgba(15,23,42,0.05)] dark:shadow-none ${integration.className}`}
-                                  aria-label={integration.name}
-                                >
-                                  {integration.icon}
-                                </div>
-                              </Tooltip.Trigger>
-                              <Tooltip.Portal>
-                                <Tooltip.Content
-                                  className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 dark:bg-slate-100 dark:text-slate-900 z-50"
-                                  sideOffset={5}
-                                >
-                                  {integration.name}
-                                  <Tooltip.Arrow className="fill-slate-900 dark:fill-slate-100" />
-                                </Tooltip.Content>
-                              </Tooltip.Portal>
-                            </Tooltip.Root>
-                          ))}
-                        </div>
-
-                        <div className="hidden sm:block w-full border border-slate-200 bg-white px-3 py-2.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)] dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-none mb-10">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="min-w-0 font-mono text-[0.65rem] sm:text-[0.75rem] lg:text-[0.65rem] xl:text-[0.75rem] tracking-tight leading-6 text-slate-800 dark:text-slate-100 flex items-center whitespace-nowrap overflow-hidden">
-                              <span className="mr-2 font-semibold text-indigo-600 dark:text-indigo-400">
-                                $
-                              </span>
-                              <span className="truncate">
-                                npx skills add paradedb/agent-skills
-                              </span>
+                        <div className="flex flex-col justify-center sm:h-[102px] mb-8">
+                          <div className="hidden sm:block w-full border border-slate-200 bg-white px-3 py-2.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)] dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-none mb-1">
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="min-w-0 font-mono text-[0.65rem] sm:text-[0.75rem] lg:text-[0.65rem] xl:text-[0.75rem] tracking-tight leading-6 text-slate-800 dark:text-slate-100 flex items-center whitespace-nowrap overflow-hidden">
+                                <span className="mr-2 font-semibold text-indigo-600 dark:text-indigo-400">
+                                  $
+                                </span>
+                                <span className="truncate">
+                                  npx skills add paradedb/agent-skills
+                                </span>
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  handleCopy(
+                                    "npx skills add paradedb/agent-skills",
+                                  )
+                                }
+                                className="shrink-0 border border-slate-200 bg-transparent p-1.5 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
+                                aria-label="Copy command"
+                              >
+                                {copiedAgent ? (
+                                  <RiCheckLine className="size-[14px] text-green-600 dark:text-green-400" />
+                                ) : (
+                                  <RiFileCopyLine className="size-[14px]" />
+                                )}
+                              </button>
                             </div>
-                            <button
-                              type="button"
-                              onClick={() =>
-                                handleCopy(
-                                  "npx skills add paradedb/agent-skills",
-                                  true,
-                                )
-                              }
-                              className="shrink-0 border border-slate-200 bg-transparent p-1.5 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
-                              aria-label="Copy command"
-                            >
-                              {copiedAgent ? (
-                                <RiCheckLine className="size-[14px] text-green-600 dark:text-green-400" />
-                              ) : (
-                                <RiFileCopyLine className="size-[14px]" />
-                              )}
-                            </button>
+                          </div>
+
+                          <div className="flex flex-wrap items-center justify-center gap-4 h-[2rem] sm:mt-1">
+                            {Integrations.map((integration) => (
+                              <Tooltip.Root key={integration.name}>
+                                <Tooltip.Trigger asChild>
+                                  <div
+                                    className={`flex size-[1.5rem] items-center justify-center grayscale opacity-60 transition-all hover:grayscale-0 hover:opacity-100 bg-transparent ${integration.className}`}
+                                    aria-label={integration.name}
+                                  >
+                                    {integration.icon}
+                                  </div>
+                                </Tooltip.Trigger>
+                                <Tooltip.Portal>
+                                  <Tooltip.Content
+                                    className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 dark:bg-slate-100 dark:text-slate-900 z-50"
+                                    sideOffset={5}
+                                  >
+                                    {integration.name}
+                                    <Tooltip.Arrow className="fill-slate-900 dark:fill-slate-100" />
+                                  </Tooltip.Content>
+                                </Tooltip.Portal>
+                              </Tooltip.Root>
+                            ))}
                           </div>
                         </div>
 
@@ -345,96 +481,65 @@ export default function AgentReady() {
                     </div>
                   </div>
 
-                  {/* Card 2: Cloud Platforms */}
+                  {/* Card 3: Frameworks */}
                   <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
-                        <div className="flex flex-wrap items-center justify-center gap-4 mb-8 h-[3rem]">
-                          {CloudPlatforms.map((platform, index) => (
-                            <Tooltip.Root key={platform.name}>
-                              <Tooltip.Trigger asChild>
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedCloud(index)}
-                                  className={`flex size-[3rem] items-center justify-center rounded-[0.7rem] border shadow-[0_6px_16px_rgba(15,23,42,0.05)] dark:shadow-none transition-all duration-300 ${
-                                    selectedCloud === index
-                                      ? "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-700 opacity-100"
-                                      : "bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-700 opacity-50 hover:opacity-100"
-                                  } ${platform.className || ""}`}
-                                  aria-label={platform.name}
-                                >
-                                  {platform.icon}
-                                </button>
-                              </Tooltip.Trigger>
-                              <Tooltip.Portal>
-                                <Tooltip.Content
-                                  className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 dark:bg-slate-100 dark:text-slate-900 z-50"
-                                  sideOffset={5}
-                                >
-                                  {platform.name}
-                                  <Tooltip.Arrow className="fill-slate-900 dark:fill-slate-100" />
-                                </Tooltip.Content>
-                              </Tooltip.Portal>
-                            </Tooltip.Root>
-                          ))}
-                        </div>
+                        <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
+                          <div className="relative flex items-center justify-center w-[7rem] h-[3rem] mx-auto">
+                            <GridBackground cols={6} cellWidth="3.5rem" />
+                            <CornerMarkers />
 
-                        <div className="hidden sm:block w-full border border-slate-200 bg-white px-3 py-2.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)] dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-none mb-10">
-                          <div className="flex items-center justify-between gap-2">
-                            <div className="min-w-0 font-mono text-[0.65rem] sm:text-[0.75rem] lg:text-[0.65rem] xl:text-[0.75rem] tracking-tight leading-6 text-slate-800 dark:text-slate-100 flex items-center whitespace-nowrap overflow-hidden">
-                              <span className="mr-2 font-semibold text-indigo-600 dark:text-indigo-400">
-                                $
-                              </span>
-                              <span className="truncate">
-                                {CloudPlatforms[selectedCloud].url
-                                  ? `${osPrefix} "${CloudPlatforms[selectedCloud].url}"`
-                                  : CloudPlatforms[selectedCloud].command}
-                              </span>
+                            {/* Logos */}
+                            <div className="relative z-20 flex items-center justify-center w-full h-full gap-2">
+                              {Frameworks.map((framework, index) => (
+                                <Tooltip.Root key={framework.name}>
+                                  <Tooltip.Trigger asChild>
+                                    <button
+                                      onClick={() =>
+                                        setSelectedFramework(index)
+                                      }
+                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 ${
+                                        selectedFramework === index
+                                          ? "grayscale-0 opacity-100"
+                                          : "grayscale opacity-60 hover:grayscale-0 hover:opacity-100"
+                                      } bg-transparent ${framework.className}`}
+                                      aria-label={framework.name}
+                                    >
+                                      {framework.icon}
+                                    </button>
+                                  </Tooltip.Trigger>
+                                  <Tooltip.Portal>
+                                    <Tooltip.Content
+                                      className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 dark:bg-slate-100 dark:text-slate-900 z-50"
+                                      sideOffset={5}
+                                    >
+                                      {framework.name}
+                                      <Tooltip.Arrow className="fill-slate-900 dark:fill-slate-100" />
+                                    </Tooltip.Content>
+                                  </Tooltip.Portal>
+                                </Tooltip.Root>
+                              ))}
                             </div>
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const command = CloudPlatforms[selectedCloud]
-                                  .url
-                                  ? `${osPrefix} "${CloudPlatforms[selectedCloud].url}"`
-                                  : CloudPlatforms[selectedCloud].command || "";
-                                handleCopy(command, false);
-                              }}
-                              className="shrink-0 border border-slate-200 bg-transparent p-1.5 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
-                              aria-label="Copy command"
-                            >
-                              {copiedCloud ? (
-                                <RiCheckLine className="size-[14px] text-green-600 dark:text-green-400" />
-                              ) : (
-                                <RiFileCopyLine className="size-[14px]" />
-                              )}
-                            </button>
                           </div>
                         </div>
 
                         <div className="flex flex-col text-left flex-1">
                           <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
-                            Cloud Platforms
+                            Frameworks
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                            Run ParadeDB on your preferred cloud platform.
-                            Supports Render, Railway, and DigitalOcean with more
-                            coming soon.
+                            Support for Django, SQLAlchemy, ActiveRecord and
+                            more coming soon.
                           </p>
                           <Link
-                            href={
-                              CloudPlatforms[selectedCloud].name ===
-                              "DigitalOcean"
-                                ? "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean"
-                                : CloudPlatforms[selectedCloud].name ===
-                                    "Render"
-                                  ? "https://docs.paradedb.com/deploy/cloud-platforms/render"
-                                  : "https://docs.paradedb.com/deploy/cloud-platforms/railway"
-                            }
+                            href={Frameworks[selectedFramework].url}
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
-                            Learn more
+                            {Frameworks[selectedFramework].name === "Python"
+                              ? "Django docs"
+                              : "ActiveRecord docs"}
                             <RiArrowRightLine className="size-4" />
                           </Link>
                         </div>
