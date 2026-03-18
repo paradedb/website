@@ -1,6 +1,6 @@
 "use client";
 
-import { documentation, social } from "@/lib/links";
+import { documentation } from "@/lib/links";
 import Link from "next/link";
 import { Button } from "../Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
@@ -55,13 +55,7 @@ export default function PreFooterCta() {
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 font-semibold shadow-none hover:bg-indigo-50 border-0"
                 >
-                  <Link
-                    href={social.CALENDLY}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    Book a Demo
-                  </Link>
+                  <a href="mailto:hello@paradedb.com">Contact Us</a>
                 </Button>
                 <Button
                   asChild

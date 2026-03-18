@@ -279,9 +279,7 @@ export function Navigation() {
                     : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
                 )}
               >
-                <Link href={social.CALENDLY} target="_blank">
-                  Book a Demo
-                </Link>
+                <a href="mailto:hello@paradedb.com">Contact Us</a>
               </Button>
               <div className="md:hidden">
                 <Button
@@ -381,9 +379,7 @@ export function Navigation() {
                   asChild
                   className="w-full h-12 !rounded-none bg-indigo-600 text-white font-bold border-0 shadow-none text-md"
                 >
-                  <Link target="_blank" href={social.CALENDLY}>
-                    Book a Demo
-                  </Link>
+                  <a href="mailto:hello@paradedb.com">Contact Us</a>
                 </Button>
               </li>
               <li className="flex justify-center pt-6">
