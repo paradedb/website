@@ -436,25 +436,13 @@ export default function AgentReady() {
 
                           <div className="flex flex-wrap items-center justify-center gap-4 h-[2rem] sm:mt-1">
                             {Integrations.map((integration) => (
-                              <Tooltip.Root key={integration.name}>
-                                <Tooltip.Trigger asChild>
-                                  <div
-                                    className={`flex size-[1.5rem] items-center justify-center grayscale opacity-60 transition-all hover:grayscale-0 hover:opacity-100 bg-transparent ${integration.className}`}
-                                    aria-label={integration.name}
-                                  >
-                                    {integration.icon}
-                                  </div>
-                                </Tooltip.Trigger>
-                                <Tooltip.Portal>
-                                  <Tooltip.Content
-                                    className="rounded-md bg-slate-900 px-3 py-1.5 text-xs text-white shadow-md animate-in fade-in-0 zoom-in-95 dark:bg-slate-100 dark:text-slate-900 z-50"
-                                    sideOffset={5}
-                                  >
-                                    {integration.name}
-                                    <Tooltip.Arrow className="fill-slate-900 dark:fill-slate-100" />
-                                  </Tooltip.Content>
-                                </Tooltip.Portal>
-                              </Tooltip.Root>
+                              <div
+                                key={integration.name}
+                                className={`flex size-[1.5rem] items-center justify-center grayscale opacity-60 transition-all hover:grayscale-0 hover:opacity-100 bg-transparent ${integration.className}`}
+                                aria-label={integration.name}
+                              >
+                                {integration.icon}
+                              </div>
                             ))}
                           </div>
                         </div>
