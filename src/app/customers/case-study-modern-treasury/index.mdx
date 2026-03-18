@@ -55,6 +55,19 @@ import heroImage from "./images/hero.png";
   </div>
 </div>
 
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
+      Built on the solid foundation of Postgres, ParadeDB provides the good
+      parts of Elasticsearch we actually need, without the infrastructure and
+      hassle of data synchronization.
+    </span>
+    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
+      Matt Higgins, Head of Engineering
+    </span>
+  </div>
+</div>
+
 ### Overview
 
 Modern Treasury is the payments operations platform for businesses that move money at scale. The platform offers APIs, dashboards, and workflow tooling to manage the full lifecycle of payments — from initiation and approval through reconciliation and reporting. Modern Treasury's customers span financial services, fintech, and enterprise, relying on the platform to process high volumes of transactions with accuracy down to the penny.
@@ -76,36 +89,22 @@ The result was a long tail of edge-case query timeouts. Approximately 5% of quer
 
 Modern Treasury needed a backend that could power subsecond responses across its core UIs without requiring a different index for every query pattern. The requirements boiled down to filtering records based on any of dozens of attributes, sorting by any attribute, and returning the top results. Crucially, the system had to be accurate to the penny.
 
-<div className="py-2">
-  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
-    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
-      Modern Treasury needed the performance of a search and analytics engine
-      alongside the accuracy of a database.
-    </span>
-    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
-      Matt Higgins, Head of Engineering
-    </span>
-  </div>
-</div>
-
 The team evaluated Elasticsearch but concluded that the data consistency challenges and deployment complexity it would introduce were not worth the trade-off. While Elasticsearch is mature and feature-rich, the value of Postgres replication and SQL-native infrastructure offered by ParadeDB — as a native Postgres extension — outweighed the bells and whistles.
-
-<div className="py-2">
-  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
-    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
-      Built on the solid foundation of Postgres, ParadeDB provides the good
-      parts of Elasticsearch we actually need, without the infrastructure and
-      hassle of data synchronization.
-    </span>
-    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
-      Matt Higgins, Head of Engineering
-    </span>
-  </div>
-</div>
 
 Modern Treasury deployed ParadeDB as a logical replica of their primary Postgres across 7 clusters. This meant the team could leverage its existing Postgres knowledge and infrastructure. No new data pipelines, no sync jobs, and no new query language. Implementation required only minor adjustments to existing SQL queries.
 
 ### Results
+
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
+      Switching to ParadeDB allowed us to replace as many as 26 B-tree and GIN indexes over one table with a single ParadeDB index. This has massively improved our write throughput and simplified our operational overhead.
+    </span>
+    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
+      Eric Barendt, Software Engineer
+    </span>
+  </div>
+</div>
 
 ParadeDB resolved an entire class of edge-case query timeouts for Modern Treasury. The team no longer needs to think about the many permutations of query plans that previously caused failures. The 5% of queries that previously timed out are now subsecond.
 
