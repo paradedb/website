@@ -66,16 +66,16 @@ export default function SocialProof() {
         <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
         <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-        <div className="px-4 md:px-12 w-full flex flex-col relative">
+        <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
           {/* Background color layer */}
-          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-10" />
+          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100 dark:bg-slate-950/50 z-0" />
 
           {/* Inner Vertical Borders for boxed look */}
           <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
           <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
           {/* Section 1: Case Studies (Gray Background) */}
-          <div className="relative flex flex-col items-center justify-center sm:py-24 py-12 text-center bg-transparent">
+          <div className="relative z-10 flex flex-col items-center justify-center sm:py-24 py-12 text-center bg-transparent">
             {/* Fades for Case Studies Section */}
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
