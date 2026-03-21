@@ -42,14 +42,6 @@ export default async function Customers() {
                   <p className="text-gray-600 dark:text-slate-400 text-md md:text-sm leading-relaxed mb-4 flex-grow">
                     {post.description}
                   </p>
-                  <div className="mt-4">
-                    <span className="text-sm md:text-xs text-gray-700 dark:text-slate-300">
-                      By{" "}
-                      {Array.isArray(post.author)
-                        ? post.author.join(", ")
-                        : post.author}
-                    </span>
-                  </div>
                 </div>
               </div>
             </Link>
