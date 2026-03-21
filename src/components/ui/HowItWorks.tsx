@@ -637,7 +637,14 @@ export default function HowItWorks() {
                 key={activeTab + "-btn"}
               >
                 <Button className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all">
-                  <Link target="_blank" href={documentation.REPLICATION}>
+                  <Link
+                    target="_blank"
+                    href={
+                      activeTab === "selfHosted"
+                        ? documentation.DEPLOY_EXTENSION
+                        : documentation.REPLICATION
+                    }
+                  >
                     Learn More
                   </Link>
                 </Button>
