@@ -11,7 +11,7 @@ export const documentation = {
   REPLICATION:
     "https://docs.paradedb.com/deploy/logical-replication/getting-started",
   INGEST: "https://docs.paradedb.com/deploy/third-party-extensions",
-  DOCKER: "https://docs.paradedb.com/deploy/self-hosted/docker",
+  DOCKER: "https://docs.paradedb.com/documentation/getting-started/install",
   DEPLOY_EXTENSION: "https://docs.paradedb.com/deploy/self-hosted/extension",
   CHANGELOG: "https://docs.paradedb.com/changelog",
 };
