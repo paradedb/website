@@ -28,6 +28,7 @@ const navigation = {
     { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
     { name: "Documentation", href: documentation.BASE, external: true },
     { name: "Changelog", href: documentation.CHANGELOG, external: true },
+    { name: "Brand Assets", href: "/brand", external: false },
   ],
   connect: [
     { name: "Slack Community", href: social.SLACK, external: true },
