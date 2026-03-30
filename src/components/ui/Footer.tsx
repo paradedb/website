@@ -26,6 +26,7 @@ const navigation = {
     },
     { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
     { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
+    { name: "Brand", href: siteConfig.baseLinks.brand, external: false },
     { name: "Documentation", href: documentation.BASE, external: true },
     { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
