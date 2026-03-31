@@ -60,6 +60,11 @@ Let's take a look at how much faster our approach is, and also how we make this 
 
 ## Performance: Our Benchmarking Results
 
+<Note>
+  As of v0.22.0, the performance of MVCC-accurate faceting is roughly 40%
+  faster.
+</Note>
+
 To demonstrate the performance benefit of our new faceting, we benchmarked traditional PostgreSQL faceting against ParadeDB's integrated approach using a dataset of 46 million Hacker News posts and comments (details on the queries and schema can be found [later in the post](#comparing-the-approaches)).
 
 Both approaches use ParadeDB's BM25 search (PostgreSQL's built-in tsvector simply doesn't cut it, already being 27x slower at 200,000 results), but they differ in how faceting is implemented. The results show just how significant the performance difference can be:
