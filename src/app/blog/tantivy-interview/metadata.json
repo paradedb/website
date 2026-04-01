@@ -1,7 +1,7 @@
 {
   "title": "A Conversation with Paul Masurel, Creator of Tantivy",
-  "date": "2026-03-03T00:00:00.000Z",
+  "date": "2026-04-02T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
-  "description": "We sat down with Paul Masurel — creator of Tantivy and co-founder of Quickwit — to talk about building a search engine in Rust, competing with Lucene, open-source maintenance, and the lessons learned along the way.",
+  "description": "We sat down with Paul Masurel (creator of Tantivy and co-founder of Quickwit) to talk about building a search engine in Rust, following the competitive happy-path with Lucene, open-source maintenance, and the lessons learned along the way.",
   "categories": ["tantivy", "search", "open-source"]
 }
