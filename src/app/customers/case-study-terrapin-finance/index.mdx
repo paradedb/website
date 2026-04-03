@@ -69,13 +69,13 @@ import heroImage from "./images/hero.png";
 
 ### Overview
 
-Terrapin Finance is a fixed-income data provider specializing in reference and pricing data APIs for US municipal, government, and corporate bonds. The company serves institutional clients who depend on accurate, real-time bond data for trading and analysis. Terrapin is also building a municipal credit intelligence platform that combines document search, credit risk analytics, and AI-driven research tools.
+[Terrapin Finance](https://terrapinfinance.com) is a fixed-income data provider specializing in reference and pricing data APIs for US municipal, government, and corporate bonds. The company serves institutional clients who depend on accurate, real-time bond data for trading and analysis. Terrapin is also building a municipal credit intelligence platform that combines document search, credit risk analytics, and AI-driven research tools.
 
 ### The Problem
 
 Terrapin's bond reference data APIs serve data derived from massive source tables spanning over a billion rows. A key requirement from their clients is the ability to filter bonds by issuer name, a natural-language field that doesn't lend itself to exact-match lookups. On the product side, Terrapin's credit risk analysis web UI features a type-ahead search bar where users enter a unique identifier or bond issuer name and see matching results as they type.
 
-For a financial data platform, search responsiveness is non-negotiable: analysts expect instant feedback while narrowing down results across millions of securities.
+For a financial data platform, search responsiveness is non-negotiable: analysts expect instant feedback as they narrow down results across millions of securities.
 
 The team initially built this functionality with `pg_trgm`, Postgres' built-in trigram matching extension. While trigram indexes are a common starting point for fuzzy text search in Postgres, they struggled under the weight of Terrapin's data. Search queries routinely took 5 seconds to return results, far too slow for a type-ahead interface. This was also painful for API consumers running batch queries against issuer names.
 
@@ -93,5 +93,5 @@ Beyond the core bond data APIs, Terrapin leveraged ParadeDB to build something m
 
 ### ParadeDB
 
-ParadeDB is the simplest way to add Elastic-quality search to your Postgres. If you have a use case around large scale search in Postgres,
+ParadeDB is the simplest way to add Elastic-quality search to your Postgres. If you have a use case around large-scale search in Postgres,
 we'd [love to chat](mailto:hello@paradedb.com).
