@@ -36,14 +36,7 @@ export default function ResourcesLayoutClient({
     items: section.resources.map((resource) => ({
       key: resource.href,
       href: `${siteConfig.baseLinks.resources}/${resource.href}`,
-      label: (
-        <div className="flex flex-col">
-          <span className="text-sm font-medium">{resource.name}</span>
-          <span className="text-[10px] text-slate-400 dark:text-slate-500 uppercase tracking-wider font-bold mt-0.5">
-            {resource.type}
-          </span>
-        </div>
-      ),
+      label: <span className="text-sm font-medium">{resource.name}</span>,
     })),
   }));
 

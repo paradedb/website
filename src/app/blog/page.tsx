@@ -23,7 +23,7 @@ export default async function Blog() {
               className="group"
             >
               <div className="bg-white dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors duration-200 overflow-hidden h-full flex flex-col border border-slate-200 dark:border-slate-800 rounded-none">
-                <div className="relative w-full aspect-video">
+                <div className="relative w-full aspect-[1200/620]">
                   <BlogListImage slug={post.href} title={post.name} />
                 </div>
                 <div className="p-6 flex flex-col flex-grow">

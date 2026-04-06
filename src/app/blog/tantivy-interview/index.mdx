@@ -1,0 +1,201 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import { Question, Answer } from "@/components/mdx/Question";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+For most of its history, full-text search has been synonymous with one library: Apache Lucene. Written in Java and battle-tested over two decades, Lucene powers Elasticsearch, Solr, and much of the search infrastructure the industry relies on today. It's the kind of project that makes you think the problem is solved, that there's no room left to rethink the fundamentals.
+
+Then in 2017, a Rust library called [Tantivy](https://github.com/quickwit-oss/tantivy) appeared on GitHub. Built by a single developer who wanted to test his understanding of search engines and his new favorite language, it was small, fast, and unapologetically modular. Within a few years it had grown into the engine behind [Quickwit](https://quickwit.io/), [ParadeDB](https://paradedb.com/), [LNX](https://github.com/lnx-search/lnx), and a growing number of search products, and had sparked a genuine performance collaboration with the Lucene team itself.
+
+That developer is Paul Masurel. After creating Tantivy, Paul co-founded Quickwit in 2020 to build a cloud-native log search engine on top of it. Quickwit was acquired by Datadog in 2024, where Paul now works on search infrastructure at massive scale. We sat down with him to talk about the origins of Tantivy, the philosophy behind its design, what it's like competing (and collaborating) with Lucene, and the lessons he's learned along the way.
+
+## Origins
+
+<Question>
+  You've spent much of your career rethinking how search infrastructure is
+  built. How did you first get interested in search systems?
+</Question>
+<Answer>
+  My history with search engines started at a small French enterprise search
+  company called Exalead. I was a front-end engineer at the time. I like to
+  think my frustration grew from not being part of the core team. Long-fermented
+  frustration is an underrated driver in my opinion.
+</Answer>
+
+## Building Tantivy
+
+Paul’s frustration soon led to a job as a backend engineer for a search product at Indeed in Japan, where he worked on the core search engine itself. But the idea of building something from scratch kept pulling at him. The catalyst came on a long-haul flight in 2016. The first version was “a bit silly” and only took a couple of months of spare time, but it was enough to prove the idea had legs.
+
+<Question>What made you decide to build a search engine from scratch, and did Rust shape its architecture?</Question>
+<Answer>
+I read the Rust book during a flight from Tokyo to Paris in 2016. Being very familiar  with C++, all of the ideas were very enticing to me. I quickly worked through the [exercism.io](https://exercism.io/) Rust track and then wanted to test the language on a real-life project — something with IO, error management, multithreading. What project should I have picked?
+
+At the time, I was working at Indeed in the search quality team. Our search engine was based on Lucene 2.4. Building a search engine was a perfect way for me to test my understanding of search engines and try out Rust on a real-life project.
+
+Rust did impact the way the code is organized, but I wouldn't say it shaped the architecture. Lucene is really the inspiration there.
+
+</Answer>
+
+Paul didn't set out to build a Lucene replacement. He set out to build something small enough that developers could actually own it. He has described becoming more productive in Rust within two weeks than he had been after five years of C++, and experiencing "a degree of confidence that my code was not buggy, that I had never experienced in any other language".
+
+Architecturally, Tantivy follows Lucene’s model: it is a library, not a server. It handles indexing, compression, and search, but leaves distribution and orchestration to whatever system embeds it.
+
+<Question>Were there particular trade-offs or priorities you focused on?</Question>
+<Answer>
+Originally I wanted to keep the project small but modular. Batteries included, but minimal.
+
+My target was companies for which search was so central to their product that they would eventually build their own engine instead of using off-the-shelf solutions like Elasticsearch. Usually such companies would have to use Lucene — and therefore Java. I thought Tantivy could be a good alternative for them.
+
+For this reason, I wanted Tantivy to be small and modular as opposed to featureful. No matter how sophisticated Tantivy might become, these users would rather be able to plug in their own tokenizer and their own query parser.
+
+Today, Tantivy users come in all sizes and shapes. We still sometimes refuse PRs that add niche features in order to keep the library simple, and we prefer PRs that make it possible to implement those features outside of Tantivy. Generally speaking though, this principle isn't as strong as it used to be.
+
+</Answer>
+
+## The Benchmark Game
+
+It quickly became apparent that Tantivy was not only competitive with other search engines, in many cases it outperformed them. Under the hood, Tantivy uses finite state transducers for its term dictionary, SIMD-accelerated compression for its inverted index, and a memory-mapped I/O layer that keeps resident memory remarkably low. The result is a library that can handle indexes larger than available RAM without breaking a sweat.
+
+Jason Wolfe, Paul's manager at Indeed, created [Search Benchmark, the Game](https://github.com/quickwit-oss/search-benchmark-game), a reproducible benchmark suite that showed Tantivy was often 2x faster than Lucene. Over the years the benchmark sparked a genuine back-and-forth between the two projects. Adrien Grand, a Lucene committer, published "[Why is Tantivy Faster than Lucene?](https://jpountz.github.io/2025/04/12/why-is-Tantivy-faster-than-Lucene.html)" and a [follow-up analysis](https://jpountz.github.io/2025/05/12/analysis-of-Search-Benchmark-the-Game.html), and Lucene has since landed patches that close the gap across [most areas](https://tantivy-search.github.io/bench/).
+
+<Question>Can you see this game of cat and mouse between Tantivy and Lucene continuing?</Question>
+<Answer>
+Let me first talk a little bit about that benchmark. We wanted it honest and reproducible, and designed it to help us find out where Tantivy's performance was lacking.
+
+Lucene developers approached it with genuine curiosity. Adrien Grand (at Elastic at the time) and Mike McCandless (Amazon) used it to investigate how to improve Lucene's performance. We kept a channel of communication open for the benefit of both projects. Some patches inspired by Tantivy made it into Lucene. After that, Adrien kept finding new optimizations to improve Lucene's search performance. He shared his progress with us and even left [tickets](https://github.com/quickwit-oss/tantivy/issues?q=is%3Aissue%20state%3Aopen%20author%3Ajpountz) in Tantivy's GitHub. We're trailing behind on implementing them. Today, Lucene outperforms Tantivy in many places. Overall, both projects benefited from the collaboration.
+
+Now I'll hijack this question for a second and jump on my soapbox. Some people get the wrong idea about the nature of competition in software. Of course, Quickwit and Tantivy are projects competing with Elasticsearch and Lucene. But **competition does not have to translate into a feud** — especially in open source.
+
+Through Tantivy, I've interacted with many companies. A good number of them turn the "fake it until you make it" saying into a culture of pettiness and hypocrisy. I truly appreciate how special Lucene and Elastic are, and how lucky we were to compete with them.
+
+</Answer>
+
+## The Open-Source Life
+
+Paul's respect for Lucene is striking, especially given how tribal the open-source search space can get. But open source comes with its own challenges. As Tantivy's adoption grew, so did the weight of maintaining it.
+
+<Question>Maintaining an open-source project at Tantivy's scale isn't easy. What have been the hardest challenges in guiding its growth?</Question>
+<Answer>
+Reviewing contributions — and sometimes simply saying no to them — is, I think, the hardest part. I review a lot of code, both open source and proprietary. It's very difficult to decide whether a PR should be merged, should be improved, or should be dropped. A lot of contributors are excited about the idea of contributing to open source and can submit features that don't solve any actual problem they have, should be kept external to Tantivy, introduce too much complexity, or are just not of sufficient quality.
+
+Every time I review code, I'm torn between:
+
+- The responsibility to not let the project drift into a terrible state
+- Wanting to please people
+- Quickwit's interests
+- The nihilist's thesis: code quality is subjective, after all
+- Managing my time and the energy required for context switching
+
+Since Quickwit's acquisition, it's even more difficult for me to find the time and energy to review PRs. Like many developers, I struggle with having to deal with several problems in parallel, and my work at Datadog is already very challenging in that regard.
+
+</Answer>
+
+Despite that tension, the ecosystem around Tantivy has grown into something Paul never designed for. The library-only architecture that he borrowed from Lucene turned out to be its greatest asset: because Tantivy handles indexing and search but stays silent on how to shard, replicate, and coordinate across nodes, downstream projects can wrap it in radically different ways. What started as a library for companies who wanted to build their own search engine is now the foundation for products with very different goals: scale-out log search, typo-tolerant lookup, edge databases, and transactional search inside Postgres.
+
+<Question>Tantivy now serves as the foundation for Quickwit, LNX, ParadeDB, Turso, and others. Have you seen contributions or design ideas flow back upstream?</Question>
+<Answer>
+Someone contributed support for [geo search](https://github.com/quickwit-oss/tantivy/pull/2729) seemingly out of nowhere. This is something we had wanted to add for a while. The PR is large but its quality is very impressive. I hope I will eventually find time to get it merged.
+
+ParadeDB has also been actively contributing great PRs and deep ideas lately.
+
+</Answer>
+
+<Question>While the story of Tantivy started with you on a plane, many others have been involved over the years. Who else has helped shape your vision?</Question>
+<Answer>
+Fellow Quickwiots first! In particular, Pascal ([@pseitz](https://github.com/pseitz)) and Trinity ([@trinity-1686a](https://github.com/trinity-1686a)) probably had a strong impact on Tantivy itself. Outside Quickwit, recently Stu ([@Stuhood](https://github.com/Stuhood)) has been very impactful. Harrison ([@ChillFish8](https://github.com/ChillFish8)) also comes to mind. But also, many other people helped along the way: Evance, Pasha, Shikhar, Dru, etc.
+
+In France, there is a monument called "Tomb of the Unknown Soldier". We should celebrate the large crowd of people who come, contribute with an idea, a nice word, an answer to a question, and disappear. Their flow is really what kept the project alive, especially in the beginning.
+
+If we extend the question to Quickwit, I was sharing the architect cap with [Adrien](https://github.com/guilload) and [Francois](https://github.com/fmassot) was the product owner.
+
+</Answer>
+
+<Question>Did Tantivy's adoption ever surprise you? Was there a moment when you realized it had "made it"?</Question>
+<Answer>
+Tantivy's adoption is slow and steady. It's like watching my daughter grow. My parents are surprised whenever they see her, but I don't "see" her grow. I realize it when she uses a word I've never heard her use before, expresses a thought that's new to me, or grows an interest in something new.
+
+For Tantivy, the real signs are exotic bug reports. For instance, someone reported an overflow in the 64-bit nanosecond datetime representation — they were indexing events in science fiction literature.
+
+</Answer>
+
+## Quickwit
+
+A library growing beyond what its creator can fully track is usually the point where the story takes its next turn. For Paul, that turn was Quickwit, a bet that the same technology powering search inside applications could be reimagined to work at infrastructure scale, running directly off object storage.
+
+<Question>After building Tantivy, you co-founded Quickwit in 2020. What was the original vision, and what gap did you see in the market?</Question>
+<Answer>
+The original vision was actually very different. There was a real-time, large-scale, search-based analytics tool we were using at Indeed that was incredibly powerful. We want to replicate a similar experience.
+
+As we started building it, we noticed that traditional search engines were perfectly suited to run off S3, so we opportunistically pivoted to building a log search engine on S3.
+
+</Answer>
+
+The pivot is a detail that's easy to gloss over, but it says something important about how Paul works: follow the architecture, not the roadmap. If the underlying technology points somewhere interesting, go there.
+
+<Question>How was the transition from maintaining an open-source library to running a startup?</Question>
+<Answer>
+For me, the transition was not as brutal as you might think. In the first two years, Quickwit was as close to a "just code" company as you can get. Everyone was very self-driven, so there was little to no management involved. For marketing, we quickly discovered that writing a few high-quality engineering blog posts was the right approach for us.
+
+The hardest part was dealing with the isolation of remote work and having to accept meetings across different time zones. I was living in Japan, so it was common for me to have meetings at 8 AM or 11 PM. I never got used to either.
+
+</Answer>
+
+<Question>Early on, Quickwit was adopted by heavy-hitters like Binance, who built a 100 PB log search service indexing 1.6 PB per day. How did working with large-scale users influence Quickwit's roadmap?</Question>
+<Answer>
+Binance suggested they would be open to signing a contract eventually but never actually signed one. We had already burned our fingers with a similar company and knew we shouldn't prioritize their feature requests until we had a signed contract. We just fixed the scale road bumps they reported — we always welcome bug reports as long as they aren't too specific to an exotic workload.
+
+Mezmo is the company that influenced our roadmap the most. They put a lot of trust in us and signed a contract for us to develop features for their product. The impact was overall positive for our roadmap — it pushed us to implement features we kept postponing because we judged them too hard.
+
+One feature, however — the ingestion API — was implemented too fast and built to fit their specific requirements. We still suffer today from the technical debt we accumulated on that one.
+
+</Answer>
+
+## Datadog
+
+By 2024, Quickwit had proven that Tantivy-based infrastructure could handle production workloads at serious scale. The team was preparing to raise a Series A when Datadog came calling, offering something a funding round couldn't: immediate access to some of the largest observability workloads in the world.
+
+<Question>What made Datadog the right home for Quickwit?</Question>
+<Answer>
+  To be honest, this was a very difficult decision. One benefit we expected was
+  that our technology could now be pushed to more companies, at even larger
+  scales.
+</Answer>
+
+<Question>Was it difficult to secure a commitment to keep Tantivy and Quickwit open source?</Question>
+<Answer>
+Datadog offered to relicense Quickwit under Apache. This allowed four (and probably more) companies to build their products around Quickwit.
+
+That said, the product we're building at Datadog is not open source. We push all improvements to Quickwit and maintain a private fork with the Datadog-specific code. Apart from that, we cannot afford to spend much time dealing with support or contributions that aren't aligned with our product's agenda.
+
+</Answer>
+
+It's a pragmatic arrangement, and a generous one by acquisition standards. The open-source projects stay open, the proprietary product stays proprietary, and the line between them is clean. What's more interesting is how working at Datadog's scale has reshaped Paul's thinking about search itself.
+
+<Question>Working on search inside a much larger platform now, has that changed your perspective? Has any of that work fed back into Tantivy?</Question>
+<Answer>
+I'm more convinced than ever that the wall between columnar databases and search engines is entirely artificial.
+
+We've pushed several massive optimizations into Tantivy, and improvements to Quickwit's stability have been motivated by workloads observed on Datadog's customers. Generally speaking, whenever possible, we push all of our changes back to the Tantivy and Quickwit open-source projects.
+
+</Answer>
+
+## Advice for Developers
+
+Paul's arc, from frustrated front-end engineer to the creator of search infrastructure used by companies worldwide, is in many ways the story of someone who looked at a "solved" problem and decided it wasn't. We closed by asking what he'd tell developers who want to do the same.
+
+<Question>If I had looked at the lexical search and BM25 space in 2016, I would have said it was solved, and that catching up would be nearly impossible. You proved otherwise. What advice would you give to developers who are eyeing "solved" problem spaces with fresh eyes?</Question>
+<Answer>
+Keep an eye on the academic world. The new ideas often come from there, and they won't make it into the industry without our help — and our sweat.
+
+Keep refining your mental models about how systems work. Software is a collection of abstraction matryoshka dolls. Identify these abstractions and study them. It will make you a better developer: you'll start building beautiful abstractions yourself. But you'll also notice that there's a lot of value to be delivered where abstractions leak.
+
+And keep a critical view of why the industry converged on a given solution. Maybe your problem is singular enough to not match the vanilla solution. Or maybe the industry made choices in the past when hardware and software looked very different from what we have today.
+
+</Answer>

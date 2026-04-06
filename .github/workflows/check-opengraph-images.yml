@@ -1,0 +1,56 @@
+# workflows/check-opengraph-images.yml
+#
+# Check OpenGraph Images
+# Ensure every blog post and customer case study has opengraph-image.png and twitter-image.png.
+
+name: Check OpenGraph Images
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "src/app/blog/**"
+      - "src/app/customers/**"
+      - ".github/workflows/check-opengraph-images.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: check-opengraph-images-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-opengraph-images:
+    name: Check OpenGraph Images
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v6
+
+      - name: Check for missing OpenGraph images
+        run: |
+          missing=0
+
+          for dir in src/app/blog/*/metadata.json src/app/customers/*/metadata.json; do
+            post_dir=$(dirname "$dir")
+            slug=$(basename "$post_dir")
+
+            if [ ! -f "$post_dir/images/opengraph-image.png" ]; then
+              echo "::error::Missing opengraph-image.png in $post_dir/images/"
+              missing=1
+            fi
+
+            if [ ! -f "$post_dir/images/twitter-image.png" ]; then
+              echo "::error::Missing twitter-image.png in $post_dir/images/"
+              missing=1
+            fi
+          done
+
+          if [ "$missing" -eq 1 ]; then
+            echo ""
+            echo "Every blog post and customer case study must have opengraph-image.png and twitter-image.png (1200x630) in its images/ directory."
+            exit 1
+          fi
+
+          echo "All posts have OpenGraph and Twitter images."
