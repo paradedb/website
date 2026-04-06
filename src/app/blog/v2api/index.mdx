@@ -32,7 +32,7 @@ In this post, we’ll walk through what’s new, and how the v2 API brings Parad
 
 The foundation of the v2 API is improved schema inference. When you create a search index, ParadeDB examines your existing table structure and automatically configures appropriate search behavior for each column type (rather than maintaining a separate JSON configuration blob). We believe your PostgreSQL schema should be the authoritative source of truth, so we built the system to work with what you already have.
 
-All the code examples in this post use the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/quickstart)).
+All the code examples in this post use the ParadeDB getting started demo table (which you can easily install by [following the SQL steps here](https://docs.paradedb.com/documentation/getting-started/install)).
 
 ```ini
 Table "public.mock_items"
@@ -429,8 +429,8 @@ The v2 API provides three advanced capabilities for sophisticated search require
 
 This post covers the core features of the v2 API, but there's much more to explore. For the complete feature set, including advanced ranking options, custom analyzers, and specialized query types, check out the [full documentation](https://docs.paradedb.com/documentation/full-text/overview).
 
-All the examples in this post use ParadeDB's [`mock_items` table](https://docs.paradedb.com/documentation/getting-started/quickstart), which you can install and try yourself following the getting started guide. Every query shown here works with the demo data, allowing you to explore the v2 API's capabilities hands-on.
+All the examples in this post use ParadeDB's `mock_items` table, which you can install and try yourself following the [getting started guide](https://docs.paradedb.com/documentation/getting-started/install). Every query shown here works with the demo data, allowing you to explore the v2 API's capabilities hands-on.
 
 The v2 API represents our vision for how search should work in SQL databases: powerful, flexible, and integrated rather than separate and complex. Because ParadeDB runs inside PostgreSQL, you get all the PostgreSQL guarantees you rely on: ACID transactions, backup and recovery, security, and the entire ecosystem of extensions and tools.
 
-[Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/quickstart) to see how the v2 API can simplify your search architecture while expanding your search capabilities, and please don’t hesitate to [give us a star](https://github.com/paradedb/paradedb).
+[Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/install) to see how the v2 API can simplify your search architecture while expanding your search capabilities, and please don’t hesitate to [give us a star](https://github.com/paradedb/paradedb).
