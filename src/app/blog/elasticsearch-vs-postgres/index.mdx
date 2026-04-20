@@ -75,5 +75,7 @@ While each service differentiates around the edges, there’s an important cavea
 
 ParadeDB is a full text search engine built for Postgres. Powered by an extension called `pg_search`, ParadeDB embeds Tantivy, a Rust-based Lucene alternative, inside Postgres. Like native Postgres FTS, ParadeDB plugs into any existing, self-managed Postgres database with no additional infrastructure. Like Elasticsearch, ParadeDB provides the capabilities of an advanced full text search engine.
 
+Teams making this tradeoff have already made the switch: [INSA Strasbourg replaced Elasticsearch with ParadeDB](/customers/case-study-insa) to simplify their research database stack, and [Bilt cut Postgres query timeouts by 95%](/customers/case-study-bilt) without standing up a separate search cluster.
+
 Compatibility with managed Postgres services like Amazon RDS is coming soon. To get notified when it’s ready, we invite you to fill out our [interest form](https://form.typeform.com/to/jHkLmIzx?typeform-source=paradedb.typeform.com).
 In the meantime, you can follow our [GitHub repository](https://github.com/paradedb/paradedb) and give us a star!

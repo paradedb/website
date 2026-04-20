@@ -121,6 +121,16 @@ export default function SocialProof() {
                   />
                 </div>
               </div>
+
+              <div className="mt-10 flex justify-center">
+                <Link
+                  href="/customers"
+                  className="group inline-flex items-center gap-2 text-indigo-950 dark:text-white font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
+                >
+                  View all case studies
+                  <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                </Link>
+              </div>
             </div>
           </div>
         </div>
