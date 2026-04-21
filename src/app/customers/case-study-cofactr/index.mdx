@@ -1,0 +1,102 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+<b>
+  After three high-impact outages on a managed search vendor, Cofactr
+  consolidated its stack onto Postgres and has run disruption-free on ParadeDB
+  ever since.
+</b>
+<div className="border-t border-0.5 border-slate-300">
+  {/* Desktop Table */}
+  <table className="table-auto w-full mt-6 hidden md:table">
+    <thead className="border-0">
+      <tr className="text-2xl font-medium border-0">
+        <th className="py-0 px-0">10M+</th>
+        <th className="py-0 px-0">7.8K/s</th>
+        <th className="py-0 px-0">245 QPS</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr className="font-light border-0">
+        <td className="py-0 px-0">Total Rows</td>
+        <td className="py-0 px-0">Peak Write Rate</td>
+        <td className="py-0 px-0">Peak Read Rate</td>
+      </tr>
+    </tbody>
+  </table>
+  {/* Mobile Vertical List */}
+  <div className="block md:hidden mt-6">
+    <div className="flex justify-between py-2">
+      <span>Total Rows</span>
+      <span className="font-medium">10M+</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Peak Write Rate</span>
+      <span className="font-medium">7.8K/s</span>
+    </div>
+    <div className="flex justify-between py-2">
+      <span>Peak Read Rate</span>
+      <span className="font-medium">245 QPS</span>
+    </div>
+  </div>
+</div>
+
+<div className="py-2">
+  <div className="border-l-4 border-indigo-600 px-8 md:px-12 my-4">
+    <span className="font-medium text-slate-900 dark:text-slate-100 md:text-2xl">
+      ParadeDB lets us unify our search and primary data stores around Postgres
+      without giving up performance. Its operational stability has made it a
+      trusted part of our stack.
+    </span>
+    <span className="pt-2 text-slate-600 dark:text-slate-400 block">
+      Noah Trueblood, Director, Data & AI
+    </span>
+  </div>
+</div>
+
+### Overview
+
+[Cofactr](https://cofactr.com) is a full-service electronics purchasing platform for hardware teams. Customers upload a bill of materials, and Cofactr handles the rest: its AI agents source components, negotiate pricing, and place orders, while Cofactr's warehouses store the parts and assemble custom kits.
+
+Cofactr's platform is also compliant with the International Traffic in Arms Regulations (ITAR), the US government framework governing the export of defense articles and technical data. That means data access must be restricted to US Persons, and the entire stack runs inside AWS GovCloud under strict security controls.
+
+### The Problem
+
+Before ParadeDB, Cofactr's search architecture was split across two database systems. An internal service aggregated and normalized part data from many sources into MongoDB Atlas, using Atlas Search to explore a large parts dataset of structured and unstructured fields. Cleaned records were then synced into a Postgres database behind the customer-facing platform, which relied on a mix of native full-text search and custom query patterns.
+
+Maintaining two search approaches across two database systems made synchronization operationally complex and gave the team less control over search index freshness and consistency than they wanted. Atlas was also fully managed: when issues came up, Cofactr was dependent on MongoDB's support staff to take action. Across 2023 and 2024, three high-impact service disruptions required MongoDB support to escalate and resolve.
+
+MongoDB Atlas for Government also carried a steep markup and ran outside Cofactr's AWS account, which added another cloud environment to the compliance surface area.
+
+Cofactr came to realize that its workload and query patterns were a natural fit for Postgres, and that consolidating around a Postgres-native search engine would simplify the stack without compromising on capabilities.
+
+### The Solution
+
+Cofactr's technical requirements were clear: tight control over replication from the primary database to the search database, low replication latency, and the ability to absorb bursts of traffic without degrading. The team evaluated MongoDB Atlas, OpenSearch, and native Postgres full-text search (`tsvector`/`tsquery`/`ts_rank`) alongside ParadeDB.
+
+MongoDB Atlas offered low read latency, but replication lag from the primary database was opaque and outside Cofactr's control, and the GovCloud markup plus extra compliance surface area made it a poor fit. OpenSearch offered more control and an expansive feature set but added operational complexity to the stack. Native Postgres full-text search could run inside RDS, but initial benchmarking suggested that index and query performance wouldn't meet Cofactr's long-term needs, and `ts_rank` was too limited.
+
+ParadeDB stood out for two reasons. First, consolidating search into Postgres collapsed the stack around a single database system the team already knew well. Second, by using `dblink` to pull data from the primary database into ParadeDB, the time from ingesting new data into the primary database to having it searchable in ParadeDB was small.
+
+### Results
+
+Cofactr deployed ParadeDB as a standalone database in AWS GovCloud — the same environment as the rest of its ITAR-compliant infrastructure — to power freeform search across its electronic components catalog.
+
+The ParadeDB database today spans roughly 11 million rows. Cofactr deliberately keeps this lean: it only contains data for parts customers are likely to access, and only the fields that go into the search index. When additional context is needed, the team enriches the result set at query time.
+
+In the last 90 days, the highest peak write rate was roughly 7,800 rows/s on a 60-second rollup. Peak read throughput hit 245 QPS on a 30-second rollup. ParadeDB has absorbed these bursts without issue.
+
+The operational story is where the difference is starkest. Since adopting ParadeDB, Cofactr has had zero major disruptions.
+
+### ParadeDB
+
+ParadeDB is the simplest way to add Elastic-quality search to your Postgres. If you have a use case around large scale search in Postgres,
+we'd [love to chat](mailto:hello@paradedb.com).
