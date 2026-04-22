@@ -1,0 +1,8 @@
+{
+  "title": "Cofactr Migrates from MongoDB Atlas to ParadeDB",
+  "date": "2026-04-21T00:00:00.000Z",
+  "author": "Ming Ying",
+  "description": "How Cofactr replaced MongoDB Atlas Search with ParadeDB to unify its search and primary data stores on Postgres in AWS GovCloud.",
+  "categories": ["case-study", "cofactr", "performance"],
+  "hideAuthor": true
+}

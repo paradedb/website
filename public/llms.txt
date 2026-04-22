@@ -37,6 +37,7 @@
 
 - [Alibaba Picks ParadeDB to Bring Full Text Search to its Postgres-Based Data Warehouse](https://www.paradedb.com/customers/case-study-alibaba)
 - [Bilt Reduces Postgres Query Timeouts by 95% with ParadeDB](https://www.paradedb.com/customers/case-study-bilt)
+- [Cofactr Migrates from MongoDB Atlas to ParadeDB](https://www.paradedb.com/customers/case-study-cofactr)
 - [INSA Strasbourg Powers New Research Database with ParadeDB](https://www.paradedb.com/customers/case-study-insa)
 - [ParadeDB Powers Modern Treasury's Core UI and Search APIs](https://www.paradedb.com/customers/case-study-modern-treasury)
 - [Sweetspot Unifies Hybrid Search on Postgres with ParadeDB](https://www.paradedb.com/customers/case-study-sweetspot)
