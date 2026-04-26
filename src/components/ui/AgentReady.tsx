@@ -530,7 +530,7 @@ export default function AgentReady() {
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Query ParadeDB from your favorite programming
                             language. Supports Django, SQLAlchemy, and
-                            ActiveRecord, with more coming soon.
+                            ActiveRecord with more coming soon.
                           </p>
                           <div className="mt-auto flex flex-col gap-2">
                             {Frameworks[selectedFramework].docs.map((doc) => (
