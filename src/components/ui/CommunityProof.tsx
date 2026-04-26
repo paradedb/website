@@ -64,7 +64,7 @@ export default function CommunityProof() {
                     <PostgresLogo className="w-full h-full" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    100K+
+                    200K+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Postgres extension installs

@@ -389,10 +389,7 @@ export default function AgentReady() {
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
-                            {CloudPlatforms[selectedCloud].name ===
-                            "DigitalOcean"
-                              ? "Read Guide"
-                              : `Deploy to ${CloudPlatforms[selectedCloud].name}`}
+                            Deploy to {CloudPlatforms[selectedCloud].name}
                             <RiArrowRightLine className="size-4" />
                           </Link>
                         </div>
