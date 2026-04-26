@@ -134,13 +134,13 @@ const Frameworks = [
   {
     name: "Python",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://github.com/paradedb/django-paradedb",
+    url: "https://docs.paradedb.com/documentation/getting-started/environment#django",
     icon: <PythonIcon className="size-[1.6rem]" />,
   },
   {
     name: "Ruby",
     className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
-    url: "https://github.com/paradedb/rails-paradedb",
+    url: "https://docs.paradedb.com/documentation/getting-started/environment#rails",
     icon: <RubyIcon className="size-[1.4rem]" />,
   },
 ];
