@@ -532,7 +532,7 @@ export default function AgentReady() {
                             language. Supports Django, SQLAlchemy, and
                             ActiveRecord, with more coming soon.
                           </p>
-                          <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
+                          <div className="mt-auto flex flex-col gap-2">
                             {Frameworks[selectedFramework].docs.map((doc) => (
                               <Link
                                 key={doc.url}
