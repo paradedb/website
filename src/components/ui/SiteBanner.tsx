@@ -5,9 +5,9 @@ export function SiteBanner() {
   return (
     <Link
       href="/customers/case-study-modern-treasury"
-      className="relative z-50 flex w-full items-center justify-center gap-2 bg-slate-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-slate-800 sm:text-sm"
+      className="relative z-50 flex w-full items-center justify-center gap-2 bg-slate-900 px-4 py-2 text-center text-xs font-medium text-white transition-colors hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 sm:text-sm"
     >
-      <span className="relative inline-flex h-2 w-2 shrink-0 rounded-full bg-white" />
+      <span className="relative inline-flex h-2 w-2 shrink-0 rounded-full bg-white dark:bg-slate-900" />
       <span>
         ParadeDB powers Modern Treasury&apos;s core UI and search APIs
       </span>
