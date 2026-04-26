@@ -33,13 +33,13 @@ export default async function HeroV3() {
           <div className="relative flex flex-col items-center justify-center sm:pt-48 pt-36 text-center px-6 sm:px-0">
             <div className="flex flex-col items-center w-full relative z-20">
               <Link
-                href={`${siteConfig.baseLinks.blog}/series-a-announcement`}
+                href="/customers/case-study-modern-treasury"
                 className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border border-white/20 bg-white/10 px-1 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20 opacity-0 animate-hero-pill"
               >
                 <span className="mr-2 flex h-2 w-2">
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
                 </span>
-                Announcing our $12M Series A
+                Modern Treasury case study
               </Link>
               <h1
                 id="hero-title"
