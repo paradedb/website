@@ -464,8 +464,8 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Teach your agents to use ParadeDB with a single
-                            command. Works with Claude Code, Cursor, Codex,
-                            Windsurf, Gemini, and more.
+                            command. Works with Claude Code, Codex, Gemini,
+                            Cursor, Windsurf, and more.
                           </p>
                           <Link
                             href="https://docs.paradedb.com/welcome/ai-agents"
