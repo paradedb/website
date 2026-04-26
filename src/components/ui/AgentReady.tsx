@@ -134,14 +134,28 @@ const Frameworks = [
   {
     name: "Python",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://docs.paradedb.com/documentation/getting-started/environment#django",
     icon: <PythonIcon className="size-[1.6rem]" />,
+    docs: [
+      {
+        label: "Django docs",
+        url: "https://docs.paradedb.com/documentation/getting-started/environment#django",
+      },
+      {
+        label: "SQLAlchemy docs",
+        url: "https://docs.paradedb.com/documentation/getting-started/environment#sqlalchemy",
+      },
+    ],
   },
   {
     name: "Ruby",
     className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
-    url: "https://docs.paradedb.com/documentation/getting-started/environment#rails",
     icon: <RubyIcon className="size-[1.4rem]" />,
+    docs: [
+      {
+        label: "ActiveRecord docs",
+        url: "https://docs.paradedb.com/documentation/getting-started/environment#rails",
+      },
+    ],
   },
 ];
 
@@ -375,8 +389,8 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Run ParadeDB on your preferred cloud platform.
-                            Supports Render, Railway, and DigitalOcean with more
-                            coming soon.
+                            Supports Railway, Render, and DigitalOcean, with
+                            more coming soon.
                           </p>
                           <Link
                             href={
@@ -450,8 +464,8 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Teach your agents to use ParadeDB with a single
-                            command. Works with Claude Code, Cursor, Codex,
-                            Windsurf, Gemini, and more.
+                            command. Works with Claude Code, Codex, Gemini,
+                            Cursor, Windsurf, and more.
                           </p>
                           <Link
                             href="https://docs.paradedb.com/welcome/ai-agents"
@@ -514,19 +528,23 @@ export default function AgentReady() {
                             Frameworks
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                            Support for Django, SQLAlchemy, ActiveRecord and
-                            more coming soon.
+                            Query ParadeDB from your favorite programming
+                            language. Supports Django, SQLAlchemy, and
+                            ActiveRecord, with more coming soon.
                           </p>
-                          <Link
-                            href={Frameworks[selectedFramework].url}
-                            target="_blank"
-                            className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                          >
-                            {Frameworks[selectedFramework].name === "Python"
-                              ? "Django docs"
-                              : "ActiveRecord docs"}
-                            <RiArrowRightLine className="size-4" />
-                          </Link>
+                          <div className="mt-auto flex flex-col gap-2">
+                            {Frameworks[selectedFramework].docs.map((doc) => (
+                              <Link
+                                key={doc.url}
+                                href={doc.url}
+                                target="_blank"
+                                className="flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                              >
+                                {doc.label}
+                                <RiArrowRightLine className="size-4" />
+                              </Link>
+                            ))}
+                          </div>
                         </div>
                       </div>
                     </div>
