@@ -3,7 +3,6 @@ import { documentation } from "@/lib/links";
 import Link from "next/link";
 import { Button } from "../Button";
 import LogoCloud from "./LogoCloud";
-import { siteConfig } from "@/app/siteConfig";
 import { HeroVisual } from "./HeroVisual";
 import { DarkModeOverlay } from "./DarkModeOverlay";
 import Code from "@/components/Code";
