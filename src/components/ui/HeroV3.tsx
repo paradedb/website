@@ -34,12 +34,12 @@ export default async function HeroV3() {
             <div className="flex flex-col items-center w-full relative z-20">
               <Link
                 href="/customers/case-study-modern-treasury"
-                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] w-[215px] justify-center border border-white/20 bg-white/10 px-1 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20 opacity-0 animate-hero-pill"
+                className="mb-6 mt-px ml-px inline-flex items-center h-[23px] justify-center border border-white/20 bg-white/10 px-3 text-xs font-medium text-white shadow-none transition-colors hover:bg-white/20 opacity-0 animate-hero-pill"
               >
                 <span className="mr-2 flex h-2 w-2">
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-white"></span>
                 </span>
-                Modern Treasury case study
+                ParadeDB Powers Modern Treasury&apos;s Core UI and Search APIs
               </Link>
               <h1
                 id="hero-title"
