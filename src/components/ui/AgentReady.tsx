@@ -134,13 +134,13 @@ const Frameworks = [
   {
     name: "Python",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://github.com/paradedb/django-paradedb",
+    url: "https://docs.paradedb.com/documentation/getting-started/environment#django",
     icon: <PythonIcon className="size-[1.6rem]" />,
   },
   {
     name: "Ruby",
     className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
-    url: "https://github.com/paradedb/rails-paradedb",
+    url: "https://docs.paradedb.com/documentation/getting-started/environment#rails",
     icon: <RubyIcon className="size-[1.4rem]" />,
   },
 ];
@@ -389,10 +389,7 @@ export default function AgentReady() {
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
-                            {CloudPlatforms[selectedCloud].name ===
-                            "DigitalOcean"
-                              ? "Read Guide"
-                              : `Deploy to ${CloudPlatforms[selectedCloud].name}`}
+                            Deploy to {CloudPlatforms[selectedCloud].name}
                             <RiArrowRightLine className="size-4" />
                           </Link>
                         </div>

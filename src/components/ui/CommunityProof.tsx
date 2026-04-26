@@ -64,7 +64,7 @@ export default function CommunityProof() {
                     <PostgresLogo className="w-full h-full" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    100K+
+                    200K+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Postgres extension installs
@@ -92,7 +92,7 @@ export default function CommunityProof() {
                     8K+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    Stargazers on Github
+                    Stargazers on GitHub
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                     ParadeDB is one of the fastest-growing open source database
