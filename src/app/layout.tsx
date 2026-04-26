@@ -1,5 +1,6 @@
 import Footer from "@/components/ui/Footer";
 import { Navigation } from "@/components/ui/Navbar";
+import { SiteBanner } from "@/components/ui/SiteBanner";
 import type { Metadata } from "next";
 import { ThemeProvider } from "next-themes";
 import { Inter } from "next/font/google";
@@ -100,6 +101,7 @@ export default function RootLayout({
           attribute="class"
           enableSystem={true}
         >
+          <SiteBanner />
           <div className="relative mx-auto w-full max-w-[1440px]">
             <Navigation />
           </div>
