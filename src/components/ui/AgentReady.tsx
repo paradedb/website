@@ -528,10 +528,11 @@ export default function AgentReady() {
                             Frameworks
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                            Query ParadeDB from Django, SQLAlchemy,
-                            ActiveRecord, and more.
+                            Query ParadeDB from your favorite programming
+                            language. Supports Django, SQLAlchemy, and
+                            ActiveRecord with more coming soon.
                           </p>
-                          <div className="mt-auto flex flex-col gap-2">
+                          <div className="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2">
                             {Frameworks[selectedFramework].docs.map((doc) => (
                               <Link
                                 key={doc.url}
