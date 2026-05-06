@@ -452,7 +452,7 @@ export default function AgentReady() {
                             Cursor, Windsurf, and more.
                           </p>
                           <Link
-                            href="https://docs.paradedb.com/welcome/ai-agents"
+                            href="https://docs.paradedb.com/documentation/getting-started/ai-agents"
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
