@@ -4,7 +4,8 @@ export const company = {
 
 export const documentation = {
   BASE: "https://docs.paradedb.com/welcome/introduction",
-  GETTING_STARTED: "https://docs.paradedb.com/documentation/getting-started/ai-agents",
+  GETTING_STARTED:
+    "https://docs.paradedb.com/documentation/getting-started/ai-agents",
   SEARCH: "https://docs.paradedb.com/documentation/full-text/overview",
   ANALYTICS: "https://docs.paradedb.com/documentation/aggregates/overview",
   REPLICATION:
