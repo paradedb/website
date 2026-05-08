@@ -1,0 +1,80 @@
+import Image from "next/image";
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { HeroImage } from "@/components/HeroImage";
+import { Title } from "@/components/Title";
+import heroImage from "./images/hero.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+<HeroImage src={heroImage} metadata={blogMetadata} />
+
+import { BookNote } from "@/components/mdx/BookNote";
+import bookImage from "./images/book.jpg";
+
+We are building a search engine inside Postgres, so of course we need to show people how it performs. Like it or not, that means publishing benchmarks: both against ourselves and against other engines like Elasticsearch or MongoDB. Benchmarking boils down to three concerns: the workload (what you measure), the execution (how you measure it), and the story (what you write about it). Each one is harder than it looks, and a surprising number of published benchmarks underweight at least one.
+
+We have opinions on all three. Workload choices are specific to each benchmark, so we'll get into ours in future posts when we can point at the actual decisions we made and why. This post is about the other two: how we think about execution, and how we think about storytelling.
+
+<BookNote src={bookImage} alt="What I Talk About When I Talk About Running by Haruki Murakami">
+The title is a nod to Haruki Murakami's [_What I Talk About When I Talk About Running_](https://en.wikipedia.org/wiki/What_I_Talk_About_When_I_Talk_About_Running), a book about consistency, repetition, and how the daily practice matters more than the race.
+
+Benchmarking works the same way. You learn what your system actually is by measuring it honestly, repeatedly, in conditions that aren't designed to flatter you.
+</BookNote>
+
+## How We Think About Execution
+
+Getting reliable numbers out of a single system is hard enough. Getting reliable, comparable numbers out of multiple systems simultaneously is a project in itself. Every time we wanted to benchmark something, we'd spend more time fighting the mechanics than thinking about the results: setting up backends, making sure resource constraints were identical, figuring out how to capture configs, writing one-off scripts to collect metrics. And if the runner is tied to one specific benchmark, you end up rebuilding infrastructure every time you want to test a different workload. We wanted something generic enough to throw many different workloads at, so we built a runner to handle it once.
+
+Most of the ways benchmarks go wrong are mechanical. Here's what a runner needs to get right.
+
+**Environment and resource isolation.** Every backend needs to start from the same place every time: identical resource constraints, same setup steps, same starting state. And when you're comparing multiple backends, they shouldn't be competing with each other for resources either. 
+
+**Configuration capture.** A poorly-tuned Postgres will lose to a well-tuned Elasticsearch every time, and vice versa. Configuration is part of the benchmark whether you acknowledge it or not, and many published benchmarks don't post their full configs. A runner needs to save the full context alongside results: backend configuration (PostgreSQL GUCs, Elasticsearch JVM settings, versions), setup scripts (`VACUUM ANALYZE`, force merge), resource allocation. If you can't reproduce a result, you can't trust it.
+
+**Multiple scenarios, rich statistics.** Different questions need different test shapes. "How fast is a single query?" is a different scenario from "what happens at 1,000 QPS?" which is different again from "what does latency look like when reads and writes hit the system at the same time?" A runner should support all of these: constant throughput, ramping load, concurrent virtual users, mixed read/write workloads, and the ability to compose them. And whatever scenario you run, an average response time hides almost everything important; you need full latency distributions (p50, p95, p99 at minimum) and throughput over time, not point-in-time summaries.
+
+**Application-shaped queries.** A benchmark should send queries the way a real application would: over the network, using the same client libraries that production code uses. CLI tools and developer interfaces (psql, mongosh, the Elasticsearch dev console) often take shortcuts that production traffic doesn't have access to: different connection pooling, different transports, optimizations for interactive use. If you benchmark through them, you're measuring the CLI as much as the database.
+
+**Driver separation.** You're probably not an expert in every system you're benchmarking. We know Postgres well; we don't know the best way to construct Elasticsearch queries or use its bulk API as well as someone who's been writing them in production for years. The code that actually talks to each database should be separated from the benchmark scripts, so experts in each system can audit and improve how queries are sent without touching the benchmark logic. Each backend should run queries in its own native syntax with no translation layer that would favour one system over another.
+
+## ParadeDB Benchmarker
+
+We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) around these ideas. It's an open-source benchmarking suite built as an extension to [k6](https://k6.io/), Grafana's open-source load testing framework.
+
+The beauty of building on k6 is that it handles the actual execution engine: virtual user scheduling, request firing, latency measurement, the whole load generation pipeline. We got to focus on the database-specific layer on top: drivers for each backend, dataset management, configuration capture, container metrics, and the dashboard.
+
+You write the benchmark (the queries, the dataset, the scenarios to run), and the runner handles environment setup, metric collection, configuration capture, and result streaming to a real-time dashboard. It currently supports six backends (ParadeDB, PostgreSQL native FTS, Elasticsearch, OpenSearch, ClickHouse, and MongoDB Atlas Search), comes with Docker Compose files so setup is a single command, and exports results to shareable HTML reports that capture everything needed to reproduce a run.
+
+It doesn't solve every problem. Tuning is still judgement, and choosing the right workload still requires thought. But it handles enough of the plumbing that we can focus on the parts that actually require thinking: what to measure, and what the results mean.
+
+We're currently extending it to support tracks: persistent records of multiple runs so you can compare results across commits, configurations, or versions, and watch how the numbers move as you iterate. Right now each run is its own artifact; tracks make the iteration loop a first-class part of the tool.
+
+The code is at [https://github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker), and full walkthrough is coming soon.
+
+## How We Think About Storytelling
+
+There's an argument that benchmarks don't need a story at all: document the methodology, publish the numbers, let the results speak for themselves. For regression testing or internal performance tracking that's fine. But people love a good arc, and the best benchmark posts give them one.
+
+ParadeDB is built on Tantivy, so we've followed the [Search Benchmark Game](https://tantivy-search.github.io/bench/) (a reproducible benchmark suite the Tantivy team built to compare Lucene and Tantivy) closely. On its own, the benchmark is just a leaderboard. What made it stick with us was the writing that grew up around it. Adrien Grand, a Lucene committer, used the suite to investigate [why Tantivy was faster](https://jpountz.github.io/2025/04/12/why-is-Tantivy-faster-than-Lucene.html) and published a [detailed follow-up](https://jpountz.github.io/2025/05/12/analysis-of-Search-Benchmark-the-Game.html). Patches inspired by Tantivy made it into Lucene. Adrien left [optimization tickets](https://github.com/quickwit-oss/tantivy/issues?q=is%3Aissue%20state%3Aopen%20author%3Ajpountz) in Tantivy's GitHub. Today, Lucene outperforms Tantivy in many areas. Both projects got better. Nobody planned that arc; it fell out of honest, repeated measurement.
+
+Reading through that history, we realised that benchmarking is a great vehicle for performance optimization stories. The benchmark gives you the spine: a measurable thing that gets faster or slower as you change the system. The narrative comes from the work in between, when a number didn't match expectations and you have to figure out why.
+
+[Mark Callaghan](https://www.linkedin.com/in/mdcallag/), who spent years doing performance work at MySQL, MongoDB, and Meta, put it well when I asked him about this:
+
+> In all cases, the results are better when you have expertise in all DBMS that you are testing and have the time to explain the results.
+
+*The time to explain the results.* That's the part that makes the difference. Understanding why one system is faster in a particular scenario, whether a different configuration would change the outcome, whether the slower system could catch up with a targeted fix. Taking the time to understand and explain can be harder than running the benchmark in the first place, but it adds so much value to the narrative.
+
+We've been using the benchmarker to help us drill down into some performance improvements lately, and this optimization arc is the shape we want our upcoming posts to take: measure, find a problem, dig in, fix it, measure again. The interesting moments aren't just the numbers you publish at the end; they're also the ones in the middle, when something is slower than you expected and you're trying to figure out why. 
+
+## What's Next
+
+We're not going to pretend we don't have a product to sell. We'll publish comparisons designed around workloads where we think ParadeDB performs well, and that's benchmarketing whether we call it that or not. Because the runner is open and every run captures the full configuration, you can see exactly what we measured and how we set each system up.
+
+But we're also going to write the kind of posts the Search Benchmark Game showed us were possible: ones where the writing around the benchmark teaches you more than the benchmark itself.
+
+---
+
+If this post has inspired you to run your own database benchmarks, you can find our runner at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker).
+
