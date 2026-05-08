@@ -20,6 +20,7 @@ We have opinions on all three. Workload choices are specific to each benchmark, 
 The title is a nod to Haruki Murakami's [_What I Talk About When I Talk About Running_](https://en.wikipedia.org/wiki/What_I_Talk_About_When_I_Talk_About_Running), a book about consistency, repetition, and how the daily practice matters more than the race.
 
 Benchmarking works the same way. You learn what your system actually is by measuring it honestly, repeatedly, in conditions that aren't designed to flatter you.
+
 </BookNote>
 
 ## How We Think About Execution
@@ -28,7 +29,7 @@ Getting reliable numbers out of a single system is hard enough. Getting reliable
 
 Most of the ways benchmarks go wrong are mechanical. Here's what a runner needs to get right.
 
-**Environment and resource isolation.** Every backend needs to start from the same place every time: identical resource constraints, same setup steps, same starting state. And when you're comparing multiple backends, they shouldn't be competing with each other for resources either. 
+**Environment and resource isolation.** Every backend needs to start from the same place every time: identical resource constraints, same setup steps, same starting state. And when you're comparing multiple backends, they shouldn't be competing with each other for resources either.
 
 **Configuration capture.** A poorly-tuned Postgres will lose to a well-tuned Elasticsearch every time, and vice versa. Configuration is part of the benchmark whether you acknowledge it or not, and many published benchmarks don't post their full configs. A runner needs to save the full context alongside results: backend configuration (PostgreSQL GUCs, Elasticsearch JVM settings, versions), setup scripts (`VACUUM ANALYZE`, force merge), resource allocation. If you can't reproduce a result, you can't trust it.
 
@@ -64,9 +65,9 @@ Reading through that history, we realised that benchmarking is a great vehicle f
 
 > In all cases, the results are better when you have expertise in all DBMS that you are testing and have the time to explain the results.
 
-*The time to explain the results.* That's the part that makes the difference. Understanding why one system is faster in a particular scenario, whether a different configuration would change the outcome, whether the slower system could catch up with a targeted fix. Taking the time to understand and explain can be harder than running the benchmark in the first place, but it adds so much value to the narrative.
+_The time to explain the results._ That's the part that makes the difference. Understanding why one system is faster in a particular scenario, whether a different configuration would change the outcome, whether the slower system could catch up with a targeted fix. Taking the time to understand and explain can be harder than running the benchmark in the first place, but it adds so much value to the narrative.
 
-We've been using the benchmarker to help us drill down into some performance improvements lately, and this optimization arc is the shape we want our upcoming posts to take: measure, find a problem, dig in, fix it, measure again. The interesting moments aren't just the numbers you publish at the end; they're also the ones in the middle, when something is slower than you expected and you're trying to figure out why. 
+We've been using the benchmarker to help us drill down into some performance improvements lately, and this optimization arc is the shape we want our upcoming posts to take: measure, find a problem, dig in, fix it, measure again. The interesting moments aren't just the numbers you publish at the end; they're also the ones in the middle, when something is slower than you expected and you're trying to figure out why.
 
 ## What's Next
 
@@ -77,4 +78,3 @@ But we're also going to write the kind of posts the Search Benchmark Game showed
 ---
 
 If this post has inspired you to run your own database benchmarks, you can find our runner at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker).
-
