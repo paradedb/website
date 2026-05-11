@@ -100,6 +100,7 @@ export default function RootLayout({
           defaultTheme="system"
           attribute="class"
           enableSystem={true}
+          disableTransitionOnChange
         >
           <SiteBanner />
           <div className="relative mx-auto w-full max-w-[1440px]">
