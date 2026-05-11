@@ -9,7 +9,6 @@ import {
   RiPerplexityFill,
   RiGithubFill,
 } from "@remixicon/react";
-import FocusMode from "@/components/FocusMode";
 
 interface ArticleActionsProps {
   basePath: string;
@@ -46,9 +45,6 @@ export default function ArticleActions({
   return (
     <div className="w-full">
       <ul className="space-y-0.5">
-        <li>
-          <FocusMode className={linkClass} />
-        </li>
         <li>
           <button
             onClick={handleCopyMarkdown}
