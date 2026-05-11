@@ -26,6 +26,12 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
   }, []);
 
   useEffect(() => {
+    if (active) return;
+    setHovered(false);
+    setBox(null);
+  }, [active]);
+
+  useEffect(() => {
     if (!active) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setActive(false);
@@ -35,10 +41,7 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
   }, [active]);
 
   useEffect(() => {
-    if (!active) {
-      setBox(null);
-      return;
-    }
+    if (!active) return;
 
     const compute = () => {
       const article = document.querySelector("article");
@@ -84,15 +87,28 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
     };
   }, [active]);
 
+  useEffect(() => {
+    if (!active || !box) return;
+    const onMove = (e: MouseEvent) => {
+      const inCutout =
+        e.clientX >= box.left &&
+        e.clientX <= box.right &&
+        e.clientY >= box.top &&
+        e.clientY <= box.bottom;
+      setHovered(!inCutout);
+    };
+    const onLeave = () => setHovered(false);
+    window.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseleave", onLeave);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseleave", onLeave);
+    };
+  }, [active, box]);
+
   const opacity = hovered ? 0 : 0.9;
-  const overlayProps = {
-    "aria-hidden": true as const,
-    onMouseEnter: () => setHovered(true),
-    onMouseLeave: () => setHovered(false),
-    onClick: () => setActive(false),
-    className:
-      "fixed z-[60] cursor-pointer bg-white transition-opacity duration-300 dark:bg-slate-950",
-  };
+  const panelClass =
+    "fixed z-[60] pointer-events-none bg-white transition-opacity duration-300 dark:bg-slate-950";
 
   return (
     <>
@@ -111,7 +127,8 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
         createPortal(
           <>
             <div
-              {...overlayProps}
+              aria-hidden="true"
+              className={panelClass}
               style={{
                 top: 0,
                 left: 0,
@@ -121,7 +138,8 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
               }}
             />
             <div
-              {...overlayProps}
+              aria-hidden="true"
+              className={panelClass}
               style={{
                 top: box.bottom,
                 left: 0,
@@ -131,7 +149,8 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
               }}
             />
             <div
-              {...overlayProps}
+              aria-hidden="true"
+              className={panelClass}
               style={{
                 top: box.top,
                 left: 0,
@@ -141,7 +160,8 @@ export default function FocusMode({ className = "" }: FocusModeProps) {
               }}
             />
             <div
-              {...overlayProps}
+              aria-hidden="true"
+              className={panelClass}
               style={{
                 top: box.top,
                 left: box.right,
