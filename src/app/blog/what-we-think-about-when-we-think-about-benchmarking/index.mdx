@@ -103,11 +103,12 @@ A single script can compose multiple scenarios across multiple backends. You mig
 Results stream to the browser as the test runs: latency percentiles per backend (P50, P90, P95, P99), query and ingest throughput, and per-container CPU and memory pulled from Docker. Backend configs, setup scripts, and query patterns are captured alongside the timeline, so a result can be reproduced and audited later.
 
 <ZoomVideo
-  ariaLabel="ParadeDB Benchmarker dashboard showing latency percentiles, queries-per-second, and per-container CPU and memory for two ParadeDB builds running side by side"
+  ariaLabel="ParadeDB Benchmarker dashboard showing latency percentiles, queries-per-second, and per-container CPU and memory for a ParadeDB instance (running an upcoming version) and an Elasticsearch instance"
   sources={[{ src: benchmarkerMp4, type: "video/mp4" }]}
+  caption="ParadeDB Benchmarker comparing ParadeDB (upcoming version) against Elasticsearch for a TopK query"
 />
 
-The code is at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker), with a full walkthrough coming soon.
+The code can be found at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker), with a full walkthrough coming soon.
 
 ## What's Next
 

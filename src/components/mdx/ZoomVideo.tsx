@@ -1,15 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 
 type Source = { src: string; type: string };
 
 export function ZoomVideo({
   sources,
   ariaLabel,
+  caption,
 }: {
   sources: Source[];
   ariaLabel: string;
+  caption?: ReactNode;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -29,29 +31,36 @@ export function ZoomVideo({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        aria-label={`Expand: ${ariaLabel}`}
-        className="group relative my-4 block w-full cursor-zoom-in overflow-hidden rounded-lg border-0 bg-transparent p-0 focus:outline-none focus-visible:outline-none"
-      >
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          aria-label={ariaLabel}
-          className="block h-auto w-full rounded-lg"
+      <figure className="my-4">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label={`Expand: ${ariaLabel}`}
+          className="group relative block w-full cursor-zoom-in overflow-hidden rounded-lg border-0 bg-transparent p-0 focus:outline-none focus-visible:outline-none"
         >
-          {sources.map((s) => (
-            <source key={s.src} src={s.src} type={s.type} />
-          ))}
-        </video>
-        <span className="pointer-events-none absolute right-2 top-2 rounded bg-black/60 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
-          Click to expand
-        </span>
-      </button>
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="metadata"
+            aria-label={ariaLabel}
+            className="block h-auto w-full rounded-lg"
+          >
+            {sources.map((s) => (
+              <source key={s.src} src={s.src} type={s.type} />
+            ))}
+          </video>
+          <span className="pointer-events-none absolute right-2 top-2 rounded bg-black/60 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
+            Click to expand
+          </span>
+        </button>
+        {caption && (
+          <figcaption className="-mt-1 text-center text-xs leading-tight text-gray-600 dark:text-gray-400">
+            {caption}
+          </figcaption>
+        )}
+      </figure>
 
       {open && (
         <div
