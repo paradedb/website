@@ -821,6 +821,28 @@ a {
   }
 }
 
+/* Focus mode: clean, centered reading view for articles */
+html.focus-mode header,
+html.focus-mode footer,
+html.focus-mode aside,
+html.focus-mode [data-focus-hide] {
+  display: none !important;
+}
+
+html.focus-mode main {
+  padding: 0 !important;
+}
+
+html.focus-mode article {
+  max-width: 72ch !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+  padding-top: 4rem !important;
+  padding-bottom: 4rem !important;
+  padding-left: 1.5rem !important;
+  padding-right: 1.5rem !important;
+}
+
 @layer utilities {
   .animate-hero-wrapper {
     animation: fade-in 500ms ease-out both;

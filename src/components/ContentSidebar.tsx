@@ -129,7 +129,10 @@ export function useContentSidebar({
   };
 
   const mobileNav = (
-    <div className="lg:hidden px-4 md:px-12 w-full relative z-30">
+    <div
+      data-focus-hide
+      className="lg:hidden px-4 md:px-12 w-full relative z-30"
+    >
       <div className="border-b border-slate-100 dark:border-slate-900">
         <button
           onClick={() => setMobileNavOpen(!mobileNavOpen)}
@@ -175,7 +178,10 @@ export function useContentSidebar({
   );
 
   const desktopSidebar = (
-    <div className="hidden lg:flex lg:w-80 lg:shrink-0 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900">
+    <div
+      data-focus-hide
+      className="hidden lg:flex lg:w-80 lg:shrink-0 lg:flex-col transition-colors border-r border-slate-100 dark:border-slate-900"
+    >
       <div className="sticky top-0 max-h-screen overflow-y-auto flex flex-col gap-y-5 px-6 pt-8 pb-10">
         <nav className="flex flex-1 flex-col text-slate-900 dark:text-white">
           <div className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.2em] mb-4 mt-0 px-2">
