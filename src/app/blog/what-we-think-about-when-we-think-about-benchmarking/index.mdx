@@ -30,7 +30,7 @@ Benchmarking works the same way. You learn what your system actually is by measu
 
 The clearest example of the story-first path is [ClickBench](https://benchmark.clickhouse.com/), a well respected analytical benchmark. One dataset, one query set, dozens of backends, and a public leaderboard. It works because it's _simple_. A single problem, a single procedure, a single result format. Nothing varies but the database itself. The runner inherits the same simplicity: shell-script automation built for one job, with no concurrent users, no ramping load, no custom workloads, just best-of-three single shots.
 
-Being incredibly easy to run, understand, and contribute to is what made ClickBench a [Schelling point](https://en.wikipedia.org/wiki/Focal_point_(game_theory)) for analytical workloads. The same approach that got it there is what puts ClickBench firmly in the benchmarketing camp in the first place: start with a story, then combine workload and execution into one neat package.
+Being incredibly easy to run, understand, and contribute to is what made ClickBench a [Schelling point](<https://en.wikipedia.org/wiki/Focal_point_(game_theory)>) for analytical workloads. The same approach that got it there is what puts ClickBench firmly in the benchmarketing camp in the first place: start with a story, then combine workload and execution into one neat package.
 
 The same shape was open to us for search. Pick a representative workload, call it TextBench, build a runner around it, ship a leaderboard. That’s a viable approach, but it would also bind us to the initial story we wanted to tell. And once we started expanding beyond that, we’d lose the simplicity that made the approach attractive in the first place. We wanted a runner that we could grow with, not one which constrained us.
 
@@ -79,8 +79,10 @@ const scenarios = {
 };
 
 // Collect metrics from the Docker containers
-export const collectMetrics = 
-  backends.addDockerMetricsCollector(scenarios, "30s");
+export const collectMetrics = backends.addDockerMetricsCollector(
+  scenarios,
+  "30s",
+);
 
 export const options = { scenarios };
 
@@ -116,4 +118,3 @@ The runner was the easy part to publish. Now that we have it, the harder part is
 ---
 
 _Ready to run your own database benchmarks?_ Check out [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker).
-
