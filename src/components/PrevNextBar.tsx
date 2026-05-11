@@ -20,7 +20,7 @@ export function PrevNextBar({
   if (!previousHref && !nextHref) return null;
 
   return (
-    <div className="px-4 md:px-12 w-full relative z-30">
+    <div data-focus-hide className="px-4 md:px-12 w-full relative z-30">
       <div
         className={`${position === "top" ? "border-b h-12" : "border-t h-16"} border-slate-100 dark:border-slate-900 flex justify-between items-center px-6`}
       >
