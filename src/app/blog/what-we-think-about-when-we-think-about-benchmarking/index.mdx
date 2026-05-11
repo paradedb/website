@@ -4,14 +4,14 @@ import { AuthorSection } from "@/components/AuthorSection";
 import { HeroImage } from "@/components/HeroImage";
 import { Title } from "@/components/Title";
 import heroImage from "./images/hero.png";
+import { BookNote } from "@/components/mdx/BookNote";
+import { ZoomVideo } from "@/components/mdx/ZoomVideo";
+import bookImage from "./images/book.jpg";
+import benchmarkerMp4 from "./images/benchmarker.mp4";
 
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
-
-import { BookNote } from "@/components/mdx/BookNote";
-import bookImage from "./images/book.jpg";
-import benchmarkerDashboard from "./images/benchmarker.png";
 
 We're building a search engine inside Postgres, so of course we need to show people how it performs. That means publishing benchmarks: against ourselves, and against other engines like Elasticsearch and MongoDB.
 
@@ -102,9 +102,9 @@ A single script can compose multiple scenarios across multiple backends. You mig
 
 Results stream to the browser as the test runs: latency percentiles per backend (P50, P90, P95, P99), query and ingest throughput, and per-container CPU and memory pulled from Docker. Backend configs, setup scripts, and query patterns are captured alongside the timeline, so a result can be reproduced and audited later.
 
-<Image
-  src={benchmarkerDashboard}
-  alt="ParadeDB Benchmarker dashboard showing latency percentiles, queries-per-second, and per-container CPU and memory for two ParadeDB builds running side by side"
+<ZoomVideo
+  ariaLabel="ParadeDB Benchmarker dashboard showing latency percentiles, queries-per-second, and per-container CPU and memory for two ParadeDB builds running side by side"
+  sources={[{ src: benchmarkerMp4, type: "video/mp4" }]}
 />
 
 The code is at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker), with a full walkthrough coming soon.
