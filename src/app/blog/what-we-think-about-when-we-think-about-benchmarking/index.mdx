@@ -13,7 +13,7 @@ import benchmarkerMp4 from "./images/benchmarker.mp4";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-We're building a search engine inside Postgres, so of course we need to show people how it performs. That means publishing benchmarks: against ourselves, and against other engines like Elasticsearch and MongoDB.
+We're building a search engine inside Postgres, so of course we need to show people how it performs. That means publishing benchmarks: against ourselves, and against other engines like Elasticsearch.
 
 Benchmarking boils down to three concerns: the workload (what you measure), the execution (how you measure it), and the story (what you write about it). Each one is harder than it looks, and most published benchmarks underweight at least one.
 
@@ -114,8 +114,6 @@ The code can be found at [github.com/paradedb/benchmarker](https://github.com/pa
 
 We've shipped drivers for the backends we get compared to most often. We'd value experts in any of them auditing how Benchmarker drives them, so the comparisons we publish go up against each system at its best. And if there's a backend you'd like to see added, contributions are welcome.
 
-The runner was the easy part to publish. Now that we have it, the harder part is publishing results people actually trust.
-
----
+## Stay tuned for our upcoming performance blogs, where we'll put Benchmarker to work: real comparisons against the systems we get measured against, and the optimization journeys that ccame from improving the numbers.
 
 _Ready to run your own database benchmarks?_ Check out [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker).
