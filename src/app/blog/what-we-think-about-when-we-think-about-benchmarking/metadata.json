@@ -1,0 +1,7 @@
+{
+  "title": "What We Think About When We Think About Benchmarking",
+  "date": "2026-05-06T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Publishing a benchmark has two hard problems: telling a story worth reading and getting the mechanics right. Here's how we think about both.",
+  "categories": ["search", "postgres", "benchmarks", "engineering"]
+}

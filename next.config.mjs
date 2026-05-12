@@ -12,6 +12,15 @@ const nextConfig = {
   // Configure `pageExtensions` to include markdown and MDX files
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
 
+  webpack(config) {
+    config.module.rules.push({
+      test: /\.(mp4|webm|ogv)$/i,
+      type: "asset/resource",
+      generator: { filename: "static/media/[name].[hash][ext]" },
+    });
+    return config;
+  },
+
   async rewrites() {
     return [
       {
