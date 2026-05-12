@@ -13,11 +13,9 @@ import benchmarkerMp4 from "./images/benchmarker.mp4";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-We're building a search engine inside Postgres, so of course we need to show people how it performs. That means publishing benchmarks: against ourselves, and against other engines like Elasticsearch.
+We're building a search engine inside Postgres, so of course we need to show people how it performs. That means publishing benchmarks: both against ourselves, and against other engines like Elasticsearch.
 
-Benchmarking boils down to two concerns: the workload (what you measure) and the execution (how you measure it). Each is harder than it looks, and most published benchmarks underweight at least one.
-
-The two shape each other, so where do you start? Do you begin with the workload you want to highlight and build the execution around it? Or do you build the execution first and let the workloads come later? This post is about the path we picked, and the runner we built around it.
+Benchmarking boils down to two concerns: the workload (what you measure) and the execution (how you measure it). The two shape each other, so where do you start? Do you begin with the workload you want to highlight and build the execution around it? Or do you build the execution first and let the workloads come later? This post is about the path we picked, and the runner we built around it.
 
 <BookNote src={bookImage} alt="What I Talk About When I Talk About Running by Haruki Murakami">
 The title is a nod to Haruki Murakami's [_What I Talk About When I Talk About Running_](https://en.wikipedia.org/wiki/What_I_Talk_About_When_I_Talk_About_Running), a book about repetition, routine, and what long stretches of disciplined practice reveal over time.
@@ -32,7 +30,7 @@ The clearest example of the workload-first path is [ClickBench](https://benchmar
 
 Being incredibly easy to run, understand, and contribute to is what made ClickBench a [Schelling point](<https://en.wikipedia.org/wiki/Focal_point_(game_theory)>) for analytical workloads. The tradeoff is that the workload and the runner are baked together. Push past that shape and you're building a new runner.
 
-The same shape was open to us for search. Pick a representative workload, call it TextBench, build a runner around it, ship a leaderboard. That’s a viable approach, but it would also bind us to that initial workload. And once we started expanding beyond it, we’d lose the simplicity that made the approach attractive in the first place. We wanted a runner that we could grow with, not one which constrained us.
+We could have taken the same path for search. Pick a representative workload, call it TextBench, build a runner around it, ship a leaderboard. That’s a viable approach, but it would also bind us to that initial workload. And once we started expanding beyond it, we’d lose the simplicity that made the approach attractive in the first place. We wanted a runner that we could grow with, not one which constrained us.
 
 So we took the less-trodden path. We built the runner first, and kept benchmark workloads as a separate concern. ParadeDB Benchmarker is backend-agnostic, scenario-agnostic, and dataset-agnostic. Instead of fixing the workload and simplifying the runner around it, we worked to simplify the experience of defining new workloads. Because of this, the same runner can carry many benchmarks, including ones that have nothing to do with search and ones our future users haven't imagined yet.
 
@@ -72,7 +70,7 @@ k6 is an incredible benchmarking tool, and already solves most of the hard execu
 
 We also wanted better benchmarking ergonomics: dashboards, run exports, dataset loading, and reproducible local environments. This led to us building the `xk6-database` extension.
 
-Here's how the pieces fit together: backends, datasets, the script you write, and the dashboard.
+Here's how the pieces fit together: backends, datasets, query scripting, and the built-in dashboard.
 
 ### Backends and Environments
 
