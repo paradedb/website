@@ -15,9 +15,9 @@ import benchmarkerMp4 from "./images/benchmarker.mp4";
 
 We're building a search engine inside Postgres, so of course we need to show people how it performs. That means publishing benchmarks: against ourselves, and against other engines like Elasticsearch.
 
-Benchmarking boils down to three concerns: the workload (what you measure), the execution (how you measure it), and the story (what you write about it). Each one is harder than it looks, and most published benchmarks underweight at least one.
+Benchmarking boils down to two concerns: the workload (what you measure) and the execution (how you measure it). Each is harder than it looks, and most published benchmarks underweight at least one.
 
-All three shape each other, so where do you start? Do you begin with the story you want to tell and build the workload and execution around it? Or do you build the machinery first and let the story emerge from the measurements? This post is about the path we picked, and the runner we built around it.
+The two shape each other, so where do you start? Do you begin with the workload you want to highlight and build the execution around it? Or do you build the execution first and let the workloads come later? This post is about the path we picked, and the runner we built around it.
 
 <BookNote src={bookImage} alt="What I Talk About When I Talk About Running by Haruki Murakami">
 The title is a nod to Haruki Murakami's [_What I Talk About When I Talk About Running_](https://en.wikipedia.org/wiki/What_I_Talk_About_When_I_Talk_About_Running), a book about repetition, routine, and what long stretches of disciplined practice reveal over time.
@@ -28,11 +28,11 @@ Benchmarking works the same way. You learn what your system actually is by measu
 
 ## Why We Built Our Runner First
 
-The clearest example of the story-first path is [ClickBench](https://benchmark.clickhouse.com/), a well respected analytical benchmark. One dataset, one query set, dozens of backends, and a public leaderboard. It works because it's _simple_. A single problem, a single procedure, a single result format. Nothing varies but the database itself. The runner inherits the same simplicity: shell-script automation built for one job, with no concurrent users, no ramping load, no custom workloads, just best-of-three single shots.
+The clearest example of the workload-first path is [ClickBench](https://benchmark.clickhouse.com/), a well respected analytical benchmark. One dataset, one query set, dozens of backends, and a public leaderboard. It works because it's _simple_. A single problem, a single procedure, a single result format. Nothing varies but the database itself. The runner inherits the same simplicity: shell-script automation built for one job, with no concurrent users, no ramping load, no custom workloads, just best-of-three single shots.
 
-Being incredibly easy to run, understand, and contribute to is what made ClickBench a [Schelling point](<https://en.wikipedia.org/wiki/Focal_point_(game_theory)>) for analytical workloads. The same approach that got it there is what puts ClickBench firmly in the benchmarketing camp in the first place: start with a story, then combine workload and execution into one neat package.
+Being incredibly easy to run, understand, and contribute to is what made ClickBench a [Schelling point](<https://en.wikipedia.org/wiki/Focal_point_(game_theory)>) for analytical workloads. The tradeoff is that the workload and the runner are baked together. Push past that shape and you're building a new runner.
 
-The same shape was open to us for search. Pick a representative workload, call it TextBench, build a runner around it, ship a leaderboard. That’s a viable approach, but it would also bind us to the initial story we wanted to tell. And once we started expanding beyond that, we’d lose the simplicity that made the approach attractive in the first place. We wanted a runner that we could grow with, not one which constrained us.
+The same shape was open to us for search. Pick a representative workload, call it TextBench, build a runner around it, ship a leaderboard. That’s a viable approach, but it would also bind us to that initial workload. And once we started expanding beyond it, we’d lose the simplicity that made the approach attractive in the first place. We wanted a runner that we could grow with, not one which constrained us.
 
 So we took the less-trodden path. We built the runner first, and kept benchmark workloads as a separate concern. ParadeDB Benchmarker is backend-agnostic, scenario-agnostic, and dataset-agnostic. Instead of fixing the workload and simplifying the runner around it, we worked to simplify the experience of defining new workloads. Because of this, the same runner can carry many benchmarks, including ones that have nothing to do with search and ones our future users haven't imagined yet.
 
@@ -40,27 +40,53 @@ So we took the less-trodden path. We built the runner first, and kept benchmark 
 
 Building a runner worth reusing means getting the mechanics right for any benchmark you throw at it. Most of the ways benchmarks go wrong are mechanical, and the same problems show up over and over.
 
-**Environment and resource isolation.** Every backend needs to start from the same place every time: identical resource constraints, the same setup steps, the same starting state. When you compare multiple backends in one run, they shouldn't be competing with each other for resources either.
+### Environment and Resource Isolation
 
-**Configuration capture.** A poorly-tuned Postgres will lose to a well-tuned Elasticsearch, and vice versa. Configuration is part of the benchmark whether you acknowledge it or not, and a striking number of published benchmarks don't post their full configs. A runner needs to save the full context alongside the results: backend tunables (PostgreSQL GUCs, Elasticsearch JVM settings, versions), setup scripts (`VACUUM ANALYZE`, force merge), and resource allocation. If you can't reproduce a result, you can't trust it.
+Every backend needs to start from the same place every time: identical resource constraints, the same setup steps, the same starting state. When you compare multiple backends in one run, they shouldn't be competing with each other for resources either.
 
-**Scenario variety.** Different questions need different test shapes. "How fast is a single query?" is a different scenario from "what happens at 1,000 QPS?", which is different again from "what does latency look like when reads and writes hit the system at the same time?" A runner should support all of these: constant throughput, ramping load, concurrent virtual users, mixed read/write workloads, and the ability to compose them.
+### Configuration Capture
 
-**Rich statistics.** Tail latency over many runs is usually where systems actually fail. An average or minimum response time hides almost everything important. You need full latency distributions (P50, P95, P99 at minimum), throughput over time, and error rates, not point-in-time summaries.
+A poorly-tuned Postgres will lose to a well-tuned Elasticsearch, and vice versa. Configuration is part of the benchmark whether you acknowledge it or not, and a striking number of published benchmarks don't post their full configs. A runner needs to save the full context alongside the results: backend tunables (PostgreSQL GUCs, Elasticsearch JVM settings, versions), setup scripts (`VACUUM ANALYZE`, force merge), and resource allocation. If you can't reproduce a result, you can't trust it.
 
-**Application-shaped queries.** A benchmark should send queries the way a real application would: over the network, using the same client libraries production code uses. CLI tools and developer interfaces (psql, mongosh, the Elasticsearch dev console) often take shortcuts that production traffic doesn't have access to: different connection pooling, different transports, optimizations for interactive use. If you benchmark through them, you're measuring the CLI as much as the database.
+### Scenario Variety
 
-**Driver separation.** You're probably not an expert in every system you're benchmarking. We know Postgres well; we don't know the best way to construct an Elasticsearch query as well as someone who has been writing them in production for years. The code that talks to each database should be separated from the benchmark scripts, so experts in each system can audit and improve how their database is being driven without touching the benchmark itself. Each backend should run in its own native syntax, with no abstraction layer quietly translating one system into another’s strengths.
+Different questions need different test shapes. "How fast is a single query?" is a different scenario from "what happens at 1,000 QPS?", which is different again from "what does latency look like when reads and writes hit the system at the same time?" A runner should support all of these: constant throughput, ramping load, concurrent virtual users, mixed read/write workloads, and the ability to compose them.
+
+### Rich Statistics
+
+Tail latency over many runs is usually where systems actually fail. An average or minimum response time hides almost everything important. You need full latency distributions (P50, P95, P99 at minimum), throughput over time, and error rates, not point-in-time summaries.
+
+### Application-Shaped Queries
+
+A benchmark should send queries the way a real application would: over the network, using the same client libraries production code uses. CLI tools and developer interfaces (psql, mongosh, the Elasticsearch dev console) often take shortcuts that production traffic doesn't have access to: different connection pooling, different transports, optimizations for interactive use. If you benchmark through them, you're measuring the CLI as much as the database.
+
+### Driver Separation
+
+You're probably not an expert in every system you're benchmarking. We know Postgres well; we don't know the best way to construct an Elasticsearch query as well as someone who has been writing them in production for years. The code that talks to each database should be separated from the benchmark scripts, so experts in each system can audit and improve how their database is being driven without touching the benchmark itself. Each backend should run in its own native syntax, with no abstraction layer quietly translating one system into another’s strengths.
 
 ## ParadeDB Benchmarker
 
-Once we decided the runner mattered more than any single benchmark, we needed infrastructure that could survive changing workloads, changing databases, and changing questions. The result is [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker). It's open source, and built as a layer on top of [k6](https://k6.io/), Grafana's load testing framework (which is usually known for front-end testing).
+Once we decided the runner mattered more than any single benchmark, we needed infrastructure that could survive changing workloads, changing databases, and changing questions. The result was [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker). It's open source, and built as a layer on top of [k6](https://k6.io/), Grafana's load testing framework (which is usually known for front-end testing).
 
-k6 is an incredible benchmarking tool, and already solves most of the hard execution-engine problems: virtual user scheduling, request firing, latency measurement, ramping load, and scenario orchestration. It already has a database plugin with [xk6-sql](https://github.com/grafana/xk6-sql), but we needed to be able to work with databases that were outside the SQL camp (mainly Elasticsearch, OpenSearch, and MongoDB). We also wanted better benchmarking ergonomics: dashboards, run exports, dataset loading, and reproducible local environments. This led to us building the `xk6-database` extension.
+k6 is an incredible benchmarking tool, and already solves most of the hard execution-engine problems: virtual user scheduling, request firing, latency measurement, ramping load, and scenario orchestration. It already has a database plugin with [xk6-sql](https://github.com/grafana/xk6-sql), but we needed to be able to work with databases that were outside the SQL camp (mainly Elasticsearch, OpenSearch, and MongoDB).
 
-From the start, we wanted PostgreSQL FTS, Elasticsearch, OpenSearch, ClickHouse, MongoDB Atlas Search, and ParadeDB itself to run under the same framework. But we didn't want to force them through a shared abstraction layer. If you’d like to run locally, we also provide Docker Compose profiles that bring up isolated backend environments with a single command.
+We also wanted better benchmarking ergonomics: dashboards, run exports, dataset loading, and reproducible local environments. This led to us building the `xk6-database` extension.
 
-Data goes in through a separate loader. Datasets are treated as separate units: schema, raw data, and per-backend setup scripts live together in one directory. The loader reads the schema, runs the pre scripts, bulk-inserts the data, then runs the post scripts. Adding a new dataset means dropping a new directory in `./datasets/` rather than touching the runner.
+Here's how the pieces fit together: backends, datasets, the script you write, and the dashboard.
+
+### Backends and Environments
+
+From the start, we wanted PostgreSQL FTS, Elasticsearch, OpenSearch, ClickHouse, MongoDB Atlas Search, and ParadeDB itself to run under the same framework. But we didn't want to force them through a shared abstraction layer; each backend gets its own driver and runs in its own native syntax.
+
+If you’d like to run locally, we provide Docker Compose profiles that bring up isolated backend environments with a single command.
+
+### Datasets and the Loader
+
+Datasets are treated as separate units: schema, raw data, and per-backend setup scripts live together in one directory. Adding a new dataset means dropping a new directory in `./datasets/` rather than touching the runner.
+
+Data goes in through a separate loader CLI, which handles schema setup, bulk ingest, and post-load steps like VACUUM ANALYZE or force merge automatically. 
+
+### A First Benchmark
 
 You write benchmark strategies in standard k6 JavaScript. A minimal single-backend workload targeting a local ParadeDB container would look like this:
 
@@ -96,11 +122,21 @@ export function paradedbQuery() {
 }
 ```
 
-Each VU runs `paradedbQuery` in a loop for 30 seconds. The runner times every call, tags it with the backend, and pushes the metrics to the dashboard. Swap `constant-vus` for `ramping-vus` to ramp load up and down across stages, or `constant-arrival-rate` to fire a fixed number of requests per second regardless of how fast the system answers.
+Each VU runs `paradedbQuery` in a loop for 30 seconds. The runner times every call, tags it with the backend, and pushes the metrics to the dashboard.
 
-A single script can compose multiple scenarios across multiple backends. You might run search at 200 QPS, an aggregation at 100 QPS, and an ingest stream at 1,000 rows per second, all hitting the same backend at the same time, then have a built-in phase timer stagger a second backend so the two runs don't compete for resources. Comparing raw ingest throughput across databases with different write semantics rarely tells you anything useful; comparing query latency under sustained write pressure tells you a lot.
+Swap `constant-vus` for `ramping-vus` to ramp load up and down across stages, or `constant-arrival-rate` to fire a fixed number of requests per second regardless of how fast the system answers.
 
-Results stream to the browser as the test runs: latency percentiles per backend (P50, P90, P95, P99), query and ingest throughput, and per-container CPU and memory pulled from Docker. Backend configs, setup scripts, and query patterns are captured alongside the timeline, so a result can be reproduced and audited later.
+### Composing Scenarios
+
+A single script can compose multiple scenarios across multiple backends. You might run search at 200 QPS, an aggregation at 100 QPS, and an ingest stream at 1,000 rows per second, all hitting the same backend at the same time. A built-in phase timer staggers a second backend so the two runs don't compete for resources.
+
+Comparing raw ingest throughput across databases with different write semantics rarely tells you anything useful; comparing query latency under sustained write pressure tells you a lot.
+
+### Streaming Results
+
+Results stream to the browser as the test runs: latency percentiles per backend (P50, P90, P95, P99), query and ingest throughput, and per-container CPU and memory pulled from Docker.
+
+Backend configs, setup scripts, and query patterns are captured alongside the timeline, so a result can be reproduced and audited later.
 
 <ZoomVideo
   ariaLabel="ParadeDB Benchmarker dashboard showing latency percentiles, queries-per-second, and per-container CPU and memory for a ParadeDB instance (running an upcoming version) and an Elasticsearch instance"
@@ -114,6 +150,8 @@ The code can be found at [github.com/paradedb/benchmarker](https://github.com/pa
 
 We've shipped drivers for the backends we get compared to most often. We'd value experts in any of them auditing how Benchmarker drives them, so the comparisons we publish go up against each system at its best. And if there's a backend you'd like to see added, contributions are welcome.
 
-## Stay tuned for our upcoming performance blogs, where we'll put Benchmarker to work: real comparisons against the systems we get measured against, and the optimization journeys that ccame from improving the numbers.
+Stay tuned for our upcoming performance blogs, where we'll put Benchmarker to work: real comparisons against the systems we get measured against, and the optimization journeys that came from improving the numbers.
+
+---
 
 _Ready to run your own database benchmarks?_ Check out [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker).
