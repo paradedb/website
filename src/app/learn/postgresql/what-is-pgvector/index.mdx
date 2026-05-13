@@ -91,17 +91,17 @@ ORDER BY embedding <=> $1
 LIMIT 10;
 ```
 
-pgvector applies metadata filters during the index scan, but approximate indexes can still return fewer than `LIMIT` rows if the first candidates do not match the filter. Recent pgvector versions support iterative index scans, which continue scanning until enough rows are found or a configured scan limit is reached. This behavior is one of the main practical differences between introductory vector search examples and production retrieval systems. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
+With approximate indexes, pgvector applies filters after the index scan chooses candidate rows. If a filter removes too many candidates, the query can return fewer than `LIMIT` rows. Recent pgvector versions support iterative index scans, which scan more of the index until enough rows are found or a configured scan limit is reached. This behavior is one of the main practical differences between introductory vector search examples and production retrieval systems. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
 
 ## Storage and Quantization
 
 A single 1536-dimensional `vector` column stores 6 KB per row at full precision. For very large tables, pgvector supports lower-precision types that reduce storage and memory usage:
 
-- `halfvec` stores each component as a 16-bit float, halving size
-- `bit` stores binary vectors for Hamming and Jaccard distance
-- `sparsevec` stores only nonzero components, useful for sparse embeddings
+- `halfvec` stores each component as a 16-bit float, up to 4,000 dimensions
+- `bit` stores binary vectors up to 64,000 dimensions for Hamming and Jaccard distance
+- `sparsevec` stores up to 1,000 nonzero elements, useful for sparse embeddings
 
-Both IVFFlat and HNSW can be built on these lower-precision or sparse types, so you can fit larger indexes in memory while keeping the same nearest-neighbor query shape.
+Both IVFFlat and HNSW can be built on these lower-precision or sparse types, so you can fit larger indexes in memory while keeping the same nearest-neighbor query shape. For very large indexes, binary quantization plus reranking can reduce the working set while preserving final result quality.
 
 ## When to Use pgvector
 
