@@ -1,0 +1,129 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+[pgvector](/learn/postgresql/what-is-pgvector) ships with useful defaults, but [vector similarity search](/learn/search-concepts/vector-search) is expensive enough that a few well-chosen parameters make the difference between a query that returns in milliseconds and one that scans the whole table. Tuning pgvector means picking the right index, sizing it for your data, and matching the runtime knobs to the recall you actually need.
+
+The parameters that move performance most are index type, HNSW and IVFFlat settings, memory configuration, filtered-search controls, and query-plan verification.
+
+## Choosing an Index
+
+Without an index, pgvector falls back to a sequential scan that computes the distance for every row. That is fine for tens of thousands of vectors and untenable beyond that. pgvector offers two approximate indexes:
+
+- **HNSW** (Hierarchical Navigable Small Worlds) builds a layered graph. It usually gives stronger recall and query latency, at the cost of slower builds and more memory.
+- **IVFFlat** clusters vectors into lists with k-means. It builds faster and uses less memory, but recall is sensitive to the data present at build time.
+
+HNSW is the right default for most workloads. Reach for IVFFlat only when build time or memory is the binding constraint.
+
+## Tuning HNSW
+
+HNSW has two build-time parameters and one query-time parameter:
+
+```sql
+CREATE INDEX ON items
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+```
+
+- **`m`** (default 16): maximum connections per node. Higher values improve recall and increase index size and build time. 16 is a strong default; raise to 24 or 32 only if recall is insufficient.
+- **`ef_construction`** (default 64): candidate list size during the build. Larger values improve graph quality and slow the build. 64 to 200 is a useful range.
+- **`hnsw.ef_search`** (default 40): candidate list size at query time. This is the main recall/latency dial you actually turn in production.
+
+```sql
+SET hnsw.ef_search = 100;
+```
+
+Increase `ef_search` until recall meets your target, then stop. The cost grows roughly linearly with this value.
+
+## Tuning IVFFlat
+
+IVFFlat has one build parameter and one query parameter:
+
+```sql
+CREATE INDEX ON items
+USING ivfflat (embedding vector_cosine_ops)
+WITH (lists = 1000);
+```
+
+- **`lists`**: number of k-means clusters. A common starting point is `rows / 1000` up to one million rows, and `sqrt(rows)` beyond that.
+- **`ivfflat.probes`** (default 1): clusters searched at query time. Higher values improve recall at proportional cost. A reasonable starting point is `sqrt(lists)`.
+
+```sql
+SET ivfflat.probes = 10;
+```
+
+<Note>
+  IVFFlat indexes should be built after representative data is loaded. Building
+  on an empty or small table produces poor clusters that hurt recall even after
+  more data arrives.
+</Note>
+
+## Memory and Build Settings
+
+Index builds are bounded by `maintenance_work_mem`. If the build does not fit, it spills and slows down sharply. For non-trivial vector tables, raise this before building:
+
+```sql
+SET maintenance_work_mem = '4GB';
+SET max_parallel_maintenance_workers = 4;
+```
+
+For long builds, track progress through PostgreSQL's index build view:
+
+```sql
+SELECT phase, blocks_done, blocks_total
+FROM pg_stat_progress_create_index;
+```
+
+At query time, performance depends on the index staying in cache. Size `shared_buffers` and OS cache so the working set of the HNSW graph stays resident. A vector index that spills to disk has a long latency tail no parameter will fix. See [Tuning PostgreSQL for Performance](/learn/postgresql/tuning-postgresql) for the general memory configuration this builds on.
+
+## Tuning Filtered Searches
+
+Filtered vector searches may need to scan more candidates after PostgreSQL applies `WHERE` predicates. Start with the query-time recall knobs, then add scan limits only when you need tighter control:
+
+```sql
+SET hnsw.ef_search = 100;
+SET hnsw.max_scan_tuples = 20000;
+SET hnsw.scan_mem_multiplier = 2;
+
+SET ivfflat.probes = 10;
+SET ivfflat.max_probes = 100;
+```
+
+Use these settings with measured recall. Raising them can recover missing filtered results, but it also increases CPU, memory, and latency.
+
+## Choosing the Distance Operator
+
+Use the operator that matches how your embeddings were trained:
+
+```sql
+SELECT id FROM items ORDER BY embedding <=> $1 LIMIT 10;  -- cosine
+SELECT id FROM items ORDER BY embedding <#> $1 LIMIT 10;  -- inner product
+SELECT id FROM items ORDER BY embedding <-> $1 LIMIT 10;  -- L2
+```
+
+The index must be created with the matching opclass (`vector_cosine_ops`, `vector_ip_ops`, or `vector_l2_ops`). A mismatch produces a sequential scan with no warning. For normalized embeddings (OpenAI, Cohere), cosine and inner product are equivalent; inner product is slightly faster.
+
+## Verifying the Index Is Used
+
+Always check with `EXPLAIN`:
+
+```sql
+EXPLAIN (ANALYZE, BUFFERS)
+SELECT id FROM items
+ORDER BY embedding <=> $1
+LIMIT 10;
+```
+
+Look for an `Index Scan` on the vector index. A `Seq Scan` means the planner ignored it, usually because the operator does not match the opclass, the `LIMIT` is missing, or a `WHERE` predicate forced a different plan.
+
+## Summary
+
+Most pgvector performance comes from three decisions: use HNSW unless you have a reason not to, tune `ef_search` (or `probes`) to the recall you need, and give the index enough memory to stay resident. Everything else is refinement.
+
+For the operational side of running these indexes at scale, see [pgvector in Production](/learn/postgresql/pgvector-in-production), and for the failure modes that no amount of tuning will fix, see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
