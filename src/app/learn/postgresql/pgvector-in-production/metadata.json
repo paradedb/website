@@ -1,0 +1,9 @@
+{
+  "title": "pgvector in Production",
+  "date": "2026-05-13T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Learn how to operate pgvector reliably in production, from index choice and capacity planning to filtering, backups, and monitoring.",
+  "order": 10,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}
