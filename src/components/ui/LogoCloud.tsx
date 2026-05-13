@@ -11,6 +11,12 @@ export default function LogoCloud({
   const isIndigo = variant === "indigo";
   const isWhite = variant === "white";
 
+  const logoClass = cx(
+    isIndigo || isWhite
+      ? "brightness-0 invert opacity-70"
+      : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+  );
+
   return (
     <div
       className={cx(
@@ -24,84 +30,28 @@ export default function LogoCloud({
       )}
     >
       <div className="flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.BiltRewards
-          className={cx(
-            "w-18 md:w-20",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+        <Logos.BiltRewards className={cx("w-14 md:w-20", logoClass)} />
       </div>
       <div className="flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.ModernTreasury
-          className={cx(
-            "w-32 md:w-40",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+        <Logos.ModernTreasury className={cx("w-48 md:w-40", logoClass)} />
       </div>
       <div className="flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.Alibaba
-          className={cx(
-            "w-18 md:w-28",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+        <Logos.Alibaba className={cx("w-20 md:w-28", logoClass)} />
       </div>
       <div className="flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.Span
-          className={cx(
-            "w-18 md:w-20",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+        <Logos.Span className={cx("w-16 md:w-20", logoClass)} />
       </div>
-      <div className="hidden sm:flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.RxVantage
-          className={cx(
-            "w-22 md:w-32",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+      <div className="flex items-center justify-center sm:order-3 opacity-0 animate-logo delay-700 fill-mode-both">
+        <Logos.Tcdi className={cx("w-10 md:w-11", logoClass)} />
       </div>
-      <div className="flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.Tcdi
-          className={cx(
-            "w-11 md:w-14",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+      <div className="flex items-center justify-center sm:order-1 opacity-0 animate-logo delay-700 fill-mode-both">
+        <Logos.SafetyCulture className={cx("w-28 md:w-32", logoClass)} />
       </div>
-      <div className="flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.DemandScience
-          className={cx(
-            "w-32 md:w-40",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+      <div className="hidden sm:flex sm:order-2 items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
+        <Logos.RxVantage className={cx("w-22 md:w-32", logoClass)} />
       </div>
-      <div className="hidden sm:flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
-        <Logos.SafetyCulture
-          className={cx(
-            "w-32 md:w-40",
-            isIndigo || isWhite
-              ? "brightness-0 invert opacity-70"
-              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
-          )}
-        />
+      <div className="hidden sm:flex sm:order-4 items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
+        <Logos.DemandScience className={cx("w-32 md:w-40", logoClass)} />
       </div>
     </div>
   );
