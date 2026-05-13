@@ -91,7 +91,7 @@ ORDER BY embedding <=> $1
 LIMIT 10;
 ```
 
-pgvector evaluates the ANN index and then applies the filter, which can return fewer than `LIMIT` rows if the filter is selective. This behavior is one of the main practical differences between introductory vector search examples and production retrieval systems. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
+pgvector applies metadata filters during the index scan, but approximate indexes can still return fewer than `LIMIT` rows if the first candidates do not match the filter. Recent pgvector versions support iterative index scans, which continue scanning until enough rows are found or a configured scan limit is reached. This behavior is one of the main practical differences between introductory vector search examples and production retrieval systems. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
 
 ## Storage and Quantization
 
