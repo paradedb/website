@@ -1,0 +1,116 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+Modern AI applications produce embeddings: fixed-length arrays of floating-point numbers that represent the semantic content of text, images, or audio. Similar inputs map to vectors that sit near each other in this space, so retrieval becomes a [vector search](/learn/search-concepts/vector-search) problem rather than a keyword match. [pgvector](https://github.com/pgvector/pgvector) is a PostgreSQL extension that stores and searches those embeddings with a native `vector` data type, distance operators, and approximate nearest neighbor indexes. It does not create embeddings itself; you generate them with an embedding model, then insert the resulting vectors into PostgreSQL.
+
+## How pgvector Works
+
+pgvector registers a new column type with PostgreSQL. You declare the dimensionality up front, insert vectors as arrays, and query them with distance operators:
+
+```sql
+CREATE EXTENSION vector;
+
+CREATE TABLE documents (
+    id      bigserial PRIMARY KEY,
+    content text,
+    -- A 1536-dimensional embedding, matching OpenAI's text-embedding-3-small
+    embedding vector(1536)
+);
+
+INSERT INTO documents (content, embedding)
+VALUES ('PostgreSQL is a relational database', '[0.12, -0.04, ...]');
+```
+
+Four distance operators cover the common similarity measures:
+
+- `<->` for L2 (Euclidean) distance
+- `<#>` for negative inner product
+- `<=>` for cosine distance
+- `<+>` for L1 (taxicab) distance
+
+A nearest-neighbor query is an `ORDER BY` on one of these operators with a `LIMIT`:
+
+```sql
+SELECT id, content
+FROM documents
+ORDER BY embedding <=> '[0.10, -0.02, ...]'
+LIMIT 5;
+```
+
+Because the result is just rows from a regular table, you can combine vector search with `WHERE` filters, joins, transactions, and any other SQL feature in the same query.
+
+## Indexes for Approximate Nearest Neighbor Search
+
+Without an index, pgvector runs an exact scan: every row is compared against the query vector. That is accurate but scales linearly with table size. For larger tables, pgvector provides two approximate nearest neighbor (ANN) index types that trade a small amount of recall for much faster queries.
+
+**IVFFlat** partitions vectors into lists using k-means clustering. At query time, only the most relevant lists are scanned:
+
+```sql
+CREATE INDEX ON documents
+USING ivfflat (embedding vector_cosine_ops)
+WITH (lists = 100);
+```
+
+IVFFlat must be built after data is loaded, since the clusters depend on the existing vector distribution.
+
+**HNSW** builds a multi-layer graph where each node links to nearby neighbors. Searches walk the graph from coarse to fine layers:
+
+```sql
+CREATE INDEX ON documents
+USING hnsw (embedding vector_cosine_ops)
+WITH (m = 16, ef_construction = 64);
+```
+
+HNSW indexes are slower and more memory-intensive to build than IVFFlat, but they typically deliver better recall-versus-latency tradeoffs and can be built incrementally as rows arrive.
+
+Each index type supports separate operator classes for L2, inner product, cosine, and L1 distance. The operator class in the index must match the operator used in queries, or PostgreSQL will fall back to a sequential scan. For a deeper walk-through of parameter selection and workload tuning, see [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector).
+
+<Note>
+  Recall in pgvector is tunable at query time. For IVFFlat, set
+  `ivfflat.probes`; for HNSW, set `hnsw.ef_search`. Higher values inspect more
+  candidates and improve recall at the cost of latency.
+</Note>
+
+## Filtered Vector Search
+
+Real applications rarely search the entire corpus. You usually want the nearest vectors that also match some metadata filter, such as a tenant, category, or date range:
+
+```sql
+SELECT id, content
+FROM documents
+WHERE tenant_id = 42
+  AND created_at > now() - interval '30 days'
+ORDER BY embedding <=> $1
+LIMIT 10;
+```
+
+pgvector evaluates the ANN index and then applies the filter, which can return fewer than `LIMIT` rows if the filter is selective. This behavior is one of the main practical differences between introductory vector search examples and production retrieval systems. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
+
+## Storage and Quantization
+
+A single 1536-dimensional `vector` column stores 6 KB per row at full precision. For very large tables, pgvector supports lower-precision types that reduce storage and memory usage:
+
+- `halfvec` stores each component as a 16-bit float, halving size
+- `bit` stores binary vectors for Hamming and Jaccard distance
+- `sparsevec` stores only nonzero components, useful for sparse embeddings
+
+Both IVFFlat and HNSW can be built on these lower-precision or sparse types, so you can fit larger indexes in memory while keeping the same nearest-neighbor query shape.
+
+## When to Use pgvector
+
+pgvector is a strong fit when your embeddings live alongside relational data you already store in PostgreSQL. Keeping vectors in the same database avoids dual-write problems, lets you join across tables, and reuses existing backup, replication, and access control. It is widely supported by managed Postgres providers and often used as the retrieval layer in [RAG](/learn/search-concepts/retrieval-augmented-generation) systems.
+
+Because vectors capture semantic meaning but miss exact terms like product codes or filenames, most production retrieval pipelines pair pgvector with a [full-text search](/learn/search-in-postgresql/full-text-search) index and combine the two results with [hybrid search](/learn/search-concepts/hybrid-search). The [lexical vs. semantic](/learn/search-concepts/lexical-vs-semantic) article covers the tradeoffs in more detail.
+
+A dedicated vector database may make more sense when you need billions of vectors, very high write throughput on the vector path alone, or features such as native multi-vector ranking and learned indexes that pgvector does not yet provide.
+
+## Summary
+
+pgvector turns PostgreSQL into a capable vector database by adding a `vector` type, distance operators, and IVFFlat and HNSW indexes for approximate nearest neighbor search. It integrates cleanly with the rest of SQL, so embeddings can be filtered, joined, and transacted on like any other column. For many applications that combine structured data with AI-generated embeddings, pgvector provides production-quality similarity search without running a separate system.

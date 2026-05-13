@@ -1,0 +1,9 @@
+{
+  "title": "What is pgvector?",
+  "date": "2026-05-13T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Learn about pgvector, the PostgreSQL extension that adds vector data types and similarity search for embeddings and AI workloads.",
+  "order": 8,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}
