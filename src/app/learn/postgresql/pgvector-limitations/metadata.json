@@ -1,0 +1,9 @@
+{
+  "title": "pgvector Limitations",
+  "date": "2026-05-13T00:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "Understand the practical limits of pgvector: index cost, filtered search performance, missing features, and operational tradeoffs.",
+  "order": 9,
+  "hideHeroImage": true,
+  "hideAuthor": true
+}

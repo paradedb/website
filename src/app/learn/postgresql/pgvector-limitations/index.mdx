@@ -1,0 +1,69 @@
+import learnMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+
+import Image from "next/image";
+
+<Title metadata={learnMetadata} />
+<AuthorSection metadata={learnMetadata} />
+
+[pgvector](/learn/postgresql/what-is-pgvector) brings [vector similarity search](/learn/search-concepts/vector-search) into PostgreSQL with HNSW and IVFFlat indexes, distance operators, and tight integration with the rest of your relational schema. That integration is its main strength, and also the root of most of its limitations. Running approximate nearest neighbor search inside a general-purpose OLTP database means inheriting PostgreSQL's storage model, locking behavior, and resource boundaries, which dedicated vector databases sidestep by design.
+
+If you're [running pgvector in production](/learn/postgresql/pgvector-in-production), knowing these limits up front helps you size hardware, plan your index strategy, and decide which parts of the workload belong elsewhere.
+
+## Index Build Time and Memory Cost
+
+HNSW indexes give good recall and query latency, but they are slow to build and expensive to keep resident. A 10M-row table with 1,536-dimensional embeddings can take hours to index on a single core, and the resulting index is typically tens of gigabytes. For acceptable query latency the index needs to live in `shared_buffers` or the OS page cache. Once it spills to disk, p99 latency climbs sharply. [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector) covers the parameters that control build cost and memory footprint.
+
+IVFFlat indexes build faster but require a representative sample for k-means clustering. If you build the index before loading most of your data, the centroids end up misplaced and recall suffers.
+
+## Filtered Search Performance
+
+Combining vector search with metadata filters is one of pgvector's weakest spots. Given a query like:
+
+```sql
+-- Find the 10 most similar documents for a specific tenant
+SELECT id FROM documents
+WHERE tenant_id = 42
+ORDER BY embedding <=> $1
+LIMIT 10;
+```
+
+pgvector walks the HNSW graph and then applies the filter. If `tenant_id = 42` matches only a small fraction of rows, the index may surface ten candidates that all fail the filter, forcing it to scan deeper or fall back to a sequential scan. Recall and latency degrade together as filter selectivity increases. pgvector supports partial indexes and table partitioning, but it does not have the same automatic filtered-ANN planning that some dedicated vector engines provide.
+
+## Dimensionality and Vector Size Limits
+
+The indexable `vector` type tops out at 2,000 dimensions. The `halfvec` type (16-bit floats) extends this to 4,000 dimensions and roughly halves storage, and `bit` vectors allow much higher dimensionality through binary quantization. Using these types usually requires choosing the storage format up front, casting in your queries, or building expression indexes for quantized representations. pgvector supports binary quantization, but it does not provide native product quantization or automatic scalar quantization like many dedicated vector engines.
+
+Each `vector(1536)` value occupies about 6KB on disk before row overhead. At 100M rows, raw vector storage alone exceeds 600GB before any index is built.
+
+## Update and Delete Behavior
+
+HNSW indexes do not reclaim space when rows are deleted: tombstoned nodes stay in the graph until the index is rebuilt. Workloads with frequent re-embeddings or churn cause index bloat and a slow drop in recall. `REINDEX CONCURRENTLY` is available but expensive on large indexes.
+
+IVFFlat indexes have a related problem. Centroids are fixed at build time, so as data drifts the clustering becomes less representative and recall falls until you rebuild.
+
+## Missing Features
+
+Several capabilities that come standard in dedicated vector systems are absent or require extra work in pgvector:
+
+- **[Hybrid search](/learn/search-concepts/hybrid-search)**: no native [BM25](/learn/search-concepts/bm25). Combining [`tsvector`](/learn/search-in-postgresql/full-text-search) ranking with vector distance requires manual score fusion, typically via [Reciprocal Rank Fusion](/learn/search-concepts/reciprocal-rank-fusion).
+- **Reranking**: no built-in cross-encoder or learned ranker integration.
+- **Multi-vector documents**: no native late-interaction document abstraction. ColBERT-style retrieval needs multiple rows, multiple vector columns, or application-side aggregation.
+- **Query-time quantization**: no automatic product or scalar quantization at query time. You choose the storage type, cast explicitly, or maintain expression indexes for quantized search.
+- **Embedding quality**: pgvector stores and searches vectors, but it cannot fix poor embeddings, weak chunking, or missing document context.
+
+<Note>
+  Extensions like [pg_search](/learn/search-in-postgresql/bm25) add BM25 to
+  PostgreSQL alongside pgvector, which is one way to build hybrid search without
+  leaving the database.
+</Note>
+
+## Operational Tradeoffs
+
+Because pgvector runs inside PostgreSQL, vector workloads share CPU, memory, and I/O with your OLTP traffic. A burst of vector queries can starve transactional queries of buffer cache and parallel workers, and the reverse is also true. Vertical scaling is the primary lever; native sharding of vector data across nodes is not supported, so very large corpora often end up on a dedicated replica or in a separate engine.
+
+## Summary
+
+pgvector is the right choice when your dataset fits comfortably on one PostgreSQL instance, your filter selectivity is moderate, and you value transactional consistency with the rest of your relational data. The edges to watch are index build cost, filtered query performance, missing hybrid and reranking primitives, and the absence of horizontal scaling. Knowing where those edges sit makes it easier to decide whether pgvector is sufficient on its own, whether to pair it with [full-text search](/learn/search-concepts/full-text-search) for [hybrid retrieval](/learn/search-concepts/lexical-vs-semantic), or whether part of the workload belongs in a dedicated engine.
