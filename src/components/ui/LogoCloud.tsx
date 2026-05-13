@@ -93,6 +93,16 @@ export default function LogoCloud({
           )}
         />
       </div>
+      <div className="hidden sm:flex items-center justify-center opacity-0 animate-logo delay-700 fill-mode-both">
+        <Logos.SafetyCulture
+          className={cx(
+            "w-32 md:w-40",
+            isIndigo || isWhite
+              ? "brightness-0 invert opacity-70"
+              : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+          )}
+        />
+      </div>
     </div>
   );
 }
