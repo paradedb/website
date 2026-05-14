@@ -40,7 +40,7 @@ A nearest-neighbor query is an `ORDER BY` on one of these operators with a `LIMI
 ```sql
 SELECT id, content
 FROM documents
-ORDER BY embedding <=> '[0.10, -0.02, ...]'
+ORDER BY embedding <=> '[0.10, -0.02, ...]'::vector  -- input embedding
 LIMIT 5;
 ```
 
