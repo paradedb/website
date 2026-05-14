@@ -21,6 +21,12 @@ Without an index, pgvector falls back to a sequential scan that computes the dis
 
 HNSW is the right default for most workloads. Reach for IVFFlat only when build time or memory is the binding constraint.
 
+## Reranking Candidate Sets
+
+Not every pgvector workload needs an ANN index. A common pattern is to use full-text search or another structured query to retrieve a small candidate set, then run exact vector scoring over those rows in memory. For example, you might take the top 100 lexical matches and rerank them by embedding distance.
+
+This works well when another retrieval step has already narrowed the search space. It avoids HNSW or IVFFlat build cost, keeps recall exact within the candidate set, and is often simpler for [hybrid search](/learn/search-concepts/hybrid-search) pipelines. It does not replace an ANN index when the vector search itself must scan a large corpus.
+
 ## Tuning HNSW
 
 HNSW has two build-time parameters and one query-time parameter:
@@ -84,7 +90,7 @@ At query time, performance depends on the index staying in cache. Size `shared_b
 
 ## Tuning Filtered Searches
 
-Filtered vector searches are harder than unfiltered nearest-neighbor queries because the index may find close vectors that do not match your `WHERE` clause. If too many candidates are filtered out, the query can return fewer rows than requested or miss relevant matches.
+Filtered vector searches are harder than unfiltered vector queries because the index may find close vectors that do not match your `WHERE` clause. If too many candidates are filtered out, the query can return fewer rows than requested or miss relevant matches.
 
 Start by enabling iterative scans. This tells pgvector to keep scanning the index after filtering removes candidates:
 
@@ -114,7 +120,7 @@ Tune these settings against measured recall and latency. Higher values recover m
 
 ## Choosing the Distance Operator
 
-Use the operator that matches how your embeddings were trained:
+Use the operator that matches your embedding model and normalization:
 
 ```sql
 SELECT id FROM items ORDER BY embedding <=> $1 LIMIT 10;  -- cosine
