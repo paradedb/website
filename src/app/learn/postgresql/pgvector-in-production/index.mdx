@@ -8,13 +8,13 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-[pgvector](/learn/postgresql/what-is-pgvector) is a common way to run [vector similarity search](/learn/search-concepts/vector-search) inside PostgreSQL. Moving it from a prototype to production is less about finding one perfect index setting and more about operating a large, approximate index beside transactional data. Vectors are large, rebuilds are slow, and recall changes when your data, model, or filters change.
+[pgvector](/learn/postgresql/what-is-pgvector) is a common way to run [vector similarity search](/learn/search-concepts/vector-search) inside PostgreSQL. Moving it from a prototype to production means treating embeddings, approximate indexes, and recall as operational concerns. Vectors are large, indexes are expensive to rebuild, and small changes to filters or embedding models can change both latency and result quality.
 
-Before you run pgvector in production, you should already know your embedding dimensionality, expected row count, write rate, filter patterns, and latency target. The operational decisions that follow are online index builds, capacity planning, workload isolation, backup and replication, rebuilds, and monitoring. For parameter-level detail see [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector), and for the constraints that shape these decisions see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
+Before you run pgvector in production, you should know your embedding dimensionality, row count, write rate, filter patterns, latency target, and minimum acceptable recall. For parameter-level tuning, see [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector). For the constraints that shape production design, see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
 
-## Build Indexes Without Blocking Writes
+## Build Indexes as Deployments
 
-Production pgvector deployments usually use HNSW unless build time or memory is the binding constraint. Build the index concurrently so inserts and updates can continue while PostgreSQL constructs the graph:
+Production pgvector deployments usually use HNSW unless build time or memory is the binding constraint. Build indexes concurrently so inserts and updates can continue while PostgreSQL constructs the graph:
 
 ```sql
 CREATE INDEX CONCURRENTLY items_embedding_hnsw
@@ -22,28 +22,57 @@ ON items USING hnsw (embedding vector_cosine_ops)
 WITH (m = 16, ef_construction = 64);
 ```
 
-Treat the first index build as a planned operation. Run it during a low-traffic window, raise `maintenance_work_mem` for the session if appropriate, and watch CPU, WAL volume, disk space, replica lag, and `pg_stat_progress_create_index`. On large tables, the operational risk is often not query latency; it is a half-finished build that fills disk or leaves replicas too far behind.
+Treat every large vector index build like a deployment. Run it during a low-traffic window, raise `maintenance_work_mem` for the session if appropriate, and watch CPU, WAL volume, disk space, replica lag, and `pg_stat_progress_create_index`. On large tables, the operational risk is often not query latency; it is a half-finished build that fills disk or leaves replicas too far behind.
 
 If you use IVFFlat, load representative data before building the index. Its clusters are fixed at build time, so an index built on early or skewed data can underperform even after more rows arrive.
 
-## Capacity Planning
+## Version Embeddings Deliberately
 
-Vector data is dense. A single 1536-dimensional `float4` vector takes roughly 6 KB on disk before row and index overhead. A million rows is around 6 GB of raw vectors, and an HNSW index can add a comparable amount again. Size the system from a budget, not from defaults:
-
-1. Estimate raw vector storage from dimensions, row count, and precision.
-2. Add index storage, table overhead, WAL growth, and backup retention.
-3. Reserve enough memory for the hot part of the index in `shared_buffers` plus OS cache.
-4. Leave headroom for ordinary PostgreSQL traffic, autovacuum, and rebuilds.
-
-For a dedicated vector-heavy instance, start with explicit memory settings and adjust after measuring cache hit ratio and p95/p99 latency:
+Embedding changes are production migrations. A new model, dimensionality, normalization strategy, or distance operator can make old vectors incomparable with new ones. Store enough metadata to know how each vector was generated:
 
 ```sql
-ALTER SYSTEM SET shared_buffers = '8GB';
-ALTER SYSTEM SET maintenance_work_mem = '4GB';
-ALTER SYSTEM SET max_parallel_maintenance_workers = 4;
+ALTER TABLE documents
+ADD COLUMN embedding_model text NOT NULL DEFAULT 'v1';
 ```
 
-If your vectors tolerate lower precision, `halfvec` can roughly halve storage and index size. Measure recall against your own data before switching formats, because the right tradeoff depends on your embedding model and ranking threshold.
+For major changes, write the new embeddings alongside the old ones, build the replacement index, validate recall, then route traffic to the new query path. Dropping the old column or index should be the last step, not the first. This gives you a rollback path if retrieval quality drops after the cutover.
+
+If you serve multiple embedding versions at once, use a stable predicate in the query and consider partial indexes or partitioning by version. That keeps each vector index internally consistent and avoids mixing embeddings that should not be compared.
+
+## Test Recall Before Cutting Over
+
+Approximate indexes do not only have a latency target; they have a quality target. Keep a fixed set of representative queries, expected neighbors, and important filtered cases. Before changing an index, model, query filter, or distance operator, compare production-style ANN results with an exact baseline:
+
+```sql
+BEGIN;
+SET LOCAL enable_indexscan = off;
+
+SELECT id
+FROM documents
+ORDER BY embedding <=> $1
+LIMIT 10;
+
+ROLLBACK;
+```
+
+Measure recall@k, p95 latency, and p99 latency on the same query set. The exact scan is too slow for the live path on large tables, but it is useful as a validation tool. Without a recall gate, a faster pgvector query can silently become a worse retrieval system.
+
+## Control Filtered Query Behavior
+
+Real applications rarely search every vector. They search the nearest vectors that also match a tenant, category, date range, permission rule, or embedding version:
+
+```sql
+SELECT id, title
+FROM documents
+WHERE tenant_id = $1
+  AND created_at > now() - interval '30 days'
+ORDER BY embedding <=> $2
+LIMIT 10;
+```
+
+This is where many prototype queries break down. Approximate search may find nearby vectors first and apply the filter after candidate selection. If the filter is selective, the query may return too few rows or miss good matches unless you tune iterative scans, raise candidate counts, or reduce the search space.
+
+Use schema design for the filters that define your retrieval surface. Partitioning by tenant, time, or model version can keep indexes smaller and make selective filters less fragile. Partial indexes can help when a predicate is stable and common. Runtime settings such as `hnsw.iterative_scan` and `hnsw.ef_search` are still useful, but they work best after the data layout matches the query shape.
 
 ## Isolate Vector Workloads
 
@@ -57,58 +86,38 @@ Common isolation patterns are:
 - Keep ingestion and re-embedding jobs on controlled schedules.
 - Set statement timeouts for user-facing vector queries.
 
-Filtered vector search needs special attention because pgvector applies filters after the approximate search. For selective filters, partitioning by tenant, category, or another stable key can keep each index smaller and reduce wasted candidates:
+Isolation matters most during re-embedding, index builds, and cache churn. Those operations can create enough CPU, I/O, and WAL pressure to affect unrelated queries even when the retrieval endpoint itself looks healthy.
 
-```sql
-SELECT id, title
-FROM documents
-WHERE tenant_id = $1
-  AND created_at > now() - interval '30 days'
-ORDER BY embedding <=> $2
-LIMIT 10;
-```
+## Plan Rebuilds and Cold Starts
 
-When filters drop too many candidates, enable iterative scans and tune `hnsw.ef_search` in the query path so pgvector searches more of the graph before returning results:
-
-```sql
-SET LOCAL hnsw.iterative_scan = strict_order;
-SET LOCAL hnsw.ef_search = 100;
-```
-
-<Note>
-  Tune iterative scans and `ef_search` from measured recall, not from defaults.
-  A value that works for broad searches may be too low once tenant, category, or
-  recency filters are added.
-</Note>
-
-## Backups and Replication
-
-pgvector does not require a special backup system. Standard physical backup tools such as pgBackRest and `pg_basebackup` handle vector tables and indexes like any other relation, and the practices in [Running PostgreSQL in Production](/learn/postgresql/running-in-production) apply unchanged.
-
-The difference is size and rebuild time. Physical backups grow with the vector index, while logical dump-and-restore workflows may require a full index rebuild after load. For large vector tables, prefer physical restore or `pg_upgrade` over dump-and-reload migrations. Include vector index size, build status, and replica freshness in failover checks, since a promoted replica with a missing, stale, or cold index can turn retrieval into slow scans or high-latency cache misses.
-
-After restart or failover, consider warming critical vector indexes before sending full traffic to the node. The `pg_prewarm` extension can load relation pages into cache, though the right warmup target depends on index size and available memory.
-
-## Plan for Rebuilds
-
-Vector indexes are not one-time artifacts. You may need to rebuild after large deletes, embedding model changes, data drift, or IVFFlat cluster degradation. Make rebuilds routine:
+Vector indexes are not one-time artifacts. You may need to rebuild after large deletes, embedding model changes, data drift, IVFFlat cluster degradation, or a change in operator class. Make rebuilds routine:
 
 1. Build replacement indexes concurrently when disk space allows.
 2. Validate recall against a fixed query set before cutting traffic over.
 3. Drop old indexes only after query plans and latency are stable.
 
-If frequent re-embedding is part of the product, consider partitioning by time, tenant, or model version so rebuilds affect smaller slices of data.
+<Note>
+  HNSW indexes can keep dead entries until they are rebuilt. If your workload
+  frequently deletes or replaces embeddings, watch index size and recall instead
+  of assuming normal table vacuuming fully resets vector index quality.
+</Note>
+
+Failover has a pgvector-specific failure mode: the promoted node may have the right index on disk but a cold cache. Large HNSW indexes can produce a long latency tail until the working set is warm again. For critical retrieval paths, test failover with realistic vector traffic and consider warming important indexes before sending full load to the new primary.
+
+Backups do not need pgvector-specific tooling, but vector indexes change the restore budget. A physical restore brings the index back with the table. A dump-and-reload path may require rebuilding large indexes before retrieval is usable. Include vector index size, rebuild time, and cache warmup in recovery planning.
 
 ## Monitoring What Matters
 
 The metrics that catch pgvector problems early are different from typical PostgreSQL signals:
 
 - **Recall regression.** Track recall against a fixed golden set after every reindex or model change.
-- **Query latency percentiles.** Watch p95 and p99, not the mean. Approximate search has a long tail.
+- **Filtered-query health.** Track result counts and recall for common tenant, category, and recency filters.
+- **Query latency percentiles.** Watch p95 and p99 by query shape, not only the mean.
 - **Index cache hit ratio.** A drop usually means the working set has outgrown memory.
 - **Index build progress.** `pg_stat_progress_create_index` shows whether long builds are moving or stuck.
 - **Replica lag during builds.** Large index operations can create enough WAL to delay read replicas.
-- **Build duration and frequency.** Long or frequent rebuilds signal churn that may justify partitioning or workload isolation.
+- **Re-embedding backlog.** A growing queue means some rows are searched with stale embeddings.
+- **Build duration and frequency.** Long or frequent rebuilds may justify partitioning or workload isolation.
 
 ```sql
 SELECT indexrelname, idx_scan, pg_size_pretty(pg_relation_size(indexrelid))
@@ -118,6 +127,6 @@ WHERE indexrelname LIKE '%hnsw%' OR indexrelname LIKE '%ivfflat%';
 
 ## Summary
 
-Running pgvector in production is mostly about respecting its physical cost: large rows, large indexes, slow rebuilds, and recall that shifts with data and query patterns. Build indexes online, size memory and disk with headroom, isolate vector-heavy traffic when needed, and monitor recall alongside latency.
+Running pgvector in production is mostly about managing change: embedding versions, approximate indexes, filtered retrieval, rebuilds, and recall validation. Build indexes online, isolate vector-heavy traffic when needed, and monitor result quality alongside latency.
 
-Treat the vector index as a living artifact with rebuild, backup, and failover plans. That operational discipline is what lets pgvector scale beyond a prototype without surprising the rest of your PostgreSQL workload.
+Treat each vector index as a living artifact with a rollout plan, rollback path, rebuild process, and failover test. That discipline is what lets pgvector scale beyond a prototype without surprising the rest of your PostgreSQL workload.
