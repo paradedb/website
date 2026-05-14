@@ -8,9 +8,9 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-[pgvector](/learn/postgresql/what-is-pgvector) is a common way to run [vector similarity search](/learn/search-concepts/vector-search) inside PostgreSQL. Moving it from a prototype to production means treating embeddings, approximate indexes, and recall as operational concerns. Vectors are large, indexes are expensive to rebuild, and small changes to filters or embedding models can change both latency and result quality.
+[pgvector](/learn/postgresql/what-is-pgvector) is a common way to run [vector similarity search](/learn/search-concepts/vector-search) inside PostgreSQL. Operating it in production means keeping retrieval fast and relevant while your data, filters, embeddings, and indexes change. Vectors are large, approximate indexes are expensive to rebuild, and small changes to query shape can change both latency and result quality.
 
-Before you run pgvector in production, you should know your embedding dimensionality, row count, write rate, filter patterns, latency target, and minimum acceptable recall. For parameter-level tuning, see [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector). For the constraints that shape production design, see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
+Before you run pgvector in production, you should know your embedding dimensionality, row count, write rate, filter patterns, latency target, and minimum acceptable recall. This guide focuses on the lifecycle of vector retrieval: index rollouts, embedding changes, recall checks, filtered search, rebuilds, and monitoring. For parameter-level tuning, see [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector). For constraints that shape production design, see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
 
 ## Build Indexes as Deployments
 
@@ -32,7 +32,14 @@ Embedding changes are production migrations. A new model, dimensionality, normal
 
 ```sql
 ALTER TABLE documents
-ADD COLUMN embedding_model text NOT NULL DEFAULT 'v1';
+ADD COLUMN embedding_model text;
+```
+
+Backfill the value in batches, set a default for new writes once the application is ready, and add `NOT NULL` only after validation. If a model change alters vector dimensions, add a new vector column instead of overwriting the old one:
+
+```sql
+ALTER TABLE documents
+ADD COLUMN embedding_v2 vector(1536);
 ```
 
 For major changes, write the new embeddings alongside the old ones, build the replacement index, validate recall, then route traffic to the new query path. Dropping the old column or index should be the last step, not the first. This gives you a rollback path if retrieval quality drops after the cutover.
@@ -74,7 +81,7 @@ This is where many prototype queries break down. Approximate search may find nea
 
 Use schema design for the filters that define your retrieval surface. Partitioning by tenant, time, or model version can keep indexes smaller and make selective filters less fragile. Partial indexes can help when a predicate is stable and common. Runtime settings such as `hnsw.iterative_scan` and `hnsw.ef_search` are still useful, but they work best after the data layout matches the query shape.
 
-## Isolate Vector Workloads
+## Separate Vector-Heavy Work
 
 Vector queries compete with OLTP queries for CPU, memory, I/O, and worker slots. If your application has strict transactional latency targets, isolate vector search before it becomes the hottest workload on the primary database.
 
@@ -86,7 +93,7 @@ Common isolation patterns are:
 - Keep ingestion and re-embedding jobs on controlled schedules.
 - Set statement timeouts for user-facing vector queries.
 
-Isolation matters most during re-embedding, index builds, and cache churn. Those operations can create enough CPU, I/O, and WAL pressure to affect unrelated queries even when the retrieval endpoint itself looks healthy.
+Separation matters most during re-embedding, index builds, and cache churn. Those operations can create enough CPU, I/O, and WAL pressure to affect unrelated queries even when the retrieval endpoint itself looks healthy.
 
 ## Plan Rebuilds and Cold Starts
 
@@ -104,7 +111,7 @@ Vector indexes are not one-time artifacts. You may need to rebuild after large d
 
 Failover has a pgvector-specific failure mode: the promoted node may have the right index on disk but a cold cache. Large HNSW indexes can produce a long latency tail until the working set is warm again. For critical retrieval paths, test failover with realistic vector traffic and consider warming important indexes before sending full load to the new primary.
 
-Backups do not need pgvector-specific tooling, but vector indexes change the restore budget. A physical restore brings the index back with the table. A dump-and-reload path may require rebuilding large indexes before retrieval is usable. Include vector index size, rebuild time, and cache warmup in recovery planning.
+Backup tools do not need special pgvector support, but vector indexes change the restore budget. A physical restore brings the index back with the table. A dump-and-reload path may require rebuilding large indexes before retrieval is usable. Include vector index size, rebuild time, and cache warmup in recovery planning.
 
 ## Monitoring What Matters
 
@@ -127,6 +134,6 @@ WHERE indexrelname LIKE '%hnsw%' OR indexrelname LIKE '%ivfflat%';
 
 ## Summary
 
-Running pgvector in production is mostly about managing change: embedding versions, approximate indexes, filtered retrieval, rebuilds, and recall validation. Build indexes online, isolate vector-heavy traffic when needed, and monitor result quality alongside latency.
+Operating pgvector in production is mostly about managing change: embedding versions, approximate indexes, filtered retrieval, rebuilds, and recall validation. Build indexes online, separate vector-heavy work when needed, and monitor result quality alongside latency.
 
 Treat each vector index as a living artifact with a rollout plan, rollback path, rebuild process, and failover test. That discipline is what lets pgvector scale beyond a prototype without surprising the rest of your PostgreSQL workload.

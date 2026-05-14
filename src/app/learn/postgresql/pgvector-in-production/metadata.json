@@ -1,8 +1,8 @@
 {
-  "title": "pgvector in Production",
+  "title": "Operating pgvector in Production",
   "date": "2026-05-14T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
-  "description": "Learn how to operate pgvector reliably in production, from index choice and capacity planning to filtering, backups, and monitoring.",
+  "description": "Learn how to operate pgvector retrieval in production, including embedding changes, recall checks, filtered search, index rebuilds, and monitoring.",
   "order": 11,
   "hideHeroImage": true,
   "hideAuthor": true
