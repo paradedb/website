@@ -10,7 +10,7 @@ import Image from "next/image";
 
 [pgvector](/learn/postgresql/what-is-pgvector) brings [vector similarity search](/learn/search-concepts/vector-search) into PostgreSQL with HNSW and IVFFlat indexes, distance operators, and tight integration with the rest of your relational schema. That integration is its main strength, but pgvector still has practical limits around scale, filtering, index maintenance, and retrieval features. Some limits come from running inside PostgreSQL, while others come from pgvector's index design and feature set.
 
-If you're [running pgvector in production](/learn/postgresql/pgvector-in-production), knowing these limits up front helps you size hardware, plan your index strategy, and decide which parts of the workload belong elsewhere.
+Knowing these limits up front helps you size hardware, plan your index strategy, and decide which parts of the workload belong elsewhere.
 
 ## Index Build Time and Memory Cost
 
