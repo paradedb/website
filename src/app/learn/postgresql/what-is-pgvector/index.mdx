@@ -93,7 +93,9 @@ ORDER BY embedding <=> $1
 LIMIT 10;
 ```
 
-With approximate indexes, pgvector applies filters after the index scan chooses candidate rows. If a filter removes too many candidates, the query can return fewer than `LIMIT` rows. Recent pgvector versions support iterative index scans, which scan more of the index until enough rows are found or a configured scan limit is reached. This behavior is one of the main practical differences between introductory vector search examples and production retrieval systems. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
+With approximate indexes, pgvector applies filters after the index scan chooses candidate rows. If a filter removes too many candidates, the query can return fewer than `LIMIT` rows.
+
+Recent pgvector versions support iterative index scans through `hnsw.iterative_scan` and `ivfflat.iterative_scan`. When enabled, pgvector keeps scanning more of the HNSW graph or IVFFlat lists until it finds enough filtered rows or reaches a configured scan limit. This improves filtered vector search without requiring a separate query pattern, but it still trades more work for better recall. The [limitations](/learn/postgresql/pgvector-limitations) and [production](/learn/postgresql/pgvector-in-production) guides cover how to handle selective filters at scale.
 
 ## Storage and Quantization
 
