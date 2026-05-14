@@ -8,7 +8,7 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-[pgvector](/learn/postgresql/what-is-pgvector) brings [vector similarity search](/learn/search-concepts/vector-search) into PostgreSQL with HNSW and IVFFlat indexes, distance operators, and tight integration with the rest of your relational schema. That integration is its main strength, and also the root of most of its limitations. Running approximate nearest neighbor search inside a general-purpose OLTP database means inheriting PostgreSQL's storage model, locking behavior, and resource boundaries, which dedicated vector databases sidestep by design.
+[pgvector](/learn/postgresql/what-is-pgvector) brings [vector similarity search](/learn/search-concepts/vector-search) into PostgreSQL with HNSW and IVFFlat indexes, distance operators, and tight integration with the rest of your relational schema. That integration is its main strength, but pgvector still has practical limits around scale, filtering, index maintenance, and retrieval features. Some limits come from running inside PostgreSQL, while others come from pgvector's index design and feature set.
 
 If you're [running pgvector in production](/learn/postgresql/pgvector-in-production), knowing these limits up front helps you size hardware, plan your index strategy, and decide which parts of the workload belong elsewhere.
 
@@ -30,7 +30,9 @@ ORDER BY embedding <=> $1
 LIMIT 10;
 ```
 
-pgvector walks the HNSW graph and then applies the filter. If `tenant_id = 42` matches only a small fraction of rows, the index may surface ten candidates that all fail the filter, forcing it to scan deeper or fall back to a sequential scan. Recall and latency degrade together as filter selectivity increases. pgvector supports partial indexes and table partitioning, but it does not have the same automatic filtered-ANN planning that some dedicated vector engines provide.
+pgvector walks the HNSW graph and then applies the filter. If `tenant_id = 42` matches only a small fraction of rows, the index may surface candidates that all fail the filter, causing recall to drop unless the scan goes deeper. Iterative scans help by continuing through more of the HNSW graph or IVFFlat lists until enough filtered rows are found or a scan limit is reached. That improves recall, but it also increases CPU, memory use, and tail latency.
+
+The tradeoff is workload-dependent. Moderate filters can often be handled with `hnsw.iterative_scan`, `ivfflat.iterative_scan`, and higher candidate settings. Very selective filters may still need partitioning, partial indexes, or a different retrieval plan because the index spends too much work finding rows the filter will reject. pgvector supports partial indexes and table partitioning, but it does not have the same automatic filtered-ANN planning that some dedicated vector engines provide.
 
 ## Dimensionality and Vector Size Limits
 
@@ -64,7 +66,9 @@ Several capabilities that come standard in dedicated vector systems are absent o
 
 ## Operational Tradeoffs
 
-Because pgvector runs inside PostgreSQL, vector workloads share CPU, memory, and I/O with your OLTP traffic. A burst of vector queries can starve transactional queries of buffer cache and parallel workers, and the reverse is also true. Vertical scaling is the primary lever; native sharding of vector data across nodes is not supported, so very large corpora often end up on a dedicated replica or in a separate engine.
+Because pgvector runs inside PostgreSQL, vector workloads share CPU, memory, and I/O with your OLTP traffic. A burst of vector queries can starve transactional queries of buffer cache and parallel workers, and the reverse is also true. Vertical scaling is the primary lever; native sharding of vector data across nodes is not supported.
+
+A dedicated replica is a common compromise. It keeps vector reads away from the primary's OLTP workload while preserving PostgreSQL as the system of record. Physical replicas usually have low lag but still receive the primary's write and WAL volume. Logical replicas can decouple more of the read workload, but they usually add more replication lag and operational complexity. Very large corpora may still belong in a separate engine.
 
 ## Summary
 
