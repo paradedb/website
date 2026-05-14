@@ -84,20 +84,33 @@ At query time, performance depends on the index staying in cache. Size `shared_b
 
 ## Tuning Filtered Searches
 
-Filtered vector searches may need to scan more candidates after PostgreSQL applies `WHERE` predicates. Start with the query-time recall knobs, then add scan limits only when you need tighter control:
+Filtered vector searches are harder than unfiltered nearest-neighbor queries because the index may find close vectors that do not match your `WHERE` clause. If too many candidates are filtered out, the query can return fewer rows than requested or miss relevant matches.
+
+Start by enabling iterative scans. This tells pgvector to keep scanning the index after filtering removes candidates:
 
 ```sql
 SET hnsw.iterative_scan = strict_order;
 SET hnsw.ef_search = 100;
-SET hnsw.max_scan_tuples = 20000;
-SET hnsw.scan_mem_multiplier = 2;
+```
 
+Use `strict_order` when exact distance ordering matters. Use `relaxed_order` when you can accept slightly looser ordering for better speed. HNSW supports both modes; IVFFlat supports `relaxed_order`:
+
+```sql
 SET ivfflat.iterative_scan = relaxed_order;
 SET ivfflat.probes = 10;
+```
+
+If recall is still too low, raise the candidate count before raising scan limits. For HNSW, `hnsw.ef_search` controls the candidate list size. For IVFFlat, `ivfflat.probes` controls how many lists are searched.
+
+When you need to cap the worst-case cost, use scan limits:
+
+```sql
+SET hnsw.max_scan_tuples = 20000;
+SET hnsw.scan_mem_multiplier = 2;
 SET ivfflat.max_probes = 100;
 ```
 
-Use these settings with measured recall. Iterative scans can recover missing filtered results by scanning more of the index, but they also increase CPU, memory, and latency. HNSW supports `strict_order` and `relaxed_order`; IVFFlat supports `relaxed_order`.
+Tune these settings against measured recall and latency. Higher values recover more filtered results, but they also increase CPU, memory, and tail latency. If a filter is extremely selective, partitioning or a partial index may work better than asking one large ANN index to scan deeper.
 
 ## Choosing the Distance Operator
 
