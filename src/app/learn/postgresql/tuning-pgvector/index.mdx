@@ -120,7 +120,7 @@ Tune these settings against measured recall and latency. Higher values recover m
 
 ## Choosing the Distance Operator
 
-Use the operator that matches your embedding model and normalization:
+Use the operator that matches how your embeddings were generated:
 
 ```sql
 SELECT id FROM items ORDER BY embedding <=> $1 LIMIT 10;  -- cosine
