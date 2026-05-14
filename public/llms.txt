@@ -55,4 +55,5 @@
 - [What is Faceted Search?](https://www.paradedb.com/learn/search-concepts/faceting)
 - [Full-Text Search in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/full-text-search)
 - [Implementing BM25 in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/bm25)
+- [Operating pgvector in Production](https://www.paradedb.com/learn/postgresql/pgvector-in-production)
 - [Introduction to Tantivy](https://www.paradedb.com/learn/tantivy/introduction)
