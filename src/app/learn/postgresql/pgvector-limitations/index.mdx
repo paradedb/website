@@ -34,9 +34,11 @@ pgvector walks the HNSW graph and then applies the filter. If `tenant_id = 42` m
 
 ## Dimensionality and Vector Size Limits
 
-The indexable `vector` type tops out at 2,000 dimensions. The `halfvec` type (16-bit floats) extends this to 4,000 dimensions and roughly halves storage, and `bit` vectors allow much higher dimensionality through binary quantization. Using these types usually requires choosing the storage format up front, casting in your queries, or building expression indexes for quantized representations. pgvector supports binary quantization, but it does not provide native product quantization or automatic scalar quantization like many dedicated vector engines.
+The indexable `vector` type tops out at 2,000 dimensions. The `halfvec` type (16-bit floats) extends this to 4,000 dimensions and roughly halves storage, `bit` vectors extend to 64,000 dimensions through binary quantization, and `sparsevec` stores up to 1,000 nonzero elements. Using these types usually requires choosing the storage format up front, casting in your queries, or building expression indexes for quantized representations. pgvector supports binary quantization, but it does not provide native product quantization or automatic scalar quantization like many dedicated vector engines.
 
 Each `vector(1536)` value occupies about 6KB on disk before row overhead. At 100M rows, raw vector storage alone exceeds 600GB before any index is built.
+
+Indexes also skip `NULL` vectors, and cosine indexes skip zero vectors. If those values can appear in your data, account for them during ingestion or recall testing.
 
 ## Update and Delete Behavior
 
