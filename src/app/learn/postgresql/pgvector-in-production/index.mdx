@@ -67,16 +67,17 @@ ORDER BY embedding <=> $2
 LIMIT 10;
 ```
 
-When filters drop too many candidates, tune `hnsw.ef_search` in the query path so the index searches more of the graph before applying the filter:
+When filters drop too many candidates, enable iterative scans and tune `hnsw.ef_search` in the query path so pgvector searches more of the graph before returning results:
 
 ```sql
+SET LOCAL hnsw.iterative_scan = strict_order;
 SET LOCAL hnsw.ef_search = 100;
 ```
 
 <Note>
-  Tune `ef_search` from measured recall, not from defaults. A value that works
-  for broad searches may be too low once tenant, category, or recency filters
-  are added.
+  Tune iterative scans and `ef_search` from measured recall, not from defaults.
+  A value that works for broad searches may be too low once tenant, category, or
+  recency filters are added.
 </Note>
 
 ## Backups and Replication
