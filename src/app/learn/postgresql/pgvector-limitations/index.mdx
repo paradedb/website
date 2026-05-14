@@ -14,7 +14,9 @@ If you're [running pgvector in production](/learn/postgresql/pgvector-in-product
 
 ## Index Build Time and Memory Cost
 
-HNSW indexes give good recall and query latency, but they are slow to build and expensive to keep resident. A 10M-row table with 1,536-dimensional embeddings can take hours to index on a single core, and the resulting index is typically tens of gigabytes. For acceptable query latency the index needs to live in `shared_buffers` or the OS page cache. Once it spills to disk, p99 latency climbs sharply. [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector) covers the parameters that control build cost and memory footprint.
+HNSW indexes give good recall and query latency when the working set fits in memory, but query performance degrades as the corpus grows beyond cache. Large HNSW graphs involve more random memory access, larger candidate sets, and a longer p99 tail once pages come from disk instead of RAM.
+
+They are also slow to build and expensive to keep resident. A 10M-row table with 1,536-dimensional embeddings can take hours to index on a single core, and the resulting index is typically tens of gigabytes. For acceptable query latency the index needs to live in `shared_buffers` or the OS page cache. Once it spills to disk, p99 latency climbs sharply. [Tuning pgvector Performance](/learn/postgresql/tuning-pgvector) covers the parameters that control build cost and memory footprint.
 
 IVFFlat indexes build faster but require a representative sample for k-means clustering. If you build the index before loading most of your data, the centroids end up misplaced and recall suffers.
 
