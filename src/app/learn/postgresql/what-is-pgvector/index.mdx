@@ -30,7 +30,7 @@ INSERT INTO documents (content, embedding)
 VALUES ('PostgreSQL is a relational database', '[0.12, -0.04, ...]');
 ```
 
-Four distance operators cover the common similarity measures. The right one depends on how your embeddings were trained and normalized:
+Four distance operators cover the common similarity measures. The right one depends on your embedding model and normalization:
 
 - `<=>` for cosine distance, which compares vector direction and is the usual choice for normalized text embeddings
 - `<#>` for negative inner product, which favors larger dot products and is often equivalent to cosine distance when vectors are normalized
@@ -60,7 +60,7 @@ USING ivfflat (embedding vector_cosine_ops)
 WITH (lists = 100);
 ```
 
-IVFFlat must be built after data is loaded, since the clusters depend on the existing vector distribution.
+In pgvector, IVFFlat should be built after data is loaded, since its clusters depend on the existing vector distribution.
 
 **HNSW** builds a multi-layer graph where each node links to nearby neighbors. Searches walk the graph from coarse to fine layers:
 
