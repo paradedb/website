@@ -8,7 +8,7 @@ import Image from "next/image";
 <Title metadata={learnMetadata} />
 <AuthorSection metadata={learnMetadata} />
 
-Modern AI applications produce embeddings: fixed-length arrays of floating-point numbers that represent the semantic content of text, images, or audio. Similar inputs map to vectors that sit near each other in this space, so retrieval becomes a [vector search](/learn/search-concepts/vector-search) problem rather than a keyword match. For example, a vector search for "reset my password" can match a document about "account recovery" even if the exact words do not overlap, unlike [lexical search](/learn/search-concepts/lexical-vs-semantic), which matches terms directly.
+Modern AI applications produce embeddings: fixed-length arrays of floating-point numbers called vectors that represent the semantic content of text, images, or audio. Similar inputs map to vectors that sit near each other in this space, so retrieval becomes a [vector search](/learn/search-concepts/vector-search) problem rather than a keyword match. For example, a vector search for "reset my password" can match a document about "account recovery" even if the exact words do not overlap, unlike [lexical search](/learn/search-concepts/lexical-vs-semantic), which matches terms directly.
 
 [pgvector](https://github.com/pgvector/pgvector) is a PostgreSQL extension that stores and searches those embeddings with a native `vector` data type, distance operators, and approximate nearest neighbor indexes. It does not create embeddings itself; you generate them with an embedding model, then insert the resulting vectors into PostgreSQL.
 
