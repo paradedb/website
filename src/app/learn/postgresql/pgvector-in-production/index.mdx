@@ -26,25 +26,11 @@ Treat every large vector index build like a deployment. Run it during a low-traf
 
 If you use IVFFlat, load representative data before building the index. Its clusters are fixed at build time, so an index built on early or skewed data can underperform even after more rows arrive.
 
-## Version Embeddings Deliberately
+## Plan Embedding Changes
 
-Embedding changes are production migrations. A new model, dimensionality, normalization strategy, or distance operator can make old vectors incomparable with new ones. Store enough metadata to know how each vector was generated:
+Changing how embeddings are generated can change search results even when the SQL stays the same. A new model, dimensionality, normalization strategy, or distance operator may require a new vector column and index.
 
-```sql
-ALTER TABLE documents
-ADD COLUMN embedding_model text;
-```
-
-Backfill the value in batches, set a default for new writes once the application is ready, and add `NOT NULL` only after validation. If a model change alters vector dimensions, add a new vector column instead of overwriting the old one:
-
-```sql
-ALTER TABLE documents
-ADD COLUMN embedding_v2 vector(1536);
-```
-
-For major changes, write the new embeddings alongside the old ones, build the replacement index, validate recall, then route traffic to the new query path. Dropping the old column or index should be the last step, not the first. This gives you a rollback path if retrieval quality drops after the cutover.
-
-If you serve multiple embedding versions at once, use a stable predicate in the query and consider partial indexes or partitioning by version. That keeps each vector index internally consistent and avoids mixing embeddings that should not be compared.
+Treat larger embedding changes as a rollout. Generate a sample of new embeddings, compare recall against the current path, build any replacement index, then cut traffic over only after the results look acceptable. Keep the old embeddings or index until you have a rollback path.
 
 ## Test Recall Before Cutting Over
 
