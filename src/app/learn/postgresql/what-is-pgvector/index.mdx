@@ -20,7 +20,7 @@ CREATE EXTENSION vector;
 CREATE TABLE documents (
     id      bigserial PRIMARY KEY,
     content text,
-    -- A 1536-dimensional embedding, matching OpenAI's text-embedding-3-small
+    -- A 1536-dimensional embedding
     embedding vector(1536)
 );
 
