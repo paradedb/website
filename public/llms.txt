@@ -12,6 +12,10 @@
 
 ## Blog
 
+- [ParadeDB is Officially on Render](https://www.paradedb.com/blog/render)
+- [What We Think About When We Think About Benchmarking](https://www.paradedb.com/blog/what-we-think-about-when-we-think-about-benchmarking)
+- [ParadeDB is Officially on Railway](https://www.paradedb.com/blog/railway)
+- [A Conversation with Paul Masurel, Creator of Tantivy](https://www.paradedb.com/blog/tantivy-interview)
 - [How We Optimized Top K in Postgres](https://www.paradedb.com/blog/optimizing-top-k)
 - [Retrieve and Rerank: Personalized Search Without Leaving Postgres](https://www.paradedb.com/blog/personalized-search-in-postgresql)
 - [Hybrid Search in PostgreSQL: The Missing Manual](https://www.paradedb.com/blog/hybrid-search-in-postgresql-the-missing-manual)
@@ -53,7 +57,9 @@
 - [What is Vector Search?](https://www.paradedb.com/learn/search-concepts/vector-search)
 - [What is Hybrid Search?](https://www.paradedb.com/learn/search-concepts/hybrid-search)
 - [What is Faceted Search?](https://www.paradedb.com/learn/search-concepts/faceting)
+- [What is Block WAND?](https://www.paradedb.com/learn/search-concepts/block-wand)
 - [Full-Text Search in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/full-text-search)
 - [Implementing BM25 in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/bm25)
+- [What is pgrx?](https://www.paradedb.com/learn/postgresql/what-is-pgrx)
 - [What is pgvector?](https://www.paradedb.com/learn/postgresql/what-is-pgvector)
 - [Introduction to Tantivy](https://www.paradedb.com/learn/tantivy/introduction)
