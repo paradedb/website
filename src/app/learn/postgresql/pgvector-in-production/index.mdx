@@ -51,7 +51,8 @@ Vector queries compete with OLTP queries for CPU, memory, I/O, and worker slots.
 
 Common isolation patterns are:
 
-- Use a read replica for retrieval queries that can tolerate replica lag.
+- Use a physical read replica when you want low-lag retrieval reads but can tolerate vector queries sharing WAL and write pressure from the primary.
+- Use logical replication when you need more workload decoupling and can tolerate more lag and operational complexity.
 - Partition large multi-tenant tables so selective queries hit smaller indexes.
 - Keep ingestion and re-embedding jobs on controlled schedules.
 - Set statement timeouts for user-facing vector queries.
