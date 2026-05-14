@@ -147,4 +147,4 @@ Look for an `Index Scan` on the vector index. A `Seq Scan` means the planner ign
 
 Most pgvector performance comes from three decisions: use HNSW unless you have a reason not to, tune `ef_search` (or `probes`) to the recall you need, and give the index enough memory to stay resident. Everything else is refinement.
 
-For the operational side of running these indexes at scale, see [pgvector in Production](/learn/postgresql/pgvector-in-production), and for the failure modes that no amount of tuning will fix, see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
+For the failure modes that no amount of tuning will fix, see [pgvector Limitations](/learn/postgresql/pgvector-limitations).
