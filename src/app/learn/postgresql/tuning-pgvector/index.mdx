@@ -80,7 +80,7 @@ SELECT phase, blocks_done, blocks_total
 FROM pg_stat_progress_create_index;
 ```
 
-At query time, performance depends on the index staying in cache. Size `shared_buffers` and OS cache so the working set of the HNSW graph stays resident. A vector index that spills to disk has a long latency tail no parameter will fix. See [Tuning PostgreSQL for Performance](/learn/postgresql/tuning-postgresql) for the general memory configuration this builds on.
+At query time, performance depends on the index staying in cache. Size `shared_buffers` and OS cache so the working set of the HNSW graph stays resident. A vector index that spills to disk has a long latency tail no parameter will fix.
 
 ## Tuning Filtered Searches
 
