@@ -10,6 +10,8 @@ import Image from "next/image";
 
 Modern AI applications produce embeddings: fixed-length arrays of floating-point numbers that represent the semantic content of text, images, or audio. Similar inputs map to vectors that sit near each other in this space, so retrieval becomes a [vector search](/learn/search-concepts/vector-search) problem rather than a keyword match. [pgvector](https://github.com/pgvector/pgvector) is a PostgreSQL extension that stores and searches those embeddings with a native `vector` data type, distance operators, and approximate nearest neighbor indexes. It does not create embeddings itself; you generate them with an embedding model, then insert the resulting vectors into PostgreSQL.
 
+Use pgvector when your vectors need to live next to relational data: users, permissions, tenants, products, documents, timestamps, or workflow state. It is a good fit when you want semantic search inside an application that already uses PostgreSQL, especially if you need SQL filters, joins, transactions, backups, and access control around the same data. A separate vector database is more likely to make sense when vector search is the main workload, the corpus is very large, or you need specialized retrieval features outside PostgreSQL.
+
 ## How pgvector Works
 
 pgvector registers a new column type with PostgreSQL. You declare the dimensionality up front, insert vectors as arrays, and query them with distance operators:
@@ -28,12 +30,12 @@ INSERT INTO documents (content, embedding)
 VALUES ('PostgreSQL is a relational database', '[0.12, -0.04, ...]');
 ```
 
-Four distance operators cover the common similarity measures:
+Four distance operators cover the common similarity measures. The right one depends on how your embeddings were trained and normalized:
 
-- `<->` for L2 (Euclidean) distance
-- `<#>` for negative inner product
-- `<=>` for cosine distance
-- `<+>` for L1 (taxicab) distance
+- `<=>` for cosine distance, which compares vector direction and is the usual choice for normalized text embeddings
+- `<#>` for negative inner product, which favors larger dot products and is often equivalent to cosine distance when vectors are normalized
+- `<->` for L2 (Euclidean) distance, which compares raw geometric distance and is useful when magnitude carries meaning
+- `<+>` for L1 (taxicab) distance, which sums absolute coordinate differences and is less common for modern text embeddings
 
 A nearest-neighbor query is an `ORDER BY` on one of these operators with a `LIMIT`:
 
@@ -44,7 +46,7 @@ ORDER BY embedding <=> '[0.10, -0.02, ...]'::vector  -- input embedding
 LIMIT 5;
 ```
 
-Because the result is just rows from a regular table, you can combine vector search with `WHERE` filters, joins, transactions, and any other SQL feature in the same query.
+Because the result is just rows from a regular table, you can combine vector search with `WHERE` filters, joins, transactions, and any other SQL feature in the same query. The operator in the query must match the operator class on the index, or PostgreSQL cannot use that index for nearest-neighbor search.
 
 ## Indexes for Approximate Nearest Neighbor Search
 
