@@ -87,15 +87,17 @@ At query time, performance depends on the index staying in cache. Size `shared_b
 Filtered vector searches may need to scan more candidates after PostgreSQL applies `WHERE` predicates. Start with the query-time recall knobs, then add scan limits only when you need tighter control:
 
 ```sql
+SET hnsw.iterative_scan = strict_order;
 SET hnsw.ef_search = 100;
 SET hnsw.max_scan_tuples = 20000;
 SET hnsw.scan_mem_multiplier = 2;
 
+SET ivfflat.iterative_scan = relaxed_order;
 SET ivfflat.probes = 10;
 SET ivfflat.max_probes = 100;
 ```
 
-Use these settings with measured recall. Raising them can recover missing filtered results, but it also increases CPU, memory, and latency.
+Use these settings with measured recall. Iterative scans can recover missing filtered results by scanning more of the index, but they also increase CPU, memory, and latency. HNSW supports `strict_order` and `relaxed_order`; IVFFlat supports `relaxed_order`.
 
 ## Choosing the Distance Operator
 
