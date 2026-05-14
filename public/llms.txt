@@ -61,4 +61,5 @@
 - [Full-Text Search in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/full-text-search)
 - [Implementing BM25 in PostgreSQL](https://www.paradedb.com/learn/search-in-postgresql/bm25)
 - [What is pgrx?](https://www.paradedb.com/learn/postgresql/what-is-pgrx)
+- [What is pgvector?](https://www.paradedb.com/learn/postgresql/what-is-pgvector)
 - [Introduction to Tantivy](https://www.paradedb.com/learn/tantivy/introduction)
