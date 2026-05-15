@@ -196,7 +196,8 @@ export interface ResourceSection {
 const SECTION_ORDER: Record<string, number> = {
   "Search Concepts": 1,
   "Search In PostgreSQL": 2,
-  Tantivy: 3,
+  PostgreSQL: 3,
+  Tantivy: 4,
 };
 
 export async function getResourcesBySection(): Promise<ResourceSection[]> {
