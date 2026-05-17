@@ -245,9 +245,10 @@ export function Navigation() {
               <Link
                 href={github.REPO}
                 target="_blank"
+                aria-label="GitHub repository"
                 className={cx(
                   "items-center justify-center space-x-2 transition-all duration-300",
-                  stars && !open ? "flex opacity-100" : "hidden opacity-0",
+                  open ? "hidden opacity-0" : "flex opacity-100",
                 )}
               >
                 <RiGithubFill
@@ -261,11 +262,13 @@ export function Navigation() {
                 />
                 <div
                   className={cx(
-                    "text-sm font-medium transition-colors",
+                    "text-sm font-medium transition-opacity duration-300",
                     isHomePage && !open
                       ? "text-white"
                       : "text-slate-900 dark:text-slate-100",
+                    stars ? "opacity-100" : "opacity-0",
                   )}
+                  aria-hidden={stars ? undefined : true}
                 >
                   {formatStarCount(stars ?? 0)}
                 </div>
