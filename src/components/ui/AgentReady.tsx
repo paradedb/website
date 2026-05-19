@@ -11,6 +11,7 @@ import {
   RiOpenaiFill,
 } from "@remixicon/react";
 import { Badge } from "./Badge";
+import { JavaScriptIcon } from "./icons/JavaScriptIcon";
 import { PythonIcon } from "./icons/PythonIcon";
 import { RubyIcon } from "./icons/RubyIcon";
 
@@ -132,6 +133,11 @@ const Integrations = [
 
 const Frameworks = [
   {
+    name: "JavaScript",
+    className: "text-slate-900 dark:text-slate-100",
+    icon: <JavaScriptIcon className="size-[1.45rem]" />,
+  },
+  {
     name: "Python",
     className: "text-slate-900 dark:text-slate-100",
     icon: <PythonIcon className="size-[1.6rem]" />,
@@ -207,13 +213,14 @@ const CloudPlatforms = [
 function GridBackground({
   cols,
   cellWidth,
+  skipCount,
 }: {
   cols: number;
   cellWidth: string;
+  skipCount: number;
 }) {
   const totalCells = cols * 5;
   const skipStart = Math.floor(totalCells / 2) - 1;
-  const skipCount = cols > 6 ? 3 : 2; // 3 items for Cloud Platforms, 2 for Frameworks
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none [mask-image:radial-gradient(ellipse_60%_50%_at_center,black_10%,transparent_70%)] z-0">
@@ -332,7 +339,11 @@ export default function AgentReady() {
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
                           <div className="relative flex items-center justify-center w-[10.5rem] h-[3rem] mx-auto">
-                            <GridBackground cols={7} cellWidth="3.5rem" />
+                            <GridBackground
+                              cols={7}
+                              cellWidth="3.5rem"
+                              skipCount={CloudPlatforms.length}
+                            />
                             <CornerMarkers />
 
                             {/* Logos */}
@@ -469,8 +480,12 @@ export default function AgentReady() {
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
-                          <div className="relative flex items-center justify-center w-[7rem] h-[3rem] mx-auto">
-                            <GridBackground cols={6} cellWidth="3.5rem" />
+                          <div className="relative flex items-center justify-center w-[10.5rem] h-[3rem] mx-auto">
+                            <GridBackground
+                              cols={7}
+                              cellWidth="3.5rem"
+                              skipCount={Frameworks.length}
+                            />
                             <CornerMarkers />
 
                             {/* Logos */}
@@ -513,7 +528,7 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Query ParadeDB from your favorite programming
-                            language. Supports Django, SQLAlchemy, and
+                            language. Supports Drizzle, Django, SQLAlchemy, and
                             ActiveRecord, with more coming soon.
                           </p>
                           <div className="mt-auto flex flex-col gap-2">
