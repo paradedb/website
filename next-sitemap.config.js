@@ -101,6 +101,8 @@ module.exports = {
     "/404",
     "/500",
     "/feed.xml",
+    "/preview",
+    "/preview/*",
     "*/opengraph-image.png",
     "*/twitter-image.png",
   ],
