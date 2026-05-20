@@ -31,7 +31,7 @@ export const landings = {
     key: "variant-b",
     name: "Variant B",
     description:
-      "Example variant — social proof moved directly under the hero.",
+      "Example variant — condensed, proof-led page: quotes and community under the hero, straight to pricing.",
     Component: VariantBLanding,
   },
 } satisfies Record<string, Landing>;
