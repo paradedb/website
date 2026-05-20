@@ -16,6 +16,7 @@ import { Button } from "../Button";
 import { ThemeToggle } from "./ThemeToggle";
 import { usePathname } from "next/navigation";
 import { cx } from "@/lib/utils";
+import { isLandingRoute } from "@/lib/landing";
 
 const navigation = {
   company: [
@@ -51,7 +52,8 @@ const navigation = {
 
 export default function Footer() {
   const pathname = usePathname();
-  const isHomePage = pathname === "/";
+  // Landing routes ("/" and /preview/*) get the indigo footer treatment.
+  const isHomePage = isLandingRoute(pathname);
 
   return (
     <div

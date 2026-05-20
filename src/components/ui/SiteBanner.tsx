@@ -3,10 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { RiArrowRightLine } from "@remixicon/react";
+import { isLandingRoute } from "@/lib/landing";
 
 export function SiteBanner() {
   const pathname = usePathname();
-  if (pathname !== "/") return null;
+  if (!isLandingRoute(pathname)) return null;
   return (
     <div className="relative z-50 w-full bg-indigo-600">
       <Link

@@ -9,6 +9,7 @@ import {
   RiMenuLine,
 } from "@remixicon/react";
 import { cx } from "@/lib/utils";
+import { isLandingRoute } from "@/lib/landing";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React from "react";
@@ -28,7 +29,8 @@ export function Navigation() {
   const [stars, setStars] = React.useState<number | null>(null);
   const [open, setOpen] = React.useState(false);
   const pathname = usePathname();
-  const isHomePage = pathname === siteConfig.baseLinks.home;
+  // Landing routes ("/" and /preview/*) get the hero-overlay navbar treatment.
+  const isHomePage = isLandingRoute(pathname);
 
   React.useEffect(() => {
     const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)");
