@@ -10,7 +10,7 @@ import CopyToClipboard from "@/components/CopyToClipboard";
 
 const installCommand = `curl -fsSL https://paradedb.com/install.sh | sh`;
 
-export default async function HeroV3() {
+export default async function Hero() {
   return (
     <div className="w-full bg-indigo-600 relative opacity-0 animate-hero-wrapper">
       {/* Alpha overlay for dark mode */}
