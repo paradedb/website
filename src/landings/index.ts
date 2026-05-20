@@ -40,8 +40,8 @@ export type LandingKey = keyof typeof landings;
 
 /**
  * ┌─────────────────────────────────────────────────────────────────────┐
- * │  The landing page served at "/". Change this one value to swap the    │
- * │  live homepage, then commit and redeploy.                             │
+ * │  The landing page served at "/". Change this one value to swap the  │
+ * │  live homepage, then commit and redeploy.                           │
  * └─────────────────────────────────────────────────────────────────────┘
  */
 export const ACTIVE_LANDING: LandingKey = "default";
