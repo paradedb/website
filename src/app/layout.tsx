@@ -82,6 +82,12 @@ export default function RootLayout({
           href="/llms.txt"
           title="ParadeDB llms.txt"
         />
+        <link
+          rel="llms-full"
+          type="text/markdown"
+          href="/llms-full.txt"
+          title="ParadeDB llms-full.txt"
+        />
         <JsonLd
           data={[
             organizationSchema(),

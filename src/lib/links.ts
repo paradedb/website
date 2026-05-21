@@ -22,6 +22,7 @@ export const legal = {
 };
 
 export const github = {
+  ORG: "https://github.com/paradedb",
   REPO: "https://github.com/paradedb/paradedb",
   API: "https://api.github.com/repos/paradedb/paradedb",
 };

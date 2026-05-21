@@ -40,7 +40,8 @@ const nextConfig = {
           {
             key: "Link",
             value:
-              '</llms.txt>; rel="llms"; type="text/markdown"; title="ParadeDB llms.txt"',
+              '</llms.txt>; rel="llms"; type="text/markdown"; title="ParadeDB llms.txt", ' +
+              '</llms-full.txt>; rel="llms-full"; type="text/markdown"; title="ParadeDB llms-full.txt"',
           },
         ],
       },
