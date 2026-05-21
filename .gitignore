@@ -46,3 +46,6 @@ next-env.d.ts
 /public/llms.txt
 /public/llms-full.txt
 /public/**/*.md
+
+# MCP content index (generated at build by scripts/generate-content-index.js)
+/src/lib/content-index.json
