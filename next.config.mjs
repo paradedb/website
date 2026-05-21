@@ -30,6 +30,23 @@ const nextConfig = {
     ];
   },
 
+  async headers() {
+    return [
+      {
+        // Advertise the LLM-friendly site index on every response so agents
+        // can discover it without guessing the /llms.txt path.
+        source: "/:path*",
+        headers: [
+          {
+            key: "Link",
+            value:
+              '</llms.txt>; rel="llms"; type="text/markdown"; title="ParadeDB llms.txt"',
+          },
+        ],
+      },
+    ];
+  },
+
   async redirects() {
     return [
       // --- host-based redirects (put first) ---
