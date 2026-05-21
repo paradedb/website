@@ -108,6 +108,27 @@ module.exports = {
   ],
   robotsTxtOptions: {
     additionalSitemaps: ["https://docs.paradedb.com/sitemap.xml"],
+    // Explicitly welcome reputable AI/agent crawlers. The wildcard policy
+    // already allows everyone; naming these is a discoverability signal that
+    // the site is intentionally open to agents.
+    policies: [
+      { userAgent: "*", allow: "/" },
+      { userAgent: "GPTBot", allow: "/" },
+      { userAgent: "OAI-SearchBot", allow: "/" },
+      { userAgent: "ChatGPT-User", allow: "/" },
+      { userAgent: "ClaudeBot", allow: "/" },
+      { userAgent: "Claude-User", allow: "/" },
+      { userAgent: "anthropic-ai", allow: "/" },
+      { userAgent: "PerplexityBot", allow: "/" },
+      { userAgent: "Perplexity-User", allow: "/" },
+      { userAgent: "Google-Extended", allow: "/" },
+      { userAgent: "Applebot-Extended", allow: "/" },
+      { userAgent: "Amazonbot", allow: "/" },
+      { userAgent: "Meta-ExternalAgent", allow: "/" },
+      { userAgent: "DuckAssistBot", allow: "/" },
+      { userAgent: "cohere-ai", allow: "/" },
+      { userAgent: "CCBot", allow: "/" },
+    ],
   },
   /**
    * Per-path overrides for priority, changefreq, and lastmod.

@@ -1,0 +1,5 @@
+Contact: mailto:security@paradedb.com
+Policy: https://github.com/paradedb/paradedb/blob/main/SECURITY.md
+Canonical: https://www.paradedb.com/.well-known/security.txt
+Preferred-Languages: en
+Expires: 2027-05-21T00:00:00.000Z
