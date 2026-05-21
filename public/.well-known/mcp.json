@@ -1,0 +1,32 @@
+{
+  "name": "paradedb",
+  "description": "MCP server for ParadeDB's blog posts, customer stories, and learn articles. Search and read ParadeDB's content for full-text search and analytics in Postgres.",
+  "version": "1.0.0",
+  "servers": [
+    {
+      "url": "https://www.paradedb.com/mcp",
+      "transport": "streamable-http",
+      "authentication": "none"
+    }
+  ],
+  "tools": [
+    {
+      "name": "search_content",
+      "description": "Keyword-search ParadeDB's blog, customer stories, and learn articles."
+    },
+    {
+      "name": "get_page",
+      "description": "Fetch the full Markdown of a ParadeDB page by path or slug."
+    },
+    {
+      "name": "list_content",
+      "description": "List all available ParadeDB content with titles and URLs."
+    },
+    {
+      "name": "get_product_info",
+      "description": "Get a structured overview of ParadeDB and key links."
+    }
+  ],
+  "documentation": "https://docs.paradedb.com",
+  "contact": "mailto:hello@paradedb.com"
+}

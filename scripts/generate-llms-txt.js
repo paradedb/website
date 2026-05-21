@@ -18,8 +18,10 @@ const HEADER = `# ParadeDB
 - [RSS Feed](${SITE_URL}/feed.xml)
 - [Content for LLMs (llms.txt)](${SITE_URL}/llms.txt)
 - [Full content for LLMs (llms-full.txt)](${SITE_URL}/llms-full.txt)
+- [MCP Server (streamable HTTP)](${SITE_URL}/mcp)
 
 > Append \`.md\` to any blog, customer, or learn URL (e.g. \`${SITE_URL}/blog/<slug>.md\`) to fetch its Markdown source.
+> An MCP server is available at \`${SITE_URL}/mcp\` (streamable HTTP) with tools to search and read this content.
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts

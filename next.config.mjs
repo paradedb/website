@@ -41,7 +41,9 @@ const nextConfig = {
             key: "Link",
             value:
               '</llms.txt>; rel="llms"; type="text/markdown"; title="ParadeDB llms.txt", ' +
-              '</llms-full.txt>; rel="llms-full"; type="text/markdown"; title="ParadeDB llms-full.txt"',
+              '</llms-full.txt>; rel="llms-full"; type="text/markdown"; title="ParadeDB llms-full.txt", ' +
+              '</mcp>; rel="mcp-server"; type="application/json"; title="ParadeDB MCP server", ' +
+              '</.well-known/mcp.json>; rel="mcp-manifest"; type="application/json"; title="ParadeDB MCP manifest"',
           },
         ],
       },
