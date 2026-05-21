@@ -1,7 +1,12 @@
 import { existsSync, readFileSync } from "fs";
 import { join, sep } from "path";
 import { siteConfig } from "@/app/siteConfig";
-import { github, social } from "@/lib/links";
+import { email, github, social } from "@/lib/links";
+
+/** Strip the `mailto:` prefix from a links.ts email entry. */
+function mailto(value: string) {
+  return value.replace(/^mailto:/, "");
+}
 
 /**
  * Stable @id values let separate schema.org nodes reference one another
@@ -26,7 +31,20 @@ export function organizationSchema() {
       url: ORG_LOGO,
     },
     description: siteConfig.description,
-    sameAs: [github.REPO, social.TWITTER, social.LINKEDIN],
+    email: mailto(email.HELLO),
+    contactPoint: [
+      {
+        "@type": "ContactPoint",
+        contactType: "customer support",
+        email: mailto(email.SUPPORT),
+      },
+      {
+        "@type": "ContactPoint",
+        contactType: "sales",
+        email: mailto(email.SALES),
+      },
+    ],
+    sameAs: [github.ORG, social.TWITTER, social.LINKEDIN],
   };
 }
 
