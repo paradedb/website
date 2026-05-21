@@ -16,6 +16,10 @@ const HEADER = `# ParadeDB
 - [Learn](${SITE_URL}/learn)
 - [Sitemap](${SITE_URL}/sitemap.xml)
 - [RSS Feed](${SITE_URL}/feed.xml)
+- [Content for LLMs (llms.txt)](${SITE_URL}/llms.txt)
+- [Full content for LLMs (llms-full.txt)](${SITE_URL}/llms-full.txt)
+
+> Append \`.md\` to any blog, customer, or learn URL (e.g. \`${SITE_URL}/blog/<slug>.md\`) to fetch its Markdown source.
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts
@@ -53,9 +57,7 @@ function listDirs(dir) {
 function collectFlat(contentDir, urlPrefix) {
   const items = [];
   for (const slug of listDirs(contentDir)) {
-    const metadata = readMetadata(
-      path.join(contentDir, slug, "metadata.json"),
-    );
+    const metadata = readMetadata(path.join(contentDir, slug, "metadata.json"));
     if (!metadata?.title) continue;
     items.push({
       title: metadata.title,

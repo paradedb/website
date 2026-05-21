@@ -41,4 +41,8 @@ next-env.d.ts
 # Sitemaps
 /public/robots.txt
 /public/sitemap*.xml
+
+# LLM / agent content (generated at build by scripts/generate-markdown.js)
 /public/llms.txt
+/public/llms-full.txt
+/public/**/*.md
