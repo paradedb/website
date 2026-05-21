@@ -14,9 +14,10 @@ const HEADER = `# ParadeDB
 - [Homepage](${SITE_URL})
 - [Blog](${SITE_URL}/blog)
 - [Learn](${SITE_URL}/learn)
-- [Full content for LLMs (llms-full.txt)](${SITE_URL}/llms-full.txt)
 - [Sitemap](${SITE_URL}/sitemap.xml)
 - [RSS Feed](${SITE_URL}/feed.xml)
+- [Content for LLMs (llms.txt)](${SITE_URL}/llms.txt)
+- [Full content for LLMs (llms-full.txt)](${SITE_URL}/llms-full.txt)
 
 > Append \`.md\` to any blog, customer, or learn URL (e.g. \`${SITE_URL}/blog/<slug>.md\`) to fetch its Markdown source.
 `;
