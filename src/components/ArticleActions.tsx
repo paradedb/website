@@ -55,6 +55,17 @@ export default function ArticleActions({
           <FocusMode className={linkClass} />
         </li>
         <li>
+          <a
+            href={mdPath}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+          >
+            <RiMarkdownLine size={16} className="shrink-0" />
+            View as Markdown
+          </a>
+        </li>
+        <li>
           <button
             onClick={handleCopyMarkdown}
             className={`${linkClass} w-full`}
@@ -66,17 +77,6 @@ export default function ArticleActions({
             )}
             {copied ? "Copied!" : "Copy Markdown"}
           </button>
-        </li>
-        <li>
-          <a
-            href={mdPath}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={linkClass}
-          >
-            <RiMarkdownLine size={16} className="shrink-0" />
-            View as Markdown
-          </a>
         </li>
         <li>
           <a
