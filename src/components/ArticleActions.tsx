@@ -4,12 +4,14 @@ import { useState } from "react";
 import {
   RiFileCopyLine,
   RiCheckLine,
+  RiMarkdownLine,
   RiOpenaiFill,
   RiClaudeFill,
   RiPerplexityFill,
   RiGithubFill,
 } from "@remixicon/react";
 import FocusMode from "@/components/FocusMode";
+import { siteConfig } from "@/app/siteConfig";
 
 interface ArticleActionsProps {
   basePath: string;
@@ -22,15 +24,18 @@ export default function ArticleActions({
 }: ArticleActionsProps) {
   const [copied, setCopied] = useState(false);
 
-  const rawUrl = `https://raw.githubusercontent.com/paradedb/website/main/src/app/${basePath}/${slug}/index.mdx`;
+  // Clean, generated Markdown (see scripts/generate-markdown.js). Same-origin
+  // relative path for fetching; absolute URL for handing to external LLMs.
+  const mdPath = `/${basePath}/${slug}.md`;
+  const mdUrl = `${siteConfig.url}${mdPath}`;
   const editUrl = `https://github.com/paradedb/website/edit/main/src/app/${basePath}/${slug}/index.mdx`;
   const prompt = encodeURIComponent(
-    `Read from ${rawUrl} so I can ask questions about it.`,
+    `Read from ${mdUrl} so I can ask questions about it.`,
   );
 
   const handleCopyMarkdown = async () => {
     try {
-      const res = await fetch(rawUrl);
+      const res = await fetch(mdPath);
       const text = await res.text();
       await navigator.clipboard.writeText(text);
       setCopied(true);
@@ -50,6 +55,17 @@ export default function ArticleActions({
           <FocusMode className={linkClass} />
         </li>
         <li>
+          <a
+            href={mdPath}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={linkClass}
+          >
+            <RiMarkdownLine size={16} className="shrink-0" />
+            View as Markdown
+          </a>
+        </li>
+        <li>
           <button
             onClick={handleCopyMarkdown}
             className={`${linkClass} w-full`}
@@ -59,7 +75,7 @@ export default function ArticleActions({
             ) : (
               <RiFileCopyLine size={16} className="shrink-0" />
             )}
-            {copied ? "Copied!" : "Copy markdown"}
+            {copied ? "Copied!" : "Copy Markdown"}
           </button>
         </li>
         <li>
