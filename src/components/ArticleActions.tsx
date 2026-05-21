@@ -64,7 +64,7 @@ export default function ArticleActions({
             ) : (
               <RiFileCopyLine size={16} className="shrink-0" />
             )}
-            {copied ? "Copied!" : "Copy markdown"}
+            {copied ? "Copied!" : "Copy Markdown"}
           </button>
         </li>
         <li>
