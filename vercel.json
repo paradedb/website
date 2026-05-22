@@ -1,7 +1,6 @@
 {
   "headers": [
     {
-      "//": "Article routes vary on Accept: src/proxy.ts serves Markdown when the client prefers it. Set at the Vercel edge layer because Next's App Router RSC pipeline owns (and overrides) Vary at the framework level. Includes the RSC Vary fragments so prefetch/streaming still works.",
       "source": "/:section(blog|customers|learn)/:path*",
       "headers": [
         {
