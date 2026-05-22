@@ -46,10 +46,6 @@ export function proxy(req: NextRequest) {
   return NextResponse.next();
 }
 
-// Vary: Accept is set in vercel.json. Next's App Router RSC pipeline owns the
-// Vary header on dynamic routes and strips anything set from middleware or
-// next.config.mjs headers(), so the only place it survives is the edge layer.
-
 export const config = {
   matcher: ["/blog/:path*", "/customers/:path*", "/learn/:path*"],
 };
