@@ -1,0 +1,245 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { ZoomImage } from "@/components/mdx/ZoomImage";
+import { PerformanceTable } from "@/components/mdx/PerformanceTable";
+
+import roundOneThroughput from "./images/round_one_throughput.png";
+import roundTwoThroughput from "./images/round_two_throughput.png";
+import roundThreeCPU from "./images/round_three_cpu.png";
+import roundThreeMemory from "./images/round_three_memory.png";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+
+We [previously](/blog/what-we-think-about-when-we-think-about-benchmarking) wrote about choosing to build a flexible [benchmarker](https://github.com/paradedb/benchmarker) in isolation before we created any workloads. This post walks through a benchmark using the tool, showing how flexibility can make a difference. We ran a ParadeDB vs Postgres full text search TopK benchmark over a million rows of Hacker News data, the type of benchmark teams might use to select their technology stack. The catch is we ran it with three different methodologies.
+
+With a fixed-duration steady state benchmark using one plausible search term, ParadeDB and Postgres FTS look close. With a rotating term mix, ParadeDB stays in the same performance range while Postgres FTS drops 29x, from 3,290 to 115 QPS. With scheduled arrivals at 50 QPS (well under the FTS capacity), both complete the offered rate, but Postgres FTS is roughly 44x slower at P90 and 47x slower at P99 while consuming substantially more CPU and memory.
+
+The first results were not wrong, and with single-use benchmarking tooling it would have been easy to stop there and call it a day.
+
+## Benchmarker
+
+Benchmarker is a [k6](https://grafana.com/docs/k6/latest/) extension that adds backend drivers, automatic latency and throughput metrics, Docker container stats, and a real-time dashboard. You write the SQL or API calls; it handles the timing and visualization. The query body stays fixed while we swap the term source or scenario executor in a few lines, so the three runs below are not three unrelated benchmarks but one workload shape driven three ways.
+
+When you're running a benchmark there are several exectution strategies you can use, the most common being closed-loop and open-loop (Planetscale have a great article on benchmarking terminology and mechanics). In a closed-loop run, each virtual user sends a query, waits for the response, and then sends the next one, so throughput is an outcome of how quickly the database answers. In k6, Benchmarker uses the `constant-vus` executor for that shape.
+
+In an open-loop run, the runner starts queries on a schedule, such as 50 QPS, so the offered rate is fixed and latency shows up as slower completions or missed iterations. Benchmarker uses k6's `constant-arrival-rate` executor for this shape, with `maxVUs` capping how many workers can run scheduled queries at once. Closed-loop is a great way of asking 'can you hhandle this level of throughput', allowing analysis of latency banding at each rate.
+
+The concrete environment is in [The Setup](#the-setup), and the commands to reproduce are in [Try It Yourself](#try-it-yourself).
+
+## The Setup
+
+Only a few setup details matter before the results. The full commands are in [Try It Yourself](#try-it-yourself).
+
+Both backends run in their own Docker containers, each with four cores and eight gigabytes of memory. We restart the containers^[1] between passes so each database process starts cleanly, rather than carrying connection state or backend-local state from the previous run.
+
+The comparison is [ParadeDB](https://github.com/paradedb/paradedb)'s BM25 index against Postgres' built-in `tsvector` + GIN full-text search. These are different ranking models over different index implementations, but both are ways developers can run TopK relevance search inside Postgres. The single-term pass uses `inverted` as the search term, which matches 390 documents in this dataset.
+
+The data is a (tiny) cut-down slice[^2] of the Hacker News archive: one million rows in a single `hn_items` table, keeping only the `id` and `text` of each post. ParadeDB indexes `text` directly with BM25:
+
+```sql
+CREATE TABLE hn_items (
+  id BIGINT PRIMARY KEY,
+  text TEXT
+);
+
+CREATE INDEX hn_items_bm25_idx ON hn_items
+USING bm25 (id, (text::pdb.unicode_words('stopwords_language=english')))
+WITH (key_field = id);
+```
+
+Postgres uses the same base fields, but pre-tokenizes `text` into a stored generated `tsv` column and indexes that value with GIN:
+
+```sql
+CREATE TABLE hn_items (
+  id BIGINT PRIMARY KEY,
+  text TEXT,
+  tsv tsvector GENERATED ALWAYS AS (
+    to_tsvector('english', coalesce(text, ''))
+  ) STORED
+);
+
+CREATE INDEX hn_items_tsv_idx ON hn_items USING gin(tsv);
+```
+
+Both are configured for English text processing, but the ranking and TopK execution paths are different. The benchmark keeps the TopK shape fixed and uses each backend's native syntax:
+
+```sql
+-- ParadeDB BM25
+SELECT id, text, pdb.score(id) AS score
+FROM hn_items
+WHERE text ||| $1
+ORDER BY score DESC
+LIMIT 10;
+
+-- Postgres FTS
+SELECT id, text, ts_rank(tsv, plainto_tsquery('english', $1)) AS score
+FROM hn_items
+WHERE tsv @@ plainto_tsquery('english', $1)
+ORDER BY score DESC
+LIMIT 10;
+```
+
+The query shape does not change between passes. In the first pass, `term` is the literal string `"inverted"`. In the second and third, it cycles through a list of forty real search terms[^3] that match anywhere from a few hundred to tens of thousands of rows.
+
+With the data, indexes, and query shape fixed, we can start with the simplest credible run and then make the workload harder one step at a time.
+
+## Pass 1: One Term, Sustained
+
+In the first pass, we keep the setup simple: sixteen virtual users per backend, four per available core, looping the same query for thirty seconds under `constant-vus`. Every query searches for `inverted`, and the measured rate is whatever the database can serve under those waiting callers, not a rate we choose up front.
+
+Running this for thirty seconds against each backend produces:
+
+<PerformanceTable
+  columns={["Backend", "QPS", "Min", "P50", "P90", "P99"]}
+  rows={[
+    { label: "ParadeDB", color: "#7C3AED", values: ["3,646", "1.06ms", "1.33ms", "2.04ms", "68.6ms"] },
+    { label: "Postgres FTS", color: "#3B82F6", values: ["3,290", "1.11ms", "1.49ms", "2.39ms", "68.9ms"] },
+  ]}
+/>
+
+<ZoomImage
+  src={roundOneThroughput}
+  alt="Benchmarker dashboard view of throughput over the 30-second closed-loop run with 16 VUs, both backends searching the term 'inverted'. Both lines sit around 3,500 QPS for the entire window, with ParadeDB very slightly above Postgres FTS"
+  caption="Pass 1 throughput over time. ParadeDB sustains roughly 3,650 QPS; Postgres FTS sustains roughly 3,300. The lines barely separate."
+/>
+
+The two backends land close to each other, with ParadeDB sustaining about 3,650 queries per second under sixteen concurrent callers and Postgres FTS sustaining about 3,300. Median and P90 latencies move together, and the P99 tails are essentially identical at around 69ms.
+
+That makes Pass 1 useful, but also easy to overread. If you stopped here with "Postgres' built-in full-text search and ParadeDB are within ten percent of each other on this TopK workload," the sentence would be true as far as the run is concerned, and most readers would not have a reason to object.
+
+The missing question is whether `inverted` is doing too much of the work for the conclusion. Real applications search for many different terms, and the cost of a TopK query can depend heavily on how many documents the term matches. `inverted` is a real term in the dataset, but it only matches 390 documents. A workload that also includes terms matching thousands or tens of thousands of documents is asking a different question.
+
+## Pass 2: Term Rotation, Sustained
+
+The second pass preserves the closed-loop setup from Pass 1, including concurrency and duration. The deliberate change is that `term` stops being hardcoded and starts cycling through forty real search terms. Luckily benchmarker makes this easy with a term set.
+
+The forty terms match anywhere from a few hundred to tens of thousands of rows, from `serverless` (272) to `google` (27,336). A condensed view of the distribution:
+
+```
+27,336  google           <- most matches
+23,256  source
+19,543  apple
+15,329  security
+13,032  performance
+ ... 30 more terms ...
+   447  golang
+   444  layoffs
+   389  graphql
+   272  serverless       <- fewest matches
+
+```
+
+The runner walks that list sequentially and wraps back to the beginning. Over the run, each backend sees the same ordered mix of cheap and expensive terms. Swapping the literal term for the rotation gives:
+
+<PerformanceTable
+  columns={["Backend", "QPS", "Min", "P50", "P90", "P99"]}
+  rows={[
+    { label: "ParadeDB", color: "#7C3AED", values: ["3,373", "1.09ms", "1.44ms", "2.30ms", "68.9ms"] },
+    { label: "Postgres FTS", color: "#3B82F6", values: ["115", "2.03ms", "109ms", "296ms", "490ms"] },
+  ]}
+/>
+
+<ZoomImage
+  src={roundTwoThroughput}
+  alt="Benchmarker dashboard view of throughput over the 30-second closed-loop run with 16 VUs rotating through 40 terms. ParadeDB stays around 3,400 QPS, Postgres FTS hugs the bottom of the chart near 100 QPS"
+  caption="Pass 2 throughput over time. ParadeDB stays at ~3,400 QPS. Postgres FTS dropped to ~115."
+/>
+
+Compared with Pass 1, the picture splits in two. ParadeDB moves from 3,646 QPS to 3,373 QPS, with median latency shifting from 1.33ms to 1.44ms. Going from one cheap term to a rotation that mixes cheap and expensive ones barely changes ParadeDB's numbers.
+
+Postgres FTS follows a different curve. Its closed-loop throughput falls from 3,290 QPS to 115 QPS, a 29x drop, and median latency moves from 1.49ms to 109ms. The run is configured like Pass 1 in every important respect, from hardware and concurrency to the SQL shape; what changed is that the rotation includes terms matching thousands of rows, not just 390.
+
+### Why Pass 2 diverged from Pass 1
+
+The split comes from how each backend scores its candidate rows. For this query shape, Postgres' `ts_rank` scores every row that the `tsv @@ plainto_tsquery(...)` filter matches before `ORDER BY score DESC LIMIT 10` can pick the top ten. That is manageable for `inverted`, which matches 390 rows, but much more expensive for terms like `google`, which matches 27,336.
+
+ParadeDB's BM25 implementation is built on Tantivy, which uses a block-max-WAND-style top-K traversal. The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. In this run, that kept the high-match terms fast while Postgres FTS spent most of its time ranking large result sets.
+
+## Pass 3: Open-Loop at 50 QPS
+
+Pass 2 tells us that Postgres FTS sustained about 115 QPS against the rotating term mix in a closed loop. For the open-loop pass, we deliberately choose 50 QPS: less than half of that closed-loop rate. This keeps the test away from the obvious saturation point. If latency separates here, the explanation cannot simply be that we drove Postgres FTS above the throughput it had already shown.
+
+The question is narrower: does a rate well inside the closed-loop ceiling still behave well when arrivals are scheduled? Application traffic usually looks more like this than a closed loop. Requests arrive because users, jobs, or upstream services send them, not because the previous request finished quickly enough.
+
+So we keep the forty-term rotation and the same sixteen-worker client budget, but switch the executor to `constant-arrival-rate`, k6's open-loop executor. The runner schedules 50 queries per second for thirty seconds. With `maxVUs` still fixed at sixteen, a missed iteration would mean the runner couldn't start the next scheduled query because all workers were still busy.
+
+<PerformanceTable
+  columns={["Backend", "Offered", "Completion", "P50", "P90", "P99"]}
+  rows={[
+    { label: "ParadeDB", color: "#7C3AED", values: ["50 QPS", "100%", "1.54ms", "1.71ms", "5.11ms"] },
+    { label: "Postgres FTS", color: "#3B82F6", values: ["50 QPS", "100%", "24.9ms", "74.5ms", "238ms"] },
+  ]}
+/>
+
+Both backends keep up at the offered rate with no missed iterations, which is the expected result given that 50 QPS fits inside Postgres FTS's observed throughput capacity. By a throughput measure, Postgres FTS handles the workload.
+
+The latency columns tell the useful story. Postgres FTS completes every scheduled request, but its P90 is 74.5ms versus ParadeDB's 1.71ms, and its P99 is 238ms versus ParadeDB's 5.11ms. That is roughly a 44x gap at P90 and a 47x gap at P99. Pass 2's percentiles were actually higher in absolute terms (Postgres FTS hit 296ms at P90 and 490ms at P99), but in a closed loop they were easy to dismiss as a saturation symptom: sixteen waiting callers on a backend that could only sustain 115 QPS will queue. Pass 3 removes that explanation. The arrival rate sits well inside Postgres FTS's observed capacity, and the same kind of gap shows up as application latency rather than as collapsed throughput.
+
+The Docker metrics dashboard recorded the resource picture during both phases:
+
+<ZoomImage
+  src={roundThreeCPU}
+  alt="CPU percent over time during the 30-second open-loop run at 50 QPS. ParadeDB sits near zero percent for its phase; Postgres FTS oscillates between roughly 130 and 400 percent across the window, spiking to all four cores when high-cardinality terms arrive"
+  caption="Pass 3 container CPU. ParadeDB sits near zero. Postgres FTS oscillates between one and four cores, spiking to four whenever a high-cardinality term lands in the rotation."
+/>
+
+<ZoomImage
+  src={roundThreeMemory}
+  alt="Container memory over time during the 30-second open-loop run. ParadeDB sits flat around 400MB; Postgres FTS climbs to and holds around 1.2GB"
+  caption="Pass 3 container memory. ParadeDB holds at roughly 400MB; Postgres FTS climbs to about 1.2GB."
+/>
+
+50 QPS does not sound like a lot, and for ParadeDB against this workload it is not: CPU stays close to zero and memory holds steady at around 400MB. For Postgres FTS the same offered rate keeps two to four cores busy throughout the window and uses about a gigabyte more working memory. The completion column says the database kept up. The resource view says it had to work hard to do so, and the latency columns show what that means for the application.
+
+## What Changed
+
+Across the three passes, we kept the query shape, dataset, hardware, and worker budget fixed. What changed was the benchmark shape, and that changed which claim the result could support.
+
+The single-term run supports a narrow claim: this one term looks close. The term rotation supports a broader claim: the result changes when the workload includes terms with very different match counts. The scheduled-arrival run supports a different claim again: a closed-loop throughput number does not automatically tell you whether a fixed arrival rate will behave well.
+
+None of those answers invalidates the others. They are all true about the question that produced them. The mistake is treating the first answer as if it had already survived the next two questions.
+
+## Try It Yourself
+
+The schema, loader config, dataset, and all three benchmark scripts for the Hacker News slice are hosted in S3 and pulled by [Benchmarker](https://github.com/paradedb/benchmarker)'s `loader pull` into `datasets/hn_cutdown/`. To reproduce these runs:
+
+```bash
+git clone https://github.com/paradedb/benchmarker.git
+cd benchmarker
+
+make
+docker compose --profile paradedb --profile postgres up -d
+
+./bin/loader pull --dataset hn_cutdown --source s3://fts-bench/datasets/hn_cutdown/ --anonymous
+
+./bin/loader load --backend paradedb ./datasets/hn_cutdown
+./bin/loader load --backend postgres ./datasets/hn_cutdown
+
+# Pass 1: closed-loop sustained, 16 VUs, single term 'inverted'
+./k6 run --out dashboard datasets/hn_cutdown/k6/closed_loop_single.js
+
+# Pass 2: closed-loop sustained, 16 VUs, rotating terms
+./k6 run --out dashboard datasets/hn_cutdown/k6/closed_loop.js
+
+# Pass 3: open-loop, 50 QPS offered, maxVUs=16, rotating terms
+./k6 run --out dashboard datasets/hn_cutdown/k6/open_loop.js
+```
+
+Open `http://localhost:5665/static/` while a dashboard run is going and the metrics stream in real time. Each script takes a minute or two, and the differences between them are a handful of lines.
+
+The forty terms in `search_terms.json` were picked by hand to cover a wide range of match counts. Swap the file for your own list, change the rotation strategy, or replace `terms.next()` with a sampler that biases toward terms matching more rows. Each change is a one-line edit, and the dashboard renders the result the same way.
+
+## When One Question Is Not Enough
+
+We said up front that the first numbers were not wrong, but they were not enough. This is the reason we chose to build a benchmarker rather than a benchmark: a workload-agnostic runner instead of a single test with the workload baked in. Once the single-term run made the two backends look close, we could ask whether the term was doing too much work. Once the rotating-term run showed a much lower closed-loop rate for Postgres FTS, we could ask whether a rate well inside that number still held up under scheduled arrivals. Each follow-up was a few lines of change against the same harness, not a new benchmarking project.
+
+A one-shot benchmark is finished the moment it runs. A workload-agnostic runner lets us keep adding shapes and strategies as new questions come up: different term mixes, different arrival patterns, new backends, ingest pressure running alongside queries. The dataset, the query code, the dashboard, the Docker metrics, and the repro path all stay in one place. We only change the part of the run we're newly interested in.
+
+Benchmarker is open source at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker). The `pg_search` install steps are at [docs.paradedb.com](https://docs.paradedb.com/documentation/getting-started/install).
+
+--- 
+[^1]: We restart containers, but do not drop the operating system cache. We are finding steady-state latency, so we don't need to worry about cold-start performance. This would be a good follow-up though!
+[^2]: 1 million rows is really not a lot, the gap seen in this post will widen considerably as the total document size grows.
+[^3]: rust, python, javascript, startup, google, apple, amazon, facebook, microsoft, ai, machine, database, postgresql, linux, source, security, privacy, blockchain, crypto, bitcoin,remote, hiring, layoffs, funding, ipo, acquisition, kubernetes, docker, aws, cloud, serverless, api, graphql, react, typescript, golang, performance, optimization, scaling, distributed, postgresql
