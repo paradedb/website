@@ -37,11 +37,7 @@ export function ZoomImage({
           aria-label={`Expand: ${alt}`}
           className="group relative block w-full cursor-zoom-in overflow-hidden border-0 bg-transparent p-0 focus:outline-none focus-visible:outline-none"
         >
-          <Image
-            src={src}
-            alt={alt}
-            className="block h-auto w-full"
-          />
+          <Image src={src} alt={alt} className="block h-auto w-full" />
           <span className="pointer-events-none absolute right-2 top-2 rounded bg-black/60 px-2 py-1 text-xs font-medium text-white opacity-0 transition-opacity group-hover:opacity-100">
             Click to expand
           </span>
