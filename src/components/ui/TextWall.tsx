@@ -4,64 +4,55 @@ const IsometricStackIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 64 64" fill="none" {...props}>
     <path
       d="M17 25 32 33.5 17 42 2 33.5 17 25Z"
-      fill="#E0E7FF"
-      stroke="#4F46E5"
+      className="fill-[#E0E7FF] stroke-[#4F46E5] dark:fill-[#312E81] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M2 33.5 17 42v17L2 50.5v-17Z"
-      fill="#A5B4FC"
-      stroke="#4F46E5"
+      className="fill-[#A5B4FC] stroke-[#4F46E5] dark:fill-[#3730A3] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M32 33.5 17 42v17l15-8.5v-17Z"
-      fill="#818CF8"
-      stroke="#4F46E5"
+      className="fill-[#818CF8] stroke-[#4F46E5] dark:fill-[#4338CA] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M47 25 62 33.5 47 42 32 33.5 47 25Z"
-      fill="#E0E7FF"
-      stroke="#4F46E5"
+      className="fill-[#E0E7FF] stroke-[#4F46E5] dark:fill-[#312E81] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M32 33.5 47 42v17l-15-8.5v-17Z"
-      fill="#A5B4FC"
-      stroke="#4F46E5"
+      className="fill-[#A5B4FC] stroke-[#4F46E5] dark:fill-[#3730A3] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M62 33.5 47 42v17l15-8.5v-17Z"
-      fill="#818CF8"
-      stroke="#4F46E5"
+      className="fill-[#818CF8] stroke-[#4F46E5] dark:fill-[#4338CA] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M32 1.5 47 10 32 18.5 17 10 32 1.5Z"
-      fill="#C7D2FE"
-      stroke="#4F46E5"
+      className="fill-[#C7D2FE] stroke-[#4F46E5] dark:fill-[#312E81] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M17 10 32 18.5v15L17 25V10Z"
-      fill="#818CF8"
-      stroke="#4F46E5"
+      className="fill-[#818CF8] stroke-[#4F46E5] dark:fill-[#3730A3] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
     <path
       d="M47 10 32 18.5v15L47 25V10Z"
-      fill="#6366F1"
-      stroke="#4F46E5"
+      className="fill-[#6366F1] stroke-[#4F46E5] dark:fill-[#4338CA] dark:stroke-[#6366F1]"
       strokeWidth="2.25"
       strokeLinejoin="round"
     />
@@ -71,11 +62,21 @@ const IsometricStackIcon = (props: React.SVGProps<SVGSVGElement>) => (
 const ReliableDatastoreIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 64 64" fill="none" {...props}>
     <g transform="rotate(-45 32 32)">
-      <circle cx="24" cy="32" r="18" fill="#C7D2FE" />
-      <circle cx="40" cy="32" r="18" fill="#A5B4FC" />
+      <circle
+        cx="24"
+        cy="32"
+        r="18"
+        className="fill-[#C7D2FE] dark:fill-[#312E81]"
+      />
+      <circle
+        cx="40"
+        cy="32"
+        r="18"
+        className="fill-[#A5B4FC] dark:fill-[#4338CA]"
+      />
       <path
         d="M32 15.9A18 18 0 0 1 32 48.1A18 18 0 0 1 32 15.9Z"
-        fill="#4338CA"
+        className="fill-[#4338CA] dark:fill-[#1E1B4B]"
         fillOpacity="0.62"
       />
       <circle
@@ -83,7 +84,7 @@ const ReliableDatastoreIcon = (props: React.SVGProps<SVGSVGElement>) => (
         cy="32"
         r="18"
         fill="none"
-        stroke="#4F46E5"
+        className="stroke-[#4F46E5] dark:stroke-[#6366F1]"
         strokeWidth="2.25"
       />
       <circle
@@ -91,7 +92,7 @@ const ReliableDatastoreIcon = (props: React.SVGProps<SVGSVGElement>) => (
         cy="32"
         r="18"
         fill="none"
-        stroke="#4F46E5"
+        className="stroke-[#4F46E5] dark:stroke-[#6366F1]"
         strokeWidth="2.25"
       />
     </g>
