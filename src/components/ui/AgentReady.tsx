@@ -318,7 +318,7 @@ export default function AgentReady() {
               {/* Header section */}
               <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0 text-center mb-12">
                 <Badge className="mb-6">Integrations</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#1d1d1b] dark:text-white sm:text-6xl mb-4">
+                <h2 className="homepage-section-title mb-4 text-3xl sm:text-6xl">
                   Use your{" "}
                   <span className="text-indigo-600 dark:text-indigo-400">
                     favorite

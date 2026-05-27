@@ -81,6 +81,12 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+@layer components {
+  .homepage-section-title {
+    @apply font-semibold tracking-tighter text-[#1d1d1b] dark:text-white;
+  }
+}
+
 @keyframes hide {
   from {
     opacity: 1;

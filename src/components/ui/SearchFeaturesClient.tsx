@@ -28,7 +28,7 @@ export default function SearchFeaturesClient({
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch bg-diagonal-hatch-warm border-b border-[#d7d4cf] dark:border-slate-900 relative z-20 bg-[#e4e1dc] dark:bg-slate-900/50 opacity-60" />
           <div className="flex w-full flex-col items-center pt-12 md:pt-20">
             <Badge className="mb-6">Features</Badge>
-            <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-[#1d1d1b] dark:text-white sm:text-6xl px-6 sm:px-0">
+            <h2 className="homepage-section-title px-6 text-center text-3xl sm:px-0 sm:text-6xl">
               Stop <span className="text-highlight-blink">chasing</span> the{" "}
               <br className="hidden sm:block" /> next slow query
             </h2>

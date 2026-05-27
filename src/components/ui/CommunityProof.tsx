@@ -23,7 +23,7 @@ export default function CommunityProof() {
                 {/* Heading Column */}
                 <div className="p-8 md:p-12 md:py-24 text-left flex flex-col items-start md:border-r border-[#d7d4cf] dark:border-slate-900">
                   <Badge className="mb-6">Open Source</Badge>
-                  <h2 className="text-3xl font-bold tracking-tighter text-[#1d1d1b] dark:text-white mb-4">
+                  <h2 className="homepage-section-title mb-4 text-3xl">
                     <span className="text-highlight-blink">Loved</span> by
                     developers
                   </h2>

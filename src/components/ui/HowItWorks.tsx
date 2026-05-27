@@ -615,7 +615,7 @@ export default function HowItWorks() {
             <div className="pt-8 md:pt-0">
               <Badge className="mb-6">How It Works</Badge>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
+            <h2 className="homepage-section-title mb-6 mt-2 text-3xl sm:text-6xl">
               Ship <span className="text-highlight-blink">features</span>,<br/>not ETL jobs
             </h2>
 
