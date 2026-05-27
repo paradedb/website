@@ -114,7 +114,7 @@ export default function Footer() {
                       : "text-gray-600 dark:text-slate-400",
                   )}
                 >
-                  Simple, Elastic-Quality Search for Postgres.
+                  The Operational Database for Agents.
                 </p>
                 <div className="md:pt-4">
                   <Button

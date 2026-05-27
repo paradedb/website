@@ -130,7 +130,7 @@ export default async function SearchFeatures() {
     },
     {
       value: "boolean",
-      label: "Boolean Queries",
+      label: "Metadata Filtering",
       bullets: [
         {
           title: "Boolean conditions",

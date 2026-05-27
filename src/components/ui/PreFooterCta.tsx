@@ -23,11 +23,11 @@ export default function PreFooterCta() {
   return (
     <div className="w-full relative">
       {/* White Grid Divider Section - Full Width Background */}
-      <div className="hidden sm:block w-full bg-white dark:bg-slate-950 relative border-t border-slate-200 dark:border-slate-900">
+      <div className="hidden sm:block w-full bg-[#ebe9e5] dark:bg-slate-950 relative border-t border-[#d7d4cf] dark:border-slate-900">
         <div className="max-w-[1440px] mx-auto relative px-4 md:px-12">
-          <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-          <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-          <div className="h-12 md:h-20 w-full border-b border-slate-200 dark:border-slate-900 relative z-20 bg-white dark:bg-slate-950" />
+          <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none" />
+          <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none" />
+          <div className="h-12 md:h-20 w-full border-b border-[#d7d4cf] dark:border-slate-900 relative z-20 bg-[#ebe9e5] dark:bg-slate-950" />
         </div>
       </div>
 
@@ -44,11 +44,8 @@ export default function PreFooterCta() {
           <div className="relative flex flex-col items-center justify-center pt-24 md:pt-32 pb-4 md:pb-8 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
-                Elastic-quality search <br className="hidden sm:block" />{" "}
-                without the{" "}
-                <span className="text-highlight-blink !text-white after:!bg-white/10 after:!bg-gradient-to-r after:!from-white/20 after:!to-transparent">
-                  complexity
-                </span>
+                The operational<br className="hidden sm:block" />{" "}
+                database for agents
               </h2>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
                 <Button

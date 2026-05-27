@@ -117,7 +117,7 @@ BANNER
 printf "%s" "$RESET"
 printf "  %sWelcome to ParadeDB%s (%shttps://paradedb.com%s)!\n" "$BOLD" "$RESET" "$CYAN" "$RESET"
 echo ""
-echo "  We bring you simple, Elastic-quality search for Postgres."
+echo "  We bring you the operational database for agents."
 echo "  That includes everything you expect from a search engine: full-text, hybrid, and faceted search."
 echo "  All right inside Postgres with no extra infrastructure, and no ETL pipelines."
 echo ""

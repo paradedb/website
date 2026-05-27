@@ -613,12 +613,10 @@ export default function HowItWorks() {
           <div className="lg:col-span-5 flex flex-col justify-start py-0 lg:py-12 px-6 md:px-12 w-full min-h-fit sm:min-h-[600px] relative border-b border-slate-200 dark:border-slate-900">
             <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-px bg-slate-200 dark:bg-slate-900/50" />
             <div className="pt-8 md:pt-0">
-              <Badge className="mb-6">Benefits</Badge>
+              <Badge className="mb-6">How It Works</Badge>
             </div>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 mt-2">
-              <span className="text-highlight-blink">Zero ETL</span> means{" "}
-              <br />
-              zero headache
+              Ship <span className="text-highlight-blink">features</span>,<br/>not ETL jobs
             </h2>
 
             {/* Dynamic Tagline & Button Area */}
@@ -627,11 +625,8 @@ export default function HowItWorks() {
                 className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300"
                 key={activeTab + "-text"}
               >
-                Because ParadeDB is just Postgres, it can run as a logical
-                replica of any managed Postgres, or be installed inside any
-                self-hosted Postgres.
+                ParadeDB is built as an extension on top of Postgres, which means it can reliably store and search your operational data.
               </p>
-
               <div
                 className="mt-6 flex w-full sm:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75"
                 key={activeTab + "-btn"}
@@ -654,14 +649,13 @@ export default function HowItWorks() {
             <div className="flex flex-col divide-y divide-slate-200 dark:divide-slate-900">
               {/* Section 1: Managed */}
               <AccordionItem
-                title="For managed Postgres"
+                title="Reliable Data Store"
                 isActive={activeTab === "managed"}
                 onClick={() => setActiveTab("managed")}
                 number="01"
               >
                 <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                  ParadeDB can replicate from any managed Postgres — RDS,
-                  Supabase, Google Cloud/Azure Postgres, Neon, etc.
+                  ParadeDB inherits Postgres&apos; ACID guarantees, transaction safety, and OLTP performance.
                 </div>
 
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
@@ -676,14 +670,14 @@ export default function HowItWorks() {
 
               {/* Section 2: Self Hosted */}
               <AccordionItem
-                title="For self-hosted Postgres"
+                title="Best-in-Class Search"
                 isActive={activeTab === "selfHosted"}
                 onClick={() => setActiveTab("selfHosted")}
                 number="02"
               >
                 <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                  Installing ParadeDB in a self-hosted Postgres deployment
-                  incurs zero infra overhead or spend.
+                  ParadeDB solves the performance bottlenecks of native Postgres search and benchmarks
+                  competitively against Elasticsearch.
                 </div>
 
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
@@ -722,7 +716,7 @@ export default function HowItWorks() {
                   01
                 </span>
                 <span className="font-semibold tracking-tight">
-                  Managed Postgres
+                  As Primary Datastore
                 </span>
               </button>
               <div className="w-px bg-slate-200 dark:bg-slate-900" />

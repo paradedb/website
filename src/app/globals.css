@@ -732,6 +732,16 @@ a {
   );
 }
 
+.bg-diagonal-hatch-warm {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    transparent,
+    transparent 4px,
+    #d7d4cf 4px,
+    #d7d4cf 5px
+  );
+}
+
 .bg-diagonal-hatch-white {
   background-image: repeating-linear-gradient(
     -45deg,

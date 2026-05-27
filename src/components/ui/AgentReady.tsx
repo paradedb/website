@@ -134,17 +134,17 @@ const Integrations = [
 const Frameworks = [
   {
     name: "JavaScript",
-    className: "text-slate-900 dark:text-slate-100",
+    className: "text-[#1d1d1b] dark:text-slate-100",
     icon: <JavaScriptIcon className="size-[1.45rem]" />,
   },
   {
     name: "Python",
-    className: "text-slate-900 dark:text-slate-100",
+    className: "text-[#1d1d1b] dark:text-slate-100",
     icon: <PythonIcon className="size-[1.6rem]" />,
   },
   {
     name: "Ruby",
-    className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
+    className: "text-[#1d1d1b] dark:text-slate-100 -translate-y-[2px]",
     icon: <RubyIcon className="size-[1.4rem]" />,
   },
 ];
@@ -152,7 +152,7 @@ const Frameworks = [
 const CloudPlatforms = [
   {
     name: "Railway",
-    className: "text-slate-900 dark:text-slate-100",
+    className: "text-[#1d1d1b] dark:text-slate-100",
     url: "https://railway.com/deploy/paradedb?referralCode=l5qxN4&utm_medium=integration&utm_source=button&utm_campaign=paradedb",
     icon: (
       <svg
@@ -175,7 +175,7 @@ const CloudPlatforms = [
   },
   {
     name: "Render",
-    className: "text-slate-900 dark:text-slate-100",
+    className: "text-[#1d1d1b] dark:text-slate-100",
     url: "https://dashboard.render.com/login?next=%2Fblueprint%2Fnew%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2Fparadedb%2Frender-blueprint",
     icon: (
       <svg
@@ -304,37 +304,37 @@ export default function AgentReady() {
 
   return (
     <Tooltip.Provider delayDuration={100}>
-      <div className="w-full relative bg-white dark:bg-slate-950">
+      <div className="w-full relative bg-[#ebe9e5] dark:bg-slate-950">
         <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
-          <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-          <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+          <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none" />
+          <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none" />
 
           <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-10" />
-            <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-            <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-[#e4e1dc] dark:bg-slate-950/50 -z-10" />
+            <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+            <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
             <div className="relative flex flex-col items-center justify-center py-16 sm:py-24 bg-transparent z-20">
               {/* Header section */}
               <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0 text-center mb-12">
                 <Badge className="mb-6">Integrations</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
+                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#1d1d1b] dark:text-white sm:text-6xl mb-4">
                   Use your{" "}
                   <span className="text-indigo-600 dark:text-indigo-400">
                     favorite
                   </span>{" "}
                   tools
                 </h2>
-                <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
+                <p className="text-base sm:text-lg text-[#77736d] dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                   ParadeDB works seamlessly with your existing stack.
                 </p>
               </div>
 
               {/* Nested Cards Container */}
               <div className="relative w-full z-20">
-                <div className="max-w-[1128px] mx-auto grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-slate-800 border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+                <div className="max-w-[1128px] mx-auto grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-[#d7d4cf] dark:divide-slate-800 border-y border-[#d7d4cf] dark:border-slate-800 bg-[#ebe9e5] dark:bg-slate-900/50">
                   {/* Card 2: Cloud Platforms */}
-                  <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">
+                  <div className="flex flex-col h-full relative overflow-hidden bg-[#ebe9e5] dark:bg-slate-900/40">
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
@@ -379,10 +379,10 @@ export default function AgentReady() {
                         </div>
 
                         <div className="flex flex-col text-left flex-1">
-                          <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
+                          <h3 className="font-semibold text-lg text-[#1d1d1b] dark:text-slate-100 mb-2">
                             Cloud Platforms
                           </h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                          <p className="text-sm text-[#77736d] dark:text-slate-400 mb-6 leading-relaxed">
                             Run ParadeDB on your preferred cloud platform.
                             Supports Railway, Render, and DigitalOcean, with
                             more coming soon.
@@ -407,13 +407,13 @@ export default function AgentReady() {
                   </div>
 
                   {/* Card 1: Coding Agents */}
-                  <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">
+                  <div className="flex flex-col h-full relative overflow-hidden bg-[#ebe9e5] dark:bg-slate-900/40">
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8">
-                          <div className="hidden sm:block w-full border border-slate-200 bg-white px-3 py-2.5 shadow-[0_10px_24px_rgba(15,23,42,0.04)] dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-none mb-1">
+                          <div className="hidden sm:block w-full border border-[#d7d4cf] bg-[#ebe9e5] px-3 py-2.5 shadow-[0_10px_24px_rgba(29,29,27,0.04)] dark:border-slate-700 dark:bg-slate-900/90 dark:shadow-none mb-1">
                             <div className="flex items-center justify-between gap-2">
-                              <div className="min-w-0 font-mono text-[0.65rem] sm:text-[0.75rem] lg:text-[0.65rem] xl:text-[0.75rem] tracking-tight leading-6 text-slate-800 dark:text-slate-100 flex items-center whitespace-nowrap overflow-hidden">
+                              <div className="min-w-0 font-mono text-[0.65rem] sm:text-[0.75rem] lg:text-[0.65rem] xl:text-[0.75rem] tracking-tight leading-6 text-[#1d1d1b] dark:text-slate-100 flex items-center whitespace-nowrap overflow-hidden">
                                 <span className="mr-2 font-semibold text-indigo-600 dark:text-indigo-400">
                                   $
                                 </span>
@@ -428,7 +428,7 @@ export default function AgentReady() {
                                     "npx skills add paradedb/agent-skills",
                                   )
                                 }
-                                className="shrink-0 border border-slate-200 bg-transparent p-1.5 text-slate-500 transition-colors hover:bg-slate-50 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
+                                className="shrink-0 border border-[#d7d4cf] bg-transparent p-1.5 text-[#77736d] transition-colors hover:bg-[#e4e1dc] hover:text-[#1d1d1b] dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-200 cursor-pointer"
                                 aria-label="Copy command"
                               >
                                 {copiedAgent ? (
@@ -454,10 +454,10 @@ export default function AgentReady() {
                         </div>
 
                         <div className="flex flex-col text-left flex-1">
-                          <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
+                          <h3 className="font-semibold text-lg text-[#1d1d1b] dark:text-slate-100 mb-2">
                             Coding Agents
                           </h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                          <p className="text-sm text-[#77736d] dark:text-slate-400 mb-6 leading-relaxed">
                             Teach your agents to use ParadeDB with a single
                             command. Works with Claude Code, Codex, Gemini,
                             Cursor, Windsurf, and more.
@@ -476,7 +476,7 @@ export default function AgentReady() {
                   </div>
 
                   {/* Card 3: Frameworks */}
-                  <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">
+                  <div className="flex flex-col h-full relative overflow-hidden bg-[#ebe9e5] dark:bg-slate-900/40">
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
@@ -523,10 +523,10 @@ export default function AgentReady() {
                         </div>
 
                         <div className="flex flex-col text-left flex-1">
-                          <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">
+                          <h3 className="font-semibold text-lg text-[#1d1d1b] dark:text-slate-100 mb-2">
                             Frameworks
                           </h3>
-                          <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                          <p className="text-sm text-[#77736d] dark:text-slate-400 mb-6 leading-relaxed">
                             Query ParadeDB from your favorite programming
                             language. Supports Drizzle, Django, SQLAlchemy, and
                             ActiveRecord, with more coming soon.

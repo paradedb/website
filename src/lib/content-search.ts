@@ -158,7 +158,7 @@ export function listContent(
 export function getProductInfo() {
   return {
     name: siteConfig.name,
-    tagline: "Simple, Elastic-Quality Search for Postgres",
+    tagline: "The Operational Database for Agents",
     description: siteConfig.description,
     summary:
       "ParadeDB is a PostgreSQL-native search and analytics engine, packaged as a Postgres extension (pg_search). It provides a BM25 inverted index for full-text search and a columnar index for analytics, offering a transactional alternative to Elasticsearch without ETL or external systems.",

@@ -27,18 +27,18 @@ const CaseStudyCard = ({
     {/* Content Wrapper - Blurs on hover */}
     <div className="w-full flex flex-col items-start transition-all duration-300 group-hover:blur-sm group-hover:opacity-40">
       <div className="mb-8 h-8 sm:h-10 flex items-center">{logo}</div>
-      <blockquote className="text-sm md:text-lg text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
+      <blockquote className="text-sm md:text-lg text-[#1d1d1b] dark:text-slate-300 leading-relaxed mb-8">
         {quote}
       </blockquote>
       <div className="mt-auto flex items-center gap-3">
-        <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-wide border border-slate-200 dark:border-slate-700">
+        <div className="size-10 rounded-full bg-[#e4e1dc] dark:bg-slate-800 flex items-center justify-center text-[#77736d] dark:text-slate-400 font-bold text-xs uppercase tracking-wide border border-[#d7d4cf] dark:border-slate-700">
           {initials}
         </div>
         <div className="text-left">
-          <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+          <div className="font-semibold text-[#1d1d1b] dark:text-slate-100 text-sm">
             {author}
           </div>
-          <div className="text-slate-500 dark:text-slate-400 text-sm">
+          <div className="text-[#77736d] dark:text-slate-400 text-sm">
             {role}
           </div>
         </div>
@@ -47,7 +47,7 @@ const CaseStudyCard = ({
 
     {/* Hover Overlay */}
     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-95 group-hover:scale-100">
-      <div className="flex items-center gap-2 text-indigo-950 dark:text-white font-semibold bg-transparent px-6 py-3">
+      <div className="flex items-center gap-2 text-[#1d1d1b] dark:text-white font-semibold bg-transparent px-6 py-3">
         Read {companyName} case study
         <RiArrowRightLine className="size-4" />
       </div>
@@ -57,43 +57,43 @@ const CaseStudyCard = ({
 
 export default function SocialProof() {
   return (
-    <div className="w-full relative bg-white dark:bg-slate-950">
+    <div className="w-full relative bg-[#ebe9e5] dark:bg-slate-950">
       <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
-        <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
-        <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
+        <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none" />
+        <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none" />
 
         {/* Additional Vertical Lines */}
-        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
         <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
           {/* Background color layer */}
-          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100 dark:bg-slate-950/50 z-0" />
+          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-[#e4e1dc] dark:bg-slate-950/50 z-0" />
 
           {/* Inner Vertical Borders for boxed look */}
-          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-[#d7d4cf] dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
           {/* Section 1: Case Studies (Gray Background) */}
           <div className="relative z-10 flex flex-col items-center justify-center sm:py-24 py-12 text-center bg-transparent">
             {/* Fades for Case Studies Section */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
+            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#e4e1dc] dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
               <Badge className="mb-6 mt-px ml-px">Case Studies</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-[#1d1d1b] dark:text-white sm:text-6xl mb-4">
                 <span className="text-highlight-blink">Trusted</span> by
                 enterprises
               </h2>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
-                The most innovative companies are simplifying their search stack
+              <p className="text-base sm:text-lg text-[#77736d] dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
+                The most innovative companies are simplifying their infrastructure
                 with ParadeDB.
               </p>
             </div>
 
             <div className="relative w-full z-20">
-              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900">
-                <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
+              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-2 bg-[#ebe9e5] dark:bg-slate-900/50 border-y border-[#d7d4cf] dark:border-slate-900">
+                <div className="border-b md:border-b-0 md:border-r border-[#d7d4cf] dark:border-slate-900">
                   <CaseStudyCard
                     href="/customers/case-study-bilt"
                     logo={
@@ -125,7 +125,7 @@ export default function SocialProof() {
               <div className="mt-10 flex justify-center">
                 <Link
                   href="/customers"
-                  className="group inline-flex items-center gap-2 text-indigo-950 dark:text-white font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
+                  className="group inline-flex items-center gap-2 text-[#1d1d1b] dark:text-white font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
                 >
                   View all case studies
                   <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />

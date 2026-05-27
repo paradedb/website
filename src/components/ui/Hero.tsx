@@ -35,17 +35,15 @@ export default async function Hero() {
                 id="hero-title"
                 className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl opacity-0 animate-hero-title"
               >
-                Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
-                <span className="text-white/90">Search</span> for Postgres
+                The Only Database <br className="hidden sm:block" />{" "}
+                Your Agents Need
               </h1>
             </div>
 
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-center opacity-0 animate-hero-content">
               <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4">
-                You want better search, not the burden of Elasticsearch.{" "}
-                <br className="hidden sm:block" /> ParadeDB is the modern
-                Elastic alternative built as a Postgres extension.
+              Agents require operational data and best-in-class search.<br/>Built on Postgres, ParadeDB is a single database that delivers both.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-center mb-6 sm:mb-8 sm:px-0">
                 <Button
