@@ -1,8 +1,0 @@
-{
-  "title": "Benchmarking ParadeDB vs Postgres FTS Three Ways",
-  "date": "2026-05-20T00:00:00.000Z",
-  "author": "James Blackwood-Sewell",
-  "description": "A walkthrough of one TopK full-text query run three ways: one term, a rotating term mix, and scheduled arrivals.",
-  "categories": ["benchmarks", "postgres", "search", "bm25", "engineering"],
-  "hideHeroImage": true
-}
