@@ -40,7 +40,7 @@ Both backends run in their own Docker containers, each with four cores and eight
 
 The data is a cut-down slice[^2] of the Hacker News archive: one million rows in a single `hn_items` table, keeping only the `id` and `text` of each post.
 
-The comparison is [ParadeDB](https://github.com/paradedb/paradedb)'s BM25 index against Postgres' built-in tsvector datatype and a GIN index (often refered to as [Postgres full-text search](https://www.postgresql.org/docs/current/textsearch.html)). These are different ranking models over different index implementations, but both are ways developers can run TopK relevance search inside Postgres. 
+The comparison is [ParadeDB](https://github.com/paradedb/paradedb)'s BM25 index against Postgres' built-in tsvector datatype and a GIN index (often referred to as [Postgres full-text search](https://www.postgresql.org/docs/current/textsearch.html)). These are different ranking models over different index implementations, but both are ways developers can run TopK relevance search inside Postgres.
 
 ParadeDB indexes `text` directly with BM25. Postgres pre-tokenizes `text` into a stored generated `tsv` column and indexes that value with GIN[^3]. Both are configured for English text processing, and both answer the same query shape using their native syntax:
 
@@ -73,8 +73,16 @@ Running this for thirty seconds against each backend produces:
 <PerformanceTable
   columns={["Backend", "QPS", "Min", "P50", "P90", "P99"]}
   rows={[
-    { label: "ParadeDB", color: "#7C3AED", values: ["3,646", "1.06ms", "1.33ms", "2.04ms", "68.6ms"] },
-    { label: "Postgres FTS", color: "#3B82F6", values: ["3,290", "1.11ms", "1.49ms", "2.39ms", "68.9ms"] },
+    {
+      label: "ParadeDB",
+      color: "#7C3AED",
+      values: ["3,646", "1.06ms", "1.33ms", "2.04ms", "68.6ms"],
+    },
+    {
+      label: "Postgres FTS",
+      color: "#3B82F6",
+      values: ["3,290", "1.11ms", "1.49ms", "2.39ms", "68.9ms"],
+    },
   ]}
 />
 
@@ -114,8 +122,16 @@ The runner walks that list sequentially and wraps back to the beginning. Over th
 <PerformanceTable
   columns={["Backend", "QPS", "Min", "P50", "P90", "P99"]}
   rows={[
-    { label: "ParadeDB", color: "#7C3AED", values: ["3,373", "1.09ms", "1.44ms", "2.30ms", "68.9ms"] },
-    { label: "Postgres FTS", color: "#3B82F6", values: ["115", "2.03ms", "109ms", "296ms", "490ms"] },
+    {
+      label: "ParadeDB",
+      color: "#7C3AED",
+      values: ["3,373", "1.09ms", "1.44ms", "2.30ms", "68.9ms"],
+    },
+    {
+      label: "Postgres FTS",
+      color: "#3B82F6",
+      values: ["115", "2.03ms", "109ms", "296ms", "490ms"],
+    },
   ]}
 />
 
@@ -146,8 +162,16 @@ Again, we change nothing else: keeping the forty-term rotation and the same sixt
 <PerformanceTable
   columns={["Backend", "Offered", "Completion", "P50", "P90", "P99"]}
   rows={[
-    { label: "ParadeDB", color: "#7C3AED", values: ["50 QPS", "100%", "1.54ms", "1.71ms", "5.11ms"] },
-    { label: "Postgres FTS", color: "#3B82F6", values: ["50 QPS", "100%", "24.9ms", "74.5ms", "238ms"] },
+    {
+      label: "ParadeDB",
+      color: "#7C3AED",
+      values: ["50 QPS", "100%", "1.54ms", "1.71ms", "5.11ms"],
+    },
+    {
+      label: "Postgres FTS",
+      color: "#3B82F6",
+      values: ["50 QPS", "100%", "24.9ms", "74.5ms", "238ms"],
+    },
   ]}
 />
 
@@ -172,7 +196,6 @@ The Docker metrics dashboard recorded the resource picture during both phases:
 50 QPS does not sound like a lot, and for ParadeDB against this workload it is not: CPU stays close to zero and memory holds steady at around 400MB. For Postgres FTS the same offered rate keeps two to four cores busy throughout the window and uses about a gigabyte more working memory. The completion column says the database kept up. The resource view says it had to work hard to do so, and the latency columns show what that means for the application.
 
 ## Try It Yourself
-
 
 The schema, loader config, dataset, and all three benchmark scripts for the Hacker News slice are hosted in S3 and pulled by [Benchmarker](https://github.com/paradedb/benchmarker)'s `loader pull`. From there you can reproduce the runs yourself, using local Docker with a few commands.
 
@@ -218,6 +241,7 @@ Open `http://localhost:5665/static/` while a dashboard run is happening and the 
 The forty terms in `search_terms.json` were picked by hand to cover a wide selectivity range. Swap the file for your own list, change the rotation strategy, or replace `terms.next()` with a sampler that biases toward less selective terms. Each change is a one-line edit, and the dashboard renders the result the same way.
 
 One small oddity to call out is we are setting `max_parallel_workers_per_gather` to 0 in the ParadeDB post script. This is to combat incorrect worker selection for TopK queries, this will be fixed shortly by [PR#5150 (cost-based serial vs parallel for score-DESC TopK)](https://github.com/paradedb/paradedb/pull/5150).
+
 </details>
 
 ## When One Question Is Not Enough
@@ -229,9 +253,15 @@ That is the reason we built a generic benchmarker, not one bound to a specific b
 Benchmarker is open source at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker). The `pg_search` install steps are at [docs.paradedb.com](https://docs.paradedb.com/documentation/getting-started/install).
 
 ---
+
 [^1]: We restart containers, but do not drop the operating system cache. We are measuring steady-state latency here, not cold-start behavior.
+
 [^2]: One million rows is small for a search workload, so this result should not be read as a scaling limit. Larger corpora are worth testing separately because selectivity and ranking cost become more important.
+
 [^3]: Usually Postgres full text search isn't implemented like this. In practice a functional index would be used to avoid having to materialize tokenized tsvector representations in the parent table. While this is a more flexible approach, it's slower to query. We wanted to give Postgres FTS every chance to shine.
+
 [^4]: rust, python, javascript, startup, google, apple, amazon, facebook, microsoft, ai, machine, database, postgresql, linux, source, security, privacy, blockchain, crypto, bitcoin, remote, hiring, layoffs, funding, ipo, acquisition, kubernetes, docker, aws, cloud, serverless, api, graphql, react, typescript, golang, performance, optimization, scaling, distributed
+
 [^5]: Which can totally happen at higher rates. If we pushed this rate to 100, then Postgres FTS actually can't keep up at all, and k6 ends up exhausting it's VU worker pool and dropping requests. This is interesting for Postgres workloads because you don't really want to bump VUs any higher (each becomes a process in the 4CPU database container), so normally you'd add PgBouncer in front to do connection pooling. This would be an interesting benchmark setup for another day.
+
 [^6]: So what's the next question here? How do the systems behave across a wider range of selectitivy (it turns out for single digit selectivity Postgres FTS is actually faster than ParadeDB, mostly due to setup costs)? How do the systems behave in the face of insert pressure? If you run any follow-ups let us know!
