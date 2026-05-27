@@ -180,16 +180,15 @@ export default function TextWall() {
         <div className="px-6 pt-20 pb-8 sm:px-8 sm:pt-24 md:px-12 md:pt-28 lg:pt-32">
           <Badge className="mb-6">Benefits</Badge>
           <h2 className="homepage-section-title max-w-5xl text-3xl leading-[1.02] md:text-6xl">
-            Focus on <span className="text-highlight-blink">building features</span>,<br/>not ETL pipelines.
+            Focus on{" "}
+            <span className="text-highlight-blink">building features</span>,
+            <br />
+            not ETL pipelines.
           </h2>
         </div>
 
         {textWallRows.map((row, index) => (
-          <TextWallRow
-            key={row.title}
-            {...row}
-            solidTopDivider={index === 0}
-          />
+          <TextWallRow key={row.title} {...row} solidTopDivider={index === 0} />
         ))}
       </div>
     </section>

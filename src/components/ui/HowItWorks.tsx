@@ -616,7 +616,8 @@ export default function HowItWorks() {
               <Badge className="mb-6">How It Works</Badge>
             </div>
             <h2 className="homepage-section-title mb-6 mt-2 text-3xl sm:text-6xl">
-              Ship <span className="text-highlight-blink">features</span>,<br/>not ETL jobs
+              Ship <span className="text-highlight-blink">features</span>,<br />
+              not ETL jobs
             </h2>
 
             {/* Dynamic Tagline & Button Area */}
@@ -625,7 +626,8 @@ export default function HowItWorks() {
                 className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed animate-in fade-in slide-in-from-bottom-2 duration-300"
                 key={activeTab + "-text"}
               >
-                ParadeDB is built as an extension on top of Postgres, which means it can reliably store and search your operational data.
+                ParadeDB is built as an extension on top of Postgres, which
+                means it can reliably store and search your operational data.
               </p>
               <div
                 className="mt-6 flex w-full sm:flex-row animate-in fade-in slide-in-from-bottom-2 duration-300 delay-75"
@@ -655,7 +657,8 @@ export default function HowItWorks() {
                 number="01"
               >
                 <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                  ParadeDB inherits Postgres&apos; ACID guarantees, transaction safety, and OLTP performance.
+                  ParadeDB inherits Postgres&apos; ACID guarantees, transaction
+                  safety, and OLTP performance.
                 </div>
 
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}
@@ -676,8 +679,8 @@ export default function HowItWorks() {
                 number="02"
               >
                 <div className="text-gray-600 dark:text-slate-400 leading-relaxed text-sm mb-4">
-                  ParadeDB solves the performance bottlenecks of native Postgres search and benchmarks
-                  competitively against Elasticsearch.
+                  ParadeDB solves the performance bottlenecks of native Postgres
+                  search and benchmarks competitively against Elasticsearch.
                 </div>
 
                 {/* Mobile Graphic (MOVED BELOW SUBTEXT) */}

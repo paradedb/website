@@ -86,8 +86,8 @@ export default function SocialProof() {
                 enterprises
               </h2>
               <p className="text-base sm:text-lg text-[#77736d] dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
-                The most innovative companies are simplifying their infrastructure
-                with ParadeDB.
+                The most innovative companies are simplifying their
+                infrastructure with ParadeDB.
               </p>
             </div>
 

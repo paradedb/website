@@ -35,15 +35,18 @@ export default async function Hero() {
                 id="hero-title"
                 className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl opacity-0 animate-hero-title"
               >
-                The Only Database <br className="hidden sm:block" />{" "}
-                Your Agents Need
+                The Only Database <br className="hidden sm:block" /> Your Agents
+                Need
               </h1>
             </div>
 
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-center opacity-0 animate-hero-content">
               <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4">
-              Agents require operational data and best-in-class search.<br/>Built on Postgres, ParadeDB is a single database that delivers both.
+                Agents require operational data and best-in-class search.
+                <br />
+                Built on Postgres, ParadeDB is a single database that delivers
+                both.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-center mb-6 sm:mb-8 sm:px-0">
                 <Button
