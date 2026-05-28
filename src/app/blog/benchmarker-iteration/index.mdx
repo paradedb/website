@@ -12,11 +12,11 @@ import roundThreeMemory from "./images/round_three_memory.png";
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 
-Most database benchmarks start as one-off scripts: pick a workload, pick a backend, write the load generation, publish a chart. The problem is that the first run is rarely the last question. We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) to make the next question cheap rather than expensive. The runner stays the same as your workload evolves, and the same runner can be used across wildly different benchmarks.
+Most database benchmarks start as one-off scripts: pick a workload, pick a backend, write the load generation, publish a chart. The problem is that the first run rarely settles the matter. We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) to make the follow-up cheap rather than expensive. The runner stays the same as your workload evolves, and the same runner can be used across wildly different benchmarks.
 
 This post is a worked example of this in practice. We take one TopK full-text search query over one million Hacker News rows, run it against ParadeDB and Postgres FTS, then change two things: first the workload, by varying term selectivity; then the execution, by switching the arrival pattern. The dataset, query shape, hardware, and backend setup stay fixed.
 
-As we will see below, each pass produces a different and equally true answer. Pass 1 shows the two backends within ten percent on QPS. Pass 2 shows Postgres FTS dropping by an order of magnitude once term selectivity varies. Pass 3 caps the offered rate well inside that ceiling and surfaces the gap as latency and resource use instead. The point is not that one pass is right; it is that each next question was cheap to ask.
+As we will see below, each pass produces a different and equally true answer. Pass 1 shows the two backends within ten percent on QPS. Pass 2 shows Postgres FTS dropping by an order of magnitude once term selectivity varies. Pass 3 caps the offered rate well inside that ceiling and surfaces the gap as latency and resource use instead. The point is not that one pass is right; it is that each follow-up was cheap to run.
 
 ## Benchmarker
 
@@ -64,7 +64,7 @@ The query shape does not change between passes. In the first pass, `term` is the
 
 With the data, indexes, and query shape fixed, we can start with the simplest credible run and then make the workload harder one step at a time.
 
-## Pass 1: The Plausible First Answer
+## Pass 1: The Plausible First Answer (within 10%)
 
 In the first pass, we keep the setup simple: sixteen virtual users per backend, four per available core, looping the same query for thirty seconds under `constant-vus`. Every query searches for `inverted`, and the measured rate is whatever the database can serve under those waiting callers, not a rate we choose up front.
 
@@ -96,9 +96,9 @@ The two backends land close to each other, with ParadeDB sustaining about 3,650 
 
 That makes Pass 1 useful, but also easy to overread. If you stopped here with "Postgres' built-in full-text search and ParadeDB are within ten percent of each other on this TopK workload," the sentence would be true as far as the run is concerned, and most readers would not have a reason to object.
 
-The missing question is whether this workload looks like what real users would do. Real applications search for many different terms, and the cost of a TopK query can depend heavily on term selectivity: how many documents a term matches. `inverted` is a real term in the dataset, but it only matches 390 documents. A workload that also includes terms matching thousands or tens of thousands of documents is asking a different question.
+The missing piece is whether this workload looks like what real users would do. Real applications search for many different terms, and the cost of a TopK query can depend heavily on term selectivity: how many documents a term matches. `inverted` is a real term in the dataset, but it only matches 390 documents. A workload that also includes terms matching thousands or tens of thousands of documents is a different test.
 
-## Pass 2: Change the Terms
+## Pass 2: Change the Terms (29x throughput gap)
 
 The second pass preserves the closed-loop setup from Pass 1, including concurrency and duration. The deliberate change is that `term` stops being hardcoded and starts cycling through forty real search terms across a wider selectivity range. Benchmarker exposes term sets for this, so the change is one line.
 
@@ -151,11 +151,11 @@ The split comes from how each backend scores its candidate rows. For this query 
 
 ParadeDB's BM25 implementation is built on Tantivy, which uses a block-max-WAND-style top-K traversal. The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. In this run, that kept the higher selectivity terms fast while Postgres FTS spent most of its time ranking the larger result sets.
 
-## Pass 3: Fix the Arrival Rate
+## Pass 3: Fix the Arrival Rate (47x P99 gap)
 
 Pass 2 tells us that Postgres FTS sustained about 115 QPS against the rotating term mix in a closed loop. For the open-loop pass, we deliberately choose 50 QPS: less than half of that closed-loop rate. This keeps the test away from the obvious saturation point. If latency separates here, the explanation cannot simply be that we drove Postgres FTS to it's breaking point.
 
-This question is narrower: does a rate well inside the closed-loop ceiling still behave well when arrivals are scheduled? Application traffic usually looks more like this than a closed loop. Requests arrive because users, jobs, or upstream services send them, not because the previous request finished quickly enough.
+This pass asks something narrower: does a rate well inside the closed-loop ceiling still behave well when arrivals are scheduled? Application traffic usually looks more like this than a closed loop. Requests arrive because users, jobs, or upstream services send them, not because the previous request finished quickly enough.
 
 Again, we change nothing else: keeping the forty-term rotation and the same sixteen-worker client budget, just switching the executor to `constant-arrival-rate`. The runner schedules 50 queries per second for thirty seconds. With `maxVUs` still fixed at sixteen, a missed iteration would mean the runner couldn't start the next scheduled query because all workers were still busy[^5].
 
@@ -244,11 +244,17 @@ One small oddity to call out is we are setting `max_parallel_workers_per_gather`
 
 </details>
 
-## When One Question Is Not Enough
+## Three Passes, Three Answers
 
-Three benchmark shapes against the same query, data, and hardware produced three different and equally true answers. The only mistake would be not asking the next question[^6].
+Three benchmark shapes against the same query, data, and hardware produced three different and equally true answers:
 
-That is the reason we built a generic benchmarker, not one bound to a specific benchmark. The next question is always a few lines away, and we plan to keep asking different ones as we go.
+- **Pass 1 (closed loop, one selective term).** ParadeDB sustained ~3,650 QPS, Postgres FTS sustained ~3,300, with P99 tails near 69ms for both. Within ten percent. A single rare term keeps the per-query work small enough that the two backends look similar.
+- **Pass 2 (closed loop, forty rotating terms).** ParadeDB held at ~3,400 QPS while Postgres FTS dropped to ~115 QPS, a 29x gap. The Postgres FTS plan's cost scales with how many rows a term matches; Tantivy's block-max-WAND TopK traversal lets ParadeDB skip blocks that cannot make the top ten.
+- **Pass 3 (open loop, 50 QPS offered).** Postgres FTS completed every scheduled request, but P90 was 74.5ms vs 1.71ms and P99 was 238ms vs 5.11ms, a 44x and 47x gap. The offered rate sits well inside Postgres FTS's measured capacity, so saturation is not the explanation; the same workload also pushed Postgres FTS's container to noticeably higher CPU and roughly 3x the memory of ParadeDB's.
+
+The only mistake would be stopping at the first answer[^6].
+
+That is the reason we built a generic benchmarker, not one bound to a specific benchmark. The next pass is always a few lines away, and we plan to keep running different ones as we go.
 
 Benchmarker is open source at [github.com/paradedb/benchmarker](https://github.com/paradedb/benchmarker). The `pg_search` install steps are at [docs.paradedb.com](https://docs.paradedb.com/documentation/getting-started/install).
 
@@ -264,4 +270,4 @@ Benchmarker is open source at [github.com/paradedb/benchmarker](https://github.c
 
 [^5]: Which can totally happen at higher rates. If we pushed this rate to 100, then Postgres FTS actually can't keep up at all, and k6 ends up exhausting it's VU worker pool and dropping requests. This is interesting for Postgres workloads because you don't really want to bump VUs any higher (each becomes a process in the 4CPU database container), so normally you'd add PgBouncer in front to do connection pooling. This would be an interesting benchmark setup for another day.
 
-[^6]: So what's the next question here? How do the systems behave across a wider range of selectitivy (it turns out for single digit selectivity Postgres FTS is actually faster than ParadeDB, mostly due to setup costs)? How do the systems behave in the face of insert pressure? If you run any follow-ups let us know!
+[^6]: So what's worth checking next? How do the systems behave across a wider range of selectivity (it turns out for single digit selectivity Postgres FTS is actually faster than ParadeDB, mostly due to setup costs)? How do the systems behave in the face of insert pressure? If you run any follow-ups let us know!
