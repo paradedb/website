@@ -12,11 +12,11 @@ import roundThreeMemory from "./images/round_three_memory.png";
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 
-Most database benchmarks start as one-off scripts: pick a workload, pick a backend, write the load generation, publish a chart. The problem is that the first run is rarely the last question. We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) to make the next question cheap rather than expensive. The runner stays the same your workload evolves, and the same runner can be used across wildly different benchmarks.
+Most database benchmarks start as one-off scripts: pick a workload, pick a backend, write the load generation, publish a chart. The problem is that the first run is rarely the last question. We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) to make the next question cheap rather than expensive. The runner stays the same as your workload evolves, and the same runner can be used across wildly different benchmarks.
 
 This post is a worked example of this in practice. We take one TopK full-text search query over one million Hacker News rows, run it against ParadeDB and Postgres FTS, then change two things: first the workload, by varying term selectivity; then the execution, by switching the arrival pattern. The dataset, query shape, hardware, and backend setup stay fixed.
 
-Each pass produces a different and equally true answer. Pass 1 shows the two backends within ten percent on QPS (3,646 vs 3,290). Pass 2 shows Postgres FTS dropping to 115 QPS once term selectivity varies. Pass 3 limits throughput to 50 QPS, with FTS still trailing on latency (P99 238ms vs 5.11ms) and consuming more resources.
+As we will see below, each pass produces a different and equally true answer. Pass 1 shows the two backends within ten percent on QPS. Pass 2 shows Postgres FTS dropping by an order of magnitude once term selectivity varies. Pass 3 caps the offered rate well inside that ceiling and surfaces the gap as latency and resource use instead. The point is not that one pass is right; it is that each next question was cheap to ask.
 
 ## Benchmarker
 
@@ -96,7 +96,7 @@ The two backends land close to each other, with ParadeDB sustaining about 3,650 
 
 That makes Pass 1 useful, but also easy to overread. If you stopped here with "Postgres' built-in full-text search and ParadeDB are within ten percent of each other on this TopK workload," the sentence would be true as far as the run is concerned, and most readers would not have a reason to object.
 
-The missing question is whether `inverted` is doing too much of the work for the conclusion. Real applications search for many different terms, and the cost of a TopK query can depend heavily on term selectivity: how many documents a term matches. `inverted` is a real term in the dataset, but it only matches 390 documents. A workload that also includes terms matching thousands or tens of thousands of documents is asking a different question.
+The missing question is whether this workload looks like what real users would do. Real applications search for many different terms, and the cost of a TopK query can depend heavily on term selectivity: how many documents a term matches. `inverted` is a real term in the dataset, but it only matches 390 documents. A workload that also includes terms matching thousands or tens of thousands of documents is asking a different question.
 
 ## Pass 2: Change the Terms
 
