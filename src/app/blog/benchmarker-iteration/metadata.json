@@ -4,5 +4,5 @@
   "author": "James Blackwood-Sewell",
   "description": "A worked example showing how a generic benchmark runner keeps one TopK query shape fixed while varying term selectivity and arrival pattern.",
   "categories": ["benchmarks", "postgres", "search", "bm25", "engineering"],
-  "hideHeroImage": true
+  "hideHeroImage": false
 }
