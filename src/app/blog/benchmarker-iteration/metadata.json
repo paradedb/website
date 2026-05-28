@@ -2,7 +2,7 @@
   "title": "Iterating on a ParadeDB vs Postgres FTS Benchmark",
   "date": "2026-05-27T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
-  "description": "A worked example showing how a generic benchmark runner keeps one TopK query shape fixed while varying term selectivity and arrival pattern.",
+  "description": "Three benchmark passes over one TopK search query against ParadeDB and Postgres FTS, showing how workload variation and execution shape change the answer.",
   "categories": ["benchmarks", "postgres", "search", "bm25", "engineering"],
   "hideHeroImage": false
 }
