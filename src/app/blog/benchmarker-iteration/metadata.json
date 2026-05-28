@@ -1,5 +1,5 @@
 {
-  "title": "Iterating on a ParadeDB vs Postgres FTS Benchmark with Benchmarker",
+  "title": "Benchmarking ParadeDB and Postgres FTS",
   "date": "2026-05-27T00:00:00.000Z",
   "author": "James Blackwood-Sewell",
   "description": "A worked example showing how a generic benchmark runner keeps one TopK query shape fixed while varying term selectivity and arrival pattern.",
