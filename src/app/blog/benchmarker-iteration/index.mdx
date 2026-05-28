@@ -12,11 +12,11 @@ import roundThreeMemory from "./images/round_three_memory.png";
 <Title metadata={blogMetadata} />
 <AuthorSection metadata={blogMetadata} />
 
-Most database benchmarks start as one-off scripts: pick a workload, pick a backend, write the load generation, publish a chart. The problem is that the first run rarely settles the matter. We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) to make the follow-up cheap rather than expensive. The runner stays the same as your workload evolves, and the same runner can be used across wildly different benchmarks.
+Most database benchmarks publish one story from one run. The trouble is that the same query, on the same data and hardware, can produce wildly different results depending on workload or scheduling decisions. Picking one set of choices and stopping there is one way that reasonable benchmarks can end up misleading.
 
-This post is a worked example of this in practice. We take one TopK full-text search query over one million Hacker News rows, run it against ParadeDB and Postgres FTS, then change two things: first the workload, by varying term selectivity; then the execution, by switching the arrival pattern. The dataset, query shape, hardware, and backend setup stay fixed.
+We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) so each of those choices is easy to change, making each iteration of the benchmark an easy process. The runner stays the same as your workload evolves, and the same runner can be used across wildly different benchmarks.
 
-As we will see below, each pass produces a different and equally true answer. Pass 1 shows the two backends within ten percent on QPS. Pass 2 shows Postgres FTS dropping by an order of magnitude once term selectivity varies. Pass 3 caps the offered rate well inside that ceiling and surfaces the gap as latency and resource use instead. The point is not that one pass is right; it is that each follow-up was cheap to run.
+This post is a worked example. We take one TopK full-text search query over one million Hacker News rows, run it against ParadeDB and Postgres FTS, and walk three passes while the dataset, query shape, hardware, and backend setup stay fixed. Pass 1 is the baseline: single hardcoded term, closed loop. Pass 2 changes the **workload** to a forty-term rotation across a wider selectivity range. Pass 3 keeps that workload and changes the **execution model** to a fixed-rate open loop. Each pass produces a different and equally true answer; the point is not which one is right, but that each axis is a separate methodology decision, and exploring all three was easy.
 
 ## Benchmarker
 
@@ -94,7 +94,7 @@ Running this for thirty seconds against each backend produces:
 
 The two backends land close to each other, with ParadeDB sustaining about 3,650 queries per second under sixteen concurrent callers and Postgres FTS sustaining about 3,300. Median and P90 latencies move together, and the P99 tails are essentially identical at around 69ms.
 
-That makes Pass 1 useful, but also easy to overread. If you stopped here with "Postgres' built-in full-text search and ParadeDB are within ten percent of each other on this TopK workload," the sentence would be true as far as the run is concerned, and most readers would not have a reason to object.
+If you stopped here with "Postgres' built-in full-text search and ParadeDB are within ten percent of each other on this TopK workload," the sentence would be true as far as the run is concerned, and most readers would not have a reason to object.
 
 The missing piece is whether this workload looks like what real users would do. Real applications search for many different terms, and the cost of a TopK query can depend heavily on term selectivity: how many documents a term matches. `inverted` is a real term in the dataset, but it only matches 390 documents. A workload that also includes terms matching thousands or tens of thousands of documents is a different test.
 
@@ -250,9 +250,9 @@ Three benchmark shapes against the same query, data, and hardware produced three
 
 - **Pass 1 (closed loop, one selective term).** ParadeDB sustained ~3,650 QPS, Postgres FTS sustained ~3,300, with P99 tails near 69ms for both. Within ten percent. A single rare term keeps the per-query work small enough that the two backends look similar.
 - **Pass 2 (closed loop, forty rotating terms).** ParadeDB held at ~3,400 QPS while Postgres FTS dropped to ~115 QPS, a 29x gap. The Postgres FTS plan's cost scales with how many rows a term matches; Tantivy's block-max-WAND TopK traversal lets ParadeDB skip blocks that cannot make the top ten.
-- **Pass 3 (open loop, 50 QPS offered).** Postgres FTS completed every scheduled request, but P90 was 74.5ms vs 1.71ms and P99 was 238ms vs 5.11ms, a 44x and 47x gap. The offered rate sits well inside Postgres FTS's measured capacity, so saturation is not the explanation; the same workload also pushed Postgres FTS's container to noticeably higher CPU and roughly 3x the memory of ParadeDB's.
+- **Pass 3 (open loop, 50 QPS offered).** Both systems completed every scheduled request, but Postgres FTS P90 was 74.5ms vs 1.71ms and P99 was 238ms vs 5.11ms, a 44x and 47x gap. The offered rate sits well inside Postgres FTS's measured capacity, so saturation is not the explanation; the same workload also pushed Postgres FTS's container to noticeably higher CPU and roughly 3x the memory of ParadeDB's.
 
-The only mistake would be stopping at the first answer[^6].
+The only mistake would be stopping at the first pass[^6],
 
 That is the reason we built a generic benchmarker, not one bound to a specific benchmark. The next pass is always a few lines away, and we plan to keep running different ones as we go.
 
