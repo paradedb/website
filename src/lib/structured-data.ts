@@ -61,29 +61,25 @@ export function websiteSchema() {
   };
 }
 
-/** schema.org SoftwareApplication — ParadeDB the product. */
-export function softwareApplicationSchema() {
-  return {
-    "@context": "https://schema.org",
-    "@type": "SoftwareApplication",
-    name: siteConfig.name,
-    applicationCategory: "DeveloperApplication",
-    applicationSubCategory: "Database",
-    operatingSystem: "Linux, macOS, Docker, Kubernetes",
-    description: siteConfig.description,
-    url: siteConfig.url,
-    downloadUrl: github.REPO,
-    softwareHelp: "https://docs.paradedb.com",
-    license: "https://github.com/paradedb/paradedb/blob/main/LICENSE",
-    author: { "@id": ORG_ID },
-    publisher: { "@id": ORG_ID },
-    offers: {
-      "@type": "Offer",
-      price: "0",
-      priceCurrency: "USD",
-    },
-  };
-}
+/**
+ * A `SoftwareApplication` schema previously lived here and was emitted on every
+ * page via the root layout. It was removed because Google requires the type to
+ * carry `name`, `offers.price`, AND one of `aggregateRating` or `review`
+ * (https://developers.google.com/search/docs/appearance/structured-data/software-app).
+ * We had no genuine rating/review data, so it was invalid on every page and
+ * SEMrush flagged it across the whole site.
+ *
+ * To bring it back:
+ *   1. Obtain REAL aggregate ratings or a real review — never fabricate them, as
+ *      invented ratings violate Google's guidelines and risk a manual action.
+ *   2. Add a `softwareApplicationSchema()` builder returning at minimum:
+ *        name, offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+ *        and aggregateRating: { "@type": "AggregateRating", ratingValue, ratingCount }
+ *        (or a `review`). author/publisher can reference ORG_ID as before.
+ *   3. Emit it ONLY on the product/homepage — not site-wide — since the schema
+ *      makes no semantic sense on blog posts, which is what caused 55 errors.
+ *   4. Validate with the Rich Results Test before shipping.
+ */
 
 interface PostMetadata {
   title: string;
