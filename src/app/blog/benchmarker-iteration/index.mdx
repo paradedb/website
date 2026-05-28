@@ -92,7 +92,7 @@ Running this for thirty seconds against each backend produces:
   caption="Pass 1 throughput over time. ParadeDB sustains roughly 3,650 QPS; Postgres FTS sustains roughly 3,300. The lines barely separate."
 />
 
-The two backends land close to each other, with ParadeDB sustaining about 3,650 queries per second under sixteen concurrent callers and Postgres FTS sustaining about 3,300. Median and P90 latencies move together, and the P99 tails are essentially identical at around 69ms.
+Both backends sit within ten percent of each other on every metric: for this single-term workload, there is no meaningful difference. ParadeDB sustains about 3,650 QPS to Postgres FTS's 3,300, median and P90 latencies move together, and the P99 tails are essentially identical at around 69ms.
 
 If you stopped here with "Postgres' built-in full-text search and ParadeDB are within ten percent of each other on this TopK workload," the sentence would be true as far as the run is concerned, and most readers would not have a reason to object.
 
@@ -141,9 +141,7 @@ The runner walks that list sequentially and wraps back to the beginning. Over th
   caption="Pass 2 throughput over time. ParadeDB stays at ~3,400 QPS. Postgres FTS dropped to ~115."
 />
 
-Compared with Pass 1, the picture splits in two. ParadeDB moves from 3,646 QPS to 3,373 QPS, with median latency shifting from 1.33ms to 1.44ms. Going from one uncommon term to a rotation that mixes in more common ones barely changes ParadeDB's numbers.
-
-Postgres FTS follows a different curve. Its closed-loop throughput falls from 3,290 QPS to 115 QPS, a 29x drop, and median latency moves from 1.49ms to 109ms. The run is configured like Pass 1 in every important respect, from hardware and concurrency to the SQL shape; what changed is that the rotation includes terms matching thousands of rows, not just 390.
+Postgres FTS throughput collapsed 29x; ParadeDB barely moved. The only change was the term mix. ParadeDB drops from 3,646 to 3,373 QPS with median latency shifting from 1.33ms to 1.44ms. Postgres FTS falls from 3,290 to 115 QPS, and median latency moves from 1.49ms to 109ms. The run is configured like Pass 1 in every important respect; what changed is that the rotation includes terms matching thousands of rows, not just 390.
 
 <details>
 <summary>**Aside: why selectivity hit Postgres FTS so hard**</summary>
@@ -178,9 +176,7 @@ Again, we change nothing else: keeping the forty-term rotation and the same sixt
   ]}
 />
 
-Both backends keep up at the offered rate with no missed iterations, which is the expected result given that 50 QPS fits inside Postgres FTS's observed throughput capacity. By a throughput measure, Postgres FTS handles the workload.
-
-The latency columns tell the useful story. Postgres FTS completes every scheduled request, but its P90 is 74.5ms versus ParadeDB's 1.71ms, and its P99 is 238ms versus ParadeDB's 5.11ms. That is roughly a 44x gap at P90 and a 47x gap at P99. Pass 2's percentiles were actually higher in absolute terms (Postgres FTS hit 296ms at P90 and 490ms at P99), but in a closed loop they were easy to dismiss as a saturation symptom: sixteen waiting callers on a backend that could only sustain 115 QPS will queue. Pass 3 removes that explanation. The arrival rate sits well inside Postgres FTS's observed capacity, and the same kind of gap shows up as application latency rather than as collapsed throughput.
+Postgres FTS completes every request, but its P99 is 47x higher than ParadeDB's, even though 50 QPS sits well inside Postgres FTS's observed capacity. By a throughput measure, Postgres FTS handles the workload, but the latency story is different: P90 of 74.5ms vs ParadeDB's 1.71ms, P99 of 238ms vs 5.11ms. Pass 2's percentiles were actually higher in absolute terms, but in a closed loop they were easy to dismiss as a saturation symptom: sixteen waiting callers on a backend that could only sustain 115 QPS will queue. Pass 3 removes that explanation.
 
 The Docker metrics dashboard recorded the resource picture during both phases:
 
@@ -196,7 +192,7 @@ The Docker metrics dashboard recorded the resource picture during both phases:
   caption="Pass 3 container memory. ParadeDB holds at roughly 400MB; Postgres FTS climbs to about 1.2GB."
 />
 
-50 QPS does not sound like a lot, and for ParadeDB against this workload it is not: CPU stays close to zero and memory holds steady at around 400MB. For Postgres FTS the same offered rate keeps two to four cores busy throughout the window and uses about a gigabyte more working memory. The completion column says the database kept up. The resource view says it had to work hard to do so, and the latency columns show what that means for the application.
+Postgres FTS uses two to four cores and roughly 3x the memory to keep up with the same offered rate that leaves ParadeDB near idle. The completion column says the database kept up. The resource view says it had to work hard to do so, and the latency columns show what that means for the application.
 
 ## Try It Yourself
 
