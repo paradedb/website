@@ -30,7 +30,7 @@ In a closed-loop run, each virtual user sends a query, waits for the response, a
 
 In an open-loop run, the runner starts queries on a schedule, such as 50 QPS, so the offered rate is fixed and latency shows up as slower completions or missed iterations. Benchmarker uses k6's `constant-arrival-rate` executor for this shape, with `maxVUs` capping how many workers can run scheduled queries at once.
 
-The concrete environment is in [What Stayed Fixed](#what-stayed-fixed), and the commands to reproduce are in [Try It Yourself](#try-it-yourself).
+The concrete environment is explained below in [What Stayed Fixed](#what-stayed-fixed), and the commands to reproduce are in [Try It Yourself](#try-it-yourself).
 
 ## What Stayed Fixed
 
@@ -145,11 +145,14 @@ Compared with Pass 1, the picture splits in two. ParadeDB moves from 3,646 QPS t
 
 Postgres FTS follows a different curve. Its closed-loop throughput falls from 3,290 QPS to 115 QPS, a 29x drop, and median latency moves from 1.49ms to 109ms. The run is configured like Pass 1 in every important respect, from hardware and concurrency to the SQL shape; what changed is that the rotation includes terms matching thousands of rows, not just 390.
 
-### A Quick Aside: Why Selectivity Mattered
+<details>
+<summary>**Aside: why selectivity hit Postgres FTS so hard**</summary>
 
 The split comes from how each backend scores its candidate rows. For this query shape, Postgres' `ts_rank` scores every row that the `tsv @@ plainto_tsquery(...)` filter matches before `ORDER BY score DESC LIMIT 10` can pick the top ten. That is manageable for a selective term like `inverted`, which matches 390 rows, but much more expensive for a less selective term like `google`, which matches 27,336.
 
 ParadeDB's BM25 implementation is built on Tantivy, which uses a block-max-WAND-style top-K traversal. The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. In this run, that kept the higher selectivity terms fast while Postgres FTS spent most of its time ranking the larger result sets.
+
+</details>
 
 ## Pass 3: Fix the Arrival Rate (47x P99 gap)
 
