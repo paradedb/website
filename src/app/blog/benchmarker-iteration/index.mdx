@@ -15,11 +15,11 @@ import roundThreeMemory from "./images/round_three_memory.png";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-Most database benchmarks publish one story from one run. The trouble is that the same query, on the same data and hardware, can produce different results depending on workload or scheduling decisions. A benchmark that picks one set of choices and stops there can still mislead, even when the run itself is fair.
+Most database benchmarks publish one story based on one run. The trouble is that the same query, on the same data and hardware, can produce different results depending on workload or scheduling decisions. A benchmark that picks one set of choices and stops there can still mislead, even when the run itself is fair.
 
 We built [ParadeDB Benchmarker](https://github.com/paradedb/benchmarker) to support a wide range of methodologies, making each iteration of a benchmark an easy lift. The runner stays the same as your workload evolves, and the same runner can be used across wildly different benchmarks.
 
-To demonstrate, we ran one TopK full-text search query against ParadeDB and Postgres FTS across three passes, while the dataset, query shape, hardware, and backend setup stayed fixed. Pass 1 used a single hardcoded term in a closed loop, and the two backends sat within 10% of each other. Pass 2 swapped the **workload** for a forty-term rotation across a wider selectivity range; the gap widened to ~29x on throughput. Pass 3 kept that workload but switched the **execution model** to a fixed-rate open loop well inside both backends' capacity; a ~47x P99 latency gap opened.
+To demonstrate, we ran one TopK full-text search query against ParadeDB and Postgres FTS across three passes, while the dataset, query shape, hardware, and backend setup stayed fixed. Pass 1 used a single hardcoded term in a closed loop, and the two backends sat within 10% of each other. Pass 2 swapped the **workload** for a forty-term rotation, and the throughput gap widened to ~29x. Pass 3 kept that workload but switched the **execution model** to a fixed-rate open loop well inside both backends' capacity, and a ~47x P99 latency gap opened.
 
 ## Benchmarker
 
@@ -27,7 +27,7 @@ To demonstrate, we ran one TopK full-text search query against ParadeDB and Post
 
 Benchmarker is a runner built on top. It builds a custom k6 binary with our multi-backend `xk6-database` extension compiled in, alongside a loader CLI, dataset tooling, Docker compose profiles, and a real-time dashboard. A single k6 JavaScript script defines backends, datasets, term sources, and scenarios in one place, with run-time artifacts like container metrics and backend configuration being captured on run.
 
-Two execution shapes matter for this post: closed-loop and open-loop (Planetscale have a good primer on these in their excellent [on-benchmarking](https://planetscale.com/blog/on-benchmarking) post).
+Two execution shapes matter for this post: closed-loop and open-loop (PlanetScale have a good primer on these in their excellent [on-benchmarking](https://planetscale.com/blog/on-benchmarking) post).
 
 In a closed-loop run, each virtual user sends a query, waits for the response, and then sends the next one, so throughput is an outcome of how quickly the database answers. This is useful for asking how much work a backend can serve with a fixed amount of client concurrency. In k6, Benchmarker uses the `constant-vus` executor for this shape.
 
@@ -151,7 +151,7 @@ Postgres FTS throughput collapsed 29x; ParadeDB barely moved. The only change wa
 
 The split comes from how each backend scores its candidate rows. For this query shape, Postgres' `ts_rank` scores every row that the `tsv @@ plainto_tsquery(...)` filter matches before `ORDER BY score DESC LIMIT 10` can pick the top ten. That is manageable for a selective term like `inverted`, which matches 390 rows, but much more expensive for a less selective term like `google`, which matches 27,336.
 
-ParadeDB's BM25 implementation is built on Tantivy, which uses a [block-max-WAND-style top-K traversal](https://paradedb.com/learn/search-concepts/block-wand). The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. We've written about how this plays out in Postgres in [How We Optimized Top K in Postgres](https://www.paradedb.com/blog/optimizing-top-k). In this run, that kept the higher selectivity terms fast while Postgres FTS spent most of its time ranking the larger result sets.
+ParadeDB's BM25 implementation is built on Tantivy, which uses a [block-max-WAND-style top-K traversal](https://paradedb.com/learn/search-concepts/block-wand). The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. We've written about how this plays out in Postgres in [How We Optimized Top K in Postgres](https://www.paradedb.com/blog/optimizing-top-k). In this run, that kept the less selective terms fast while Postgres FTS spent most of its time ranking the larger result sets.
 
 </details>
 
@@ -195,7 +195,7 @@ The Docker metrics dashboard recorded the resource picture during both phases:
   caption="Pass 3 container memory. ParadeDB holds at roughly 400MB; Postgres FTS climbs to about 1.2GB."
 />
 
-Postgres FTS uses two to four cores and roughly 3x the memory to keep up with the same offered rate that leaves ParadeDB near idle. The completion column says the database kept up. The resource view says it had to work hard to do so, and the latency columns show what that means for the application.
+Postgres FTS uses one to four cores and roughly 3x the memory to keep up with the same offered rate that leaves ParadeDB near idle. The completion column says the database kept up. The resource view says it had to work hard to do so, and the latency columns show what that means for the application.
 
 ## Try It Yourself
 
@@ -229,9 +229,18 @@ docker compose --file ./datasets/hn_cutdown/docker-compose.yml \
 ./k6 run --out dashboard=json,live,html \
     ./datasets/hn_cutdown/k6/closed_loop_single.js
 
+# Restart between runs so each pass starts from a clean process
+docker restart paradedb postgres
+docker compose --file ./datasets/hn_cutdown/docker-compose.yml \
+    --profile all up -d --wait
+
 # Pass 2: closed-loop sustained, 16 VUs, rotating terms
 ./k6 run --out dashboard=json,live,html \
     ./datasets/hn_cutdown/k6/closed_loop.js
+
+docker restart paradedb postgres
+docker compose --file ./datasets/hn_cutdown/docker-compose.yml \
+    --profile all up -d --wait
 
 # Pass 3: open-loop, 50 QPS offered, maxVUs=16, rotating terms
 ./k6 run --out dashboard=json,live,html \
@@ -242,7 +251,7 @@ Open `http://localhost:5665/static/` while a dashboard run is happening and the 
 
 The forty terms in `search_terms.json` were picked by hand to cover a wide selectivity range. Swap the file for your own list, change the rotation strategy, or replace `terms.next()` with a sampler that biases toward less selective terms. Each change is a one-line edit, and the dashboard renders the result the same way.
 
-One small oddity to call out is we are setting `max_parallel_workers_per_gather` to 0 in the ParadeDB post script. This is to combat incorrect worker selection for TopK queries, this will be fixed shortly by [PR#5150 (cost-based serial vs parallel for score-DESC TopK)](https://github.com/paradedb/paradedb/pull/5150).
+One small oddity to call out is we are setting `max_parallel_workers_per_gather` to 0 in the ParadeDB post script. This is to combat incorrect worker selection for TopK queries; it will be fixed shortly by [PR#5150 (cost-based serial vs parallel for score-DESC TopK)](https://github.com/paradedb/paradedb/pull/5150).
 
 </details>
 
@@ -268,8 +277,8 @@ Benchmarker is open source at [github.com/paradedb/benchmarker](https://github.c
 
 [^4]: rust, python, javascript, startup, google, apple, amazon, facebook, microsoft, ai, machine, database, postgresql, linux, source, security, privacy, blockchain, crypto, bitcoin, remote, hiring, layoffs, funding, ipo, acquisition, kubernetes, docker, aws, cloud, serverless, api, graphql, react, typescript, golang, performance, optimization, scaling, distributed
 
-[^5]: Which can totally happen at higher rates. If we pushed this rate to 100, then Postgres FTS actually can't keep up at all, and k6 ends up exhausting it's VU worker pool and dropping requests. This is interesting for Postgres workloads because you don't really want to bump VUs any higher (each becomes a process in the 4CPU database container), so normally you'd add PgBouncer in front to do connection pooling. This would be an interesting benchmark setup for another day.
+[^5]: Which can totally happen at higher rates. If we pushed this rate to 100, then Postgres FTS actually can't keep up at all, and k6 ends up exhausting its VU worker pool and dropping requests. This is interesting for Postgres workloads because you don't really want to bump VUs any higher (each becomes a process in the 4CPU database container), so normally you'd add PgBouncer in front to do connection pooling. This would be an interesting benchmark setup for another day.
 
-[^6]: So what's worth checking next? How do the systems behave across a wider range of selectivity (it turns out for single digit selectivity Postgres FTS is actually faster than ParadeDB, mostly due to setup costs)? How do the systems behave in the face of insert pressure? If you run any follow-ups let us know!
+[^6]: So what's worth checking next? How do the systems behave across a wider range of selectivity (it turns out for terms matching only a handful of documents, on the order of 1-10, Postgres FTS is actually faster than ParadeDB, mostly due to setup costs)? How do the systems behave in the face of insert pressure? If you run any follow-ups let us know!
 
 [^7]: Planetscale's primer names a separate closed-loop pitfall: coordinated omission, where a stalled client stops sending requests during a database stall and misses recording the tail latency it would otherwise have seen. We didn't see that here. Pass 2's closed-loop tail latencies were higher than Pass 3's open-loop ones, so there was no hidden tail to expose. Our use of open-loop is the inverse: removing the saturation and levelling the playing field between backends, not surfacing missed measurements.
