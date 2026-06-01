@@ -8,11 +8,7 @@ import Script from "next/script";
 import { GoogleTagManager } from "@next/third-parties/google";
 import CookieConsentLoader from "@/components/CookieConsentLoader";
 import { JsonLd } from "@/components/JsonLd";
-import {
-  organizationSchema,
-  softwareApplicationSchema,
-  websiteSchema,
-} from "@/lib/structured-data";
+import { organizationSchema, websiteSchema } from "@/lib/structured-data";
 import { siteConfig } from "./siteConfig";
 
 import "./globals.css";
@@ -88,13 +84,7 @@ export default function RootLayout({
           href="/llms-full.txt"
           title="ParadeDB llms-full.txt"
         />
-        <JsonLd
-          data={[
-            organizationSchema(),
-            websiteSchema(),
-            softwareApplicationSchema(),
-          ]}
-        />
+        <JsonLd data={[organizationSchema(), websiteSchema()]} />
       </head>
       <body
         className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-background text-foreground selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-700 dark:selection:text-indigo-300`}
