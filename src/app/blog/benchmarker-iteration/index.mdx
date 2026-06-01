@@ -229,18 +229,9 @@ docker compose --file ./datasets/hn_cutdown/docker-compose.yml \
 ./k6 run --out dashboard=json,live,html \
     ./datasets/hn_cutdown/k6/closed_loop_single.js
 
-# Restart between runs so each pass starts from a clean process
-docker restart paradedb postgres
-docker compose --file ./datasets/hn_cutdown/docker-compose.yml \
-    --profile all up -d --wait
-
 # Pass 2: closed-loop sustained, 16 VUs, rotating terms
 ./k6 run --out dashboard=json,live,html \
     ./datasets/hn_cutdown/k6/closed_loop.js
-
-docker restart paradedb postgres
-docker compose --file ./datasets/hn_cutdown/docker-compose.yml \
-    --profile all up -d --wait
 
 # Pass 3: open-loop, 50 QPS offered, maxVUs=16, rotating terms
 ./k6 run --out dashboard=json,live,html \
