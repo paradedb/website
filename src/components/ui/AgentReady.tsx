@@ -14,6 +14,7 @@ import { Badge } from "./Badge";
 import { JavaScriptIcon } from "./icons/JavaScriptIcon";
 import { PythonIcon } from "./icons/PythonIcon";
 import { RubyIcon } from "./icons/RubyIcon";
+import { CSharpIcon } from "./icons/CSharpIcon";
 
 const Integrations = [
   {
@@ -146,6 +147,11 @@ const Frameworks = [
     name: "Ruby",
     className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
     icon: <RubyIcon className="size-[1.4rem]" />,
+  },
+  {
+    name: "C#",
+    className: "text-slate-900 dark:text-slate-100",
+    icon: <CSharpIcon className="size-[1.4rem]" />,
   },
 ];
 
@@ -528,8 +534,9 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Query ParadeDB from your favorite programming
-                            language. Supports Drizzle, Django, SQLAlchemy, and
-                            ActiveRecord, with more coming soon.
+                            language. Supports Drizzle, Django, SQLAlchemy,
+                            ActiveRecord, and Entity Framework Core with more
+                            coming soon.
                           </p>
                           <div className="mt-auto flex flex-col gap-2">
                             <Link
