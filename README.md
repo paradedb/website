@@ -21,12 +21,6 @@ pnpm run dev
 
 Visit [http://localhost:3000](http://localhost:3000) in your browser to view.
 
-## Notes
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-Chart components use vendored utilities from [`Tremor Raw`](https://raw.tremor.so/docs/getting-started/installation) (in `src/lib/chartUtils.ts`) alongside [`@tremor/react`](https://www.tremor.so/) for bar charts.
-
 ## License
 
 Apache-2.0 License - see [LICENSE](LICENSE) for details.
