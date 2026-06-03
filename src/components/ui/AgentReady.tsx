@@ -14,6 +14,7 @@ import { Badge } from "./Badge";
 import { JavaScriptIcon } from "./icons/JavaScriptIcon";
 import { PythonIcon } from "./icons/PythonIcon";
 import { RubyIcon } from "./icons/RubyIcon";
+import { CSharpIcon } from "./icons/CSharpIcon";
 
 const Integrations = [
   {
@@ -147,6 +148,11 @@ const Frameworks = [
     className: "text-slate-900 dark:text-slate-100 -translate-y-[2px]",
     icon: <RubyIcon className="size-[1.4rem]" />,
   },
+  {
+    name: "C#",
+    className: "text-slate-900 dark:text-slate-100",
+    icon: <CSharpIcon className="size-[1.4rem]" />,
+  },
 ];
 
 const CloudPlatforms = [
@@ -220,7 +226,7 @@ function GridBackground({
   skipCount: number;
 }) {
   const totalCells = cols * 5;
-  const skipStart = Math.floor(totalCells / 2) - 1;
+  const skipStart = Math.floor((totalCells - skipCount) / 2);
 
   return (
     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none [mask-image:radial-gradient(ellipse_60%_50%_at_center,black_10%,transparent_70%)] z-0">
@@ -480,9 +486,9 @@ export default function AgentReady() {
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
-                          <div className="relative flex items-center justify-center w-[10.5rem] h-[3rem] mx-auto">
+                          <div className="relative flex items-center justify-center w-[14rem] h-[3rem] mx-auto">
                             <GridBackground
-                              cols={7}
+                              cols={8}
                               cellWidth="3.5rem"
                               skipCount={Frameworks.length}
                             />
@@ -528,8 +534,8 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Query ParadeDB from your favorite programming
-                            language. Supports Drizzle, Django, SQLAlchemy, and
-                            ActiveRecord, with more coming soon.
+                            language. Supports Drizzle, Django, SQLAlchemy,
+                            ActiveRecord, and EF Core with more coming soon.
                           </p>
                           <div className="mt-auto flex flex-col gap-2">
                             <Link
