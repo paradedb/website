@@ -535,7 +535,7 @@ export default function AgentReady() {
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Query ParadeDB from your favorite programming
                             language. Supports Drizzle, Django, SQLAlchemy,
-                            ActiveRecord, and EF Core with more coming soon.
+                            Rails, and EF Core with more coming soon.
                           </p>
                           <div className="mt-auto flex flex-col gap-2">
                             <Link
