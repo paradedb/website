@@ -45,7 +45,7 @@ The data is a cut-down slice[^2] of the Hacker News archive: one million rows in
 
 The comparison is [ParadeDB](https://github.com/paradedb/paradedb)'s BM25 index against Postgres' built-in tsvector datatype and a GIN index (often referred to as [Postgres full-text search](https://www.postgresql.org/docs/current/textsearch.html)). These are different ranking models over different index implementations, but both are ways developers can run TopK relevance search inside Postgres.
 
-ParadeDB indexes `text` directly with [BM25](https://paradedb.com/learn/search-concepts/bm25). Postgres pre-tokenizes `text` into a stored generated `tsv` column and indexes that value with GIN[^3]. Both are configured for English text processing, and both answer the same query shape using their native syntax:
+ParadeDB indexes `text` directly with [BM25](https://www.paradedb.com/learn/search-concepts/bm25). Postgres pre-tokenizes `text` into a stored generated `tsv` column and indexes that value with GIN[^3]. Both are configured for English text processing, and both answer the same query shape using their native syntax:
 
 ```sql
 -- ParadeDB BM25
@@ -151,7 +151,7 @@ Postgres FTS throughput collapsed 29x; ParadeDB barely moved. The only change wa
 
 The split comes from how each backend scores its candidate rows. For this query shape, Postgres' `ts_rank` scores every row that the `tsv @@ plainto_tsquery(...)` filter matches before `ORDER BY score DESC LIMIT 10` can pick the top ten. That is manageable for a selective term like `inverted`, which matches 390 rows, but much more expensive for a less selective term like `google`, which matches 27,336.
 
-ParadeDB's BM25 implementation is built on Tantivy, which uses a [block-max-WAND-style top-K traversal](https://paradedb.com/learn/search-concepts/block-wand). The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. We've written about how this plays out in Postgres in [How We Optimized Top K in Postgres](https://www.paradedb.com/blog/optimizing-top-k). In this run, that kept the less selective terms fast while Postgres FTS spent most of its time ranking the larger result sets.
+ParadeDB's BM25 implementation is built on Tantivy, which uses a [block-max-WAND-style top-K traversal](https://www.paradedb.com/learn/search-concepts/block-wand). The index keeps per-block score upper bounds so the reader can skip whole blocks that cannot contribute to the top ten. We've written about how this plays out in Postgres in [How We Optimized Top K in Postgres](https://www.paradedb.com/blog/optimizing-top-k). In this run, that kept the less selective terms fast while Postgres FTS spent most of its time ranking the larger result sets.
 
 </details>
 
