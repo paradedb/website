@@ -13,7 +13,6 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "src/**"
-      - "vercel.json"
       - ".github/workflows/check-www-links.yml"
   workflow_dispatch:
 
@@ -42,7 +41,7 @@ jobs:
             --include="*.tsx" --include="*.ts" \
             --include="*.jsx" --include="*.js" \
             --include="*.json" --exclude="content-index.json" \
-            src/ vercel.json | grep -v "paradedb\.com/install\.sh" || true)
+            src/ | grep -v "paradedb\.com/install\.sh" || true)
 
           if [ -n "$matches" ]; then
             echo "::error::Found apex paradedb.com links. Use https://www.paradedb.com instead:"
