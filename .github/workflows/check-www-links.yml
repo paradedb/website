@@ -13,6 +13,7 @@ on:
     types: [opened, synchronize, reopened, ready_for_review]
     paths:
       - "src/**"
+      - "vercel.json"
       - ".github/workflows/check-www-links.yml"
   workflow_dispatch:
 
@@ -34,12 +35,14 @@ jobs:
         run: |
           # Match http(s)://paradedb.com (the apex host) but not www.paradedb.com,
           # docs.paradedb.com, or any other subdomain. The /install.sh endpoint is
-          # an intentional exception.
+          # an intentional exception. content-index.json is generated at build
+          # from the source content, so it is excluded (it is also gitignored).
           matches=$(grep -rnoE "https?://paradedb\.com[^[:space:])\"'\`]*" \
             --include="*.mdx" --include="*.md" \
             --include="*.tsx" --include="*.ts" \
             --include="*.jsx" --include="*.js" \
-            src/ | grep -v "paradedb\.com/install\.sh" || true)
+            --include="*.json" --exclude="content-index.json" \
+            src/ vercel.json | grep -v "paradedb\.com/install\.sh" || true)
 
           if [ -n "$matches" ]; then
             echo "::error::Found apex paradedb.com links. Use https://www.paradedb.com instead:"
