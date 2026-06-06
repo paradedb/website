@@ -1,0 +1,59 @@
+# workflows/check-www-links.yml
+#
+# Check www. Links
+# Ensure internal links use the canonical https://www.paradedb.com host. Apex
+# paradedb.com URLs 308-redirect to www, which hurts SEO and wastes a request
+# hop. The /install.sh endpoint is exempt: the short apex form is intentional
+# and curl follows the redirect.
+
+name: Check www. Links
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "src/**"
+      - ".github/workflows/check-www-links.yml"
+  workflow_dispatch:
+
+concurrency:
+  group: check-www-links-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check-www-links:
+    name: Check www. Links
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v6
+
+      - name: Check for apex paradedb.com links
+        run: |
+          # Match http(s)://paradedb.com (the apex host) but not www.paradedb.com,
+          # docs.paradedb.com, or any other subdomain. The /install.sh endpoint is
+          # an intentional exception.
+          matches=$(grep -rnoE "https?://paradedb\.com[^[:space:])\"'\`]*" \
+            --include="*.mdx" --include="*.md" \
+            --include="*.tsx" --include="*.ts" \
+            --include="*.jsx" --include="*.js" \
+            src/ | grep -v "paradedb\.com/install\.sh" || true)
+
+          if [ -n "$matches" ]; then
+            echo "::error::Found apex paradedb.com links. Use https://www.paradedb.com instead:"
+            echo "$matches" | while IFS= read -r line; do
+              file=$(echo "$line" | cut -d: -f1)
+              lineno=$(echo "$line" | cut -d: -f2)
+              url=$(echo "$line" | cut -d: -f3-)
+              echo "::error file=$file,line=$lineno::$url should use the www. host"
+            done
+            echo ""
+            echo "Internal links must use https://www.paradedb.com (the canonical host)."
+            echo "Apex paradedb.com URLs 308-redirect to www., which hurts SEO."
+            echo "The only exception is https://paradedb.com/install.sh."
+            exit 1
+          fi
+
+          echo "All paradedb.com links use the canonical www. host."
