@@ -1,0 +1,7 @@
+{
+  "title": "Testing ParadeDB with Antithesis",
+  "date": "2026-06-12T00:00:00.000Z",
+  "author": "Philippe Noël",
+  "description": "Why ParadeDB, a Postgres extension that behaves like a distributed system inside one node, runs every commit through Antithesis' deterministic simulation harness.",
+  "categories": ["postgres", "testing", "antithesis", "search"]
+}

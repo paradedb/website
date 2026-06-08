@@ -1,0 +1,113 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+
+ParadeDB is a Postgres extension. From the outside, it looks like a single binary running on a single machine, the same shape as a vanilla Postgres install. From the inside, it looks much more like a distributed system. Postgres is process-based, and a single query against a `bm25` index can fan out across a primary backend, multiple parallel workers, autovacuum, the WAL writer, and the checkpointer, with each process reading and writing shared on-disk data structures through Postgres' buffer cache. Add physical replication, logical replication, and the [CloudNativePG](https://cloudnative-pg.io/) operator we use in production, and the surface area for concurrency bugs starts to look a lot like the kind of system [Antithesis](https://antithesis.com/) was built to test.
+
+This post is about why we run ParadeDB inside Antithesis on every commit, what our setup looks like, and which bugs it has actually found. It is heavily inspired by [the Tigris team's report](https://antithesis.com/blog/2026/tigris_report/), and we are publishing it for the same reasons: to be transparent about how we test the database that our customers run as their system of record, and to share what has worked for a team that does not have the luxury of building from scratch on top of a deterministic runtime.
+
+## A distributed system inside a single node
+
+Vanilla Postgres is already concurrent. There is a postmaster, a process per connection, a set of background workers, and several specialised processes (autovacuum, the checkpointer, the WAL writer, logical replication workers). They coordinate through shared memory, the buffer cache, the WAL, and a forest of lightweight locks. Most of the time, this is invisible to the user.
+
+For an extension like `pg_search`, it is not. ParadeDB stores its full-text index inside Postgres' block storage so that the index participates in MVCC, WAL, and physical replication. We wrote [a separate post](https://www.paradedb.com/blog/block-storage-part-one) about why we built it this way, and [another one](https://www.paradedb.com/blog/lsm-trees-in-postgres) about how making writes faster with an LSM-tree layout broke replication until we taught the index how to be physically and logically consistent on a replica. The takeaway from both posts is the same: the moment you put a non-trivial data structure into Postgres' shared buffers, every Postgres process becomes a potential reader or writer, and every interleaving has to be correct.
+
+Parallel query is the clearest example. When a user runs a `SELECT ... WHERE message @@@ 'cheese'` against a large index, the planner can split the scan across half a dozen parallel workers, each holding its own snapshot of the index's segment list, each potentially racing with a concurrent `INSERT` from another backend, a background merge from a third, and `VACUUM` from a fourth. The processes do not share an address space, so they cannot use ordinary mutexes. They share pages, and they have to agree on what those pages mean.
+
+This is the property that pushed us toward Antithesis. ParadeDB is not "Postgres plus a library." It is a set of cooperating processes that read and write the same on-disk structures, and almost every interesting bug we have shipped has been an ordering bug between them.
+
+## What ParadeDB tries to guarantee
+
+Before getting into testing, it is worth being explicit about what we are trying to preserve. We publish a [guarantees page](https://docs.paradedb.com/welcome/guarantees) in our docs, but the short version is:
+
+1. **Behavioural compatibility with Postgres.** A query that returns a result in vanilla Postgres should return the same result with `pg_search` installed, modulo the new operators and functions we add. Crashes, wrong answers, or corrupted indexes are bugs, not trade-offs.
+2. **ACID for index writes.** Inserts, updates, and deletes against a table with a `bm25` index participate in the surrounding transaction. Either the index reflects the committed state or it does not, with no partial updates and no torn pages.
+3. **Crash-safety.** A `bm25` index must survive a crash of any Postgres process at any point, and come back up in a state that is consistent with what was committed. There are no partial recoveries, no torn structures, and no "rebuild the index and try again" instructions in our runbook.
+4. **Portability across Postgres distributions.** ParadeDB is an extension, not a fork, and it has to keep working on every distribution our customers run: stock Postgres, CloudNativePG, Neon, RDS, and so on. We do not control the surrounding infrastructure, so we cannot rely on any particular operator or storage layer to paper over our bugs.
+
+These guarantees set the bar for "correct." Everything below is about how we try to convince ourselves that the bar is being met.
+
+## Testing at ParadeDB before Antithesis
+
+We had a lot of tests before we ever signed up for Antithesis. We still have all of them, and Antithesis is a complement to them rather than a replacement.
+
+- **Unit tests.** Standard Rust unit tests against the internal data structures. Fast, cheap, and good for catching the obvious things.
+- **Integration tests.** `pgrx`-based tests that load the extension into a running Postgres and exercise it through SQL. These are how we test that a feature works end to end on a single node.
+- **`pg_regress` tests.** `pg_regress` is the test runner that the Postgres project itself uses for its regression suite. It runs a sequence of SQL files against a real `postgres` binary and `diff`s the output against a checked-in expected file. We use it to make sure that the parts of ParadeDB that overlap with vanilla Postgres (the planner, the executor, replication, recovery) keep behaving exactly the way Postgres does.
+- **Property tests.** We use [`proptest`](https://github.com/proptest-rs/proptest) to generate random SQL queries and random index configurations, and assert that ParadeDB produces the same answer as a reference implementation (usually vanilla Postgres with a `tsvector` or `b-tree` index). This is where most of our query-correctness coverage lives.
+- **Load tests with Stressgres.** [Stressgres](https://github.com/paradedb/paradedb/tree/main/stressgres) is an in-house tool that runs customer-representative workloads against a Postgres cluster. Each workload is a TOML file that defines the schema, the initial data, and a set of concurrent jobs (`COUNT` queries, bulk updates, vacuums, and so on). We use it for performance regression testing and for the kind of "run it for a few hours and see what breaks" testing that catches slow leaks.
+- **End-to-end Terraform tests.** Our [BYOC](https://github.com/paradedb/terraform-paradedb-byoc/blob/dev/.github/workflows/tests-reusable-infrastructure-e2e-test.yml) test spins up a full cluster on real cloud infrastructure, feeds it with data through both direct writes and logical replication, and then drives it through a minor-version upgrade while continuing to serve queries. It is slow and expensive, but it is the only test we have that exercises the actual operator and the actual storage layer at the same time.
+
+This stack catches a lot. What it does not catch, reliably, are concurrency bugs that depend on a specific interleaving of two or more processes touching the same page in a particular order. We learned this the hard way.
+
+## Why we went looking for Antithesis
+
+In early 2026, a production cluster of ours hit a data-corruption error inside `pg_search`'s free space map (FSM). The FSM is the on-disk structure that tracks which blocks in the index are available for reuse, and which are not. It is read and written by every process that allocates a block: parallel workers building merged segments, the backend running an `INSERT`, the background merger, and so on. The corruption was caused by a race between two of those processes that we had never managed to trigger in CI, even with Stressgres running for hours.
+
+We fixed the race, shipped the fix, and then went looking for a way to make sure we never had to fix one of those by reading a corrupted index in production again. Antithesis was the obvious candidate. It is built around a deterministic hypervisor that schedules every thread, every syscall, and every network packet, and replays runs with bug-finding heuristics designed to surface exactly the kind of interleaving that bit us. It is also the only system we are aware of that can do this for a workload that is not written from scratch against a deterministic runtime, which mattered because ParadeDB is a Postgres extension and we cannot rewrite Postgres.
+
+We were honest with ourselves about the limits of this. The specific FSM bug had already been fixed when we started, and we never managed to reproduce it inside Antithesis. We spent several months getting the harness to a state where it could reliably surface new bugs, which turned out to be the more valuable outcome anyway. The point was never to relive that one incident. The point was to make the next class of bug visible before it shipped.
+
+## ParadeDB's Antithesis setup
+
+We run two separate workloads on Antithesis. Both are wired into the same GitHub Actions workflow ([`antithesis-trigger-test-run.yml`](https://github.com/paradedb/paradedb/blob/main/.github/workflows/antithesis-trigger-test-run.yml)), and both can be triggered three ways: on a nightly schedule (twice a week, at 02:00 UTC on Tuesday and Thursday), on pull requests by applying an `antithesis`, `antithesis-stressgres`, or `antithesis-proptests` label, and manually through `workflow_dispatch`. Scheduled runs go for 8 hours of wall-clock time. PR-triggered runs go for 60 minutes and are marked `is_ephemeral` so they do not pollute the long-running bug history.
+
+The workflow builds a custom `.deb` of `pg_search` with the Antithesis instrumentation enabled. Concretely, it links against `libvoidstar.so` and compiles with `-Cpasses=sancov-module -Cllvm-args=-sanitizer-coverage-level=3 -Cllvm-args=-sanitizer-coverage-trace-pc-guard`, which is how Antithesis collects coverage and steers its search. The `.deb` is then baked into a Docker image, pushed to Antithesis' registry, and used as the `pg_search` build inside both workloads.
+
+### Workload 1: Stressgres on a real cluster
+
+The first workload is the closest thing we have to running a customer in a box. We deploy a full ParadeDB cluster using our [public Helm chart](https://github.com/paradedb/charts) on top of [CloudNativePG](https://cloudnative-pg.io/): one primary, two replicas, all running under the CNPG operator inside Antithesis' Kubernetes harness. Alongside the cluster, we deploy two more containers:
+
+- `logical-replication-publisher`, a vanilla Postgres pod that publishes changes to the ParadeDB primary over logical replication. This lets us exercise the path that most of our customers use to get into ParadeDB: a separate OLTP Postgres as the system of record, and a ParadeDB replica downstream.
+- `stressgres`, the driver, which simultaneously writes to the LR publisher (so changes flow through logical replication into the ParadeDB primary), writes directly to the ParadeDB primary, and reads from the two ParadeDB replicas.
+
+Stressgres workloads are defined as TOML suites. A representative example is [`bulk-updates.toml`](https://github.com/paradedb/paradedb/blob/main/stressgres/suites/bulk-updates.toml): 9 million rows, a `bm25` index, a forced 5 MB merge size to keep the background merger busy, a `COUNT` query running continuously at 100 ms intervals, and a bulk `UPDATE` job rewriting the same 10,000 rows in a tight loop. Each suite has a matching shell script in [`stressgres/suites/antithesis/`](https://github.com/paradedb/paradedb/tree/main/stressgres/suites/antithesis) (for example, [`singleton_driver_bulk-updates.sh`](https://github.com/paradedb/paradedb/blob/main/stressgres/suites/antithesis/singleton_driver_bulk-updates.sh)) that rewrites the connection string to point at the in-cluster `paradedb-rw` service and then runs Stressgres in headless mode. Antithesis treats each script as a singleton driver and runs it deterministically against the cluster.
+
+We currently have seven Stressgres suites in the nightly rotation: single-server, wide-table, bulk-updates, background-merge, logical-replication, vanilla-postgres, and a still-disabled `logical-replication-merge` (more on that one below). Each is a different customer-shaped workload, and each one exercises a slightly different corner of the index.
+
+On top of the workloads, Antithesis injects faults. The configuration that lives in our manifests enables container kills, container stops, and network faults, with carefully chosen exclusion patterns for the workloads we cannot safely interrupt (the `coredns` pod, the driver itself, and, for kill/stop faults, the database pods that need to survive long enough to make progress). Inside that envelope, the simulator can crash a replica, partition the primary, restart CNPG, or drop traffic between the LR publisher and the primary, and ParadeDB is expected to come back up and continue to serve correct results.
+
+### Workload 2: property tests under fault injection
+
+The second workload is much narrower. We deploy the same ParadeDB cluster (no Stressgres, no logical replication), and a single `proptests-runner` container that runs our `qgen` property test binary against the in-cluster primary ([`singleton_driver_property-tests.sh`](https://github.com/paradedb/paradedb/blob/main/tests/antithesis/singleton_driver_property-tests.sh)). `qgen` already iterates internally: 24 separate property tests, each running 128 proptest cases per iteration, with parallel query forced on and a 60-second statement timeout. We let Antithesis schedule the binary against a cluster that is being actively perturbed by fault injection.
+
+The reason for the split is that the two workloads stress different things. Stressgres covers concurrency between unrelated processes (writers, mergers, replicas) on a hot dataset. The proptests cover query-result correctness on a wide variety of randomly generated queries and indexes, under the same fault injection. Both run on the same instrumented `pg_search` binary, so the simulator's coverage data accumulates across both.
+
+### How much testing this actually is
+
+Antithesis' value is that one wall-clock hour of testing is many hours of effective testing, because the simulator runs the system at many times real-time speed and explores multiple branches of the schedule in parallel. In our reports, an 8-hour scheduled run typically lands around 2 days of simulated time per suite. With seven Stressgres suites and one proptests suite running on each cron firing, a single night is roughly 16 days of accumulated simulated test time. Twice a week, for the few months we have been running consistently since getting the harness stable, that adds up to over a year of simulated test time on top of everything else we run in CI. Some of that overlaps, but the cost-per-hour-of-coverage is not close to anything we could afford to run on real hardware.
+
+## What it has found
+
+The point of any of this is bugs. The most important ones we have shipped fixes for in the last few months were all surfaced by Antithesis:
+
+- [paradedb-enterprise#636](https://github.com/paradedb/paradedb-enterprise/pull/636). Our most important Antithesis-surfaced bug to date. A race in the path that handles a particular kind of replication event, where the index could end up in a state that produced incorrect query results on a replica after a specific sequence of events on the primary. We had no test in the rest of our stack that could have caught this.
+- [paradedb#5072](https://github.com/paradedb/paradedb/pull/5072). A second high-impact race, this one between a background merge and a concurrent writer. Antithesis triggered it by stopping and restarting the merger at exactly the wrong point.
+- [paradedb-enterprise#616](https://github.com/paradedb/paradedb-enterprise/pull/616). A subtle issue with our logical-replication apply path that only manifested under sustained fault injection on the publisher.
+- [paradedb#5255](https://github.com/paradedb/paradedb/pull/5255), [paradedb#4774](https://github.com/paradedb/paradedb/pull/4774), and [paradedb#5238](https://github.com/paradedb/paradedb/pull/5238). Three more interleaving bugs of decreasing severity, all the same shape: a sequence of process events that we could not produce in Stressgres or the proptests on their own, but that Antithesis hit reliably once it had the right coverage hooks.
+
+The pattern is consistent. Each of these was a bug that did not show up in unit tests, integration tests, `pg_regress`, the proptests run without fault injection, or many hours of Stressgres against the same cluster shape. None of them were caught by code review, which is unsurprising in hindsight: a code reviewer can spot a missing lock, but they cannot spot a missing lock that only matters when three specific processes interleave in one of 10^9 possible orders.
+
+There is also the case of `logical-replication-merge`. We added this suite to cover a customer workload that exposed a TOAST handling issue we had not seen before. The suite is currently checked in but [intentionally disabled](https://github.com/paradedb/paradedb/blob/a059e3bab7135eab376717e2d8eb50d52147cbd4/stressgres/suites/antithesis/singleton_driver_logical-replication-merge.sh#L13) because the underlying bug is still open. Antithesis found the bug the first night the suite ran, which we count as a success even though we are not yet shipping the fix.
+
+## What we are doing next
+
+A few things have changed our thinking about testing since we started running Antithesis.
+
+The first is that we now treat Antithesis as a gating signal for any change that touches storage or concurrency. Major refactors get an `antithesis` label on the PR, and we wait for the run to come back clean before we merge. We do not do this for every PR (the 60-minute PR-triggered runs are not free), but the option is there, and it has caught at least one bug before merge that we would otherwise have shipped.
+
+The second is that we now design new features with deterministic simulation in mind. Two pieces of work coming up in the next few months sharpen this:
+
+- Our MPP plan partitioning work changes the way `JoinScan` and friends fan out across parallel workers. Multi-process handling is exactly where most of our Antithesis-surfaced bugs have been, so we are doing this work with Antithesis on the PR from the start.
+- Our segment partitioning work changes the on-disk storage format of the `bm25` index. The original FSM bug that brought us to Antithesis was a storage-layout race, and we expect that any change at this layer will surface a similar class of issue. Having the harness already in place means we can iterate on the design with the simulator in the loop rather than treating it as a post-hoc verification step.
+
+The third, and the one that has been most useful internally, is that Antithesis has shifted our default assumption about concurrency bugs from "we will find it in production" to "we will find it in CI." That changes the kind of work we are willing to take on. The MPP and segment partitioning projects are both the sort of thing that would have been very hard to justify a year ago, because the blast radius of a missed race would have landed on a customer. With deterministic simulation testing in the pipeline, the blast radius lands on a Tuesday-night CI run instead.
+
+We are not going to claim that ParadeDB is bug-free. The interesting claim is more modest, and we think more honest: every concurrency bug we ship from here on is one we owe an explanation for, because the tooling to find it before release exists and is running on every commit. That is the bar we want to be held to.
+
+_Ready to try ParadeDB? [Get started here](https://docs.paradedb.com/welcome/introduction)._
+
+_Many thanks to the Antithesis team for the close collaboration over the past months, and for reviewing a draft of this post._
