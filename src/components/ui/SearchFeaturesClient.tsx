@@ -8,6 +8,7 @@ import { Badge } from "./Badge";
 interface Feature {
   value: string;
   label: string;
+  tagline?: string;
   bullets: {
     title: string;
     description: string;
@@ -25,14 +26,15 @@ export default function SearchFeaturesClient({
     <div className="w-full relative bg-white dark:bg-slate-950">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         <section className="py-12 md:py-20 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
-          <Badge className="mb-6">Features</Badge>
+          <Badge className="mb-6">Workloads</Badge>
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
-            The <span className="text-highlight-blink">complete</span> toolkit{" "}
-            <br className="hidden sm:block" /> for search
+            Three workloads,{" "}
+            <br className="hidden sm:block" />{" "}
+            <span className="text-highlight-blink">one</span> place to run them.
           </h2>
           <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl px-6 sm:px-0">
-            ParadeDB brings everything you need from a modern search engine into
-            Postgres, including text, hybrid, and faceted search.
+            Full-text search, vector retrieval, and search-side aggregations
+            run inside the same Postgres index, over the live rows your app writes.
           </p>
 
           <Tabs.Root
@@ -55,8 +57,15 @@ export default function SearchFeaturesClient({
                     <span className="text-xs font-mono font-semibold opacity-50 group-data-[state=active]:text-indigo-600 dark:group-data-[state=active]:text-indigo-400 group-data-[state=active]:opacity-100">
                       0{i + 1}
                     </span>
-                    <span className="text-sm sm:text-base font-semibold tracking-tight">
-                      {feature.label}
+                    <span className="flex flex-col items-start text-left">
+                      <span className="text-sm sm:text-base font-semibold tracking-tight">
+                        {feature.label}
+                      </span>
+                      {feature.tagline && (
+                        <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 dark:text-slate-600 group-data-[state=active]:text-indigo-500 dark:group-data-[state=active]:text-indigo-400/80">
+                          {feature.tagline}
+                        </span>
+                      )}
                     </span>
                   </Tabs.Trigger>
                 ))}

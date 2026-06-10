@@ -33,19 +33,17 @@ export default async function Hero() {
             <div className="flex flex-col items-center w-full relative z-20">
               <h1
                 id="hero-title"
-                className="inline-block py-2 text-3xl font-bold tracking-tighter text-white sm:text-6xl opacity-0 animate-hero-title"
+                className="inline-block py-2 text-4xl font-bold tracking-tighter text-white sm:text-7xl opacity-0 animate-hero-title"
               >
-                Simple, Elastic-Quality <br className="hidden sm:block" />{" "}
-                <span className="text-white/90">Search</span> for Postgres
+                Search without <br className="hidden sm:block" />{" "}
+                a <span className="text-white/90">second system</span>.
               </h1>
             </div>
 
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-center opacity-0 animate-hero-content">
-              <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4">
-                You want better search, not the burden of Elasticsearch.{" "}
-                <br className="hidden sm:block" /> ParadeDB is the modern
-                Elastic alternative built as a Postgres extension.
+              <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4 max-w-2xl">
+                Full-text, vector, and aggregations in your Postgres database.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-center mb-6 sm:mb-8 sm:px-0">
                 <Button

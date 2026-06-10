@@ -1,81 +1,72 @@
 import Code from "../Code";
 import SearchFeaturesClient from "./SearchFeaturesClient";
 import {
-  RiScissorsCutLine,
-  RiTranslate2,
   RiSearchEyeLine,
-  RiGlobalLine,
-  RiBracesLine,
-  RiSpeedLine,
-  RiSortAsc,
-  RiEqualizerLine,
-  RiListCheck2,
+  RiTranslate2,
+  RiCpuLine,
+  RiSparklingLine,
   RiPieChartLine,
-  RiCheckDoubleLine,
+  RiListCheck2,
 } from "@remixicon/react";
 
-const textProcessingCode = `CREATE INDEX ON animals
-USING bm25 (
-    id,
-    (name::pdb.ngram(3,3)),
-    (description::pdb.unicode_words('stemmer=english'))
-);`;
+const fullTextCode = `-- one index over your text columns
+CREATE INDEX ON articles
+USING bm25 (id, (body::pdb.unicode_words('stemmer=english')));
 
-const textSearchCode = `SELECT * FROM animals
-WHERE name &&& 'asian elephant'
-OR id @@@ pdb.more_like_this(1)
-LIMIT 5;`;
-
-const booleanCode = `SELECT * FROM animals
-WHERE name &&& 'asian elephant'
-AND metadata->>'region' === 'Asia'
-AND weight >= 4000
-LIMIT 5;`;
-
-const topNCode = `SELECT * FROM animals
-WHERE name &&& 'asian elephant'
-ORDER BY weight DESC
-LIMIT 5;`;
-
-const facetedCode = `SELECT metadata->>'region', count(*)
-FROM animals
-WHERE name &&& 'asian elephant'
-GROUP BY metadata->>'region'
-ORDER BY 1;`;
-
-const hybridSearchCode = `SELECT id, pdb.score(id)
-FROM animals
-WHERE name &&& 'asian elephant'
+-- BM25 scoring, phrase, fuzzy, proximity, more-like-this
+SELECT id, pdb.score(id)
+FROM articles
+WHERE body @@@ pdb.match('body', 'asian elephant', fuzzy => 1)
 ORDER BY pdb.score(id) DESC
-LIMIT 5;
+LIMIT 10;`;
 
-SELECT id, embedding <=> '[1,2,3]'
-FROM animals
-ORDER BY embedding <=> '[1,2,3]' DESC
-LIMIT 5;`;
+const vectorCode = `-- vector field lives in the same index as your BM25 fields
+CREATE INDEX ON products
+USING bm25 (id, name, (embedding::pdb.hnsw(dim=>768)));
+
+-- hybrid: lexical and vector signals scored in a single query
+SELECT id,
+       pdb.score(id, mode => 'hybrid')
+FROM products
+WHERE name &&& 'asian elephant'
+  AND embedding <#> $1 < 0.4
+ORDER BY pdb.score(id, mode => 'hybrid') DESC
+LIMIT 10;`;
+
+const aggregationsCode = `-- aggregations alongside the search query, in the same scan
+SELECT
+  metadata->>'region' AS region,
+  count(*)            AS hits,
+  avg(price)          AS avg_price
+FROM products
+WHERE name &&& 'asian elephant'
+  AND price BETWEEN 20 AND 500
+GROUP BY region
+ORDER BY hits DESC;`;
 
 export default async function SearchFeatures() {
   const features = [
     {
-      value: "processing",
-      label: "Text Processing",
+      value: "full-text",
+      label: "Full-text search",
+      tagline: "BM25",
       bullets: [
         {
-          title: "Advanced tokenization",
+          title: "BM25 relevance",
           description:
-            "12+ different tokenizers to break apart text into searchable tokens.",
-          icon: <RiScissorsCutLine className="size-5" />,
+            "State-of-the-art lexical ranking, with phrase, fuzzy, proximity, more-like-this, and regex queries.",
+          icon: <RiSearchEyeLine className="size-5" />,
         },
         {
-          title: "Multi-language support",
+          title: "20+ languages, 12+ tokenizers",
           description:
-            "Support for 20+ languages, including dictionary-based tokenizers.",
+            "Stemmers, n-grams, ICU, and dictionary tokenizers configurable per column. Pre-filter results with any Postgres type.",
           icon: <RiTranslate2 className="size-5" />,
         },
       ],
       code: (
         <Code
-          code={textProcessingCode}
+          code={fullTextCode}
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
@@ -83,25 +74,26 @@ export default async function SearchFeatures() {
       ),
     },
     {
-      value: "text",
-      label: "Text Search",
+      value: "vector",
+      label: "Vector retrieval",
+      tagline: "Hybrid scoring",
       bullets: [
         {
-          title: "Full text search",
+          title: "Vectors in the same index",
           description:
-            "Support for standard match, phrase, term, and fuzzy queries.",
-          icon: <RiSearchEyeLine className="size-5" />,
+            "HNSW lives next to your BM25 fields. No second store, no second sync. Embeddings stay where your rows live.",
+          icon: <RiCpuLine className="size-5" />,
         },
         {
-          title: "Advanced search queries",
+          title: "True hybrid queries",
           description:
-            "And many more advanced queries like proximity, more-like-this, regex, etc.",
-          icon: <RiGlobalLine className="size-5" />,
+            "Lexical and vector signals scored in a single query, in a single pass over the index. Not two queries fused after the fact.",
+          icon: <RiSparklingLine className="size-5" />,
         },
       ],
       code: (
         <Code
-          code={textSearchCode}
+          code={vectorCode}
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
@@ -109,97 +101,26 @@ export default async function SearchFeatures() {
       ),
     },
     {
-      value: "hybrid",
-      label: "Hybrid Search",
+      value: "aggregations",
+      label: "Search-side aggregations",
+      tagline: "Facets & counts",
       bullets: [
         {
-          title: "Fully compatible with pgvector",
+          title: "Aggregations alongside search",
           description:
-            "ParadeDB can be combined with pgvector to deliver a hybrid search solution.",
-          icon: <RiCheckDoubleLine className="size-5" />,
-        },
-      ],
-      code: (
-        <Code
-          code={hybridSearchCode}
-          lang="sql"
-          className="[&_pre]:!bg-transparent"
-          copy={false}
-        />
-      ),
-    },
-    {
-      value: "boolean",
-      label: "Boolean Queries",
-      bullets: [
-        {
-          title: "Boolean conditions",
-          description:
-            "Multiple boolean conditions are efficiently handled as a single index scan.",
-          icon: <RiBracesLine className="size-5" />,
-        },
-        {
-          title: "Metadata filtering",
-          description:
-            "Most Postgres types (numeric, datetime, JSON, etc.) can be used to pre-filter search results.",
-          icon: <RiSpeedLine className="size-5" />,
-        },
-      ],
-      code: (
-        <Code
-          code={booleanCode}
-          lang="sql"
-          className="[&_pre]:!bg-transparent"
-          copy={false}
-        />
-      ),
-    },
-    {
-      value: "top-k",
-      label: "Top K",
-      bullets: [
-        {
-          title: "Efficient Top K",
-          description:
-            "Optimized execution paths for quickly retrieving the Top K most relevant results.",
-          icon: <RiSortAsc className="size-5" />,
-        },
-        {
-          title: "BM25 Ranking",
-          description:
-            "Tunable relevance scores with BM25, the state-of-the-art algorithm for relevance ranking.",
-          icon: <RiEqualizerLine className="size-5" />,
-        },
-      ],
-      code: (
-        <Code
-          code={topNCode}
-          lang="sql"
-          className="[&_pre]:!bg-transparent"
-          copy={false}
-        />
-      ),
-    },
-    {
-      value: "faceted",
-      label: "Aggregates",
-      bullets: [
-        {
-          title: "Bucket and metric aggregates",
-          description:
-            "Quickly executes common aggregates (count, bucket, average, etc.) with a columnar index.",
+            "Facets, filter counts, term distributions, time-bucketed counts, and top-N rendered from the same scan as the search itself.",
           icon: <RiPieChartLine className="size-5" />,
         },
         {
-          title: "Search faceting",
+          title: "Pushed down into the index",
           description:
-            "Return aggregates alongside your search results in a single query.",
+            "Columnar fields in the index serve count, sum, avg, min, max, and percentile aggregates without touching the heap.",
           icon: <RiListCheck2 className="size-5" />,
         },
       ],
       code: (
         <Code
-          code={facetedCode}
+          code={aggregationsCode}
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
