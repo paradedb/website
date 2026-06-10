@@ -1,15 +1,10 @@
 # workflows/check-slack-invite.yml
 #
 # Check Slack Invite
-# The public Slack invite link (https://paradedb.com/slack) is served by a 302
-# redirect in next.config.mjs. Slack shared-invite links auto-deactivate after
-# ~400 joins regardless of the "never expire" setting, and they fail silently:
-# an expired link still returns 200 with a JS app-shell identical to a live one,
-# so curl/uptime checks can't catch it. This job renders the page in a headless
-# browser, reads the post-JS DOM, and alerts (red run + GitHub issue) when the
-# invite is dead. It also re-checks a known-dead canary link each run to confirm
-# the detector itself still works. When it fires: generate a fresh invite in the
-# Slack admin and swap the `/slack` destination in next.config.mjs.
+# Alerts when the public Slack invite (https://paradedb.com/slack) dies. Slack
+# links auto-deactivate after ~400 joins and fail silently (an expired link
+# still 200s with a live-looking app-shell), so this renders the page in a
+# headless browser to detect it. See check-slack-invite.mjs for details.
 
 name: Check Slack Invite
 
@@ -39,7 +34,7 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Probe Slack invite
         id: probe
@@ -73,7 +68,7 @@ jobs:
             live.png
             canary.png
           if-no-files-found: ignore
-          retention-days: 14
+          retention-days: 7
 
       - name: Open or update alert issue
         # Fire on a dead invite OR a broken detector. Skip the transient
