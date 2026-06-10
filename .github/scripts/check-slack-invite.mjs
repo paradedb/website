@@ -41,12 +41,15 @@ const DEAD_PHRASES = [
   "ask for a new link",
 ];
 
-async function classify(browser, url, screenshotPath) {
+async function classify(browser, label, url, screenshotPath) {
+  const t0 = Date.now();
+  console.log(`[${label}] loading ${url} ...`);
   const page = await browser.newPage();
   try {
     // domcontentloaded + settle is more reliable than networkidle here: Slack
     // holds long-lived connections, so networkidle frequently times out.
     await page.goto(url, { waitUntil: "domcontentloaded", timeout: 45000 });
+    console.log(`[${label}] loaded, settling for render ...`);
     await page.waitForTimeout(5000);
     if (screenshotPath) {
       await page.screenshot({ path: screenshotPath, fullPage: true });
@@ -55,8 +58,13 @@ async function classify(browser, url, screenshotPath) {
       await page.evaluate(() => document.body.innerText || "")
     ).toLowerCase();
     const matched = DEAD_PHRASES.find((p) => text.includes(p)) || null;
-    return { dead: Boolean(matched), matched, error: null };
+    const dead = Boolean(matched);
+    console.log(
+      `[${label}] done in ${Date.now() - t0}ms — ${dead ? `DEAD (matched "${matched}")` : "alive"}`,
+    );
+    return { dead, matched, error: null };
   } catch (err) {
+    console.log(`[${label}] errored after ${Date.now() - t0}ms: ${err.message}`);
     return { dead: null, matched: null, error: err.message };
   } finally {
     await page.close();
@@ -74,8 +82,8 @@ let status; // healthy | dead | detector_broken | inconclusive
 let reason;
 
 try {
-  const canary = await classify(browser, DEAD_CANARY, "canary.png");
-  const live = await classify(browser, LIVE_URL, "live.png");
+  const canary = await classify(browser, "canary", DEAD_CANARY, "canary.png");
+  const live = await classify(browser, "live", LIVE_URL, "live.png");
 
   console.log("Canary (known-dead) result:", JSON.stringify(canary));
   console.log("Live  (paradedb.com/slack) result:", JSON.stringify(live));

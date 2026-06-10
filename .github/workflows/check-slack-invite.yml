@@ -28,10 +28,17 @@ permissions:
   contents: read
   issues: write
 
+env:
+  # Pinned so the browser cache key below stays stable across runs.
+  PLAYWRIGHT_VERSION: "1.49.1"
+
 jobs:
   check-slack-invite:
     name: Check Slack Invite
     runs-on: ubuntu-latest
+    # A hung page-load or browser download should fail loudly, not sit there
+    # looking frozen for the full 6h default.
+    timeout-minutes: 20
 
     steps:
       - name: Checkout Git Repository
@@ -42,20 +49,34 @@ jobs:
         with:
           node-version: 24
 
+      # Cache the ~160MB Chromium download so only the first run (cold cache)
+      # pays for it — scheduled daily runs restore it in seconds.
+      - name: Cache Playwright browser
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ms-playwright-${{ runner.os }}-${{ env.PLAYWRIGHT_VERSION }}
+
+      # Separate, visible step so progress is obvious. Installing Playwright in an
+      # isolated temp dir keeps us off the repo's package.json/lockfile (pnpm
+      # project — a stray root `npm install` would clobber it).
+      - name: Install Playwright + Chromium
+        run: |
+          mkdir -p "$RUNNER_TEMP/pw"
+          cd "$RUNNER_TEMP/pw"
+          echo "::group::npm install playwright@$PLAYWRIGHT_VERSION"
+          npm init -y >/dev/null 2>&1
+          npm install "playwright@$PLAYWRIGHT_VERSION" >/dev/null
+          echo "::endgroup::"
+          echo "::group::playwright install --with-deps chromium (downloads ~160MB on a cache miss)"
+          npx playwright install --with-deps chromium
+          echo "::endgroup::"
+
       - name: Probe Slack invite
         id: probe
         run: |
-          # Install Playwright in an isolated temp dir so we never touch the
-          # repo's package.json / lockfile (this project uses pnpm; a stray
-          # `npm install` at the root would clobber it). The script and its
-          # output artifacts live in $work; copy the outputs back to the
-          # workspace so the upload + issue steps can find them.
-          work="$(mktemp -d)"
-          cp .github/scripts/check-slack-invite.mjs "$work/probe.mjs"
-          cd "$work"
-          npm init -y >/dev/null 2>&1
-          npm install playwright@1.49.1 >/dev/null
-          npx playwright install --with-deps chromium
+          cp .github/scripts/check-slack-invite.mjs "$RUNNER_TEMP/pw/probe.mjs"
+          cd "$RUNNER_TEMP/pw"
           # Don't let set -e abort on a failing probe — we still need to copy the
           # screenshots/reason back so the artifact + issue steps can use them.
           set +e
