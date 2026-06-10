@@ -1,0 +1,130 @@
+# workflows/check-slack-invite.yml
+#
+# Check Slack Invite
+# The public Slack invite link (https://paradedb.com/slack) is served by a 302
+# redirect in next.config.mjs. Slack shared-invite links auto-deactivate after
+# ~400 joins regardless of the "never expire" setting, and they fail silently:
+# an expired link still returns 200 with a JS app-shell identical to a live one,
+# so curl/uptime checks can't catch it. This job renders the page in a headless
+# browser, reads the post-JS DOM, and alerts (red run + GitHub issue) when the
+# invite is dead. It also re-checks a known-dead canary link each run to confirm
+# the detector itself still works. When it fires: generate a fresh invite in the
+# Slack admin and swap the `/slack` destination in next.config.mjs.
+
+name: Check Slack Invite
+
+on:
+  schedule:
+    # Daily at 13:00 UTC. So a dead link is caught within ~24h, not weeks later.
+    - cron: "0 13 * * *"
+  workflow_dispatch:
+
+concurrency:
+  group: check-slack-invite
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  check-slack-invite:
+    name: Check Slack Invite
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Probe Slack invite
+        id: probe
+        run: |
+          # Install Playwright in an isolated temp dir so we never touch the
+          # repo's package.json / lockfile (this project uses pnpm; a stray
+          # `npm install` at the root would clobber it). The script and its
+          # output artifacts live in $work; copy the outputs back to the
+          # workspace so the upload + issue steps can find them.
+          work="$(mktemp -d)"
+          cp .github/scripts/check-slack-invite.mjs "$work/probe.mjs"
+          cd "$work"
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.49.1 >/dev/null
+          npx playwright install --with-deps chromium
+          # Don't let set -e abort on a failing probe — we still need to copy the
+          # screenshots/reason back so the artifact + issue steps can use them.
+          set +e
+          node probe.mjs
+          status=$?
+          set -e
+          cp -f live.png canary.png monitor-reason.txt "$GITHUB_WORKSPACE/" 2>/dev/null || true
+          exit $status
+
+      - name: Upload rendered screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: slack-invite-screenshots
+          path: |
+            live.png
+            canary.png
+          if-no-files-found: ignore
+          retention-days: 14
+
+      - name: Open or update alert issue
+        # Fire on a dead invite OR a broken detector. Skip the transient
+        # "inconclusive" (network) case so we don't open noise on a blip.
+        if: always() && (steps.probe.outputs.status == 'dead' || steps.probe.outputs.status == 'detector_broken')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const status = '${{ steps.probe.outputs.status }}';
+            const reason = fs.readFileSync('monitor-reason.txt', 'utf8').trim();
+            const marker = '<!-- slack-invite-monitor -->';
+            const title = status === 'dead'
+              ? '🔴 Slack invite link is no longer active'
+              : '⚠️ Slack invite monitor needs attention';
+            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const body = [
+              marker,
+              `**Status:** \`${status}\``,
+              '',
+              reason,
+              '',
+              status === 'dead'
+                ? '**Fix:** generate a new invite in the Slack admin, then update the `/slack` `destination` in `next.config.mjs`.'
+                : '**Fix:** update `DEAD_PHRASES` in `.github/scripts/check-slack-invite.mjs` to match Slack’s current expired-invite wording.',
+              '',
+              `[View the workflow run](${runUrl}) · screenshots are attached as run artifacts.`,
+            ].join('\n');
+
+            // De-dupe: reuse the open issue this monitor created (matched by the
+            // hidden marker) instead of opening a new one every day.
+            const existing = await github.paginate(github.rest.issues.listForRepo, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100,
+            });
+            const open = existing.find((i) => (i.body || '').includes(marker));
+
+            if (open) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: open.number,
+                body: `Still failing as of this run.\n\n${body}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title,
+                body,
+              });
+            }
