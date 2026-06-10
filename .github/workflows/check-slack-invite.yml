@@ -13,6 +13,12 @@ on:
     # Daily at 13:00 UTC. So a dead link is caught within ~24h, not weeks later.
     - cron: "0 13 * * *"
   workflow_dispatch:
+  # TEMPORARY: lets us test the monitor on this branch before merging.
+  # REMOVE this push trigger before merging — the monitor should only run on a
+  # schedule / manual dispatch, not on every push.
+  push:
+    branches:
+      - slack-invite-rotate-and-monitor
 
 concurrency:
   group: check-slack-invite
