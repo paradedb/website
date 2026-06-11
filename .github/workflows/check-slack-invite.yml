@@ -14,10 +14,6 @@ on:
     # this lands at 2 PM during PDT.
     - cron: "0 21 * * 1-5"
   workflow_dispatch:
-  # TEMPORARY: test end-to-end on this branch before merging. REMOVE before merge.
-  push:
-    branches:
-      - slack-invite-rotate-and-monitor
 
 concurrency:
   group: check-slack-invite-${{ github.head_ref || github.ref }}
