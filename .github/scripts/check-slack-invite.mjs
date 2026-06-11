@@ -13,7 +13,7 @@
 // a new invite in the Slack admin and swap the destination in next.config.mjs.
 
 import { chromium } from "playwright";
-import { appendFileSync, writeFileSync } from "node:fs";
+import { appendFileSync } from "node:fs";
 
 const LIVE_URL = "https://paradedb.com/slack";
 
@@ -114,7 +114,7 @@ try {
 }
 
 setOutput("status", status);
-writeFileSync("monitor-reason.txt", reason);
+setOutput("reason", reason);
 
 console.log(`\nSTATUS: ${status}\n${reason}`);
 

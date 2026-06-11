@@ -13,33 +13,27 @@ on:
     # Daily at 13:00 UTC. So a dead link is caught within ~24h, not weeks later.
     - cron: "0 13 * * *"
   workflow_dispatch:
-  # TEMPORARY: lets us test the monitor on this branch before merging.
-  # REMOVE this push trigger before merging — the monitor should only run on a
-  # schedule / manual dispatch, not on every push.
-  push:
-    branches:
-      - slack-invite-rotate-and-monitor
 
 concurrency:
-  group: check-slack-invite
+  group: check-slack-invite-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
-  issues: write
 
 jobs:
   check-slack-invite:
     name: Check Slack Invite
     runs-on: ubuntu-latest
-    # Run inside the official Playwright image: Chromium + all system deps are
-    # baked in, so there is NO ~160MB browser download at runtime (that download
-    # from Slack's slow CDN was taking 8-10+ min and looked frozen). Keep the
-    # `playwright@` install below pinned to the SAME version as this image tag.
+    # Chromium + deps are baked in, so there's no slow browser download at
+    # runtime. Keep the `playwright@` install below on the same version tag.
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-jammy
     # A hung page-load should fail loudly, not sit there for the 6h default.
     timeout-minutes: 10
+    outputs:
+      status: ${{ steps.probe.outputs.status }}
+      reason: ${{ steps.probe.outputs.reason }}
 
     steps:
       - name: Checkout Git Repository
@@ -62,7 +56,7 @@ jobs:
           node probe.mjs
           status=$?
           set -e
-          cp -f live.png canary.png monitor-reason.txt "$GITHUB_WORKSPACE/" 2>/dev/null || true
+          cp -f live.png canary.png "$GITHUB_WORKSPACE/" 2>/dev/null || true
           exit $status
 
       - name: Upload rendered screenshots
@@ -76,56 +70,43 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-      - name: Open or update alert issue
-        # Fire on a dead invite OR a broken detector. Skip the transient
-        # "inconclusive" (network) case so we don't open noise on a blip.
-        if: always() && (steps.probe.outputs.status == 'dead' || steps.probe.outputs.status == 'detector_broken')
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const status = '${{ steps.probe.outputs.status }}';
-            const reason = fs.readFileSync('monitor-reason.txt', 'utf8').trim();
-            const marker = '<!-- slack-invite-monitor -->';
-            const title = status === 'dead'
-              ? '🔴 Slack invite link is no longer active'
-              : '⚠️ Slack invite monitor needs attention';
-            const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
-            const body = [
-              marker,
-              `**Status:** \`${status}\``,
-              '',
-              reason,
-              '',
-              status === 'dead'
-                ? '**Fix:** generate a new invite in the Slack admin, then update the `/slack` `destination` in `next.config.mjs`.'
-                : '**Fix:** update `DEAD_PHRASES` in `.github/scripts/check-slack-invite.mjs` to match Slack’s current expired-invite wording.',
-              '',
-              `[View the workflow run](${runUrl}) · screenshots are attached as run artifacts.`,
-            ].join('\n');
-
-            // De-dupe: reuse the open issue this monitor created (matched by the
-            // hidden marker) instead of opening a new one every day.
-            const existing = await github.paginate(github.rest.issues.listForRepo, {
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              state: 'open',
-              per_page: 100,
-            });
-            const open = existing.find((i) => (i.body || '').includes(marker));
-
-            if (open) {
-              await github.rest.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: open.number,
-                body: `Still failing as of this run.\n\n${body}`,
-              });
-            } else {
-              await github.rest.issues.create({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                title,
-                body,
-              });
-            }
+  # Ping Slack when the probe job fails (dead invite or broken detector). The
+  # "inconclusive" network case exits 0, so the probe job stays green and this
+  # won't fire. Mirrors the notify-slack pattern in terraform-paradedb-byoc.
+  notify-slack:
+    name: Notify Slack on Failure
+    needs: [check-slack-invite]
+    if: always() && needs.check-slack-invite.result == 'failure'
+    runs-on: ubuntu-latest
+    env:
+      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
+      # Via env (not inline ${{ }}) so quotes in the reason can't break the shell.
+      MONITOR_STATUS: ${{ needs.check-slack-invite.outputs.status }}
+      MONITOR_REASON: ${{ needs.check-slack-invite.outputs.reason }}
+    steps:
+      - name: Send Slack notification
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_GITHUB_CHANNEL_WEBHOOK_URL not set — skipping Slack ping."
+            exit 0
+          fi
+          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          # jq builds the payload so embedded quotes in the reason are escaped.
+          payload="$(jq -n \
+            --arg status "$MONITOR_STATUS" \
+            --arg reason "$MONITOR_REASON" \
+            --arg repo "${{ github.repository }}" \
+            --arg url "$run_url" \
+            '{
+              text: "🚨 ParadeDB Community Slack invite needs attention - <!here>",
+              attachments: [{
+                color: "danger",
+                fields: [
+                  {title: "Status", value: $status, short: true},
+                  {title: "Repository", value: $repo, short: true},
+                  {title: "Details", value: $reason, short: false},
+                  {title: "View Logs", value: ("<" + $url + "|Click here>"), short: false}
+                ]
+              }]
+            }')"
+          curl -fsS -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
