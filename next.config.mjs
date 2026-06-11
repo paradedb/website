@@ -102,11 +102,16 @@ const nextConfig = {
         permanent: true,
       },
       // --- external service redirects ---
+      // NOTE: Slack shared invite links auto-deactivate after ~400 joins,
+      // regardless of the "never expire" setting. When this link dies, generate
+      // a new invite in the Slack admin and swap the destination below — every
+      // reference across the org points at /slack, so this is the only edit needed.
+      // Kept as `permanent: false` (302) so browsers/Slack don't cache a dead link.
       {
         source: "/slack",
         destination:
-          "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw",
-        permanent: true,
+          "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-40nbq9zkk-ffd5IvYjkMwnIx8MuPkFlQ",
+        permanent: false,
       },
       // --- legacy legal page redirects ---
       {
