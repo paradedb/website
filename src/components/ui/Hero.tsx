@@ -109,11 +109,6 @@ export default async function Hero() {
           </div>
         </div>
 
-        {/* Shaded Region Below Logos */}
-        <div className="relative z-20 px-4 md:px-12">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-60" />
-        </div>
-
         {/* Global Vertical Lines - Rendered last to ensure they are on top */}
         <div className="absolute top-[64px] md:top-[80px] bottom-0 left-4 md:left-12 w-px bg-white/20 z-30 pointer-events-none" />
         <div className="absolute top-[64px] md:top-[80px] bottom-0 right-4 md:right-12 w-px bg-white/20 z-30 pointer-events-none" />

@@ -11,7 +11,7 @@ export default function Architecture() {
         {/* Top hatched border */}
         <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
 
-        <section className="relative py-14 md:py-20 border-r border-l border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
+        <section className="relative py-14 md:py-20 border-r border-l border-slate-200 dark:border-slate-900 bg-indigo-50/40 dark:bg-indigo-950/20">
           {/* Header */}
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-14">
             <Badge className="mb-6">Architecture</Badge>
@@ -19,13 +19,8 @@ export default function Architecture() {
               One <span className="text-highlight-blink">index</span>, three search workloads.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
-              We give you a single Postgres index containing the lexical,
-              vector, and columnar data needed for search, retrieval, and
-              aggregations.
-              Queries are planned and executed efficently against
-              the index, not stitched together across multiple systems.
-            </p>
-            <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
+              Most systems spread full-text search, vector retrieval, and aggregations
+              across separate indexes, engines, or even databases. ParadeDB plans and executes all three together against a single wide Postgres index, allowing them to be optimized as a single operation.
             </p>
           </div>
 
@@ -43,7 +38,7 @@ export default function Architecture() {
      ┌── `}<span className="text-indigo-700 dark:text-indigo-300 font-semibold">postgres</span>{` ──────────────────────────┐
      │                                      `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
      │    ┌── `}<span className="text-indigo-950 dark:text-white font-semibold">heap</span>{` ────────────────────┐    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    │    table rows `}<span className="text-slate-500 dark:text-slate-500">[vanilla]</span>{`    │    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
+     │    │    table rows `}<span className="text-slate-500 dark:text-slate-500">[OLTP]</span>{`       │    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
      │    └─────────────┬──────────────┘    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
      │                  │                   `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
      │                  ▼                   `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`

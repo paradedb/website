@@ -99,7 +99,7 @@ export default function PostgresNative() {
   }, []);
 
   return (
-    <div ref={sectionRef} className="w-full relative bg-white dark:bg-slate-950">
+    <div ref={sectionRef} className="w-full relative bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         {/* Vertical guide lines */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
@@ -137,48 +137,40 @@ export default function PostgresNative() {
               </div>
             </div>
 
-            {/* Right: compatibility receipt */}
+            {/* Right: adoption tally */}
             <div className="lg:col-span-5">
               <div className="relative border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60">
-                <div className="flex items-center justify-between px-4 py-2 border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/80">
+                <div className="px-5 py-3 border-b border-slate-200 dark:border-slate-800">
                   <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500">
-                    pg_compat.log
-                  </span>
-                  <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
-                    <span className="size-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    all green
+                    adoption
                   </span>
                 </div>
-                <div className="p-5 font-mono text-[12px] leading-[1.85] space-y-1 text-slate-700 dark:text-slate-300">
-                  <div>
-                    <span className="text-slate-400 dark:text-slate-600">$</span>{" "}
-                    psql -h paradedb -c &lsquo;\dx&rsquo;
-                  </div>
-                  <div className="text-slate-500 dark:text-slate-500">
-                    pg_search   │ 0.18.x │ search workloads
-                  </div>
-                  <div className="text-slate-500 dark:text-slate-500">
-                    pgvector    │ 0.8.x  │ vector type
-                  </div>
-                  <div className="text-slate-500 dark:text-slate-500">
-                    pg_partman  │ 5.x    │ partition mgmt
-                  </div>
-                  <div className="pt-3 mt-3 border-t border-dashed border-slate-200 dark:border-slate-800 space-y-1">
-                    <div className="text-emerald-600 dark:text-emerald-400">
-                      ✓ heap          unchanged
+                <div className="p-6 sm:p-7 divide-y divide-slate-100 dark:divide-slate-800/60">
+                  {[
+                    "driver changes",
+                    "schema migrations",
+                    "sync pipelines",
+                    "new query languages",
+                  ].map((label) => (
+                    <div
+                      key={label}
+                      className="flex items-baseline gap-5 py-2.5"
+                    >
+                      <span className="font-mono text-2xl sm:text-3xl font-semibold text-slate-300 dark:text-slate-700 w-7 sm:w-9 tabular-nums leading-none">
+                        0
+                      </span>
+                      <span className="text-sm sm:text-base text-slate-700 dark:text-slate-300">
+                        {label}
+                      </span>
                     </div>
-                    <div className="text-emerald-600 dark:text-emerald-400">
-                      ✓ transactions  ACID, MVCC
-                    </div>
-                    <div className="text-emerald-600 dark:text-emerald-400">
-                      ✓ drivers       libpq wire protocol
-                    </div>
-                    <div className="text-emerald-600 dark:text-emerald-400">
-                      ✓ backups       pg_dump, pg_basebackup
-                    </div>
-                    <div className="text-emerald-600 dark:text-emerald-400">
-                      ✓ replication   logical &amp; physical
-                    </div>
+                  ))}
+                  <div className="flex items-baseline gap-5 py-2.5 pt-4 mt-1">
+                    <span className="font-mono text-2xl sm:text-3xl font-semibold text-indigo-600 dark:text-indigo-400 w-7 sm:w-9 tabular-nums leading-none">
+                      1
+                    </span>
+                    <span className="font-mono text-sm sm:text-base text-indigo-950 dark:text-white">
+                      CREATE EXTENSION pg_search;
+                    </span>
                   </div>
                 </div>
               </div>

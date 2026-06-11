@@ -28,13 +28,13 @@ export default function SearchFeaturesClient({
         <section className="py-12 md:py-20 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
           <Badge className="mb-6">Workloads</Badge>
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
-            Three workloads,{" "}
-            <br className="hidden sm:block" />{" "}
-            <span className="text-highlight-blink">one</span> place to run them.
+            Search like a{" "}
+            <span className="text-highlight-blink">search engine</span>.
           </h2>
-          <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl px-6 sm:px-0">
-            Full-text search, vector retrieval, and search-side aggregations
-            run inside the same Postgres index, over the live rows your app writes.
+          <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl px-6 sm:px-0">
+            Full-text search, vector retrieval, and search-side aggregations,
+            each expressed in standard SQL and each running over the live rows
+            your app writes.
           </p>
 
           <Tabs.Root
