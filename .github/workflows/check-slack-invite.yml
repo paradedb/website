@@ -10,8 +10,9 @@ name: Check Slack Invite
 
 on:
   schedule:
-    # Daily at 13:00 UTC. So a dead link is caught within ~24h, not weeks later.
-    - cron: "0 13 * * *"
+    # 1 PM PST (21:00 UTC), weekdays. GitHub cron is UTC-only with no DST, so
+    # this lands at 2 PM during PDT.
+    - cron: "0 21 * * 1-5"
   workflow_dispatch:
 
 concurrency:
@@ -31,9 +32,6 @@ jobs:
       image: mcr.microsoft.com/playwright:v1.49.1-jammy
     # A hung page-load should fail loudly, not sit there for the 6h default.
     timeout-minutes: 10
-    outputs:
-      status: ${{ steps.probe.outputs.status }}
-      reason: ${{ steps.probe.outputs.reason }}
 
     steps:
       - name: Checkout Git Repository
@@ -70,43 +68,33 @@ jobs:
           if-no-files-found: ignore
           retention-days: 7
 
-  # Ping Slack when the probe job fails (dead invite or broken detector). The
-  # "inconclusive" network case exits 0, so the probe job stays green and this
-  # won't fire. Mirrors the notify-slack pattern in terraform-paradedb-byoc.
-  notify-slack:
-    name: Notify Slack on Failure
-    needs: [check-slack-invite]
-    if: always() && needs.check-slack-invite.result == 'failure'
-    runs-on: ubuntu-latest
-    env:
-      SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
-      # Via env (not inline ${{ }}) so quotes in the reason can't break the shell.
-      MONITOR_STATUS: ${{ needs.check-slack-invite.outputs.status }}
-      MONITOR_REASON: ${{ needs.check-slack-invite.outputs.reason }}
-    steps:
-      - name: Send Slack notification
+      - name: Ping Slack on failure
+        # Fires for dead/detector_broken only; "inconclusive" exits 0 so it won't fire.
+        if: always() && (steps.probe.outputs.status == 'dead' || steps.probe.outputs.status == 'detector_broken')
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
+          # Via env (not inline ${{ }}) so quotes in the reason can't break the shell.
+          MONITOR_STATUS: ${{ steps.probe.outputs.status }}
+          MONITOR_REASON: ${{ steps.probe.outputs.reason }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           if [ -z "$SLACK_WEBHOOK_URL" ]; then
             echo "SLACK_GITHUB_CHANNEL_WEBHOOK_URL not set — skipping Slack ping."
             exit 0
           fi
-          run_url="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
-          # jq builds the payload so embedded quotes in the reason are escaped.
-          payload="$(jq -n \
-            --arg status "$MONITOR_STATUS" \
-            --arg reason "$MONITOR_REASON" \
-            --arg repo "${{ github.repository }}" \
-            --arg url "$run_url" \
-            '{
-              text: "🚨 ParadeDB Community Slack invite needs attention - <!here>",
-              attachments: [{
-                color: "danger",
-                fields: [
-                  {title: "Status", value: $status, short: true},
-                  {title: "Repository", value: $repo, short: true},
-                  {title: "Details", value: $reason, short: false},
-                  {title: "View Logs", value: ("<" + $url + "|Click here>"), short: false}
-                ]
-              }]
-            }')"
+          # node (already in the image) builds the JSON so quotes in the reason
+          # are escaped — no jq dependency needed.
+          payload="$(node -e 'process.stdout.write(JSON.stringify({
+            text: "🚨 ParadeDB Community Slack invite needs attention - <!here>",
+            attachments: [{
+              color: "danger",
+              fields: [
+                { title: "Status", value: process.env.MONITOR_STATUS, short: true },
+                { title: "Repository", value: process.env.REPO, short: true },
+                { title: "Details", value: process.env.MONITOR_REASON, short: false },
+                { title: "View Logs", value: `<${process.env.RUN_URL}|Click here>`, short: false }
+              ]
+            }]
+          }))')"
           curl -fsS -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"
