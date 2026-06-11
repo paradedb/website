@@ -14,6 +14,10 @@ on:
     # this lands at 2 PM during PDT.
     - cron: "0 21 * * 1-5"
   workflow_dispatch:
+  # TEMPORARY: test end-to-end on this branch before merging. REMOVE before merge.
+  push:
+    branches:
+      - slack-invite-rotate-and-monitor
 
 concurrency:
   group: check-slack-invite-${{ github.head_ref || github.ref }}
@@ -59,7 +63,7 @@ jobs:
 
       - name: Upload rendered screenshots
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: slack-invite-screenshots
           path: |
