@@ -59,6 +59,15 @@ const nextConfig = {
         destination: "https://www.paradedb.com/blog",
         permanent: true,
       },
+      // The legacy blog hosted posts at blog.paradedb.com/pages/<slug>. New
+      // posts live at www.paradedb.com/blog/<slug> with no `pages` segment, so
+      // strip it here (this must precede the catch-all below to take priority).
+      {
+        source: "/pages/:path*",
+        has: [{ type: "host", value: "blog.paradedb.com" }],
+        destination: "https://www.paradedb.com/blog/:path*",
+        permanent: true,
+      },
       {
         source: "/:path*",
         has: [{ type: "host", value: "blog.paradedb.com" }],
@@ -122,6 +131,15 @@ const nextConfig = {
       {
         source: "/terms",
         destination: "/legal/terms",
+        permanent: true,
+      },
+      // --- legacy blog path structure ---
+      // Catches any cached/direct hits to the old /pages/ structure that may
+      // have been recorded as www.paradedb.com/blog/pages/<slug> before the
+      // host rule above existed.
+      {
+        source: "/blog/pages/:path*",
+        destination: "/blog/:path*",
         permanent: true,
       },
       // --- specific post renames ---
