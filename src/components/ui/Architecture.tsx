@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Badge } from "./Badge";
 
 export default function Architecture() {
@@ -16,7 +17,7 @@ export default function Architecture() {
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-14">
             <Badge className="mb-6">Architecture</Badge>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-5 max-w-4xl">
-              One <span className="text-highlight-blink">index</span>, three search workloads.
+              One <span className="text-highlight-blink">index</span>, three workloads.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
               Most systems spread full-text search, vector retrieval, and aggregations
@@ -24,33 +25,17 @@ export default function Architecture() {
             </p>
           </div>
 
-          {/* ASCII diagram */}
+          {/* Architecture diagram */}
           <div className="px-4 sm:px-8 md:px-12 flex justify-center">
-            <div className="overflow-x-auto">
-              <div
-                role="img"
-                aria-label="ParadeDB architecture diagram"
-                className="font-mono text-[11px] sm:text-[13px] md:text-[14px] leading-[1.5] text-slate-800 dark:text-slate-200 whitespace-pre inline-block text-left"
-              >
-{`                 `}<span className="text-indigo-700 dark:text-indigo-300 font-semibold">Your Application</span>{`
-                         │
-                         ▼  `}<span className="text-slate-500 dark:text-slate-500">SQL</span>{`
-     ┌── `}<span className="text-indigo-700 dark:text-indigo-300 font-semibold">postgres</span>{` ──────────────────────────┐
-     │                                      `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    ┌── `}<span className="text-indigo-950 dark:text-white font-semibold">heap</span>{` ────────────────────┐    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    │    table rows `}<span className="text-slate-500 dark:text-slate-500">[OLTP]</span>{`       │    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    └─────────────┬──────────────┘    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │                  │                   `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │                  ▼                   `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    ┌── `}<span className="text-indigo-950 dark:text-white font-semibold">single wide index</span>{` ───────┐    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    │  ◆ `}<span className="text-emerald-600 dark:text-emerald-400 font-semibold">BM25</span>{` `}<span className="text-slate-500 dark:text-slate-500">[full-text search]</span>{` │    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    │  ◆ `}<span className="text-amber-600 dark:text-amber-400 font-semibold">Vector</span>{` `}<span className="text-slate-500 dark:text-slate-500">[retrieval]</span>{`      │    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    │  ◆ `}<span className="text-sky-600 dark:text-sky-400 font-semibold">Columnar</span>{` `}<span className="text-slate-500 dark:text-slate-500">[aggregates]</span>{`   │    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │    └────────────────────────────┘    `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     │                                      `}<span className="text-slate-300 dark:text-slate-700">│░</span>{`
-     └──────────────────────────────────────┘`}<span className="text-slate-300 dark:text-slate-700">░</span>{`
-      `}<span className="text-slate-300 dark:text-slate-700">░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░</span>
-              </div>
+            <div className="w-full max-w-3xl">
+              <Image
+                src="/architecture-v2.png"
+                alt="ParadeDB architecture: a table heap in Postgres paired with a wide ParadeDB search index that serves full-text, vector, and aggregate queries."
+                width={2400}
+                height={1260}
+                className="w-full h-auto rounded-2xl"
+                priority
+              />
             </div>
           </div>
         </section>

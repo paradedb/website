@@ -293,6 +293,27 @@ function CornerMarkers() {
   );
 }
 
+const ECOSYSTEM_BADGES = [
+  "postgres",
+  "psql",
+  "pg_dump",
+  "logical replication",
+  "pgvector",
+  "PostGIS",
+  "pg_partman",
+  "pg_cron",
+  "drizzle",
+  "django",
+  "sqlalchemy",
+  "rails",
+  "ef core",
+  "rds",
+  "supabase",
+  "neon",
+  "cloud sql",
+  "crunchy",
+];
+
 export default function AgentReady() {
   const [selectedCloud, setSelectedCloud] = useState(0);
   const [selectedFramework, setSelectedFramework] = useState(0);
@@ -551,6 +572,23 @@ export default function AgentReady() {
                       </div>
                     </div>
                   </div>
+                </div>
+              </div>
+
+              {/* Ecosystem ticker */}
+              <div className="relative w-full z-20 mt-12 max-w-[1128px] mx-auto px-2">
+                <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-2">
+                  <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500 mr-2">
+                    drops into:
+                  </span>
+                  {ECOSYSTEM_BADGES.map((name) => (
+                    <span
+                      key={name}
+                      className="inline-flex items-center font-mono text-[11px] px-2 py-0.5 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 bg-white dark:bg-slate-900/60"
+                    >
+                      {name}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>

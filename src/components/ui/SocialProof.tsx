@@ -1,7 +1,10 @@
 import { Logos } from "./Logos";
 import Link from "next/link";
-import { RiArrowRightLine } from "@remixicon/react";
+import { RiArrowRightLine, RiGithubFill } from "@remixicon/react";
 import { Badge } from "./Badge";
+import DockerLogo from "./DockerLogo";
+import PostgresLogo from "./PostgresLogo";
+import { documentation, github } from "@/lib/links";
 
 const CaseStudyCard = ({
   logo,
@@ -80,14 +83,14 @@ export default function SocialProof() {
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 mt-px ml-px">Case Studies</Badge>
+              <Badge className="mb-6 mt-px ml-px">Proof</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                <span className="text-highlight-blink">Trusted</span> by
-                enterprises
+                <span className="text-highlight-blink">Trusted</span> in
+                production, built in the open.
               </h2>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
-                The most innovative companies are simplifying their search stack
-                with ParadeDB.
+              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 px-2">
+                Enterprises run ParadeDB to simplify their search stack.
+                Developers run it for free, on Docker or as a Postgres extension.
               </p>
             </div>
 
@@ -119,6 +122,69 @@ export default function SocialProof() {
                     role="Product Manager, Alibaba"
                     companyName="Alibaba"
                   />
+                </div>
+              </div>
+
+              {/* Open-source stats */}
+              <div className="relative w-full z-20 mt-12">
+                <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-900">
+                  <div className="p-6 md:p-8 flex flex-col items-start text-left">
+                    <div className="mb-4 flex items-center justify-center size-6">
+                      <DockerLogo className="w-full h-full dark:brightness-0 dark:invert" />
+                    </div>
+                    <div className="text-2xl font-bold text-indigo-950 dark:text-white">
+                      1M+
+                    </div>
+                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm mb-1">
+                      Docker deployments
+                    </div>
+                    <Link
+                      href={documentation.DOCKER}
+                      target="_blank"
+                      className="mt-2 flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                    >
+                      Run Docker image
+                      <RiArrowRightLine className="size-3.5" />
+                    </Link>
+                  </div>
+                  <div className="p-6 md:p-8 flex flex-col items-start text-left">
+                    <div className="mb-4 flex items-center justify-center size-6 text-slate-900 dark:text-slate-100">
+                      <PostgresLogo className="w-full h-full" />
+                    </div>
+                    <div className="text-2xl font-bold text-indigo-950 dark:text-white">
+                      200K+
+                    </div>
+                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm mb-1">
+                      Extension installs
+                    </div>
+                    <Link
+                      href={documentation.DEPLOY_EXTENSION}
+                      target="_blank"
+                      className="mt-2 flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                    >
+                      Install extension
+                      <RiArrowRightLine className="size-3.5" />
+                    </Link>
+                  </div>
+                  <div className="p-6 md:p-8 flex flex-col items-start text-left">
+                    <div className="mb-4 flex items-center justify-center size-6">
+                      <RiGithubFill className="w-full h-full text-slate-900 dark:text-slate-100" />
+                    </div>
+                    <div className="text-2xl font-bold text-indigo-950 dark:text-white">
+                      8K+
+                    </div>
+                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm mb-1">
+                      GitHub stargazers
+                    </div>
+                    <Link
+                      href={github.REPO}
+                      target="_blank"
+                      className="mt-2 flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                    >
+                      Star ParadeDB
+                      <RiArrowRightLine className="size-3.5" />
+                    </Link>
+                  </div>
                 </div>
               </div>
 
