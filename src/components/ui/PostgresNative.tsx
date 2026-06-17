@@ -87,10 +87,8 @@ export default function PostgresNative() {
                 <span className="text-highlight-blink">in Postgres</span>.
               </h2>
               <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
-                Adopting ParadeDB is not adopting a new database. The heap stays
-                vanilla. Your SQL, your transactions, your drivers, your backup
-                strategy, your managed Postgres provider: all of it keeps
-                working exactly as it does today.
+                Adopting ParadeDB is not adopting a new database. Your tables stay vanilla, with a new index that unlocks search workloads.
+                Your SQL, transactions, drivers, backup strategy, high availability and other Postgres features keeps working exactly as they do today.
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center">
                 <Button asChild className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all">

@@ -21,7 +21,7 @@ export default function Architecture() {
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
               Most systems spread full-text search, vector retrieval, and aggregations
-              across separate indexes, engines, or even databases. ParadeDB plans and executes all three together against a single wide Postgres index, allowing them to be optimized as a single operation.
+              across separate indexes, engines, or even databases. ParadeDB plans and executes all three together against a custom Postgres index, allowing them to be optimized as a single operation.
             </p>
           </div>
 
