@@ -92,18 +92,27 @@ export function Navigation() {
         isHomePage ? "absolute top-0" : "relative h-16 md:h-20",
       )}
     >
+      {/* Full-viewport background — extends the nav bg past the 1440px wrapper */}
+      <div
+        className={cx(
+          "absolute inset-y-0 left-1/2 -translate-x-1/2 w-screen pointer-events-none",
+          open ? "h-auto" : "h-16 md:h-20",
+          isHomePage ? "bg-indigo-600" : "bg-white dark:bg-slate-950",
+        )}
+        aria-hidden="true"
+      />
       <header
         className={cx(
           "z-50 flex transform-gpu opacity-0 animate-navbar justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1.03)] will-change-transform",
           "left-4 md:left-12 right-4 md:right-12 absolute border-b",
           isHomePage
             ? "border-white/20"
-            : "border-slate-200 dark:border-slate-900 bg-white/80 dark:bg-slate-950/80 backdrop-blur-md",
+            : "border-slate-200 dark:border-slate-900",
           open === true
             ? "h-auto pb-8 pt-2 top-2 rounded-2xl"
             : "h-16 md:h-20 top-0",
           open === true
-            ? "bg-white/95 dark:bg-slate-950/95 backdrop-blur-2xl shadow-2xl shadow-black/10"
+            ? "bg-white dark:bg-slate-950 shadow-2xl shadow-black/10"
             : "bg-transparent",
         )}
       >

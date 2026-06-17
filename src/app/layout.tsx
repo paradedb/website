@@ -120,7 +120,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SiteBanner />
-          <div className="relative mx-auto w-full max-w-[1440px]">
+          <div className="sticky top-0 z-50 mx-auto w-full max-w-[1440px]">
             <Navigation />
           </div>
           {children}
