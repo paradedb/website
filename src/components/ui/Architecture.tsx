@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { Badge } from "./Badge";
 
 export default function Architecture() {
@@ -25,17 +24,28 @@ export default function Architecture() {
             </p>
           </div>
 
-          {/* Architecture diagram */}
+          {/* Architecture diagram (text) */}
           <div className="px-4 sm:px-8 md:px-12 flex justify-center">
-            <div className="w-full max-w-3xl">
-              <Image
-                src="/architecture-v2.png"
-                alt="ParadeDB architecture: a table heap in Postgres paired with a wide ParadeDB search index that serves full-text, vector, and aggregate queries."
-                width={2400}
-                height={1260}
-                className="w-full h-auto rounded-2xl"
-                priority
-              />
+            <div className="overflow-x-auto">
+              <div
+                role="img"
+                aria-label="ParadeDB architecture: a table heap in Postgres and a wide ParadeDB search index that serves full-text, vector, and aggregate queries."
+                className="font-mono text-[10px] sm:text-[12px] md:text-[13px] leading-[1.5] text-slate-800 dark:text-slate-200 whitespace-pre inline-block text-left"
+              >
+{`         `}<span className="text-emerald-600 dark:text-emerald-400">┏━━ </span><span className="text-emerald-600 dark:text-emerald-400 font-semibold">PostgreSQL</span><span className="text-emerald-600 dark:text-emerald-400"> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>{`
+                                     `}<span className="text-indigo-600 dark:text-indigo-400">┏━━ </span><span className="text-indigo-600 dark:text-indigo-400 font-semibold">ParadeDB</span><span className="text-indigo-600 dark:text-indigo-400"> ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>{`
+
+
+         `}<span className="text-emerald-600 dark:text-emerald-400">┏━━━━━━━━━━━━━━━━━━━┓</span>{`       `}<span className="text-indigo-600 dark:text-indigo-400">┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓</span>{`
+         `}<span className="text-emerald-600 dark:text-emerald-400">┃</span>{`   `}<span className="font-semibold text-indigo-950 dark:text-white">Table (Heap)</span>{`    `}<span className="text-emerald-600 dark:text-emerald-400">┃</span><span className="text-slate-300 dark:text-slate-700">░</span>{`◄───► `}<span className="text-indigo-600 dark:text-indigo-400">┃</span>{`                     `}<span className="font-semibold text-indigo-950 dark:text-white">Wide Search Index</span>{`                    `}<span className="text-indigo-600 dark:text-indigo-400">┃</span><span className="text-slate-300 dark:text-slate-700">░</span>{`
+         `}<span className="text-emerald-600 dark:text-emerald-400">┗━━━━━━━━━━━━━━━━━━━┛</span><span className="text-slate-300 dark:text-slate-700">░</span>{`      `}<span className="text-indigo-600 dark:text-indigo-400">┗━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━━┳━━━━━━━━━━┛</span><span className="text-slate-300 dark:text-slate-700">░</span>{`
+          `}<span className="text-slate-300 dark:text-slate-700">░░░░░░░░░░░░░░░░░░░░░</span>{`                  ┃                 ┃                 ┃
+                                                 ▼                 ▼                 ▼
+                                         `}<span className="text-amber-600 dark:text-amber-400">┏━━━━━━━━━━━━━━┓</span>{`  `}<span className="text-amber-600 dark:text-amber-400">┏━━━━━━━━━━━━━━┓</span>{`  `}<span className="text-amber-600 dark:text-amber-400">┏━━━━━━━━━━━━━━┓</span>{`
+                                         `}<span className="text-amber-600 dark:text-amber-400">┃</span>{`  `}<span className="font-semibold text-indigo-950 dark:text-white">Full-Text</span>{`   `}<span className="text-amber-600 dark:text-amber-400">┃</span><span className="text-slate-300 dark:text-slate-700">░</span>{` `}<span className="text-amber-600 dark:text-amber-400">┃</span>{`   `}<span className="font-semibold text-indigo-950 dark:text-white">Vectors</span>{`    `}<span className="text-amber-600 dark:text-amber-400">┃</span><span className="text-slate-300 dark:text-slate-700">░</span>{` `}<span className="text-amber-600 dark:text-amber-400">┃</span>{`  `}<span className="font-semibold text-indigo-950 dark:text-white">Aggregates</span>{`  `}<span className="text-amber-600 dark:text-amber-400">┃</span><span className="text-slate-300 dark:text-slate-700">░</span>{`
+                                         `}<span className="text-amber-600 dark:text-amber-400">┗━━━━━━━━━━━━━━┛</span><span className="text-slate-300 dark:text-slate-700">░</span>{` `}<span className="text-amber-600 dark:text-amber-400">┗━━━━━━━━━━━━━━┛</span><span className="text-slate-300 dark:text-slate-700">░</span>{` `}<span className="text-amber-600 dark:text-amber-400">┗━━━━━━━━━━━━━━┛</span><span className="text-slate-300 dark:text-slate-700">░</span>{`
+                                          `}<span className="text-slate-300 dark:text-slate-700">░░░░░░░░░░░░░░░░</span>{`  `}<span className="text-slate-300 dark:text-slate-700">░░░░░░░░░░░░░░░░</span>{`  `}<span className="text-slate-300 dark:text-slate-700">░░░░░░░░░░░░░░░░</span>
+              </div>
             </div>
           </div>
         </section>
