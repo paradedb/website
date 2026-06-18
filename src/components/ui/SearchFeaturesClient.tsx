@@ -32,9 +32,7 @@ export default function SearchFeaturesClient({
             <span className="text-highlight-blink">search engine</span>.
           </h2>
           <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl px-6 sm:px-0">
-            Full-text search, vector retrieval, and search-side aggregations,
-            each expressed in standard SQL and each running over the live rows
-            your app writes.
+            Express searches in standard SQL over the live rows your application writes.
           </p>
 
           <Tabs.Root

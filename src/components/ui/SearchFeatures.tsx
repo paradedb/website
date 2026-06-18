@@ -7,48 +7,76 @@ import {
   RiSparklingLine,
   RiPieChartLine,
   RiListCheck2,
+  RiFilter3Line,
+  RiSortDesc,
+  RiScissorsCutLine,
+  RiGlobalLine,
 } from "@remixicon/react";
 
-const fullTextCode = `-- one index over your text columns
-CREATE INDEX ON articles
-USING bm25 (id, (body::pdb.unicode_words('stemmer=english')));
+const indexingCode = `CREATE INDEX ON posts
+USING bm25 (
+    id,
+    (title::pdb.ngram(3,3)),
+    (body::pdb.unicode_words('stemmer=english'))
+);`;
 
--- BM25 scoring, phrase, fuzzy, proximity, more-like-this
-SELECT id, pdb.score(id)
-FROM articles
-WHERE body @@@ pdb.match('body', 'asian elephant', fuzzy => 1)
-ORDER BY pdb.score(id) DESC
-LIMIT 10;`;
+const fullTextCode = `SELECT * FROM posts
+WHERE body &&& 'postgres'
+OR id @@@ pdb.more_like_this(1)
+LIMIT 5;`;
 
-const vectorCode = `-- vector field lives in the same index as your BM25 fields
-CREATE INDEX ON products
-USING bm25 (id, name, (embedding::pdb.hnsw(dim=>768)));
+const filteringCode = `SELECT * FROM posts
+WHERE body &&& 'postgres'
+AND metadata->>'category' === 'databases'
+AND votes >= 100
+ORDER BY published_at DESC
+LIMIT 5;`;
 
--- hybrid: lexical and vector signals scored in a single query
-SELECT id,
-       pdb.score(id, mode => 'hybrid')
-FROM products
-WHERE name &&& 'asian elephant'
-  AND embedding <#> $1 < 0.4
-ORDER BY pdb.score(id, mode => 'hybrid') DESC
-LIMIT 10;`;
+const vectorCode = `SELECT id, embedding <=> '[1,2,3]' AS distance
+FROM posts
+WHERE body &&& 'postgres'
+ORDER BY embedding <=> '[1,2,3]'
+LIMIT 5;`;
 
-const aggregationsCode = `-- aggregations alongside the search query, in the same scan
-SELECT
-  metadata->>'region' AS region,
-  count(*)            AS hits,
-  avg(price)          AS avg_price
-FROM products
-WHERE name &&& 'asian elephant'
-  AND price BETWEEN 20 AND 500
-GROUP BY region
-ORDER BY hits DESC;`;
+const aggregationsCode = `SELECT metadata->>'category', count(*)
+FROM posts
+WHERE body &&& 'postgres'
+GROUP BY metadata->>'category'
+ORDER BY 1;`;
 
 export default async function SearchFeatures() {
   const features = [
     {
+      value: "indexing",
+      label: "Indexing",
+      tagline: "Tokenizers",
+      bullets: [
+        {
+          title: "Advanced tokenization",
+          description:
+            "12+ tokenizers to break apart text into searchable tokens: ngrams, stemmers, ICU, dictionaries, more.",
+          icon: <RiScissorsCutLine className="size-5" />,
+        },
+        {
+          title: "Multi-language support",
+          description:
+            "20+ languages out of the box, including dictionary-based tokenizers configurable per column.",
+          icon: <RiTranslate2 className="size-5" />,
+        },
+      ],
+      code: (
+        <Code
+          code={indexingCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+          highlightLines={[4, 5]}
+        />
+      ),
+    },
+    {
       value: "full-text",
-      label: "Full-text search",
+      label: "Full-text",
       tagline: "BM25",
       bullets: [
         {
@@ -58,10 +86,10 @@ export default async function SearchFeatures() {
           icon: <RiSearchEyeLine className="size-5" />,
         },
         {
-          title: "20+ languages, 12+ tokenizers",
+          title: "Composable search syntax",
           description:
-            "Stemmers, n-grams, ICU, and dictionary tokenizers configurable per column. Pre-filter results with any Postgres type.",
-          icon: <RiTranslate2 className="size-5" />,
+            "Mix match, term, and advanced queries with standard SQL operators on a single index.",
+          icon: <RiGlobalLine className="size-5" />,
         },
       ],
       code: (
@@ -70,25 +98,54 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
+          highlightLines={[2, 3]}
+        />
+      ),
+    },
+    {
+      value: "filtering",
+      label: "Filtering",
+      tagline: "Predicate pushdown",
+      bullets: [
+        {
+          title: "Apply any predicate faster",
+          description:
+            "Standard Postgres WHERE clauses on indexed columns are evaluated alongside the search itself, in the same scan, with no heap fetch.",
+          icon: <RiFilter3Line className="size-5" />,
+        },
+        {
+          title: "Dynamic ordering",
+          description:
+            "ORDER BY relevance, recency, distance, popularity, or any custom expression, composed with the filter in a single plan.",
+          icon: <RiSortDesc className="size-5" />,
+        },
+      ],
+      code: (
+        <Code
+          code={filteringCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+          highlightLines={[3, 4, 5]}
         />
       ),
     },
     {
       value: "vector",
-      label: "Vector retrieval",
-      tagline: "Hybrid scoring",
+      label: "Vector",
+      tagline: "pgvector compatible",
       bullets: [
         {
-          title: "Vectors in the same index",
+          title: "BM25 and pgvector side by side",
           description:
-            "HNSW lives next to your BM25 fields. No second store, no second sync. Embeddings stay where your rows live.",
-          icon: <RiCpuLine className="size-5" />,
+            "Lexical relevance with pdb.score and semantic similarity with pgvector's distance operators, both reading the same live rows.",
+          icon: <RiSparklingLine className="size-5" />,
         },
         {
-          title: "True hybrid queries",
+          title: "No second store, no sync job",
           description:
-            "Lexical and vector signals scored in a single query, in a single pass over the index. Not two queries fused after the fact.",
-          icon: <RiSparklingLine className="size-5" />,
+            "pgvector is a Postgres extension. Embeddings stay in the same table as everything else: no ingest pipeline, no eventual consistency.",
+          icon: <RiCpuLine className="size-5" />,
         },
       ],
       code: (
@@ -97,12 +154,13 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
+          highlightLines={[1, 4]}
         />
       ),
     },
     {
       value: "aggregations",
-      label: "Search-side aggregations",
+      label: "Aggregations",
       tagline: "Facets & counts",
       bullets: [
         {
@@ -124,6 +182,7 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
+          highlightLines={[1, 4]}
         />
       ),
     },

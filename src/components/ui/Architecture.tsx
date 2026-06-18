@@ -16,11 +16,11 @@ export default function Architecture() {
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-14">
             <Badge className="mb-6">Architecture</Badge>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-5 max-w-4xl">
-              One <span className="text-highlight-blink">index</span>, three workloads.
+              One <span className="text-highlight-blink">database</span>, three workloads.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
-              Most systems spread full-text search, vector retrieval, and aggregations
-              across separate indexes, engines, or even databases. ParadeDB plans and executes all three together against a custom Postgres index, allowing them to be optimized as a single operation.
+	      Full-text search, vector retrieval, and aggregations are typically spread across separate indexes, engines, or even databases. ParadeDB is a single custom Postgres
+  index that unifies all three.
             </p>
           </div>
 

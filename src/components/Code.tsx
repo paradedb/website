@@ -1,5 +1,5 @@
 import { cx } from "@/lib/utils";
-import type { BundledLanguage, BundledTheme } from "shiki";
+import type { BundledLanguage, BundledTheme, ShikiTransformer } from "shiki";
 import { codeToHtml } from "shiki";
 import CopyToClipboard from "./CopyToClipboard";
 
@@ -10,6 +10,7 @@ type Props = {
   filename?: string;
   className?: string;
   copy?: boolean;
+  highlightLines?: number[];
 };
 
 export default async function Code({
@@ -17,15 +18,45 @@ export default async function Code({
   lang = "typescript",
   className,
   copy = true,
+  highlightLines,
 }: Props) {
+  const transformers: ShikiTransformer[] | undefined = highlightLines?.length
+    ? [
+        {
+          name: "drop-line-newlines",
+          code(node) {
+            node.children = node.children.filter(
+              (child) =>
+                !(child.type === "text" && child.value === "\n"),
+            );
+          },
+        },
+        {
+          name: "highlight-lines",
+          line(node, line) {
+            if (highlightLines.includes(line)) {
+              const existing =
+                typeof node.properties.class === "string"
+                  ? node.properties.class
+                  : "";
+              node.properties.class =
+                `${existing} highlighted-line`.trim();
+            }
+          },
+        },
+      ]
+    : undefined;
+
   const htmlLight = await codeToHtml(code, {
     lang,
     theme: "github-light",
+    transformers,
   });
 
   const htmlDark = await codeToHtml(code, {
     lang,
     theme: "github-dark",
+    transformers,
   });
 
   return (

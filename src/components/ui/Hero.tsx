@@ -43,7 +43,7 @@ export default async function Hero() {
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-center opacity-0 animate-hero-content">
               <p className="text-base sm:text-lg text-indigo-50 mb-8 mt-4 max-w-2xl">
-                Unify your operational data, full-text search, vector retrieval, and aggregations in Postgres.
+                Unify your application data, full-text search, vector retrieval, and aggregations in Postgres.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-center mb-6 sm:mb-8 sm:px-0">
                 <Button

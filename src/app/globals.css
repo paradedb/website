@@ -502,6 +502,23 @@ pre[class*="shiki"] code {
   background-color: transparent !important;
 }
 
+pre.shiki:has(.highlighted-line) .line,
+pre[class*="shiki"]:has(.highlighted-line) .line {
+  display: block;
+}
+
+pre.shiki .line.highlighted-line,
+pre[class*="shiki"] .line.highlighted-line {
+  background: linear-gradient(
+    to right,
+    transparent 0,
+    transparent 1.5rem,
+    rgba(245, 158, 11, 0.7) 1.5rem,
+    rgba(245, 158, 11, 0.7) calc(1.5rem + 2px),
+    rgba(245, 158, 11, 0.14) calc(1.5rem + 2px)
+  );
+}
+
 pre::-webkit-scrollbar {
   display: none !important;
 }
