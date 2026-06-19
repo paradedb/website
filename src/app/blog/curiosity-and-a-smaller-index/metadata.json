@@ -1,0 +1,13 @@
+{
+  "title": "How Turbopuffer's Tokenizer Led Us to a 40% Smaller Index",
+  "date": "2026-06-23:00:00.000Z",
+  "author": "James Blackwood-Sewell",
+  "description": "We got curious about Turbopuffer's alyze tokenizer, ported it into ParadeDB to see how it compared, and ended up finding a position-reset bug that was quietly bloating the indexes of our default tokenizer.",
+  "categories": [
+    "search",
+    "full-text search",
+    "tokenization",
+    "tantivy",
+    "postgres"
+  ]
+}
