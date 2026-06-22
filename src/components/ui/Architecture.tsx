@@ -32,18 +32,11 @@ export default function Architecture() {
                 aria-label="ParadeDB architecture: a table heap in Postgres and a wide ParadeDB search index that serves full-text, vector, and aggregate queries."
                 className="font-mono min-w-[640px]"
               >
-                {/* PostgreSQL top frame: label above, CSS L-corners that meet the line */}
-                <div className="mb-8">
-                  <span className="block font-mono text-sm font-bold text-slate-700 dark:text-slate-300 ml-6 mb-1">PostgreSQL</span>
-                  <div className="flex items-start h-2">
-                    <div className="w-1.5 h-2 border-l border-t border-slate-400 dark:border-slate-600"></div>
-                    <div className="flex-1 border-t border-slate-400 dark:border-slate-600"></div>
-                    <div className="w-1.5 h-2 border-r border-t border-slate-400 dark:border-slate-600"></div>
-                  </div>
-                </div>
-
-                {/* Main grid: Table | ↔ | Index, with arrows + workloads stacked under Index */}
-                <div className="grid gap-x-4 md:gap-x-6 items-center grid-cols-[auto_auto_1fr]">
+                {/* PostgreSQL frame: label above, full border wrapping the whole diagram */}
+                <span className="block font-mono text-sm font-bold text-slate-700 dark:text-slate-300 ml-6 mb-1">PostgreSQL</span>
+                <div className="border border-slate-400 dark:border-slate-600 p-6 sm:p-8 md:p-10">
+                  {/* Main grid: Table | ↔ | Index, with arrows + workloads stacked under Index */}
+                  <div className="grid gap-x-4 md:gap-x-6 items-center grid-cols-[auto_auto_1fr]">
                   {/* Table (Heap) with dotted drop shadow */}
                   <div className="relative">
                     <div
@@ -131,6 +124,7 @@ export default function Architecture() {
                       </div>
                     ))}
                   </div>
+                </div>
                 </div>
               </div>
             </div>
