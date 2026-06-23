@@ -59,6 +59,15 @@ const nextConfig = {
         destination: "https://www.paradedb.com/blog",
         permanent: true,
       },
+      // The legacy blog hosted posts at blog.paradedb.com/pages/<slug>. New
+      // posts live at www.paradedb.com/blog/<slug> with no `pages` segment, so
+      // strip it here (this must precede the catch-all below to take priority).
+      {
+        source: "/pages/:path*",
+        has: [{ type: "host", value: "blog.paradedb.com" }],
+        destination: "https://www.paradedb.com/blog/:path*",
+        permanent: true,
+      },
       {
         source: "/:path*",
         has: [{ type: "host", value: "blog.paradedb.com" }],
@@ -102,11 +111,16 @@ const nextConfig = {
         permanent: true,
       },
       // --- external service redirects ---
+      // NOTE: Slack shared invite links auto-deactivate after ~400 joins,
+      // regardless of the "never expire" setting. When this link dies, generate
+      // a new invite in the Slack admin and swap the destination below — every
+      // reference across the org points at /slack, so this is the only edit needed.
+      // Kept as `permanent: false` (302) so browsers/Slack don't cache a dead link.
       {
         source: "/slack",
         destination:
-          "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-32abtyjg4-yoYoi~RPh9MSW8tDbl0BQw",
-        permanent: true,
+          "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-40nbq9zkk-ffd5IvYjkMwnIx8MuPkFlQ",
+        permanent: false,
       },
       // --- legacy legal page redirects ---
       {
@@ -117,6 +131,15 @@ const nextConfig = {
       {
         source: "/terms",
         destination: "/legal/terms",
+        permanent: true,
+      },
+      // --- legacy blog path structure ---
+      // Catches any cached/direct hits to the old /pages/ structure that may
+      // have been recorded as www.paradedb.com/blog/pages/<slug> before the
+      // host rule above existed.
+      {
+        source: "/blog/pages/:path*",
+        destination: "/blog/:path*",
         permanent: true,
       },
       // --- specific post renames ---

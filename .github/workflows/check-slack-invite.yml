@@ -1,0 +1,100 @@
+# workflows/check-slack-invite.yml
+#
+# Check Slack Invite
+# Alerts when the public Slack invite (https://paradedb.com/slack) dies. Slack
+# links auto-deactivate after ~400 joins and fail silently (an expired link
+# still 200s with a live-looking app-shell), so this renders the page in a
+# headless browser to detect it. See check-slack-invite.mjs for details.
+
+name: Check Slack Invite
+
+on:
+  schedule:
+    # 1 PM PST (21:00 UTC), weekdays. GitHub cron is UTC-only with no DST, so
+    # this lands at 2 PM during PDT.
+    - cron: "0 21 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: check-slack-invite-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  check-slack-invite:
+    name: Check Slack Invite
+    runs-on: ubuntu-latest
+    # Chromium + deps are baked in, so there's no slow browser download at
+    # runtime. Keep the `playwright@` install below on the same version tag.
+    container:
+      image: mcr.microsoft.com/playwright:v1.49.1-jammy
+    # A hung page-load should fail loudly, not sit there for the 6h default.
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout Git Repository
+        uses: actions/checkout@v6
+
+      - name: Probe Slack invite
+        id: probe
+        run: |
+          # Install only the Playwright JS package (seconds — no browser bytes;
+          # the browser is already in the image at $PLAYWRIGHT_BROWSERS_PATH).
+          # Isolated temp dir keeps us off the repo's pnpm package.json/lockfile.
+          mkdir -p "$RUNNER_TEMP/pw"
+          cp .github/scripts/check-slack-invite.mjs "$RUNNER_TEMP/pw/probe.mjs"
+          cd "$RUNNER_TEMP/pw"
+          npm init -y >/dev/null 2>&1
+          PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install playwright@1.49.1 >/dev/null
+          # Don't let set -e abort on a failing probe — we still need to copy the
+          # screenshots/reason back so the artifact + issue steps can use them.
+          set +e
+          node probe.mjs
+          status=$?
+          set -e
+          cp -f live.png canary.png "$GITHUB_WORKSPACE/" 2>/dev/null || true
+          exit $status
+
+      - name: Upload rendered screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: slack-invite-screenshots
+          path: |
+            live.png
+            canary.png
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Ping Slack on failure
+        # Fires for dead/detector_broken only; "inconclusive" exits 0 so it won't fire.
+        if: always() && (steps.probe.outputs.status == 'dead' || steps.probe.outputs.status == 'detector_broken')
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
+          # Via env (not inline ${{ }}) so quotes in the reason can't break the shell.
+          MONITOR_STATUS: ${{ steps.probe.outputs.status }}
+          MONITOR_REASON: ${{ steps.probe.outputs.reason }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          if [ -z "$SLACK_WEBHOOK_URL" ]; then
+            echo "SLACK_GITHUB_CHANNEL_WEBHOOK_URL not set — skipping Slack ping."
+            exit 0
+          fi
+          # node (already in the image) builds the JSON so quotes in the reason
+          # are escaped — no jq dependency needed.
+          payload="$(node -e 'process.stdout.write(JSON.stringify({
+            text: "🚨 ParadeDB Community Slack invite needs attention - <!here>",
+            attachments: [{
+              color: "danger",
+              fields: [
+                { title: "Status", value: process.env.MONITOR_STATUS, short: true },
+                { title: "Repository", value: process.env.REPO, short: true },
+                { title: "Details", value: process.env.MONITOR_REASON, short: false },
+                { title: "View Logs", value: `<${process.env.RUN_URL}|Click here>`, short: false }
+              ]
+            }]
+          }))')"
+          curl -fsS -X POST -H 'Content-type: application/json' --data "$payload" "$SLACK_WEBHOOK_URL"

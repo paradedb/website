@@ -39,7 +39,7 @@ export default function CommunityProof() {
                     <DockerLogo className="w-full h-full dark:brightness-0 dark:invert" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    1M+
+                    1.5M+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Docker deployments
@@ -64,7 +64,7 @@ export default function CommunityProof() {
                     <PostgresLogo className="w-full h-full" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    200K+
+                    250K+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Postgres extension installs
@@ -89,7 +89,7 @@ export default function CommunityProof() {
                     <RiGithubFill className="w-full h-full text-slate-900 dark:text-slate-100" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    8K+
+                    9K+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
                     Stargazers on GitHub
