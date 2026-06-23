@@ -15,7 +15,9 @@ export default function Architecture() {
         style={dotShadowStyle}
       />
       <div className="relative border-2 border-slate-500 dark:border-slate-500 bg-white dark:bg-slate-900 px-5 py-3">
-        <span className="font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap text-sm sm:text-base">Table (Heap)</span>
+        <span className="font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap text-sm sm:text-base">
+          Table (Heap)
+        </span>
       </div>
     </div>
   );
@@ -28,7 +30,9 @@ export default function Architecture() {
         style={dotShadowStyle}
       />
       <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 px-5 py-3 text-center">
-        <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap text-sm sm:text-base">ParadeDB Index</span>
+        <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap text-sm sm:text-base">
+          ParadeDB Index
+        </span>
       </div>
     </div>
   );
@@ -42,7 +46,9 @@ export default function Architecture() {
         style={dotShadowStyle}
       />
       <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 px-3 py-3 text-center">
-        <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap text-sm sm:text-base">{label}</span>
+        <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap text-sm sm:text-base">
+          {label}
+        </span>
       </div>
     </div>
   );
@@ -56,7 +62,14 @@ export default function Architecture() {
       aria-hidden="true"
       className="text-indigo-600 dark:text-indigo-400"
     >
-      <line x1="7" y1="0" x2="7" y2="32" stroke="currentColor" strokeWidth="2" />
+      <line
+        x1="7"
+        y1="0"
+        x2="7"
+        y2="32"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
       <polygon points="2,30 12,30 7,40" fill="currentColor" />
     </svg>
   );
@@ -71,7 +84,14 @@ export default function Architecture() {
       className="text-slate-500 dark:text-slate-400 mx-1"
     >
       <polygon points="0,7 10,2 10,12" fill="currentColor" />
-      <line x1="8" y1="7" x2="48" y2="7" stroke="currentColor" strokeWidth="2" />
+      <line
+        x1="8"
+        y1="7"
+        x2="48"
+        y2="7"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
       <polygon points="56,7 46,2 46,12" fill="currentColor" />
     </svg>
   );
@@ -86,7 +106,14 @@ export default function Architecture() {
       className="text-slate-500 dark:text-slate-400"
     >
       <polygon points="7,0 2,10 12,10" fill="currentColor" />
-      <line x1="7" y1="8" x2="7" y2="48" stroke="currentColor" strokeWidth="2" />
+      <line
+        x1="7"
+        y1="8"
+        x2="7"
+        y2="48"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
       <polygon points="7,56 2,46 12,46" fill="currentColor" />
     </svg>
   );
@@ -106,10 +133,15 @@ export default function Architecture() {
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-8 md:mb-10">
             <Badge className="mb-6">Architecture</Badge>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-5 max-w-4xl">
-              One <span className="text-highlight-blink">database</span>, three workloads.
+              One <span className="text-highlight-blink">database</span>, three
+              workloads.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
-              Full-text search, vector retrieval, and aggregations are typically spread across separate indexes, engines, or even databases. A query is broken apart, executed in different places, and stitched back together. ParadeDB unifies all three in a single custom Postgres index.
+              Full-text search, vector retrieval, and aggregations are typically
+              spread across separate indexes, engines, or even databases. A
+              query is broken apart, executed in different places, and stitched
+              back together. ParadeDB avoids this by unifying all three in a
+              custom Postgres index.
             </p>
           </div>
 
@@ -122,12 +154,16 @@ export default function Architecture() {
                 className="font-mono"
               >
                 {/* PostgreSQL frame: label above, border around the whole diagram */}
-                <span className="block font-mono text-sm font-bold text-slate-700 dark:text-slate-300 ml-6 mb-1">PostgreSQL</span>
+                <span className="block font-mono text-sm font-bold text-slate-700 dark:text-slate-300 ml-6 mb-1">
+                  PostgreSQL
+                </span>
                 <div className="border border-slate-400 dark:border-slate-600 p-5 sm:p-8 md:p-10">
                   {/* Mobile/tablet layout (< lg): vertical stack */}
                   <div className="lg:hidden flex flex-col items-stretch gap-3">
                     <div className="flex justify-center">{tableBox}</div>
-                    <div className="flex justify-center">{syncArrowVertical}</div>
+                    <div className="flex justify-center">
+                      {syncArrowVertical}
+                    </div>
                     {indexBox}
                     <div className="flex justify-center">{downArrow}</div>
                     <div className="flex flex-col items-stretch gap-3">
@@ -144,7 +180,9 @@ export default function Architecture() {
                     <div />
                     <div className="grid grid-cols-3 gap-6 mt-4 mb-1 justify-items-center">
                       {[1, 2, 3].map((i) => (
-                        <span key={i} className="inline-flex">{downArrow}</span>
+                        <span key={i} className="inline-flex">
+                          {downArrow}
+                        </span>
                       ))}
                     </div>
                     <div />
