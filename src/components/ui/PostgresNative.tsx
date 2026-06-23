@@ -6,11 +6,11 @@ import { Badge } from "./Badge";
 import { Button } from "../Button";
 import Link from "next/link";
 import { documentation } from "@/lib/links";
-import PostgresLogo from "./PostgresLogo";
 import {
   RiTerminalBoxLine,
   RiShieldKeyholeLine,
   RiLifebuoyLine,
+  RiPlugLine,
   RiPuzzleLine,
   RiArrowRightLine,
 } from "@remixicon/react";
@@ -19,7 +19,7 @@ const KEEPS = [
   {
     title: "Built as an extension",
     body: "Pure Postgres extension. Drops into any self-managed Postgres with no fork and no separate server.",
-    icon: <PostgresLogo className="h-[18px] w-auto text-current opacity-90" />,
+    icon: <RiPlugLine className="size-[18px]" />,
     code: "CREATE EXTENSION pg_search;",
   },
   {
