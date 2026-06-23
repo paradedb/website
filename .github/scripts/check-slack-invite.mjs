@@ -83,8 +83,7 @@ const browser = await chromium.launch();
 // Pin the locale to English. Slack localizes these invite pages by request
 // geo/IP, so a runner in a non-English region renders e.g. "Ce lien n'est plus
 // actif" instead of "This link is no longer active" — and our English-only
-// DEAD_PHRASES never match, silently breaking detection (the canary then reads
-// "alive" and the job fails as detector_broken).
+// DEAD_PHRASES never match, silently breaking detection.
 const context = await browser.newContext({
   locale: "en-US",
   extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" },
