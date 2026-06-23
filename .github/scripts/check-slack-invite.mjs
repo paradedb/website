@@ -41,10 +41,10 @@ const DEAD_PHRASES = [
   "ask for a new link",
 ];
 
-async function classify(browser, label, url, screenshotPath) {
+async function classify(context, label, url, screenshotPath) {
   const t0 = Date.now();
   console.log(`[${label}] loading ${url} ...`);
-  const page = await browser.newPage();
+  const page = await context.newPage();
   try {
     // domcontentloaded + settle is more reliable than networkidle here: Slack
     // holds long-lived connections, so networkidle frequently times out.
@@ -64,7 +64,9 @@ async function classify(browser, label, url, screenshotPath) {
     );
     return { dead, matched, error: null };
   } catch (err) {
-    console.log(`[${label}] errored after ${Date.now() - t0}ms: ${err.message}`);
+    console.log(
+      `[${label}] errored after ${Date.now() - t0}ms: ${err.message}`,
+    );
     return { dead: null, matched: null, error: err.message };
   } finally {
     await page.close();
@@ -78,12 +80,20 @@ function setOutput(key, value) {
 }
 
 const browser = await chromium.launch();
+// Pin the locale to English. Slack localizes these invite pages by request
+// geo/IP, so a runner in a non-English region renders e.g. "Ce lien n'est plus
+// actif" instead of "This link is no longer active" — and our English-only
+// DEAD_PHRASES never match, silently breaking detection.
+const context = await browser.newContext({
+  locale: "en-US",
+  extraHTTPHeaders: { "Accept-Language": "en-US,en;q=0.9" },
+});
 let status; // healthy | dead | detector_broken | inconclusive
 let reason;
 
 try {
-  const canary = await classify(browser, "canary", DEAD_CANARY, "canary.png");
-  const live = await classify(browser, "live", LIVE_URL, "live.png");
+  const canary = await classify(context, "canary", DEAD_CANARY, "canary.png");
+  const live = await classify(context, "live", LIVE_URL, "live.png");
 
   console.log("Canary (known-dead) result:", JSON.stringify(canary));
   console.log("Live  (paradedb.com/slack) result:", JSON.stringify(live));
