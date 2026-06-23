@@ -87,7 +87,8 @@ export default function Pricing() {
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
               <Badge className="mb-6">Pricing</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                Ready, set, <span className="text-highlight-blink">deploy</span>.
+                Ready, set, <span className="text-highlight-blink">deploy</span>
+                .
               </h2>
               <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12">
                 Scale search on Postgres with confidence.

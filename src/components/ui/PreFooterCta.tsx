@@ -44,8 +44,7 @@ export default function PreFooterCta() {
           <div className="relative flex flex-col items-center justify-center pt-16 md:pt-20 pb-4 md:pb-6 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
-                Put search where{" "}
-                <br className="hidden sm:block" />
+                Put search where <br className="hidden sm:block" />
                 your data{" "}
                 <span className="text-highlight-blink !text-white after:!bg-white/10 after:!bg-gradient-to-r after:!from-white/20 after:!to-transparent">
                   lives.

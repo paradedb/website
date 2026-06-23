@@ -19,9 +19,7 @@ const KEEPS = [
   {
     title: "Built as an extension",
     body: "Pure Postgres extension. Drops into any self-managed Postgres with no fork and no separate server.",
-    icon: (
-      <PostgresLogo className="h-[18px] w-auto text-current opacity-90" />
-    ),
+    icon: <PostgresLogo className="h-[18px] w-auto text-current opacity-90" />,
     code: "CREATE EXTENSION pg_search;",
   },
   {

@@ -293,10 +293,8 @@ function CornerMarkers() {
   );
 }
 
-
 export default function AgentReady() {
   const [selectedCloud, setSelectedCloud] = useState(0);
-  const [selectedFramework, setSelectedFramework] = useState(0);
   const [copiedAgent, setCopiedAgent] = useState(false);
 
   const handleCopy = async (text: string) => {
@@ -493,18 +491,15 @@ export default function AgentReady() {
 
                             {/* Logos */}
                             <div className="relative z-20 flex items-center justify-center w-full h-full gap-2">
-                              {Frameworks.map((framework, index) => (
+                              {Frameworks.map((framework) => (
                                 <Tooltip.Root key={framework.name}>
                                   <Tooltip.Trigger asChild>
-                                    <button
-                                      onClick={() =>
-                                        setSelectedFramework(index)
-                                      }
+                                    <div
                                       className={`flex size-[3rem] items-center justify-center transition-all duration-300 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 bg-transparent ${framework.className}`}
                                       aria-label={framework.name}
                                     >
                                       {framework.icon}
-                                    </button>
+                                    </div>
                                   </Tooltip.Trigger>
                                   <Tooltip.Portal>
                                     <Tooltip.Content
