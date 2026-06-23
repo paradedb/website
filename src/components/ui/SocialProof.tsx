@@ -1,10 +1,7 @@
 import { Logos } from "./Logos";
 import Link from "next/link";
-import { RiArrowRightLine, RiGithubFill } from "@remixicon/react";
+import { RiArrowRightLine } from "@remixicon/react";
 import { Badge } from "./Badge";
-import DockerLogo from "./DockerLogo";
-import PostgresLogo from "./PostgresLogo";
-import { documentation, github } from "@/lib/links";
 
 const CaseStudyCard = ({
   logo,
@@ -27,8 +24,8 @@ const CaseStudyCard = ({
     href={href}
     className="group relative flex flex-col items-start p-8 md:p-12 text-left overflow-hidden h-full"
   >
-    {/* Content Wrapper - Blurs on hover */}
-    <div className="w-full flex flex-col items-start transition-all duration-300 group-hover:blur-sm group-hover:opacity-40">
+    {/* Content */}
+    <div className="w-full flex flex-col items-start">
       <div className="mb-8 h-8 sm:h-10 flex items-center">{logo}</div>
       <blockquote className="text-sm md:text-lg text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
         {quote}
@@ -48,12 +45,10 @@ const CaseStudyCard = ({
       </div>
     </div>
 
-    {/* Hover Overlay */}
-    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-95 group-hover:scale-100">
-      <div className="flex items-center gap-2 text-indigo-950 dark:text-white font-semibold bg-transparent px-6 py-3">
-        Read {companyName} case study
-        <RiArrowRightLine className="size-4" />
-      </div>
+    {/* Bottom-right "Read case study" — appears on hover */}
+    <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 inline-flex items-center gap-2 bg-indigo-600 text-white text-sm font-bold px-4 py-2 shadow-sm opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
+      Read {companyName} case study
+      <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
     </div>
   </Link>
 );
@@ -77,20 +72,20 @@ export default function SocialProof() {
           <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
           <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-          {/* Section 1: Case Studies (Gray Background) */}
-          <div className="relative z-10 flex flex-col items-center justify-center sm:py-24 py-12 text-center bg-transparent">
+          {/* Section 1: Case Studies */}
+          <div className="relative z-10 flex flex-col items-center justify-center sm:py-16 py-10 text-center bg-transparent">
             {/* Fades for Case Studies Section */}
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
             <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 mt-px ml-px">Proof</Badge>
+              <Badge className="mb-6 mt-px ml-px">Case Studies</Badge>
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                <span className="text-highlight-blink">Trusted</span> in
-                production, built in the open.
+                <span className="text-highlight-blink">Trusted</span> by
+                enterprises.
               </h2>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl mx-auto leading-relaxed mb-12 px-2">
-                Enterprises run ParadeDB to simplify their search stack.
-                Developers run it for free, on Docker or as a Postgres extension.
+              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
+                The most innovative companies are simplifying their search stack
+                with ParadeDB.
               </p>
             </div>
 
@@ -125,75 +120,12 @@ export default function SocialProof() {
                 </div>
               </div>
 
-              {/* Open-source stats */}
-              <div className="relative w-full z-20 mt-12">
-                <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-900">
-                  <div className="p-6 md:p-8 flex flex-col items-start text-left">
-                    <div className="mb-4 flex items-center justify-center size-6">
-                      <DockerLogo className="w-full h-full dark:brightness-0 dark:invert" />
-                    </div>
-                    <div className="text-2xl font-bold text-indigo-950 dark:text-white">
-                      1M+
-                    </div>
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm mb-1">
-                      Docker deployments
-                    </div>
-                    <Link
-                      href={documentation.DOCKER}
-                      target="_blank"
-                      className="mt-2 flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                    >
-                      Run Docker image
-                      <RiArrowRightLine className="size-3.5" />
-                    </Link>
-                  </div>
-                  <div className="p-6 md:p-8 flex flex-col items-start text-left">
-                    <div className="mb-4 flex items-center justify-center size-6 text-slate-900 dark:text-slate-100">
-                      <PostgresLogo className="w-full h-full" />
-                    </div>
-                    <div className="text-2xl font-bold text-indigo-950 dark:text-white">
-                      200K+
-                    </div>
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm mb-1">
-                      Extension installs
-                    </div>
-                    <Link
-                      href={documentation.DEPLOY_EXTENSION}
-                      target="_blank"
-                      className="mt-2 flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                    >
-                      Install extension
-                      <RiArrowRightLine className="size-3.5" />
-                    </Link>
-                  </div>
-                  <div className="p-6 md:p-8 flex flex-col items-start text-left">
-                    <div className="mb-4 flex items-center justify-center size-6">
-                      <RiGithubFill className="w-full h-full text-slate-900 dark:text-slate-100" />
-                    </div>
-                    <div className="text-2xl font-bold text-indigo-950 dark:text-white">
-                      8K+
-                    </div>
-                    <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm mb-1">
-                      GitHub stargazers
-                    </div>
-                    <Link
-                      href={github.REPO}
-                      target="_blank"
-                      className="mt-2 flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                    >
-                      Star ParadeDB
-                      <RiArrowRightLine className="size-3.5" />
-                    </Link>
-                  </div>
-                </div>
-              </div>
-
               <div className="mt-10 flex justify-center">
                 <Link
                   href="/customers"
                   className="group inline-flex items-center gap-2 text-indigo-950 dark:text-white font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
                 >
-                  View all case studies
+                  Read other case studies
                   <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </Link>
               </div>

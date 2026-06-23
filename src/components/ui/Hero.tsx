@@ -94,11 +94,6 @@ export default async function Hero() {
           <HeroVisual />
         </div>
 
-        {/* Shaded Region */}
-        <div className="relative z-20 px-4 md:px-12">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-y border-white/20 bg-indigo-700/20 opacity-60" />
-        </div>
-
         <div className="mt-0 relative z-20 w-full">
           <div className="px-4 md:px-12 w-full mx-auto relative">
             <div className="absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />

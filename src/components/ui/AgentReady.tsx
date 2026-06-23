@@ -321,7 +321,7 @@ export default function AgentReady() {
             <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
             <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-            <div className="relative flex flex-col items-center justify-center py-16 sm:py-24 bg-transparent z-20">
+            <div className="relative flex flex-col items-center justify-center py-10 sm:py-16 bg-transparent z-20">
               {/* Header section */}
               <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0 text-center mb-12">
                 <Badge className="mb-6">Integrations</Badge>
@@ -330,7 +330,7 @@ export default function AgentReady() {
                   <span className="text-indigo-600 dark:text-indigo-400">
                     favorite
                   </span>{" "}
-                  tools
+                  tools.
                 </h2>
                 <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                   ParadeDB works seamlessly with your existing stack.
@@ -360,11 +360,7 @@ export default function AgentReady() {
                                   <Tooltip.Trigger asChild>
                                     <button
                                       onClick={() => setSelectedCloud(index)}
-                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 ${
-                                        selectedCloud === index
-                                          ? "opacity-100"
-                                          : "opacity-50 hover:opacity-100"
-                                      } ${platform.className || ""}`}
+                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 ${platform.className || ""}`}
                                       aria-label={platform.name}
                                     >
                                       {platform.icon}
@@ -504,11 +500,7 @@ export default function AgentReady() {
                                       onClick={() =>
                                         setSelectedFramework(index)
                                       }
-                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 ${
-                                        selectedFramework === index
-                                          ? "grayscale-0 opacity-100"
-                                          : "grayscale opacity-60 hover:grayscale-0 hover:opacity-100"
-                                      } bg-transparent ${framework.className}`}
+                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 bg-transparent ${framework.className}`}
                                       aria-label={framework.name}
                                     >
                                       {framework.icon}

@@ -11,16 +11,24 @@ import {
   RiTerminalBoxLine,
   RiShieldKeyholeLine,
   RiLifebuoyLine,
-  RiBracketsLine,
+  RiPuzzleLine,
   RiArrowRightLine,
 } from "@remixicon/react";
 
 const KEEPS = [
   {
+    title: "Built as an extension",
+    body: "Pure Postgres extension. Drops into any self-managed Postgres with no fork and no separate server.",
+    icon: (
+      <PostgresLogo className="h-[18px] w-auto text-current opacity-90" />
+    ),
+    code: "CREATE EXTENSION pg_search;",
+  },
+  {
     title: "Standard SQL",
     body: "Joins, CTEs, window functions, JSONB, PL/pgSQL, materialized views. Search is a WHERE clause.",
     icon: <RiTerminalBoxLine className="size-[18px]" />,
-    code: "SELECT … WHERE body @@@ 'postgres'",
+    code: "SELECT … WHERE body &&& 'postgres'",
   },
   {
     title: "ACID transactions",
@@ -29,13 +37,7 @@ const KEEPS = [
     code: "BEGIN; … COMMIT;",
   },
   {
-    title: "Every driver and ORM",
-    body: "psycopg, node-postgres, pgx, ActiveRecord, Django, SQLAlchemy, Drizzle, EF Core. No client rewrite.",
-    icon: <RiBracketsLine className="size-[18px]" />,
-    code: "conn.execute(sql)",
-  },
-  {
-    title: "A real ops surface",
+    title: "Your usual ops surface",
     body: "pg_dump, logical replication, pgBackRest, the dashboards and alerting your team already trusts.",
     icon: <RiLifebuoyLine className="size-[18px]" />,
     code: "pg_dump -Fc db | …",
@@ -43,10 +45,8 @@ const KEEPS = [
   {
     title: "The Postgres ecosystem",
     body: "pgvector, pg_partman, pg_cron, PostGIS, and the rest of the extension catalog work side by side.",
-    icon: (
-      <PostgresLogo className="h-[18px] w-auto text-current opacity-90" />
-    ),
-    code: "CREATE EXTENSION pg_search;",
+    icon: <RiPuzzleLine className="size-[18px]" />,
+    code: "CREATE EXTENSION vector;",
   },
 ];
 
@@ -80,23 +80,23 @@ export default function PostgresNative() {
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        <section className="relative py-16 md:py-24 border-r border-l border-slate-200 dark:border-slate-900 bg-slate-50/40 dark:bg-slate-950">
+        <section className="relative py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-slate-50/40 dark:bg-slate-950">
           {/* Header */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-14 md:mb-16">
+          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
             <Badge className="mb-6">Postgres-native</Badge>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 max-w-4xl">
               Built on <span className="text-highlight-blink">Postgres</span>.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
-              The most-admired database in the{" "}
+              The world's{" "}
               <Link
                 href="https://survey.stackoverflow.co/2025/technology#2-databases"
                 target="_blank"
                 className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 underline underline-offset-4 decoration-indigo-300 dark:decoration-indigo-700"
               >
-                Stack Overflow Developer Survey
-              </Link>
-              , year after year.
+                most-admired
+              </Link>{" "}
+              open-source database, proven in production at every scale.
             </p>
             <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center">
               <Button
@@ -137,7 +137,7 @@ export default function PostgresNative() {
                   <div
                     key={item.title}
                     className={cx(
-                      "relative border-r border-b border-slate-200 dark:border-slate-800 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group transition-all duration-700",
+                      "relative flex flex-col border-r border-b border-slate-200 dark:border-slate-800 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group transition-all duration-700",
                       isWide && "lg:col-span-2",
                       visible
                         ? "opacity-100 translate-y-0"
@@ -159,7 +159,7 @@ export default function PostgresNative() {
                     <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
                       {item.body}
                     </p>
-                    <div className="font-mono text-[11px] text-slate-500 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 inline-flex">
+                    <div className="mt-auto self-start font-mono text-[11px] text-slate-500 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 inline-flex">
                       <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">
                         ›
                       </span>

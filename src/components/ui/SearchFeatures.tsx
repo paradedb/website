@@ -16,23 +16,29 @@ import {
 const indexingCode = `CREATE INDEX ON posts
 USING bm25 (
     id,
-    (title::pdb.ngram(3,3)),
-    (body::pdb.unicode_words('stemmer=english'))
+    title,
+    (body::pdb.unicode_words('stemmer=english')),
+    metadata,
+    votes,
+    published_at
 );`;
 
-const fullTextCode = `SELECT * FROM posts
+const fullTextCode = `SELECT *
+FROM posts
 WHERE body &&& 'postgres'
-OR id @@@ pdb.more_like_this(1)
+OR title &&& 'postgres'
+ORDER BY pdb.score(id) DESC
 LIMIT 5;`;
 
-const filteringCode = `SELECT * FROM posts
+const filteringCode = `SELECT *
+FROM posts
 WHERE body &&& 'postgres'
 AND metadata->>'category' === 'databases'
 AND votes >= 100
 ORDER BY published_at DESC
 LIMIT 5;`;
 
-const vectorCode = `SELECT id, embedding <=> '[1,2,3]' AS distance
+const vectorCode = `SELECT *
 FROM posts
 WHERE body &&& 'postgres'
 ORDER BY embedding <=> '[1,2,3]'
@@ -41,8 +47,7 @@ LIMIT 5;`;
 const aggregationsCode = `SELECT metadata->>'category', count(*)
 FROM posts
 WHERE body &&& 'postgres'
-GROUP BY metadata->>'category'
-ORDER BY 1;`;
+GROUP BY metadata->>'category';`;
 
 export default async function SearchFeatures() {
   const features = [
@@ -70,7 +75,6 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[4, 5]}
         />
       ),
     },
@@ -98,7 +102,7 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[2, 3]}
+          highlightLines={[3, 4, 5]}
         />
       ),
     },
@@ -126,7 +130,7 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[3, 4, 5]}
+          highlightLines={[4, 5, 6]}
         />
       ),
     },
@@ -154,7 +158,7 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[1, 4]}
+          highlightLines={[4]}
         />
       ),
     },
