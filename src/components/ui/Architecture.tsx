@@ -16,7 +16,7 @@ export default function Architecture() {
       />
       <div className="relative border-2 border-slate-500 dark:border-slate-500 bg-white dark:bg-slate-900 px-5 py-3">
         <span className="font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap text-sm sm:text-base">
-          Table (Heap)
+          Table
         </span>
       </div>
     </div>
