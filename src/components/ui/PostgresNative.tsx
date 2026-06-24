@@ -12,7 +12,6 @@ import {
   RiLifebuoyLine,
   RiPlugLine,
   RiPuzzleLine,
-  RiArrowRightLine,
 } from "@remixicon/react";
 
 const KEEPS = [
@@ -90,7 +89,7 @@ export default function PostgresNative() {
               <Link
                 href="https://survey.stackoverflow.co/2025/technology#2-databases"
                 target="_blank"
-                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 underline underline-offset-4 decoration-indigo-300 dark:decoration-indigo-700"
+                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
               >
                 most-admired
               </Link>{" "}
@@ -102,17 +101,9 @@ export default function PostgresNative() {
                 className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all"
               >
                 <Link href={documentation.GETTING_STARTED} target="_blank">
-                  Install in your Postgres
+                  Install ParadeDB
                 </Link>
               </Button>
-              <Link
-                href={documentation.BASE}
-                target="_blank"
-                className="flex items-center gap-1.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-              >
-                Browse the SQL reference
-                <RiArrowRightLine className="size-4" />
-              </Link>
             </div>
           </div>
 

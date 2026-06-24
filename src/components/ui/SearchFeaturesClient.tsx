@@ -28,8 +28,8 @@ export default function SearchFeaturesClient({
         <section className="py-10 md:py-14 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
           <Badge className="mb-6">Workloads</Badge>
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
-            Search like a{" "}
-            <span className="text-highlight-blink">search engine</span>.
+            The <span className="text-highlight-blink">complete</span> toolkit{" "}
+            <br className="hidden sm:block" /> for search.
           </h2>
           <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl px-6 sm:px-0">
             Express searches in standard SQL over the live rows your application

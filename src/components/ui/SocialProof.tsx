@@ -10,7 +10,6 @@ const CaseStudyCard = ({
   role,
   initials,
   href,
-  companyName,
 }: {
   logo: React.ReactNode;
   quote: string;
@@ -18,11 +17,10 @@ const CaseStudyCard = ({
   role: string;
   initials: string;
   href: string;
-  companyName: string;
 }) => (
   <Link
     href={href}
-    className="group relative flex flex-col items-start p-8 md:p-12 text-left overflow-hidden h-full"
+    className="group relative flex flex-col items-start p-8 md:p-12 text-left overflow-hidden h-full transition-colors duration-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/30"
   >
     {/* Content */}
     <div className="w-full flex flex-col items-start">
@@ -43,12 +41,6 @@ const CaseStudyCard = ({
           </div>
         </div>
       </div>
-    </div>
-
-    {/* Bottom-right "Read case study" — appears on hover */}
-    <div className="absolute bottom-4 right-4 md:bottom-6 md:right-6 inline-flex items-center gap-2 bg-indigo-600 text-white text-sm font-bold px-4 py-2 shadow-sm opacity-0 translate-y-1 transition-all duration-200 group-hover:opacity-100 group-hover:translate-y-0">
-      Read {companyName} case study
-      <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
     </div>
   </Link>
 );
@@ -101,7 +93,6 @@ export default function SocialProof() {
                     initials="JK"
                     author="John King"
                     role="Backend Engineer, Bilt"
-                    companyName="Bilt"
                   />
                 </div>
 
@@ -115,7 +106,6 @@ export default function SocialProof() {
                     initials="PB"
                     author="Pang Bo"
                     role="Product Manager, Alibaba"
-                    companyName="Alibaba"
                   />
                 </div>
               </div>

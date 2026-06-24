@@ -23,23 +23,20 @@ USING bm25 (
     published_at
 );`;
 
-const fullTextCode = `SELECT *
-FROM posts
+const fullTextCode = `SELECT * FROM posts
 WHERE body &&& 'postgres'
 OR title &&& 'postgres'
 ORDER BY pdb.score(id) DESC
 LIMIT 5;`;
 
-const filteringCode = `SELECT *
-FROM posts
+const filteringCode = `SELECT * FROM posts
 WHERE body &&& 'postgres'
 AND metadata->>'category' === 'databases'
 AND votes >= 100
 ORDER BY published_at DESC
 LIMIT 5;`;
 
-const vectorCode = `SELECT *
-FROM posts
+const vectorCode = `SELECT * FROM posts
 WHERE body &&& 'postgres'
 ORDER BY embedding <=> '[1,2,3]'
 LIMIT 5;`;
@@ -102,7 +99,6 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[3, 4, 5]}
         />
       ),
     },
@@ -130,7 +126,6 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[4, 5, 6]}
         />
       ),
     },
@@ -158,7 +153,6 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[4]}
         />
       ),
     },
@@ -170,7 +164,7 @@ export default async function SearchFeatures() {
         {
           title: "Aggregations alongside search",
           description:
-            "Facets, filter counts, term distributions, time-bucketed counts, and top-N rendered from the same scan as the search itself.",
+            "Facets, filter counts, term distributions, time-bucketed counts, and top-K rendered from the same scan as the search itself.",
           icon: <RiPieChartLine className="size-5" />,
         },
         {
@@ -186,7 +180,6 @@ export default async function SearchFeatures() {
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}
-          highlightLines={[1, 4]}
         />
       ),
     },
