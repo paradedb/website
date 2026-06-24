@@ -41,6 +41,16 @@ const DEAD_PHRASES = [
   "ask for a new link",
 ];
 
+// Slack gates these invite pages behind a browser-support check. It 403s any
+// client whose User-Agent Client Hints brand isn't "Google Chrome" and serves
+// a "your browser is not supported" interstitial instead of the real invite
+// content — silently breaking detection. We launch real Google Chrome (see the
+// launch call below) to get past it; this phrase lets us detect (and clearly
+// report) a regression if Slack blocks us anyway. Do NOT set a custom
+// userAgent on the context: Playwright derives the client-hint brand from it,
+// which reintroduces the non-"Google Chrome" brand and gets us blocked again.
+const UNSUPPORTED_BROWSER_PHRASE = "your browser is not supported";
+
 async function classify(context, label, url, screenshotPath) {
   const t0 = Date.now();
   console.log(`[${label}] loading ${url} ...`);
@@ -57,17 +67,25 @@ async function classify(context, label, url, screenshotPath) {
     const text = (
       await page.evaluate(() => document.body.innerText || "")
     ).toLowerCase();
+    if (text.includes(UNSUPPORTED_BROWSER_PHRASE)) {
+      // Slack blocked us at the browser gate — we never saw the real invite
+      // page, so neither "dead" nor "alive" is trustworthy. Surface it.
+      console.log(
+        `[${label}] done in ${Date.now() - t0}ms — BLOCKED (unsupported-browser page)`,
+      );
+      return { dead: null, matched: null, error: null, blocked: true };
+    }
     const matched = DEAD_PHRASES.find((p) => text.includes(p)) || null;
     const dead = Boolean(matched);
     console.log(
       `[${label}] done in ${Date.now() - t0}ms — ${dead ? `DEAD (matched "${matched}")` : "alive"}`,
     );
-    return { dead, matched, error: null };
+    return { dead, matched, error: null, blocked: false };
   } catch (err) {
     console.log(
       `[${label}] errored after ${Date.now() - t0}ms: ${err.message}`,
     );
-    return { dead: null, matched: null, error: err.message };
+    return { dead: null, matched: null, error: err.message, blocked: false };
   } finally {
     await page.close();
   }
@@ -79,7 +97,14 @@ function setOutput(key, value) {
   }
 }
 
-const browser = await chromium.launch();
+// Launch real Google Chrome (channel: "chrome"), NOT bundled headless Chromium.
+// Slack now gates the invite pages behind bot detection that 403s any client
+// whose User-Agent Client Hints brand isn't "Google Chrome" — headless Chromium
+// reports "HeadlessChrome"/"Chromium" and gets served a "your browser is not
+// supported" interstitial instead of the real valid/expired invite content.
+// Google Chrome reports the "Google Chrome" brand and is let through. The CI
+// workflow installs this channel before running (see check-slack-invite.yml).
+const browser = await chromium.launch({ channel: "chrome" });
 // Pin the locale to English. Slack localizes these invite pages by request
 // geo/IP, so a runner in a non-English region renders e.g. "Ce lien n'est plus
 // actif" instead of "This link is no longer active" — and our English-only
@@ -98,7 +123,20 @@ try {
   console.log("Canary (known-dead) result:", JSON.stringify(canary));
   console.log("Live  (paradedb.com/slack) result:", JSON.stringify(live));
 
-  if (canary.dead !== true) {
+  if (canary.blocked || live.blocked) {
+    // Slack served the "your browser is not supported" interstitial instead of
+    // the real invite page — we never reached the content we classify on, so
+    // the detector is blind. Likely Slack tightened its browser gate; confirm
+    // the probe is still launching real Google Chrome (channel: "chrome") and
+    // not falling back to headless Chromium.
+    status = "detector_broken";
+    reason =
+      "Slack served its 'your browser is not supported' page instead of the " +
+      "invite page, so neither link could be classified. Confirm the probe still " +
+      'launches real Google Chrome (channel: "chrome") in ' +
+      ".github/scripts/check-slack-invite.mjs and that Chrome is installed in CI. " +
+      "Until fixed, this monitor cannot be trusted to catch a real outage.";
+  } else if (canary.dead !== true) {
     // The detector can no longer recognize a link it MUST recognize as dead.
     status = "detector_broken";
     reason =

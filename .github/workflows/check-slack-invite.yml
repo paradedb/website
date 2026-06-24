@@ -3,8 +3,9 @@
 # Check Slack Invite
 # Alerts when the public Slack invite (https://paradedb.com/slack) dies. Slack
 # links auto-deactivate after ~400 joins and fail silently (an expired link
-# still 200s with a live-looking app-shell), so this renders the page in a
-# headless browser to detect it. See check-slack-invite.mjs for details.
+# still 200s with a live-looking app-shell), so this renders the page in real
+# Google Chrome to detect it — Slack bot-blocks headless Chromium with a 403
+# "browser not supported" wall. See check-slack-invite.mjs for details.
 
 name: Check Slack Invite
 
@@ -26,8 +27,9 @@ jobs:
   check-slack-invite:
     name: Check Slack Invite
     runs-on: ubuntu-latest
-    # Chromium + deps are baked in, so there's no slow browser download at
-    # runtime. Keep the `playwright@` install below on the same version tag.
+    # Browser OS deps are baked in. We install real Google Chrome below (the
+    # image only ships headless Chromium, which Slack now bot-blocks). Keep the
+    # `playwright@` install below on the same version tag as the image.
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-jammy
     # A hung page-load should fail loudly, not sit there for the 6h default.
@@ -41,13 +43,17 @@ jobs:
         id: probe
         run: |
           # Install only the Playwright JS package (seconds — no browser bytes;
-          # the browser is already in the image at $PLAYWRIGHT_BROWSERS_PATH).
-          # Isolated temp dir keeps us off the repo's pnpm package.json/lockfile.
+          # OS deps are already in the image). Isolated temp dir keeps us off
+          # the repo's pnpm package.json/lockfile.
           mkdir -p "$RUNNER_TEMP/pw"
           cp .github/scripts/check-slack-invite.mjs "$RUNNER_TEMP/pw/probe.mjs"
           cd "$RUNNER_TEMP/pw"
           npm init -y >/dev/null 2>&1
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install playwright@1.49.1 >/dev/null
+          # Install real Google Chrome — the probe launches channel:"chrome" to
+          # get past Slack's bot wall (headless Chromium is served a 403). OS
+          # deps are baked into the image, so this is just the browser binary.
+          npx playwright install chrome >/dev/null
           # Don't let set -e abort on a failing probe — we still need to copy the
           # screenshots/reason back so the artifact + issue steps can use them.
           set +e
