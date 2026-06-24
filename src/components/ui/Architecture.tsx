@@ -1,18 +1,21 @@
 import { Badge } from "./Badge";
 
 export default function Architecture() {
-  const dotShadowStyle = {
-    backgroundImage: "radial-gradient(circle, #94a3b8 1.6px, transparent 2px)",
+  const pixelShadow = (color: string) => ({
+    backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%23${color}' fill-opacity='0.5'/%3E%3C/svg%3E")`,
     backgroundSize: "5px 5px",
-    opacity: 0.85,
-  };
+    backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
+  });
+
+  const indigoShadowStyle = pixelShadow("4f46e5");
+  const slateShadowStyle = pixelShadow("64748b");
 
   const tableBox = (
     <div className="relative">
       <div
-        className="absolute top-0 left-0 -right-2.5 -bottom-2.5"
+        className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
         aria-hidden="true"
-        style={dotShadowStyle}
+        style={slateShadowStyle}
       />
       <div className="relative border-2 border-slate-500 dark:border-slate-500 bg-white dark:bg-slate-900 px-5 py-3">
         <span className="font-mono font-bold text-slate-900 dark:text-white whitespace-nowrap text-sm sm:text-base">
@@ -25,9 +28,9 @@ export default function Architecture() {
   const indexBox = (
     <div className="relative">
       <div
-        className="absolute top-0 left-0 -right-2.5 -bottom-2.5"
+        className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
         aria-hidden="true"
-        style={dotShadowStyle}
+        style={indigoShadowStyle}
       />
       <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 px-5 py-3 text-center">
         <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap text-sm sm:text-base">
@@ -41,9 +44,9 @@ export default function Architecture() {
   const renderWorkloadBox = (label: string) => (
     <div key={label} className="relative">
       <div
-        className="absolute top-0 left-0 -right-2.5 -bottom-2.5"
+        className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
         aria-hidden="true"
-        style={dotShadowStyle}
+        style={indigoShadowStyle}
       />
       <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-white dark:bg-slate-900 px-3 py-3 text-center">
         <span className="font-mono font-bold text-indigo-600 dark:text-indigo-400 whitespace-nowrap text-sm sm:text-base">
@@ -129,6 +132,10 @@ export default function Architecture() {
         <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
 
         <section className="relative py-10 md:py-14 border-r border-l border-slate-200 dark:border-slate-900 bg-indigo-50/40 dark:bg-indigo-950/20">
+          {/* Inner grid lines */}
+          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+
           {/* Header */}
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-8 md:mb-10">
             <Badge className="mb-6">Architecture</Badge>
@@ -146,49 +153,54 @@ export default function Architecture() {
           </div>
 
           {/* Architecture diagram */}
-          <div className="px-4 sm:px-8 md:px-12 flex justify-center">
-            <div className="w-full max-w-4xl pr-3 pb-3">
+          <div className="px-4">
+            <div className="w-full max-w-[1128px] mx-auto">
               <div
                 role="img"
                 aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index that serves full-text, vector, and aggregate queries."
                 className="font-mono"
               >
-                {/* PostgreSQL frame: label above, border around the whole diagram */}
-                <span className="block font-mono text-sm font-bold text-slate-700 dark:text-slate-300 ml-6 mb-1">
-                  PostgreSQL
-                </span>
-                <div className="border border-slate-400 dark:border-slate-600 p-5 sm:p-8 md:p-10">
-                  {/* Mobile/tablet layout (< lg): vertical stack */}
-                  <div className="lg:hidden flex flex-col items-stretch gap-3">
-                    <div className="flex justify-center">{tableBox}</div>
-                    <div className="flex justify-center">
-                      {syncArrowVertical}
-                    </div>
-                    {indexBox}
-                    <div className="flex justify-center">{downArrow}</div>
-                    <div className="flex flex-col items-stretch gap-3">
-                      {workloadLabels.map(renderWorkloadBox)}
-                    </div>
+                {/* PostgreSQL frame: label inside, border around the whole diagram */}
+                <div className="relative border border-t-0 xl:border-x-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 px-5 pt-12 pb-10 sm:px-8 sm:pt-14 sm:pb-12 md:px-10 md:pt-[4.5rem] md:pb-16">
+                  {/* PostgreSQL label straddling the top border */}
+                  <div className="absolute inset-x-0 top-0 -translate-y-1/2 flex items-center gap-3 font-mono text-sm font-bold text-slate-400 dark:text-slate-500">
+                    <span aria-hidden className="h-px flex-1 bg-slate-200 dark:bg-slate-900" />
+                    PostgreSQL
+                    <span aria-hidden className="h-px flex-1 bg-slate-200 dark:bg-slate-900" />
                   </div>
-
-                  {/* Desktop layout (lg+): horizontal grid */}
-                  <div className="hidden lg:grid gap-x-6 items-center grid-cols-[auto_auto_1fr]">
-                    {tableBox}
-                    {syncArrowHorizontal}
-                    {indexBox}
-                    <div />
-                    <div />
-                    <div className="grid grid-cols-3 gap-6 mt-4 mb-1 justify-items-center">
-                      {[1, 2, 3].map((i) => (
-                        <span key={i} className="inline-flex">
-                          {downArrow}
-                        </span>
-                      ))}
+                  <div className="max-w-[820px] mx-auto">
+                    {/* Mobile/tablet layout (< lg): vertical stack */}
+                    <div className="lg:hidden flex flex-col items-stretch gap-3">
+                      <div className="flex justify-center">{tableBox}</div>
+                      <div className="flex justify-center">
+                        {syncArrowVertical}
+                      </div>
+                      {indexBox}
+                      <div className="flex justify-center">{downArrow}</div>
+                      <div className="flex flex-col items-stretch gap-3">
+                        {workloadLabels.map(renderWorkloadBox)}
+                      </div>
                     </div>
-                    <div />
-                    <div />
-                    <div className="grid grid-cols-3 gap-6">
-                      {workloadLabels.map(renderWorkloadBox)}
+
+                    {/* Desktop layout (lg+): horizontal grid */}
+                    <div className="hidden lg:grid gap-x-6 items-center grid-cols-[auto_auto_1fr]">
+                      {tableBox}
+                      {syncArrowHorizontal}
+                      {indexBox}
+                      <div />
+                      <div />
+                      <div className="grid grid-cols-3 gap-6 mt-[22px] mb-3 justify-items-center">
+                        {[1, 2, 3].map((i) => (
+                          <span key={i} className="inline-flex">
+                            {downArrow}
+                          </span>
+                        ))}
+                      </div>
+                      <div />
+                      <div />
+                      <div className="grid grid-cols-3 gap-6">
+                        {workloadLabels.map(renderWorkloadBox)}
+                      </div>
                     </div>
                   </div>
                 </div>
