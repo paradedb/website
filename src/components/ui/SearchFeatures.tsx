@@ -110,7 +110,7 @@ export default async function SearchFeatures() {
         {
           title: "Apply any predicate faster",
           description:
-            "Standard Postgres WHERE clauses on indexed columns are evaluated alongside the search itself, in the same scan, with no heap fetch.",
+            "Standard Postgres WHERE clauses on indexed columns are evaluated alongside the search itself in a single index pass.",
           icon: <RiFilter3Line className="size-5" />,
         },
         {

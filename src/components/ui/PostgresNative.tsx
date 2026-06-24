@@ -23,7 +23,7 @@ const KEEPS = [
   },
   {
     title: "Standard SQL",
-    body: "Joins, CTEs, window functions, JSONB, PL/pgSQL, materialized views. Search is a WHERE clause.",
+    body: "Joins, CTEs, window functions, JSONB, PL/pgSQL, row level security (RLS), materialized views. Search is a WHERE clause.",
     icon: <RiTerminalBoxLine className="size-[18px]" />,
     code: "SELECT … WHERE body &&& 'postgres'",
   },
@@ -119,14 +119,14 @@ export default function PostgresNative() {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 border-y border-l border-slate-200 dark:border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5">
               {KEEPS.map((item, i) => {
                 const isWide = i === KEEPS.length - 1;
                 return (
                   <div
                     key={item.title}
                     className={cx(
-                      "relative flex flex-col border-r border-b border-slate-200 dark:border-slate-800 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group transition-all duration-700",
+                      "relative transition-all duration-700",
                       isWide && "lg:col-span-2",
                       visible
                         ? "opacity-100 translate-y-0"
@@ -134,25 +134,36 @@ export default function PostgresNative() {
                     )}
                     style={{ transitionDelay: `${i * 70}ms` }}
                   >
-                    <div className="absolute top-3 right-3 font-mono text-[10px] text-slate-400 dark:text-slate-600">
-                      0{i + 1}
-                    </div>
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="inline-flex p-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400">
-                        {item.icon}
+                    <div
+                      className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
+                      aria-hidden="true"
+                      style={{
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%234f46e5' fill-opacity='0.5'/%3E%3C/svg%3E")`,
+                        backgroundSize: "5px 5px",
+                        backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
+                      }}
+                    />
+                    <div className="relative flex flex-col border-2 border-indigo-400 dark:border-indigo-500 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group h-full">
+                      <div className="absolute top-3 right-3 font-mono text-[10px] text-slate-400 dark:text-slate-600">
+                        0{i + 1}
                       </div>
-                      <h3 className="font-semibold text-base text-indigo-950 dark:text-white tracking-tight">
-                        {item.title}
-                      </h3>
-                    </div>
-                    <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-                      {item.body}
-                    </p>
-                    <div className="mt-auto self-start font-mono text-[11px] text-slate-500 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 inline-flex">
-                      <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">
-                        ›
-                      </span>
-                      {item.code}
+                      <div className="flex items-center gap-3 mb-3">
+                        <div className="inline-flex p-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400">
+                          {item.icon}
+                        </div>
+                        <h3 className="font-semibold text-base text-indigo-950 dark:text-white tracking-tight">
+                          {item.title}
+                        </h3>
+                      </div>
+                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+                        {item.body}
+                      </p>
+                      <div className="mt-auto self-start font-mono text-[11px] text-slate-500 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 inline-flex">
+                        <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">
+                          ›
+                        </span>
+                        {item.code}
+                      </div>
                     </div>
                   </div>
                 );

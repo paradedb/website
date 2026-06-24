@@ -21,7 +21,17 @@ const PricingCard = ({
   buttonVariant?: "primary" | "secondary" | "light";
   badgeText: string;
 }) => (
-  <div className="flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-slate-900/50 text-left items-start">
+  <div className="relative h-full">
+    <div
+      className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
+      aria-hidden="true"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%234f46e5' fill-opacity='0.5'/%3E%3C/svg%3E")`,
+        backgroundSize: "5px 5px",
+        backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
+      }}
+    />
+    <div className="relative flex flex-col p-6 sm:p-8 md:p-12 h-full border-2 border-indigo-400 dark:border-indigo-500 bg-white dark:bg-slate-900 text-left items-start">
     <div className="mb-6 sm:mb-8 w-full">
       <div className="flex justify-start mb-2">
         <Badge className="py-0.5 px-2 text-[10px]">{badgeText}</Badge>
@@ -63,6 +73,7 @@ const PricingCard = ({
         {buttonText}
       </Link>
     </Button>
+    </div>
   </div>
 );
 
@@ -97,7 +108,7 @@ export default function Pricing() {
 
             {/* Nested Cards Container */}
             <div className="relative w-full z-20">
-              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800 border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
+              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5">
                 <PricingCard
                   planName="Community"
                   badgeText="Self-Managed"
