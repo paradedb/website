@@ -15,6 +15,12 @@ on:
     # this lands at 2 PM during PDT.
     - cron: "0 21 * * 1-5"
   workflow_dispatch:
+  # Run on PRs that touch the monitor itself so changes can be tested in CI
+  # before merge.
+  pull_request:
+    paths:
+      - ".github/workflows/check-slack-invite.yml"
+      - ".github/scripts/check-slack-invite.mjs"
 
 concurrency:
   group: check-slack-invite-${{ github.head_ref || github.ref }}
