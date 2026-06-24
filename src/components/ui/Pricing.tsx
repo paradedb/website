@@ -22,57 +22,48 @@ const PricingCard = ({
   badgeText: string;
 }) => (
   <div className="relative h-full">
-    <div
-      className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
-      aria-hidden="true"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%234f46e5' fill-opacity='0.5'/%3E%3C/svg%3E")`,
-        backgroundSize: "5px 5px",
-        backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
-      }}
-    />
-    <div className="relative flex flex-col p-6 sm:p-8 md:p-12 h-full border-2 border-indigo-400 dark:border-indigo-500 bg-white dark:bg-slate-900 text-left items-start">
-    <div className="mb-6 sm:mb-8 w-full">
-      <div className="flex justify-start mb-2">
-        <Badge className="py-0.5 px-2 text-[10px]">{badgeText}</Badge>
+    <div className="relative flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-slate-900 text-left items-start">
+      <div className="mb-6 sm:mb-8 w-full">
+        <div className="flex justify-start mb-2">
+          <Badge className="py-0.5 px-2 text-[10px]">{badgeText}</Badge>
+        </div>
+        <div className="flex items-baseline justify-start gap-1 mb-4">
+          <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">
+            {planName}
+          </span>
+        </div>
+        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          {description}
+        </p>
       </div>
-      <div className="flex items-baseline justify-start gap-1 mb-4">
-        <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">
-          {planName}
-        </span>
-      </div>
-      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-        {description}
-      </p>
-    </div>
 
-    <ul className="space-y-4 mb-10 w-full text-left">
-      {features.map((feature, i) => (
-        <li
-          key={i}
-          className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
-        >
-          <RiCheckLine className="size-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-          <span className="leading-tight">{feature}</span>
-        </li>
-      ))}
-    </ul>
+      <ul className="space-y-4 mb-10 w-full text-left">
+        {features.map((feature, i) => (
+          <li
+            key={i}
+            className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
+          >
+            <RiCheckLine className="size-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <span className="leading-tight">{feature}</span>
+          </li>
+        ))}
+      </ul>
 
-    <Button
-      asChild
-      className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
-      variant={buttonVariant as any}
-    >
-      <Link
-        href={buttonLink}
-        target={buttonLink.startsWith("mailto:") ? undefined : "_blank"}
-        rel={
-          buttonLink.startsWith("mailto:") ? undefined : "noopener noreferrer"
-        }
+      <Button
+        asChild
+        className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
+        variant={buttonVariant as any}
       >
-        {buttonText}
-      </Link>
-    </Button>
+        <Link
+          href={buttonLink}
+          target={buttonLink.startsWith("mailto:") ? undefined : "_blank"}
+          rel={
+            buttonLink.startsWith("mailto:") ? undefined : "noopener noreferrer"
+          }
+        >
+          {buttonText}
+        </Link>
+      </Button>
     </div>
   </div>
 );
@@ -108,7 +99,7 @@ export default function Pricing() {
 
             {/* Nested Cards Container */}
             <div className="relative w-full z-20">
-              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5">
+              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 border-y border-slate-200 dark:border-slate-800 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
                 <PricingCard
                   planName="Community"
                   badgeText="Self-Managed"

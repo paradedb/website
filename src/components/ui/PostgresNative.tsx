@@ -109,7 +109,7 @@ export default function PostgresNative() {
 
           {/* Keeps bento */}
           <div className="px-4 md:px-12">
-            <div className="flex items-baseline gap-3 mb-6 px-2 md:px-0">
+            <div className="flex items-baseline gap-3 mb-6 px-2 md:px-0 max-w-[1128px] mx-auto">
               <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500">
                 what you get
               </span>
@@ -119,7 +119,7 @@ export default function PostgresNative() {
               </span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5 max-w-[1128px] mx-auto">
               {KEEPS.map((item, i) => {
                 const isWide = i === KEEPS.length - 1;
                 return (
@@ -138,12 +138,12 @@ export default function PostgresNative() {
                       className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
                       aria-hidden="true"
                       style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%234f46e5' fill-opacity='0.5'/%3E%3C/svg%3E")`,
+                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%2394a3b8' fill-opacity='0.5'/%3E%3C/svg%3E")`,
                         backgroundSize: "5px 5px",
                         backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
                       }}
                     />
-                    <div className="relative flex flex-col border-2 border-indigo-400 dark:border-indigo-500 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group h-full">
+                    <div className="relative flex flex-col border border-slate-200 dark:border-slate-800 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group h-full">
                       <div className="absolute top-3 right-3 font-mono text-[10px] text-slate-400 dark:text-slate-600">
                         0{i + 1}
                       </div>
