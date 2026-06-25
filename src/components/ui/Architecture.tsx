@@ -16,26 +16,26 @@ const SHADOW_SLATE = "#64748b";
 type Tab = "search" | "oltp";
 
 const TABS: { id: Tab; number: string; label: string }[] = [
-  { id: "search", number: "01", label: "vs Search Engine" },
-  { id: "oltp", number: "02", label: "vs OLTP" },
+  { id: "search", number: "01", label: "Search" },
+  { id: "oltp", number: "02", label: "OLTP" },
 ];
 
 const SUBHEAD: Record<Tab, string> = {
   search:
     "External search engines live on a separate system, indexing a denormalized copy of your transactional data. ParadeDB runs the index inside Postgres on the live source table, reducing complexity and keeping search results in sync with every write.",
-  oltp: "Traditional databases split full-text, vectors, and aggregates across three separate indexes. Each is scanned on its own, and the results are joined together afterwards. ParadeDB unifies all three in one custom Postgres index, so filters can be applied early and joins can be pushed down",
+  oltp: "Traditional databases split text search, vector search, and aggregates across three separate indexes. Each is scanned on its own, and the results are joined together afterwards. ParadeDB unifies all three in one custom Postgres index, so complex queries that combine search, filters, and joins run far faster.",
 };
 
 export default function Architecture() {
   const [activeTab, setActiveTab] = useState<Tab>("search");
 
-  const emphasizeTable = activeTab === "search";
-  const emphasizeWorkloads = activeTab === "oltp";
+  const emphasizeTable = activeTab === "oltp";
+  const emphasizeWorkloads = activeTab === "search";
 
   const tableBox = (
     <Box emphasis={emphasizeTable ? "indigo-light" : "slate"}>
       <span className="font-mono font-bold whitespace-nowrap text-sm sm:text-base">
-        Table
+        Table (OLTP)
       </span>
     </Box>
   );
@@ -54,9 +54,12 @@ export default function Architecture() {
   );
 
   const workloads: { label: string; icon: ReactNode }[] = [
-    { label: "Full-Text", icon: <RiSearchLine className="size-4 shrink-0" /> },
     {
-      label: "Vectors",
+      label: "Full-Text",
+      icon: <RiSearchLine className="size-4 shrink-0" />,
+    },
+    {
+      label: "Vector",
       icon: <RiBubbleChartLine className="size-4 shrink-0" />,
     },
     {
@@ -187,7 +190,7 @@ export default function Architecture() {
                   activeTab === "oltp" && "text-highlight-blink",
                 )}
               >
-                three workloads
+                two workloads
               </span>
               .
             </h2>
@@ -259,7 +262,7 @@ export default function Architecture() {
             <div className="w-full max-w-[1128px] mx-auto">
               <div
                 role="img"
-                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index that serves full-text, vector, and aggregate queries."
+                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index that serves full-text, vector, and aggregate workloads."
                 className="font-mono"
               >
                 {/* PostgreSQL frame: label inside, border around the whole diagram */}
