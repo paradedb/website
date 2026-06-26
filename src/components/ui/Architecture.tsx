@@ -2,9 +2,13 @@
 
 import { useState, type ReactNode } from "react";
 import {
+  RiArrowDownLine,
   RiBubbleChartLine,
+  RiFilterLine,
   RiLayoutVerticalLine,
+  RiRefreshLine,
   RiSearchLine,
+  RiStackLine,
 } from "@remixicon/react";
 import { Badge } from "./Badge";
 import PixelShadow from "./PixelShadow";
@@ -22,8 +26,8 @@ const TABS: { id: Tab; number: string; label: string }[] = [
 
 const SUBHEAD: Record<Tab, string> = {
   search:
-    "External search engines live on a separate system, indexing a denormalized copy of your transactional data. ParadeDB runs the index inside Postgres on the live source table, reducing complexity and keeping search results in sync with every write.",
-  oltp: "Traditional databases split text search, vector search, and aggregates across three separate indexes. Each is scanned on its own, and the results are joined together afterwards. ParadeDB unifies all three in one custom Postgres index, so complex queries that combine search, filters, and joins run far faster.",
+    "External search engines live on a separate system, indexing a denormalized copy of your transactional data. ParadeDB runs the index inside Postgres on the live source table.",
+  oltp: "Traditional databases split text search, vector search, and aggregates across three separate indexes. Each is scanned on its own, and the results are joined together afterwards. ParadeDB unifies all three in one custom Postgres index.",
 };
 
 export default function Architecture() {
@@ -81,6 +85,33 @@ export default function Architecture() {
       </div>
     </Box>
   );
+
+  const benefits: { icon: ReactNode; title: string; body: string }[] =
+    activeTab === "search"
+      ? [
+          {
+            icon: <RiStackLine className="size-5 shrink-0" />,
+            title: "Less to operate",
+            body: "No separate search system to deploy or keep in sync.",
+          },
+          {
+            icon: <RiRefreshLine className="size-5 shrink-0" />,
+            title: "Always in sync",
+            body: "Search results reflect every write the moment it lands.",
+          },
+        ]
+      : [
+          {
+            icon: <RiFilterLine className="size-5 shrink-0" />,
+            title: "Filters applied early",
+            body: "Predicates run inside the index, before any join.",
+          },
+          {
+            icon: <RiArrowDownLine className="size-5 shrink-0" />,
+            title: "Joins pushed down",
+            body: "One index serves all three workloads, so joins collapse.",
+          },
+        ];
 
   const arrowColor = "text-slate-500 dark:text-slate-400";
 
@@ -144,11 +175,11 @@ export default function Architecture() {
           <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
           {/* Header */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-6 md:mb-8">
+          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-8">
             <Badge className="mb-6">Architecture</Badge>
             <h2
               key={activeTab + "-h2"}
-              className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-8 max-w-4xl"
+              className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl"
             >
               <span
                 className={cx(
@@ -167,49 +198,56 @@ export default function Architecture() {
               </span>
               .
             </h2>
+          </div>
 
-            {/* Tab control */}
-            <div
-              role="tablist"
-              aria-label="Architecture comparison"
-              className="flex w-full max-w-md mb-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950"
-            >
-              {TABS.map((tab, i) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <button
-                    key={tab.id}
-                    role="tab"
-                    aria-selected={isActive}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={cx(
-                      "flex-1 flex items-center justify-center gap-3 py-3 text-sm font-medium transition-all border-b-2 outline-none",
-                      i > 0 &&
-                        "border-l border-l-slate-200 dark:border-l-slate-800",
-                      isActive
-                        ? "border-b-indigo-600 text-indigo-900 dark:text-white bg-white dark:bg-slate-950"
-                        : "border-b-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-900/50",
-                    )}
-                  >
-                    <span
-                      className={cx(
-                        "text-[10px] font-mono font-semibold",
-                        isActive
-                          ? "text-indigo-600 dark:text-indigo-400"
-                          : "text-slate-400 dark:text-slate-600",
-                      )}
-                    >
-                      {tab.number}
-                    </span>
-                    <span className="font-semibold tracking-tight">
-                      {tab.label}
-                    </span>
-                  </button>
-                );
-              })}
+          {/* Tab control: aligned to the diagram width, styled like the Workloads tabs */}
+          <div className="px-4 mb-6">
+            <div className="mx-auto w-full max-w-[1128px] overflow-hidden border-t-1 border-slate-200 dark:border-slate-900">
+              <div className="border-b-1 border-slate-200 dark:border-slate-900">
+                <div
+                  role="tablist"
+                  aria-label="Architecture comparison"
+                  className="flex w-full items-end"
+                >
+                  {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    return (
+                      <button
+                        key={tab.id}
+                        role="tab"
+                        aria-selected={isActive}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={cx(
+                          "group relative flex-1 flex items-center justify-center gap-3 px-6 py-3 text-sm font-medium transition-all outline-none border-b-2 whitespace-nowrap",
+                          isActive
+                            ? "border-indigo-600 text-indigo-900 dark:text-white"
+                            : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300",
+                        )}
+                      >
+                        <span
+                          className={cx(
+                            "text-xs font-mono font-semibold",
+                            isActive
+                              ? "text-indigo-600 dark:text-indigo-400 opacity-100"
+                              : "opacity-50",
+                          )}
+                        >
+                          {tab.number}
+                        </span>
+                        <span className="text-sm sm:text-base font-semibold tracking-tight">
+                          {tab.label}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
+          </div>
 
-            <div className="relative grid w-full max-w-4xl">
+          {/* Subhead */}
+          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-6">
+            <div className="relative grid w-full max-w-4xl items-center">
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
                 return (
@@ -270,6 +308,28 @@ export default function Architecture() {
                         {indexBox}
                       </div>
                     </div>
+                  </div>
+
+                  {/* Benefits band: attached to the white diagram box, sharing its border */}
+                  <div className="border border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-900 sm:grid-cols-2 sm:divide-y-0 sm:divide-x">
+                    {benefits.map((benefit) => (
+                      <div
+                        key={benefit.title}
+                        className="flex items-start gap-3 px-5 py-4 sm:px-6 sm:py-5"
+                      >
+                        <span className="mt-0.5 text-indigo-600 dark:text-indigo-400">
+                          {benefit.icon}
+                        </span>
+                        <div>
+                          <div className="font-sans text-sm font-semibold text-indigo-950 dark:text-white">
+                            {benefit.title}
+                          </div>
+                          <div className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                            {benefit.body}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 </div>
               </div>
