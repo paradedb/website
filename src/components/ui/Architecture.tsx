@@ -4,7 +4,9 @@ import { useState, type ReactNode } from "react";
 import {
   RiArrowDownLine,
   RiBubbleChartLine,
+  RiDatabase2Line,
   RiFilterLine,
+  RiFlashlightLine,
   RiLayoutVerticalLine,
   RiRefreshLine,
   RiSearchLine,
@@ -37,9 +39,21 @@ export default function Architecture() {
 
   const tableBox = (
     <Box emphasis={emphasizeTable ? "indigo-light" : "slate"}>
-      <span className="font-mono font-bold whitespace-nowrap text-sm sm:text-base">
-        Table (OLTP)
-      </span>
+      <div className="flex flex-col items-center gap-2.5">
+        <span className="font-mono font-bold whitespace-nowrap text-sm sm:text-base">
+          Table
+        </span>
+        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+          <span className="inline-flex items-center gap-1.5 border border-current/25 bg-current/10 px-2 py-0.5 font-mono text-[11px] sm:text-xs font-semibold whitespace-nowrap">
+            <RiFlashlightLine className="size-3.5 shrink-0 opacity-70" />
+            OLTP
+          </span>
+          <span className="inline-flex items-center gap-1.5 border border-current/25 bg-current/10 px-2 py-0.5 font-mono text-[11px] sm:text-xs font-semibold whitespace-nowrap">
+            <RiDatabase2Line className="size-3.5 shrink-0 opacity-70" />
+            Application Data
+          </span>
+        </div>
+      </div>
     </Box>
   );
 
@@ -182,17 +196,13 @@ export default function Architecture() {
               className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl"
             >
               <span
-                className={cx(
-                  activeTab === "search" && "text-highlight-blink",
-                )}
+                className={cx(activeTab === "search" && "text-highlight-blink")}
               >
                 One database
               </span>
               ,{" "}
               <span
-                className={cx(
-                  activeTab === "oltp" && "text-highlight-blink",
-                )}
+                className={cx(activeTab === "oltp" && "text-highlight-blink")}
               >
                 two workloads
               </span>
@@ -302,7 +312,7 @@ export default function Architecture() {
                       </div>
 
                       {/* Desktop layout (lg+): horizontal grid */}
-                      <div className="hidden lg:grid gap-x-6 items-center grid-cols-[auto_auto_1fr]">
+                      <div className="hidden lg:grid gap-x-6 items-center grid-cols-[1fr_auto_1fr]">
                         {tableBox}
                         {syncArrowHorizontal}
                         {indexBox}
@@ -372,7 +382,11 @@ function Box({
       <div className="relative">
         <PixelShadow color={SHADOW_INDIGO} />
         <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-3 text-center text-indigo-600 dark:text-indigo-400">
-          {children}
+          <div
+            aria-hidden="true"
+            className="absolute inset-0.5 border border-indigo-300 dark:border-indigo-700 pointer-events-none"
+          />
+          <div className="relative">{children}</div>
         </div>
       </div>
     );
@@ -381,7 +395,11 @@ function Box({
     <div className="relative">
       <PixelShadow color={SHADOW_SLATE} />
       <div className="relative border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-center text-slate-500 dark:text-slate-500">
-        {children}
+        <div
+          aria-hidden="true"
+          className="absolute inset-0.5 border border-slate-200 dark:border-slate-800 pointer-events-none"
+        />
+        <div className="relative">{children}</div>
       </div>
     </div>
   );
