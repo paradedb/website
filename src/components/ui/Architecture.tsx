@@ -182,17 +182,13 @@ export default function Architecture() {
               className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl"
             >
               <span
-                className={cx(
-                  activeTab === "search" && "text-highlight-blink",
-                )}
+                className={cx(activeTab === "search" && "text-highlight-blink")}
               >
                 One database
               </span>
               ,{" "}
               <span
-                className={cx(
-                  activeTab === "oltp" && "text-highlight-blink",
-                )}
+                className={cx(activeTab === "oltp" && "text-highlight-blink")}
               >
                 two workloads
               </span>
