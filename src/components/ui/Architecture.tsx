@@ -3,7 +3,6 @@
 import { useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
-  RiArrowDownLine,
   RiBubbleChartLine,
   RiDatabase2Line,
   RiFilterLine,
@@ -22,8 +21,8 @@ const SHADOW_SLATE = "#64748b";
 type Tab = "search" | "oltp";
 
 const TABS: { id: Tab; number: string; label: string }[] = [
-  { id: "search", number: "01", label: "Search" },
-  { id: "oltp", number: "02", label: "OLTP" },
+  { id: "oltp", number: "01", label: "OLTP" },
+  { id: "search", number: "02", label: "Search" },
 ];
 
 const SUBHEAD: Record<Tab, ReactNode> = {
@@ -32,20 +31,21 @@ const SUBHEAD: Record<Tab, ReactNode> = {
       Most search engines{" "}
       <Link
         href="/blog/elasticsearch-was-never-a-database"
+        target="_blank"
         className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
       >
         aren&apos;t databases
       </Link>
-      , consuming and indexing a denormalized copy of your data. ParadeDB is
-      both a search index and a Postgres database, keeping the data your
-      application needs in one place.
+      . This means they must consume and index a denormalized copy of your
+      data. ParadeDB is both a search index and a Postgres database, keeping the
+      data your application needs in one place.
     </>
   ),
-  oltp: "OLTP databases are built for transactions, not search or analytics. ParadeDB adds full-text, vector, and aggregate workloads to your live tables, in one custom Postgres index.",
+  oltp: "OLTP databases are built for transactions, not search or analytics. ParadeDB adds full-text, vector, and aggregates, all in one custom Postgres index.",
 };
 
 export default function Architecture() {
-  const [activeTab, setActiveTab] = useState<Tab>("search");
+  const [activeTab, setActiveTab] = useState<Tab>("oltp");
 
   const tableBox = (
     <Box emphasis="slate">
@@ -126,14 +126,14 @@ export default function Architecture() {
         ]
       : [
           {
-            icon: <RiFilterLine className="size-5 shrink-0" />,
-            title: "Filters applied early",
-            body: "Predicates run inside the index, before any join.",
+            icon: <RiStackLine className="size-5 shrink-0" />,
+            title: "One search index",
+            body: "A single index covering all parts of search unlocks query optimization.",
           },
           {
-            icon: <RiArrowDownLine className="size-5 shrink-0" />,
-            title: "All three pushed down",
-            body: "Full-text, vector, and aggregates all run inside a single index scan.",
+            icon: <RiFilterLine className="size-5 shrink-0" />,
+            title: "Filters applied early",
+            body: "The index filters rows up front, so the rest of the query does far less work.",
           },
         ];
 
@@ -331,7 +331,7 @@ export default function Architecture() {
                           <div className="font-sans text-sm font-semibold text-indigo-950 dark:text-white">
                             {benefit.title}
                           </div>
-                          <div className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                          <div className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400 min-h-[2lh]">
                             {benefit.body}
                           </div>
                         </div>
@@ -408,10 +408,10 @@ function Box({
   return (
     <div className="relative">
       <StaticPixelShadow color={SHADOW_SLATE} />
-      <div className="relative border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-center text-slate-500 dark:text-slate-500">
+      <div className="relative border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-3 text-center text-slate-500 dark:text-slate-200">
         <div
           aria-hidden="true"
-          className="absolute inset-0.5 border border-slate-200 dark:border-slate-800 pointer-events-none"
+          className="absolute inset-0.5 border border-slate-200 dark:border-slate-700 pointer-events-none"
         />
         <div className="relative">{children}</div>
       </div>

@@ -42,7 +42,7 @@ const KEEPS = [
   },
   {
     title: "ACID transactions",
-    body: "Commits, rollbacks, and foreign keys. The index reads the rows the latest transaction wrote.",
+    body: "Commits, rollbacks, and foreign keys, all with read after write guarantees.",
     icon: <RiShieldKeyholeLine className="size-[18px]" />,
     code: "BEGIN; … COMMIT;",
   },
@@ -90,7 +90,7 @@ export default function PostgresNative() {
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        <section className="relative py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-slate-50/40 dark:bg-slate-950">
+        <section className="relative py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
           {/* Header */}
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
             <Badge className="mb-6">Postgres-native</Badge>

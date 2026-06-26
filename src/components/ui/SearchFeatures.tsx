@@ -77,7 +77,7 @@ export default async function SearchFeatures() {
     },
     {
       value: "full-text",
-      label: "Full-text",
+      label: "Full-Text",
       tagline: "BM25",
       bullets: [
         {

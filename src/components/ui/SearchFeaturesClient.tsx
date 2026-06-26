@@ -32,7 +32,7 @@ export default function SearchFeaturesClient({
             <br className="hidden sm:block" /> for retrieval.
           </h2>
           <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl px-6 sm:px-0">
-            All the features of a search-engine in standard SQL.
+            All the features of a search engine in standard SQL.
           </p>
 
           <Tabs.Root
@@ -80,14 +80,14 @@ export default function SearchFeaturesClient({
                 >
                   <div className="flex flex-col lg:flex-row min-h-[360px]">
                     {/* Right Column: Code (MOVED ABOVE FOR MOBILE) */}
-                    <div className="flex-1 px-2 py-6 sm:p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden lg:order-2">
+                    <div className="flex-1 px-2 py-6 sm:p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden lg:order-3">
                       <div className="w-full overflow-x-auto p-2">
                         {feature.code}
                       </div>
                     </div>
 
                     {/* Vertical Divider (Desktop) */}
-                    <div className="hidden lg:block w-px bg-slate-200 dark:bg-slate-900 my-12 lg:order-3" />
+                    <div className="hidden lg:block w-px bg-slate-200 dark:bg-slate-900 my-12 lg:order-2" />
 
                     {/* Horizontal Divider (Mobile) */}
                     <div className="lg:hidden h-px w-full bg-slate-200 dark:bg-slate-900 px-6 sm:px-12" />
