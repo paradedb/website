@@ -29,11 +29,10 @@ export default function SearchFeaturesClient({
           <Badge className="mb-6">Workloads</Badge>
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
             The <span className="text-highlight-blink">complete</span> toolkit{" "}
-            <br className="hidden sm:block" /> for search.
+            <br className="hidden sm:block" /> for retrieval.
           </h2>
           <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl px-6 sm:px-0">
-            Express searches in standard SQL over the live rows your application
-            writes.
+            All the features of a search-engine in standard SQL.
           </p>
 
           <Tabs.Root
@@ -72,7 +71,7 @@ export default function SearchFeaturesClient({
             </div>
 
             {/* Content Area */}
-            <div className="w-full relative bg-slate-100 dark:bg-slate-900/50">
+            <div className="w-full relative bg-slate-50/50 dark:bg-slate-900/50">
               {features.map((feature) => (
                 <Tabs.Content
                   key={feature.value}
@@ -82,7 +81,7 @@ export default function SearchFeaturesClient({
                   <div className="flex flex-col lg:flex-row min-h-[360px]">
                     {/* Right Column: Code (MOVED ABOVE FOR MOBILE) */}
                     <div className="flex-1 px-2 py-6 sm:p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden lg:order-2">
-                      <div className="w-full overflow-x-auto rounded-lg bg-slate-200/20 dark:bg-slate-900/20 p-2">
+                      <div className="w-full overflow-x-auto p-2">
                         {feature.code}
                       </div>
                     </div>

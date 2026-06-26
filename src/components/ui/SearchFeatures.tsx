@@ -10,7 +10,7 @@ import {
   RiFilter3Line,
   RiSortDesc,
   RiScissorsCutLine,
-  RiGlobalLine,
+  RiBracesLine,
 } from "@remixicon/react";
 
 const indexingCode = `CREATE INDEX ON posts
@@ -90,7 +90,7 @@ export default async function SearchFeatures() {
           title: "Composable search syntax",
           description:
             "Mix match, term, and advanced queries with standard SQL operators on a single index.",
-          icon: <RiGlobalLine className="size-5" />,
+          icon: <RiBracesLine className="size-5" />,
         },
       ],
       code: (
@@ -108,15 +108,15 @@ export default async function SearchFeatures() {
       tagline: "pgvector compatible",
       bullets: [
         {
-          title: "BM25 and pgvector side by side",
+          title: "Hybrid search",
           description:
-            "Lexical relevance with pdb.score and semantic similarity with pgvector's distance operators, both reading the same live rows.",
+            "Blend BM25 keyword relevance with vector similarity in a single SQL query, so lexical and semantic results rank together.",
           icon: <RiSparklingLine className="size-5" />,
         },
         {
-          title: "No second store, no sync job",
+          title: "pgvector today, custom tomorrow",
           description:
-            "pgvector is a Postgres extension. Embeddings stay in the same table as everything else: no ingest pipeline, no eventual consistency.",
+            "Runs on pgvector today, with a high-performance, pgvector-compatible version coming to the ParadeDB index.",
           icon: <RiCpuLine className="size-5" />,
         },
       ],
@@ -168,9 +168,9 @@ export default async function SearchFeatures() {
           icon: <RiPieChartLine className="size-5" />,
         },
         {
-          title: "Pushed down into the index",
+          title: "Faceted search",
           description:
-            "Columnar fields in the index serve count, sum, avg, min, max, and percentile aggregates without touching the heap.",
+            "Facet counts come back in the same query as your top results, and stay fast even as the result set grows.",
           icon: <RiListCheck2 className="size-5" />,
         },
       ],

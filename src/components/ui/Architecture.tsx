@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
+import Link from "next/link";
 import {
   RiArrowDownLine,
   RiBubbleChartLine,
@@ -26,9 +27,21 @@ const TABS: { id: Tab; number: string; label: string }[] = [
   { id: "oltp", number: "02", label: "OLTP" },
 ];
 
-const SUBHEAD: Record<Tab, string> = {
-  search:
-    "Search engines run as separate systems, indexing a denormalized copy of your data. ParadeDB moves your search index inside Postgres, where it can participate in transactions.",
+const SUBHEAD: Record<Tab, ReactNode> = {
+  search: (
+    <>
+      Most search engines{" "}
+      <Link
+        href="/blog/elasticsearch-was-never-a-database"
+        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+      >
+        aren&apos;t databases
+      </Link>
+      , consuming and indexing a denormalized copy of your data. ParadeDB is
+      both a search index and a Postgres database, keeping the data your
+      application needs in one place.
+    </>
+  ),
   oltp: "OLTP databases are built for transactions, not search or analytics. ParadeDB adds full-text, vector, and aggregate workloads to your live tables, in one custom Postgres index.",
 };
 
@@ -65,7 +78,7 @@ export default function Architecture() {
       icon: <RiBubbleChartLine className="size-3.5 shrink-0 text-white/70" />,
     },
     {
-      label: "Columnar",
+      label: "Aggregates",
       icon: (
         <RiLayoutVerticalLine className="size-3.5 shrink-0 text-white/70" />
       ),
@@ -103,7 +116,7 @@ export default function Architecture() {
       ? [
           {
             icon: <RiStackLine className="size-5 shrink-0" />,
-            title: "Less to operate",
+            title: "One database to run",
             body: "No separate search system to deploy or keep in sync.",
           },
           {
@@ -120,12 +133,12 @@ export default function Architecture() {
           },
           {
             icon: <RiArrowDownLine className="size-5 shrink-0" />,
-            title: "Joins pushed down",
-            body: "One index serves all three workloads, so joins collapse.",
+            title: "All three pushed down",
+            body: "Full-text, vector, and aggregates all run inside a single index scan.",
           },
         ];
 
-  const arrowColor = "text-slate-500 dark:text-slate-400";
+  const arrowColor = "text-slate-400 dark:text-slate-600";
 
   const syncArrowHorizontal = (
     <svg
@@ -196,7 +209,7 @@ export default function Architecture() {
           </div>
 
           {/* Tab control: aligned to the diagram width, styled like the Workloads tabs */}
-          <div className="px-4 mb-6">
+          <div className="px-4 mb-10 md:mb-12">
             <div className="mx-auto w-full max-w-[1128px] overflow-hidden border-t-1 border-slate-200 dark:border-slate-900">
               <div className="border-b-1 border-slate-200 dark:border-slate-900">
                 <div
@@ -241,7 +254,7 @@ export default function Architecture() {
           </div>
 
           {/* Subhead */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-6">
+          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
             <div className="relative grid w-full max-w-4xl items-center">
               {TABS.map((tab) => {
                 const isActive = activeTab === tab.id;
@@ -268,7 +281,7 @@ export default function Architecture() {
             <div className="w-full max-w-[1128px] mx-auto">
               <div
                 role="img"
-                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index with full-text, vector, and columnar storage."
+                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index with full-text, vector, and aggregate workloads."
                 className="font-mono"
               >
                 {/* PostgreSQL frame: label inside, border around the whole diagram */}
@@ -286,9 +299,9 @@ export default function Architecture() {
                         className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
                       />
                     </div>
-                    <div className="max-w-[820px] mx-auto">
-                      {/* Mobile/tablet layout (< lg): vertical stack */}
-                      <div className="lg:hidden flex flex-col items-stretch gap-3">
+                    <div className="max-w-[900px] mx-auto">
+                      {/* Mobile/tablet layout (< xl): vertical stack */}
+                      <div className="xl:hidden flex flex-col items-stretch gap-3">
                         {tableBox}
                         <div className="flex justify-center mt-3">
                           {syncArrowVertical}
@@ -296,8 +309,8 @@ export default function Architecture() {
                         {indexBox}
                       </div>
 
-                      {/* Desktop layout (lg+): horizontal grid */}
-                      <div className="hidden lg:grid gap-x-6 items-center grid-cols-[1fr_auto_1fr]">
+                      {/* Desktop layout (xl+): horizontal grid */}
+                      <div className="hidden xl:grid gap-x-6 items-center grid-cols-[1fr_auto_1fr]">
                         {tableBox}
                         {syncArrowHorizontal}
                         {indexBox}

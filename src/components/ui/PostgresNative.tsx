@@ -12,7 +12,6 @@ import {
   RiLifebuoyLine,
   RiPlugLine,
   RiPuzzleLine,
-  RiLoopRightLine,
 } from "@remixicon/react";
 
 const KEEPS = [
@@ -43,13 +42,13 @@ const KEEPS = [
   },
   {
     title: "ACID transactions",
-    body: "Real isolation levels, MVCC, foreign keys. The index reads the rows the latest transaction wrote.",
+    body: "Commits, rollbacks, and foreign keys. The index reads the rows the latest transaction wrote.",
     icon: <RiShieldKeyholeLine className="size-[18px]" />,
     code: "BEGIN; … COMMIT;",
   },
   {
     title: "Your usual ops surface",
-    body: "pg_dump, streaming replicas, pgBackRest, the dashboards and alerting your team already trusts.",
+    body: "pg_dump, logical replication, high availability, pgBackRest, the dashboards and alerting your team already trusts.",
     icon: <RiLifebuoyLine className="size-[18px]" />,
     code: "pg_dump -Fc db | …",
   },
@@ -58,12 +57,6 @@ const KEEPS = [
     body: "pgvector, pg_partman, pg_cron, PostGIS, and the rest of the extension catalog work side by side.",
     icon: <RiPuzzleLine className="size-[18px]" />,
     code: "CREATE EXTENSION vector;",
-  },
-  {
-    title: "Logical replication",
-    body: "Run ParadeDB as a logical replica of any managed Postgres (RDS, Cloud SQL, Aurora). Search lives on the replica; your primary stays untouched.",
-    icon: <RiLoopRightLine className="size-[18px]" />,
-    code: "CREATE SUBSCRIPTION … CONNECTION …",
   },
 ];
 
@@ -135,17 +128,19 @@ export default function PostgresNative() {
               </span>
               <span className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
               <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 dark:text-slate-600">
-                06 / 06
+                05 / 05
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5 max-w-[1128px] mx-auto">
               {KEEPS.map((item, i) => {
+                const isWide = i === KEEPS.length - 1;
                 return (
                   <div
                     key={item.title}
                     className={cx(
                       "relative transition-all duration-700",
+                      isWide && "lg:col-span-2",
                       visible
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-2",
