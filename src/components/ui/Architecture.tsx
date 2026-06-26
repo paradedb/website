@@ -14,7 +14,6 @@ import {
   RiStackLine,
 } from "@remixicon/react";
 import { Badge } from "./Badge";
-import PixelShadow from "./PixelShadow";
 import { cx } from "@/lib/utils";
 
 const SHADOW_INDIGO = "#4f46e5";
@@ -354,6 +353,23 @@ export default function Architecture() {
 
 type Emphasis = "indigo-solid" | "indigo-light" | "slate";
 
+// Fixed (static) pixel-dot shadow, anchored bottom-right — the same look as the
+// PostgresNative cards, just colored per box (no canvas animation).
+function StaticPixelShadow({ color }: { color: string }) {
+  const fill = color.replace("#", "%23");
+  return (
+    <div
+      aria-hidden="true"
+      className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5 pointer-events-none"
+      style={{
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='${fill}' fill-opacity='0.5'/%3E%3C/svg%3E")`,
+        backgroundSize: "5px 5px",
+        backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
+      }}
+    />
+  );
+}
+
 function Box({
   emphasis,
   children,
@@ -364,7 +380,7 @@ function Box({
   if (emphasis === "indigo-solid") {
     return (
       <div className="relative">
-        <PixelShadow color={SHADOW_INDIGO} />
+        <StaticPixelShadow color={SHADOW_INDIGO} />
         <div className="relative border-2 border-indigo-600 bg-indigo-600 px-5 py-3 text-center text-white">
           <div
             aria-hidden="true"
@@ -378,7 +394,7 @@ function Box({
   if (emphasis === "indigo-light") {
     return (
       <div className="relative">
-        <PixelShadow color={SHADOW_INDIGO} />
+        <StaticPixelShadow color={SHADOW_INDIGO} />
         <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-3 text-center text-indigo-600 dark:text-indigo-400">
           <div
             aria-hidden="true"
@@ -391,7 +407,7 @@ function Box({
   }
   return (
     <div className="relative">
-      <PixelShadow color={SHADOW_SLATE} />
+      <StaticPixelShadow color={SHADOW_SLATE} />
       <div className="relative border-2 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-3 text-center text-slate-500 dark:text-slate-500">
         <div
           aria-hidden="true"
