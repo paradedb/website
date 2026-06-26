@@ -28,17 +28,15 @@ const TABS: { id: Tab; number: string; label: string }[] = [
 
 const SUBHEAD: Record<Tab, string> = {
   search:
-    "External search engines live on a separate system, indexing a denormalized copy of your transactional data. ParadeDB runs the index inside Postgres on the live source table.",
-  oltp: "Traditional databases split text search, vector search, and aggregates across three separate indexes. Each is scanned on its own, and the results are joined together afterwards. ParadeDB unifies all three in one custom Postgres index.",
+    "Search engines run as separate systems, indexing a denormalized copy of your data. ParadeDB moves your search index inside Postgres, where it can participate in transactions.",
+  oltp: "OLTP databases are built for transactions, not search or analytics. ParadeDB adds full-text, vector, and aggregate workloads to your live tables, in one custom Postgres index.",
 };
 
 export default function Architecture() {
   const [activeTab, setActiveTab] = useState<Tab>("search");
 
-  const emphasizeTable = activeTab === "oltp";
-
   const tableBox = (
-    <Box emphasis={emphasizeTable ? "indigo-light" : "slate"}>
+    <Box emphasis="slate">
       <div className="flex flex-col items-center gap-2.5">
         <span className="font-mono font-bold whitespace-nowrap text-sm sm:text-base">
           Table
@@ -191,22 +189,9 @@ export default function Architecture() {
           {/* Header */}
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-8">
             <Badge className="mb-6">Architecture</Badge>
-            <h2
-              key={activeTab + "-h2"}
-              className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl"
-            >
-              <span
-                className={cx(activeTab === "search" && "text-highlight-blink")}
-              >
-                One database
-              </span>
-              ,{" "}
-              <span
-                className={cx(activeTab === "oltp" && "text-highlight-blink")}
-              >
-                two workloads
-              </span>
-              .
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl">
+              <span className="text-highlight-blink">One database</span>, two
+              workloads.
             </h2>
           </div>
 
