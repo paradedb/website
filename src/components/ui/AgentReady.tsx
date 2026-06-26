@@ -328,7 +328,7 @@ export default function AgentReady() {
                   <span className="text-indigo-600 dark:text-indigo-400">
                     favorite
                   </span>{" "}
-                  tool.
+                  tools.
                 </h2>
                 <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                   ParadeDB works seamlessly with your existing stack.
