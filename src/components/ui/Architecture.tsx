@@ -5,7 +5,7 @@ import Link from "next/link";
 import {
   RiBubbleChartLine,
   RiDatabase2Line,
-  RiFilterLine,
+  RiSparklingLine,
   RiFlashlightLine,
   RiLayoutVerticalLine,
   RiRefreshLine,
@@ -128,12 +128,12 @@ export default function Architecture() {
           {
             icon: <RiStackLine className="size-5 shrink-0" />,
             title: "One search index",
-            body: "A single index covering all parts of search unlocks query optimization.",
+            body: "A single index covering all parts of search unlocks pre-filtering and query optimization.",
           },
           {
-            icon: <RiFilterLine className="size-5 shrink-0" />,
-            title: "Filters applied early",
-            body: "The index filters rows up front, so the rest of the query does far less work.",
+            icon: <RiSparklingLine className="size-5 shrink-0" />,
+            title: "A full search engine in your database",
+            body: "BM25 relevance, vector search, faceting, and hybrid ranking, all in standard SQL.",
           },
         ];
 
