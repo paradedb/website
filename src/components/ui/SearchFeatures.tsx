@@ -103,33 +103,6 @@ export default async function SearchFeatures() {
       ),
     },
     {
-      value: "filtering",
-      label: "Filtering",
-      tagline: "Predicate pushdown",
-      bullets: [
-        {
-          title: "Apply any predicate faster",
-          description:
-            "Standard Postgres WHERE clauses on indexed columns are evaluated alongside the search itself in a single index pass.",
-          icon: <RiFilter3Line className="size-5" />,
-        },
-        {
-          title: "Dynamic ordering",
-          description:
-            "ORDER BY relevance, recency, distance, popularity, or any custom expression, composed with the filter in a single plan.",
-          icon: <RiSortDesc className="size-5" />,
-        },
-      ],
-      code: (
-        <Code
-          code={filteringCode}
-          lang="sql"
-          className="[&_pre]:!bg-transparent"
-          copy={false}
-        />
-      ),
-    },
-    {
       value: "vector",
       label: "Vector",
       tagline: "pgvector compatible",
@@ -150,6 +123,33 @@ export default async function SearchFeatures() {
       code: (
         <Code
           code={vectorCode}
+          lang="sql"
+          className="[&_pre]:!bg-transparent"
+          copy={false}
+        />
+      ),
+    },
+    {
+      value: "filtering",
+      label: "Filtering",
+      tagline: "Predicate pushdown",
+      bullets: [
+        {
+          title: "Apply any predicate faster",
+          description:
+            "Standard Postgres WHERE clauses on indexed columns are evaluated alongside the search itself in a single index pass.",
+          icon: <RiFilter3Line className="size-5" />,
+        },
+        {
+          title: "Dynamic ordering",
+          description:
+            "ORDER BY relevance, recency, distance, popularity, or any custom expression, composed with the filter in a single plan.",
+          icon: <RiSortDesc className="size-5" />,
+        },
+      ],
+      code: (
+        <Code
+          code={filteringCode}
           lang="sql"
           className="[&_pre]:!bg-transparent"
           copy={false}

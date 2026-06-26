@@ -324,11 +324,11 @@ export default function AgentReady() {
               <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0 text-center mb-12">
                 <Badge className="mb-6">Integrations</Badge>
                 <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                  Use your{" "}
+                  Use with your{" "}
                   <span className="text-indigo-600 dark:text-indigo-400">
                     favorite
                   </span>{" "}
-                  tools.
+                  tool.
                 </h2>
                 <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                   ParadeDB works seamlessly with your existing stack.

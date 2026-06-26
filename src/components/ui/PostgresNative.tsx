@@ -5,19 +5,33 @@ import { cx } from "@/lib/utils";
 import { Badge } from "./Badge";
 import { Button } from "../Button";
 import Link from "next/link";
-import { documentation } from "@/lib/links";
+import { documentation, social } from "@/lib/links";
 import {
   RiTerminalBoxLine,
   RiShieldKeyholeLine,
   RiLifebuoyLine,
   RiPlugLine,
   RiPuzzleLine,
+  RiLoopRightLine,
 } from "@remixicon/react";
 
 const KEEPS = [
   {
     title: "Built as an extension",
-    body: "Pure Postgres extension. Drops into any self-managed Postgres with no fork and no separate server.",
+    body: (
+      <>
+        Pure Postgres extension. Drops into any self-managed Postgres with no
+        fork and no separate server. Or{" "}
+        <Link
+          href={social.CALENDLY}
+          target="_blank"
+          className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300"
+        >
+          let us run it for you
+        </Link>
+        .
+      </>
+    ),
     icon: <RiPlugLine className="size-[18px]" />,
     code: "CREATE EXTENSION pg_search;",
   },
@@ -35,7 +49,7 @@ const KEEPS = [
   },
   {
     title: "Your usual ops surface",
-    body: "pg_dump, logical replication, pgBackRest, the dashboards and alerting your team already trusts.",
+    body: "pg_dump, streaming replicas, pgBackRest, the dashboards and alerting your team already trusts.",
     icon: <RiLifebuoyLine className="size-[18px]" />,
     code: "pg_dump -Fc db | …",
   },
@@ -44,6 +58,12 @@ const KEEPS = [
     body: "pgvector, pg_partman, pg_cron, PostGIS, and the rest of the extension catalog work side by side.",
     icon: <RiPuzzleLine className="size-[18px]" />,
     code: "CREATE EXTENSION vector;",
+  },
+  {
+    title: "Logical replication",
+    body: "Run ParadeDB as a logical replica of any managed Postgres (RDS, Cloud SQL, Aurora). Search lives on the replica; your primary stays untouched.",
+    icon: <RiLoopRightLine className="size-[18px]" />,
+    code: "CREATE SUBSCRIPTION … CONNECTION …",
   },
 ];
 
@@ -115,19 +135,17 @@ export default function PostgresNative() {
               </span>
               <span className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
               <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 dark:text-slate-600">
-                05 / 05
+                06 / 06
               </span>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5 max-w-[1128px] mx-auto">
               {KEEPS.map((item, i) => {
-                const isWide = i === KEEPS.length - 1;
                 return (
                   <div
                     key={item.title}
                     className={cx(
                       "relative transition-all duration-700",
-                      isWide && "lg:col-span-2",
                       visible
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-2",
