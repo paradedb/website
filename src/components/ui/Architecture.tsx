@@ -21,14 +21,14 @@ const SHADOW_SLATE = "#64748b";
 type Tab = "search" | "oltp";
 
 const TABS: { id: Tab; number: string; label: string }[] = [
-  { id: "oltp", number: "01", label: "OLTP" },
-  { id: "search", number: "02", label: "Search" },
+  { id: "oltp", number: "01", label: "vs OLTP" },
+  { id: "search", number: "02", label: "vs Search Engines" },
 ];
 
 const SUBHEAD: Record<Tab, ReactNode> = {
   search: (
     <>
-      Most search engines{" "}
+      Search engines{" "}
       <Link
         href="/blog/elasticsearch-was-never-a-database"
         target="_blank"
@@ -36,7 +36,7 @@ const SUBHEAD: Record<Tab, ReactNode> = {
       >
         aren&apos;t databases
       </Link>
-      . This means they must consume and index a denormalized copy of your
+      . They consume and index a denormalized copy of your
       data. ParadeDB is both a search index and a Postgres database, keeping the
       data your application needs in one place.
     </>
