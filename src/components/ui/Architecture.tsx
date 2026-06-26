@@ -2,8 +2,8 @@
 
 import { useState, type ReactNode } from "react";
 import {
-  RiBarChart2Line,
   RiBubbleChartLine,
+  RiLayoutVerticalLine,
   RiSearchLine,
 } from "@remixicon/react";
 import { Badge } from "./Badge";
@@ -30,7 +30,6 @@ export default function Architecture() {
   const [activeTab, setActiveTab] = useState<Tab>("search");
 
   const emphasizeTable = activeTab === "oltp";
-  const emphasizeWorkloads = activeTab === "search";
 
   const tableBox = (
     <Box emphasis={emphasizeTable ? "indigo-light" : "slate"}>
@@ -40,76 +39,50 @@ export default function Architecture() {
     </Box>
   );
 
-  const indexBox = (
-    <Box emphasis="indigo-solid">
-      <span className="flex items-center justify-center gap-2 font-mono font-bold whitespace-nowrap text-sm sm:text-base">
-        <img
-          src="/brand/paradedb-logomark-white.svg"
-          alt=""
-          className="h-[0.8em] w-auto"
-        />
-        ParadeDB Index
-      </span>
-    </Box>
-  );
-
   const workloads: { label: string; icon: ReactNode }[] = [
     {
       label: "Full-Text",
-      icon: <RiSearchLine className="size-4 shrink-0" />,
+      icon: <RiSearchLine className="size-3.5 shrink-0 text-white/70" />,
     },
     {
       label: "Vector",
-      icon: <RiBubbleChartLine className="size-4 shrink-0" />,
+      icon: <RiBubbleChartLine className="size-3.5 shrink-0 text-white/70" />,
     },
     {
-      label: "Aggregates",
-      icon: <RiBarChart2Line className="size-4 shrink-0" />,
+      label: "Columnar",
+      icon: (
+        <RiLayoutVerticalLine className="size-3.5 shrink-0 text-white/70" />
+      ),
     },
   ];
-  const renderWorkloadBox = ({
-    label,
-    icon,
-  }: {
-    label: string;
-    icon: ReactNode;
-  }) => (
-    <Box
-      key={label}
-      emphasis={emphasizeWorkloads ? "indigo-light" : "slate"}
-    >
-      <span className="flex items-center justify-center gap-2 font-mono font-bold whitespace-nowrap text-sm sm:text-base">
-        {icon}
-        {label}
-      </span>
+
+  const indexBox = (
+    <Box emphasis="indigo-solid">
+      <div className="flex flex-col items-center gap-2.5">
+        <span className="flex items-center justify-center gap-2 font-mono font-bold whitespace-nowrap text-sm sm:text-base">
+          <img
+            src="/brand/paradedb-logomark-white.svg"
+            alt=""
+            className="h-[0.8em] w-auto"
+          />
+          ParadeDB Index
+        </span>
+        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+          {workloads.map(({ label, icon }) => (
+            <span
+              key={label}
+              className="inline-flex items-center gap-1.5 border border-white/25 bg-white/10 px-2 py-0.5 font-mono text-[11px] sm:text-xs font-semibold text-white/90 whitespace-nowrap"
+            >
+              {icon}
+              {label}
+            </span>
+          ))}
+        </div>
+      </div>
     </Box>
   );
 
   const arrowColor = "text-slate-500 dark:text-slate-400";
-  const downArrowColor = emphasizeWorkloads
-    ? "text-indigo-600 dark:text-indigo-400"
-    : "text-slate-400 dark:text-slate-600";
-
-  const downArrow = (
-    <svg
-      width="14"
-      height="40"
-      viewBox="0 0 14 40"
-      fill="none"
-      aria-hidden="true"
-      className={cx("h-9 lg:h-10 w-auto", downArrowColor)}
-    >
-      <line
-        x1="7"
-        y1="0"
-        x2="7"
-        y2="32"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <polygon points="2,30 12,30 7,40" fill="currentColor" />
-    </svg>
-  );
 
   const syncArrowHorizontal = (
     <svg
@@ -262,7 +235,7 @@ export default function Architecture() {
             <div className="w-full max-w-[1128px] mx-auto">
               <div
                 role="img"
-                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index that serves full-text, vector, and aggregate workloads."
+                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index with full-text, vector, and columnar storage."
                 className="font-mono"
               >
                 {/* PostgreSQL frame: label inside, border around the whole diagram */}
@@ -288,12 +261,6 @@ export default function Architecture() {
                           {syncArrowVertical}
                         </div>
                         {indexBox}
-                        <div className="flex justify-center mt-3">
-                          {downArrow}
-                        </div>
-                        <div className="flex flex-col items-stretch gap-5">
-                          {workloads.map(renderWorkloadBox)}
-                        </div>
                       </div>
 
                       {/* Desktop layout (lg+): horizontal grid */}
@@ -301,20 +268,6 @@ export default function Architecture() {
                         {tableBox}
                         {syncArrowHorizontal}
                         {indexBox}
-                        <div />
-                        <div />
-                        <div className="grid grid-cols-3 gap-6 mt-[22px] mb-3 justify-items-center">
-                          {[1, 2, 3].map((i) => (
-                            <span key={i} className="inline-flex">
-                              {downArrow}
-                            </span>
-                          ))}
-                        </div>
-                        <div />
-                        <div />
-                        <div className="grid grid-cols-3 gap-6">
-                          {workloads.map(renderWorkloadBox)}
-                        </div>
                       </div>
                     </div>
                   </div>
