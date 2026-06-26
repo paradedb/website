@@ -21,14 +21,14 @@ const SHADOW_SLATE = "#64748b";
 type Tab = "search" | "oltp";
 
 const TABS: { id: Tab; number: string; label: string }[] = [
-  { id: "oltp", number: "01", label: "vs OLTP" },
-  { id: "search", number: "02", label: "vs Search Engines" },
+  { id: "oltp", number: "01", label: "More than an OLTP database" },
+  { id: "search", number: "02", label: "More than a search engine" },
 ];
 
 const SUBHEAD: Record<Tab, ReactNode> = {
   search: (
     <>
-      Search engines{" "}
+      Search engines are built for relevant search, but they{" "}
       <Link
         href="/blog/elasticsearch-was-never-a-database"
         target="_blank"
@@ -36,12 +36,12 @@ const SUBHEAD: Record<Tab, ReactNode> = {
       >
         aren&apos;t databases
       </Link>
-      . They consume and index a denormalized copy of your
-      data. ParadeDB is both a search index and a Postgres database, keeping the
-      data your application needs in one place.
+      , so they hold a denormalized copy of your data. ParadeDB is both a search
+      index and a Postgres database, keeping the data your application needs in
+      one place.
     </>
   ),
-  oltp: "OLTP databases are built for transactions, not search or analytics. ParadeDB adds full-text, vector, and aggregates, all in one custom Postgres index.",
+  oltp: "OLTP databases are built for reliable transactions, but not for search or analytics. ParadeDB adds full-text, vector, and aggregates, all in one custom Postgres index.",
 };
 
 export default function Architecture() {
