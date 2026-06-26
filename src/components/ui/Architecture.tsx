@@ -187,7 +187,7 @@ export default function Architecture() {
           <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
           {/* Header */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-8">
+          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
             <Badge className="mb-6">Architecture</Badge>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl">
               <span className="text-highlight-blink">One database</span>, two
