@@ -196,45 +196,43 @@ export default function Architecture() {
 
           {/* Tab control: aligned to the diagram width, styled like the Workloads tabs */}
           <div className="px-4 mb-10 md:mb-12">
-            <div className="mx-auto w-full max-w-[1128px] overflow-hidden border-t-1 border-slate-200 dark:border-slate-900">
-              <div className="border-b-1 border-slate-200 dark:border-slate-900">
-                <div
-                  role="tablist"
-                  aria-label="Architecture comparison"
-                  className="flex w-full items-end"
-                >
-                  {TABS.map((tab) => {
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <button
-                        key={tab.id}
-                        role="tab"
-                        aria-selected={isActive}
-                        onClick={() => setActiveTab(tab.id)}
+            <div className="mx-auto w-full max-w-[1128px] overflow-x-auto pb-px no-scrollbar border-t-1 border-b-1 border-slate-200 dark:border-slate-900">
+              <div
+                role="tablist"
+                aria-label="Architecture comparison"
+                className="flex w-full min-w-max items-end"
+              >
+                {TABS.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  return (
+                    <button
+                      key={tab.id}
+                      role="tab"
+                      aria-selected={isActive}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={cx(
+                        "group relative flex-shrink-0 sm:flex-1 flex items-center justify-center gap-3 px-6 py-3 text-sm font-medium transition-all outline-none border-b-2 whitespace-nowrap",
+                        isActive
+                          ? "border-indigo-600 text-indigo-900 dark:text-white"
+                          : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300",
+                      )}
+                    >
+                      <span
                         className={cx(
-                          "group relative flex-1 flex items-center justify-center gap-3 px-6 py-3 text-sm font-medium transition-all outline-none border-b-2 whitespace-nowrap",
+                          "text-xs font-mono font-semibold",
                           isActive
-                            ? "border-indigo-600 text-indigo-900 dark:text-white"
-                            : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300",
+                            ? "text-indigo-600 dark:text-indigo-400 opacity-100"
+                            : "opacity-50",
                         )}
                       >
-                        <span
-                          className={cx(
-                            "text-xs font-mono font-semibold",
-                            isActive
-                              ? "text-indigo-600 dark:text-indigo-400 opacity-100"
-                              : "opacity-50",
-                          )}
-                        >
-                          {tab.number}
-                        </span>
-                        <span className="text-sm sm:text-base font-semibold tracking-tight">
-                          {tab.label}
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+                        {tab.number}
+                      </span>
+                      <span className="text-sm sm:text-base font-semibold tracking-tight">
+                        {tab.label}
+                      </span>
+                    </button>
+                  );
+                })}
               </div>
             </div>
           </div>
