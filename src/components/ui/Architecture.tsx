@@ -36,9 +36,8 @@ const SUBHEAD: Record<Tab, ReactNode> = {
       >
         aren&apos;t databases
       </Link>
-      , so they hold a denormalized copy of your data. ParadeDB is both a search
-      index and a Postgres database, keeping the data your application needs in
-      one place.
+      , so they copy your data. ParadeDB is both a search index and a Postgres
+      database, keeping the data your application needs in one place.
     </>
   ),
   oltp: "OLTP databases are built for reliable transactions, but not for search or analytics. ParadeDB adds full-text, vector, and aggregates, all in one custom Postgres index.",

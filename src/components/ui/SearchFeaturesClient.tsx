@@ -26,7 +26,7 @@ export default function SearchFeaturesClient({
     <div className="w-full relative bg-white dark:bg-slate-950">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         <section className="py-10 md:py-14 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
-          <Badge className="mb-6">Workloads</Badge>
+          <Badge className="mb-6">Search</Badge>
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
             The <span className="text-highlight-blink">complete</span> toolkit{" "}
             <br className="hidden sm:block" /> for retrieval.

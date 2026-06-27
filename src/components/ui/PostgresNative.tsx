@@ -93,7 +93,7 @@ export default function PostgresNative() {
         <section className="relative py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
           {/* Header */}
           <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
-            <Badge className="mb-6">Postgres-native</Badge>
+            <Badge className="mb-6">OLTP</Badge>
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 max-w-4xl">
               Built on <span className="text-highlight-blink">Postgres</span>.
             </h2>
