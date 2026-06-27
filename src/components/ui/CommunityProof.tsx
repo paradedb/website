@@ -25,7 +25,7 @@ export default function CommunityProof() {
                   <Badge className="mb-6">Open Source</Badge>
                   <h2 className="text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white mb-4">
                     <span className="text-highlight-blink">Loved</span> by
-                    developers
+                    developers.
                   </h2>
                   <p className="text-md text-gray-800 dark:text-slate-300 leading-relaxed">
                     We are committed to building the best open source search
@@ -49,7 +49,7 @@ export default function CommunityProof() {
                     ParadeDB.
                   </p>
                   <Link
-                    href={documentation.DOCKER}
+                    href={documentation.GETTING_STARTED}
                     target="_blank"
                     className="mt-auto flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >

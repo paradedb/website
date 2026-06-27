@@ -8,6 +8,7 @@ import { Badge } from "./Badge";
 interface Feature {
   value: string;
   label: string;
+  tagline?: string;
   bullets: {
     title: string;
     description: string;
@@ -24,15 +25,14 @@ export default function SearchFeaturesClient({
   return (
     <div className="w-full relative bg-white dark:bg-slate-950">
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
-        <section className="py-12 md:py-20 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
-          <Badge className="mb-6">Features</Badge>
+        <section className="py-10 md:py-14 flex flex-col items-center border-r border-l border-slate-200 dark:border-slate-900 px-0">
+          <Badge className="mb-6">Search</Badge>
           <h2 className="text-center text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl px-6 sm:px-0">
             The <span className="text-highlight-blink">complete</span> toolkit{" "}
-            <br className="hidden sm:block" /> for search
+            <br className="hidden sm:block" /> for retrieval.
           </h2>
-          <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl px-6 sm:px-0">
-            ParadeDB brings everything you need from a modern search engine into
-            Postgres, including text, hybrid, and faceted search.
+          <p className="mt-6 text-center text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl px-6 sm:px-0">
+            All the features of a search engine in standard SQL.
           </p>
 
           <Tabs.Root
@@ -55,8 +55,15 @@ export default function SearchFeaturesClient({
                     <span className="text-xs font-mono font-semibold opacity-50 group-data-[state=active]:text-indigo-600 dark:group-data-[state=active]:text-indigo-400 group-data-[state=active]:opacity-100">
                       0{i + 1}
                     </span>
-                    <span className="text-sm sm:text-base font-semibold tracking-tight">
-                      {feature.label}
+                    <span className="flex flex-col items-start text-left">
+                      <span className="text-sm sm:text-base font-semibold tracking-tight">
+                        {feature.label}
+                      </span>
+                      {feature.tagline && (
+                        <span className="hidden sm:inline text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 dark:text-slate-600 group-data-[state=active]:text-indigo-500 dark:group-data-[state=active]:text-indigo-400/80">
+                          {feature.tagline}
+                        </span>
+                      )}
                     </span>
                   </Tabs.Trigger>
                 ))}
@@ -64,7 +71,7 @@ export default function SearchFeaturesClient({
             </div>
 
             {/* Content Area */}
-            <div className="w-full relative bg-slate-100 dark:bg-slate-900/50">
+            <div className="w-full relative bg-slate-50/50 dark:bg-slate-900/50">
               {features.map((feature) => (
                 <Tabs.Content
                   key={feature.value}
@@ -73,14 +80,14 @@ export default function SearchFeaturesClient({
                 >
                   <div className="flex flex-col lg:flex-row min-h-[360px]">
                     {/* Right Column: Code (MOVED ABOVE FOR MOBILE) */}
-                    <div className="flex-1 px-2 py-6 sm:p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden lg:order-2">
-                      <div className="w-full overflow-x-auto rounded-lg bg-slate-200/20 dark:bg-slate-900/20 p-2">
+                    <div className="flex-1 px-2 py-6 sm:p-8 md:p-12 lg:p-16 bg-transparent flex flex-col justify-center overflow-hidden lg:order-3">
+                      <div className="w-full overflow-x-auto p-2">
                         {feature.code}
                       </div>
                     </div>
 
                     {/* Vertical Divider (Desktop) */}
-                    <div className="hidden lg:block w-px bg-slate-200 dark:bg-slate-900 my-12 lg:order-3" />
+                    <div className="hidden lg:block w-px bg-slate-200 dark:bg-slate-900 my-12 lg:order-2" />
 
                     {/* Horizontal Divider (Mobile) */}
                     <div className="lg:hidden h-px w-full bg-slate-200 dark:bg-slate-900 px-6 sm:px-12" />

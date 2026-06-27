@@ -41,13 +41,13 @@ export default function PreFooterCta() {
           {/* Top Indigo Shaded Region */}
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 relative z-20 bg-indigo-700/20 opacity-60" />
 
-          <div className="relative flex flex-col items-center justify-center pt-24 md:pt-32 pb-4 md:pb-8 text-center">
+          <div className="relative flex flex-col items-center justify-center pt-16 md:pt-20 pb-4 md:pb-6 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-white sm:text-6xl leading-[1.1] text-center">
-                Elastic-quality search <br className="hidden sm:block" />{" "}
-                without the{" "}
+                Search where <br className="hidden sm:block" />
+                your data{" "}
                 <span className="text-highlight-blink !text-white after:!bg-white/10 after:!bg-gradient-to-r after:!from-white/20 after:!to-transparent">
-                  complexity
+                  lives.
                 </span>
               </h2>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">

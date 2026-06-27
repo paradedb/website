@@ -295,7 +295,6 @@ function CornerMarkers() {
 
 export default function AgentReady() {
   const [selectedCloud, setSelectedCloud] = useState(0);
-  const [selectedFramework, setSelectedFramework] = useState(0);
   const [copiedAgent, setCopiedAgent] = useState(false);
 
   const handleCopy = async (text: string) => {
@@ -316,20 +315,20 @@ export default function AgentReady() {
           <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
           <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100 dark:bg-slate-950/50 -z-10" />
+            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-indigo-50/60 dark:bg-indigo-950/20 -z-10" />
             <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
             <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-            <div className="relative flex flex-col items-center justify-center py-16 sm:py-24 bg-transparent z-20">
+            <div className="relative flex flex-col items-center justify-center py-10 sm:py-16 bg-transparent z-20">
               {/* Header section */}
               <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0 text-center mb-12">
                 <Badge className="mb-6">Integrations</Badge>
                 <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                  Use your{" "}
+                  Use with your{" "}
                   <span className="text-indigo-600 dark:text-indigo-400">
                     favorite
                   </span>{" "}
-                  tools
+                  tools.
                 </h2>
                 <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
                   ParadeDB works seamlessly with your existing stack.
@@ -359,11 +358,7 @@ export default function AgentReady() {
                                   <Tooltip.Trigger asChild>
                                     <button
                                       onClick={() => setSelectedCloud(index)}
-                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 ${
-                                        selectedCloud === index
-                                          ? "opacity-100"
-                                          : "opacity-50 hover:opacity-100"
-                                      } ${platform.className || ""}`}
+                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 ${platform.className || ""}`}
                                       aria-label={platform.name}
                                     >
                                       {platform.icon}
@@ -496,22 +491,15 @@ export default function AgentReady() {
 
                             {/* Logos */}
                             <div className="relative z-20 flex items-center justify-center w-full h-full gap-2">
-                              {Frameworks.map((framework, index) => (
+                              {Frameworks.map((framework) => (
                                 <Tooltip.Root key={framework.name}>
                                   <Tooltip.Trigger asChild>
-                                    <button
-                                      onClick={() =>
-                                        setSelectedFramework(index)
-                                      }
-                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 ${
-                                        selectedFramework === index
-                                          ? "grayscale-0 opacity-100"
-                                          : "grayscale opacity-60 hover:grayscale-0 hover:opacity-100"
-                                      } bg-transparent ${framework.className}`}
+                                    <div
+                                      className={`flex size-[3rem] items-center justify-center transition-all duration-300 grayscale opacity-60 hover:grayscale-0 hover:opacity-100 bg-transparent ${framework.className}`}
                                       aria-label={framework.name}
                                     >
                                       {framework.icon}
-                                    </button>
+                                    </div>
                                   </Tooltip.Trigger>
                                   <Tooltip.Portal>
                                     <Tooltip.Content
