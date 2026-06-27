@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, type ReactNode } from "react";
-import Link from "next/link";
 import {
   RiBubbleChartLine,
   RiDatabase2Line,
@@ -13,6 +12,7 @@ import {
   RiStackLine,
 } from "@remixicon/react";
 import { Badge } from "./Badge";
+import PixelShadow from "./PixelShadow";
 import { cx } from "@/lib/utils";
 
 const SHADOW_INDIGO = "#4f46e5";
@@ -26,20 +26,8 @@ const TABS: { id: Tab; number: string; label: string }[] = [
 ];
 
 const SUBHEAD: Record<Tab, ReactNode> = {
-  search: (
-    <>
-      Search engines are built for relevant search, but they{" "}
-      <Link
-        href="/blog/elasticsearch-was-never-a-database"
-        target="_blank"
-        className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-      >
-        aren&apos;t databases
-      </Link>
-      , so they copy your data. ParadeDB is both a search index and a Postgres
-      database, keeping the data your application needs in one place.
-    </>
-  ),
+  search:
+    "Search engines are built for relevant search, but they operate on a denormalized copy of your data. ParadeDB is both a search index and a Postgres database, keeping the data your application needs in one place.",
   oltp: "OLTP databases are built for reliable transactions, but not for search or analytics. ParadeDB adds full-text, vector, and aggregates, all in one custom Postgres index.",
 };
 
@@ -352,23 +340,6 @@ export default function Architecture() {
 
 type Emphasis = "indigo-solid" | "indigo-light" | "slate";
 
-// Fixed (static) pixel-dot shadow, anchored bottom-right — the same look as the
-// PostgresNative cards, just colored per box (no canvas animation).
-function StaticPixelShadow({ color }: { color: string }) {
-  const fill = color.replace("#", "%23");
-  return (
-    <div
-      aria-hidden="true"
-      className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5 pointer-events-none"
-      style={{
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='${fill}' fill-opacity='0.5'/%3E%3C/svg%3E")`,
-        backgroundSize: "5px 5px",
-        backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
-      }}
-    />
-  );
-}
-
 function Box({
   emphasis,
   children,
@@ -379,7 +350,7 @@ function Box({
   if (emphasis === "indigo-solid") {
     return (
       <div className="relative">
-        <StaticPixelShadow color={SHADOW_INDIGO} />
+        <PixelShadow color={SHADOW_INDIGO} />
         <div className="relative border-2 border-indigo-600 bg-indigo-600 px-5 py-3 text-center text-white">
           <div
             aria-hidden="true"
@@ -393,7 +364,7 @@ function Box({
   if (emphasis === "indigo-light") {
     return (
       <div className="relative">
-        <StaticPixelShadow color={SHADOW_INDIGO} />
+        <PixelShadow color={SHADOW_INDIGO} />
         <div className="relative border-2 border-indigo-600 dark:border-indigo-400 bg-indigo-50 dark:bg-indigo-950 px-3 py-3 text-center text-indigo-600 dark:text-indigo-400">
           <div
             aria-hidden="true"
@@ -406,7 +377,7 @@ function Box({
   }
   return (
     <div className="relative">
-      <StaticPixelShadow color={SHADOW_SLATE} />
+      <PixelShadow color={SHADOW_SLATE} />
       <div className="relative border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-3 text-center text-slate-500 dark:text-slate-200">
         <div
           aria-hidden="true"
