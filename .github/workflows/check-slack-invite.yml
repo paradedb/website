@@ -1,10 +1,9 @@
 # workflows/check-slack-invite.yml
 #
 # Check Slack Invite
-# Alerts when the public Slack invite (https://paradedb.com/slack) dies. Slack
-# links auto-deactivate after ~400 joins and fail silently (an expired link
-# still 200s with a live-looking app-shell), so this renders the page in a
-# headless browser to detect it. See check-slack-invite.mjs for details.
+# Alerts when the public Slack invite (https://paradedb.com/slack) dies. Renders
+# the page in real Google Chrome (Slack bot-blocks headless Chromium) to detect
+# silently-expired invites. See check-slack-invite.mjs for details.
 
 name: Check Slack Invite
 
@@ -14,6 +13,10 @@ on:
     # this lands at 2 PM during PDT.
     - cron: "0 21 * * 1-5"
   workflow_dispatch:
+  pull_request:
+    paths:
+      - ".github/workflows/check-slack-invite.yml"
+      - ".github/scripts/check-slack-invite.mjs"
 
 concurrency:
   group: check-slack-invite-${{ github.head_ref || github.ref }}
@@ -26,8 +29,8 @@ jobs:
   check-slack-invite:
     name: Check Slack Invite
     runs-on: ubuntu-latest
-    # Chromium + deps are baked in, so there's no slow browser download at
-    # runtime. Keep the `playwright@` install below on the same version tag.
+    # Image ships headless Chromium + OS deps; we install real Chrome below.
+    # Keep the `playwright@` install on the same version tag as the image.
     container:
       image: mcr.microsoft.com/playwright:v1.49.1-jammy
     # A hung page-load should fail loudly, not sit there for the 6h default.
@@ -40,14 +43,15 @@ jobs:
       - name: Probe Slack invite
         id: probe
         run: |
-          # Install only the Playwright JS package (seconds — no browser bytes;
-          # the browser is already in the image at $PLAYWRIGHT_BROWSERS_PATH).
-          # Isolated temp dir keeps us off the repo's pnpm package.json/lockfile.
+          # Install just the Playwright JS package (no browser bytes). Isolated
+          # temp dir keeps us off the repo's pnpm package.json/lockfile.
           mkdir -p "$RUNNER_TEMP/pw"
           cp .github/scripts/check-slack-invite.mjs "$RUNNER_TEMP/pw/probe.mjs"
           cd "$RUNNER_TEMP/pw"
           npm init -y >/dev/null 2>&1
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install playwright@1.49.1 >/dev/null
+          # Real Chrome — the probe launches channel:"chrome" to clear the bot wall.
+          npx playwright install chrome >/dev/null
           # Don't let set -e abort on a failing probe — we still need to copy the
           # screenshots/reason back so the artifact + issue steps can use them.
           set +e
