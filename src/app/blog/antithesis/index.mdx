@@ -1,0 +1,119 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+
+ParadeDB is a Postgres extension. From the outside it looks like a single binary on a single machine; from the inside, because Postgres is a complex multi-process database, it behaves more like a distributed system. Parallel workers, autovacuum, the WAL writer, replication, and the [CloudNativePG](https://cloudnative-pg.io/) operator all touch the same on-disk structures through Postgres' shared buffer cache. Add physical replication, logical replication, and the [CloudNativePG](https://cloudnative-pg.io/) operator we use in production, and the surface area for concurrency bugs starts to look a lot like the kind of system [Antithesis](https://antithesis.com/) (a deterministic simulation testing platform) was built to test.
+
+This post is about why we chose to run ParadeDB inside Antithesis on every commit, what our setup looks like, and which bugs it has actually found. It is heavily inspired by [the Tigris team's report](https://antithesis.com/blog/2026/tigris_report/), and we are publishing it for the same reasons: to be transparent about how we test the database that our customers run as their system of record, and to share what has worked for a team that does not have the luxury of building from scratch.
+
+## What "correct" means for ParadeDB
+
+When somebody puts ParadeDB into their Postgres, they are not signing up for a search engine bolted on the side. They are signing up for a database where search is just another query, and where the rest of their OLTP workload keeps behaving the way Postgres does.
+
+That sets the bar in a few specific ways. A query that returns a result in vanilla Postgres has to return the same result with `pg_search` installed, modulo the new operators and functions we add. Inserts, updates, and deletes against a table with a BM25 index participate in the surrounding transaction; either the index reflects the committed state or it does not. And the rest of the database is not allowed to slow down because a search or aggregation query is running on the same primary. A customer running a high-throughput OLTP workload should not be able to tell we are there until they ask us to be.
+
+To deliver that, we store our full-text index inside Postgres' block storage so that the index participates in MVCC, WAL, and physical replication. We wrote [a separate post](https://www.paradedb.com/blog/block-storage-part-one) about why we built it this way. Parallel query, vacuum, replication, and recovery then "just work" against a BM25 index the same way they do against a B-tree. Making "just works" actually true means accounting for every interleaving of every Postgres process that touches the index.
+
+Parallel query is the clearest example. When a user runs `SELECT ... WHERE description ||| 'cheese'` against a large index, the planner can split the scan across half a dozen parallel workers, each holding its own snapshot of the index's segment list, each potentially racing with a concurrent `INSERT` from another backend, a background merge from a third, and `VACUUM` from a fourth. The processes do not share an address space, so they cannot use ordinary mutexes. They share pages, and they have to agree on what those pages mean.
+
+## Testing at ParadeDB before Antithesis
+
+Before Antithesis, our testing stack was already extensive:
+
+- **Unit tests.** Standard Rust unit tests against the internal data structures.
+- **Integration tests.** `pgrx`-based tests that load the extension into a running Postgres and exercise it through SQL. Most features get tested end to end on a single node here.
+- **`pg_regress` tests.** `pg_regress` is the snapshot-testing tool the Postgres project itself uses for its regression suite: a SQL script goes in, a checked-in expected file is `diff`ed against the output. We use it to make sure the parts of ParadeDB that overlap with vanilla Postgres (the planner, the executor, replication, recovery) keep behaving exactly the way Postgres does.
+- **Property tests.** We use [`proptest`](https://github.com/proptest-rs/proptest) to generate random SQL queries and random index configurations, and assert that ParadeDB produces the same answer as a reference implementation (usually vanilla Postgres with a tsvector or B-tree index). Most of our query-correctness coverage lives here.
+- **Load tests with Stressgres.** [Stressgres](https://github.com/paradedb/paradedb/tree/main/stressgres) is an in-house tool that runs customer-representative workloads against a Postgres cluster. Each workload is a TOML file that defines the schema, the initial data, and a set of concurrent jobs. We use it for performance regression testing and for the kind of "run it for a few hours and see what breaks" testing that catches slow leaks.
+- **Cluster failover tests.** End-to-end tests against real infrastructure that drive a cluster through failover and minor-version upgrades while it continues to serve queries.
+
+Antithesis is the layer on top of all of it, catching what the rest cannot: concurrency bugs that depend on a specific interleaving of two or more processes touching the same page in a particular order.
+
+## Why Antithesis
+
+If you have not run into Antithesis before, the short version is that it is a deterministic simulation testing platform. You hand it a system, a workload, and a set of faults to inject. It runs the whole thing inside a hypervisor that schedules every thread, every syscall, and every network packet itself, so every run is deterministic and replayable from a single seed. On top of that, it uses coverage-guided heuristics to steer the schedule toward the kind of process interleavings that production almost never produces but eventually will. When something breaks, Antithesis hands back the exact schedule that broke it, and we can replay it as many times as we need to to understand why.
+
+The biggest gap in the rest of our stack was sustained concurrency under fault injection, and the work on our roadmap (MPP plan partitioning, a new columnar on-disk segment layout) is the sort of work that exercises exactly that surface area harder than anything we have shipped before. We wanted the simulator in place before that work landed, not after.
+
+Antithesis is also the only platform we are aware of that can do this for a workload that is not written from scratch against a deterministic runtime. That mattered: ParadeDB is a Postgres extension, and we have to live within Postgres' (stable, but also very old) walls.
+
+## ParadeDB's Antithesis setup
+
+We run two workloads on Antithesis, both wired into the same GitHub Actions workflow. They run on a nightly schedule (twice a week, 8 hours each), on demand against pull requests via labels, and manually through `workflow_dispatch`.
+
+The workflow builds a custom `.deb` of `pg_search` with Antithesis' instrumentation enabled, bakes it into a Docker image, and pushes it to Antithesis' registry. Both workloads run against that image.
+
+### Workload 1: Stressgres on a real cluster
+
+The first workload is the closest thing we have to running a customer in a box. We deploy a full ParadeDB cluster using our [public Helm chart](https://github.com/paradedb/charts) on top of [CloudNativePG](https://cloudnative-pg.io/): a primary, two replicas, all running under the CNPG operator inside Antithesis' Kubernetes harness. Alongside the cluster, we run a vanilla Postgres pod that publishes changes into ParadeDB over logical replication, and a Stressgres driver that simultaneously writes to the publisher, writes directly to the ParadeDB primary, and reads from the two replicas.
+
+Each Stressgres suite is a different customer-shaped workload: a wide table, bulk updates against a hot row range, background-merge-heavy writes, logical replication, and so on. On top of these, Antithesis injects faults: container kills, container stops, and network partitions. Inside that envelope the simulator can crash a replica, partition the primary, restart CNPG, or drop traffic between the publisher and the primary. ParadeDB is expected to come back up and continue to serve correct results.
+
+### Workload 2: property tests under fault injection
+
+The second workload is narrower. We deploy the same ParadeDB cluster (no Stressgres, no logical replication), and a single container that runs our `qgen` property test binary against the primary. `qgen` already iterates internally over a couple of dozen property tests, each running many proptest cases per iteration, with parallel query forced on. We then let Antithesis schedule that binary against a cluster that is being actively perturbed by fault injection.
+
+The two workloads stress different things: Stressgres covers concurrency between unrelated processes (writers, mergers, replicas) on a hot dataset, while the proptests cover query-result correctness on a wide variety of randomly generated queries and indexes under the same fault injection. Both run on the same instrumented binary, so the simulator's coverage data accumulates across both.
+
+### How much testing this actually is
+
+Antithesis' value is that one wall-clock hour of testing is many hours of effective testing, because the simulator runs at many times real-time speed and explores multiple branches of the schedule in parallel. An 8-hour scheduled run typically lands around 2 days of simulated time per suite. Across all our suites running twice a week, the harness accumulates more simulated test time in a month than we could afford to run on real hardware in a year.
+
+## What it has found
+
+The point of any of this is bugs, and the most important ones we have shipped fixes for in the last few months were all surfaced by Antithesis.
+
+### WAL ordering on linked-list extension
+
+The headline find was a WAL-ordering bug in the function that extends one of the BM25 index's internal linked lists. When the list needed a new tail block, two WAL records went out: one to extend the relation file with the new block, and one to update the previous tail's `next_blockno` to point at it. The records were being emitted in the wrong order (pointer update first, block extension second), so a reader walking the chain between the two replays would follow the new pointer into a block that did not yet exist.
+
+Three things had to align to trip it. A physical standby had to be attached (on the primary this is benign, because the relation file grows synchronously when the new buffer is acquired; on a standby the file only grows when WAL replays). A chain extension had to be happening, which only happens when the list is busy enough to outgrow its current tail. And a reader on the standby had to be walking past the just-updated pointer in the microsecond gap between the two replays. When all three hit, the index surfaced `XX001: could not read blocks ... read only 0 of 8192 bytes`; the rest of the time the bug was invisible. Reproducing it deterministically against a standby required us to insert a 500 ms artificial sleep wedged between the two records. The simulator hit the natural window without help. The fix is a one-function change that controls `BufferMut` drop order so the new-page record is always emitted before the pointer update.
+
+### GC racing with replication-slot setup
+
+`garbage_collect_index` was deciding whether it was safe to free segment blocks to the free space map by checking whether a standby had sent `hot_standby_feedback` yet. The check was wrong: it could not distinguish "no standby exists" from "standby exists but has not sent its first feedback yet."
+
+The conditions were narrow but reachable. A physical replication slot had to be in the brief window between creation and its first feedback exchange. GC had to fire inside that window. And the standby had to subsequently read one of the blocks the primary freed. After the window closed, the primary correctly waited for feedback and the bug disappeared. Because the freed blocks were then recycled and overwritten with unrelated data, the symptom was not a single deterministic error: the index panicked with whatever bytes happened to land in the page (`block not found`, `mid > len`, `invalid chunk style tag`, `Fast field not available`). Antithesis surfaced five distinct panics across two nodes over six days, all the same underlying race. The fix replaces the feedback check with a direct scan of PostgreSQL's shared-memory replication slot array under `ReplicationSlotControlLock`, which closes the window between slot creation and first feedback.
+
+### Lock window in `LinkedItemList` reads
+
+The read-only iteration methods on `LinkedItemList` (`list`, `is_empty`, `for_each`, `lookup_ex`) were releasing the header shared lock before walking the data blocks. The corresponding write-side methods on the same type were already holding the header lock for the full operation, with a comment explaining why. The read-side methods just had not been given the same treatment.
+
+This needed three processes to interleave on the same chain. A reader had to be partway through iteration. A second process had to commit an atomic swap of the header pointer in that window and recycle the old chain's blocks to the FSM. Then a third process had to pop one of those blocks via `RBM_ZERO_AND_LOCK` (which zeroes the page on grab) before the reader walked into it. The trigger required sustained write traffic, an autovacuum-driven swap, and a reader on the same list at the same instant, which is why it correlated strongly with autovacuum on busy systems and was effectively invisible everywhere else. Symptoms were a SIGSEGV or a `SegmentMetaEntryHeader: UnexpectedEnd` deserialization error.
+
+### TOAST detoast without an active snapshot
+
+A logical-replication apply worker crashed with `cannot fetch toast data without an active snapshot`. An earlier fix had made mutable-segment materialization eagerly detoast varlena values to avoid a separate race with `VACUUM`. That fix was correct, but it exposed a different latent invariant: PostgreSQL only allows TOAST fetches when there is an active or registered snapshot on the stack.
+
+The combination required to hit it is what made it hide. You need the logical-replication apply worker (not a normal query path; in a normal query path the active snapshot is always there). You need a BM25 index on the subscriber. You need TOASTed values in the indexed columns. And you need the mutable-segment path to materialize inside the pre-commit callback, which runs inside the transaction but outside PostgreSQL's per-row replication wrapper that pushes an active snapshot. Any one of those alone is benign. Together, `pg_detoast_datum` tripped `get_toast_snapshot`'s "no active snapshot" check and the apply worker exited. The fix pushes the current transaction snapshot at the top of `index_memory_segment` if no caller has already provided one.
+
+### `ambulkdelete` assertion on leftover merge entries
+
+An `ambulkdelete` assertion crashed autovacuum because it treated any non-empty merge list as proof of a concurrent merge. That is not true if a previous merge errored mid-flight: such a merge cannot remove its own `MergeEntry` while unwinding (that path needs buffer locks, which Postgres refuses during unwind), so the entry survives as stale debris.
+
+Hitting it required a two-step sequence. First, a merge had to fail mid-flight and leave a stale entry behind. Then, before that entry became recyclable (its backend exiting or its `xmin` completing), VACUUM had to run on the same index. Without the prior failed merge, the merge list is empty and the assertion is fine. Without the VACUUM in the right window, the entry is cleaned up silently by the next `garbage_collect` and nothing notices. Antithesis was good at producing the two-step sequence because fault injection routinely caused mergers to error mid-flight. The fix drops the assertion and lets `garbage_collect` reclaim the entry once it becomes recyclable. The cleanup-lock invariant already guarantees a surviving entry cannot be a live merge.
+
+### `SHM_MQ_DETACHED` escalated on parallel worker shutdown
+
+A parallel worker shutdown path escalated a benign `SHM_MQ_DETACHED` from the leader into a loud `ERROR: queue is detached`, even though upstream Postgres treats the same detach as a normal state transition. The leader proactively detaches tuple queues as the intended signal that workers should stop.
+
+This needed a parallel query in which the leader stopped reading before the workers finished sending (a `LIMIT`, an early error, a parent stop in the executor), and a worker that happened to attempt one more send after that detach. Without that timing, the worker's final send succeeds and the path is never taken. The trigger window is small and only opens during parallel-query plans, which is why it never came up in our pre-Antithesis testing. The fix routes worker results through a helper that swallows `Detached` with a `debug1` breadcrumb while still panicking on every other send error.
+
+### The pattern
+
+None of these showed up in unit tests, integration tests, `pg_regress`, the proptests run without faults, or many hours of Stressgres against the same cluster shape. None of them would have been caught by code review either. A reviewer can spot a missing lock, but not a missing lock that only matters when three specific processes interleave in one of 10^9 possible orders.
+
+## What we are doing next
+
+Two things have changed since the harness went live.
+
+The first is that every release now runs through Antithesis before it ships. Major refactors get the simulator on the PR; the rest is gated on the nightly runs against the release candidate.
+
+The second is that the simulator has unblocked the high-value work we had been most cautious about. Our work on MPP (massively parallel processing) plan partitioning changes the way `JoinScan` and friends fan out across parallel workers. Our segment partitioning work changes the on-disk storage format of the BM25 index. Both are exactly the shape of change that used to make us slow down, because the blast radius of a missed race would have landed on a customer. With deterministic simulation testing in the pipeline, the blast radius lands on a Tuesday-night CI run instead, and that has freed us up to ship the kind of work we want to be shipping.
+
+_Curious about Antithesis? [Learn more about deterministic simulation testing](https://antithesis.com/)._
+
+_Many thanks to the Antithesis team for the close collaboration over the past months, and for reviewing a draft of this post._
