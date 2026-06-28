@@ -1,0 +1,169 @@
+import blogMetadata from "./metadata.json";
+import { AuthorSection } from "@/components/AuthorSection";
+import { Title } from "@/components/Title";
+import { Note } from "@/components/mdx/Callouts";
+
+<Title metadata={blogMetadata} />
+<AuthorSection metadata={blogMetadata} />
+
+Some of the best debugging stories start with asking questions. This one started when [Turbopuffer](https://turbopuffer.com) open-sourced [alyze](https://github.com/turbopuffer/alyze), a tokenization and analysis library that powers their `word_v4` tokenizer. The post and README lead with throughput numbers that are hard to ignore: a [UAX #29](https://www.unicode.org/reports/tr29/) (Unicode Standard Annex #29, the standard for splitting text into words) word segmenter, implemented as a hand-rolled deterministic finite automaton (DFA), chewing through English Wikipedia at around 500 MiB/s.
+
+We were curious how it worked, and that curiosity led us to a one-line bug fix in our default tokenizer that made real-world ParadeDB indexes **40% smaller**.
+
+## What alyze actually is (and where the speed comes from)
+
+alyze is really two parts stacked together, and it's worth seeing them separately, because we ended up using one and not the other.
+
+1. **A segmenter.** [`uax29::word`](https://github.com/turbopuffer/alyze/blob/trunk/src/uax29/word/mod.rs) finds word boundaries with a hand-rolled DFA, and it's zero-copy: it walks the input once and calls you back at each boundary with a byte offset and some properties, allocating and copying nothing per token. You pair consecutive boundaries into spans and decide what, if anything, to materialize.
+2. **An analyzer.** On top of the segmenter, [`analyze`](https://github.com/turbopuffer/alyze/blob/trunk/src/analyze/mod.rs) runs everything else (lowercasing, ASCII folding, stemming, stopword removal, and assigning each token its position) as one fixed pipeline. The stages run inline in a single pass, toggled by flags, with no plugins or trait objects to dispatch through, so it's straight-line code the compiler can inline across.
+
+The DFA gets the headline, but a big part of the speed is those two design choices (zero-copy, and a fixed chain with no dispatch), and both are things a general-purpose tokenizer layer gives up by design.
+
+<Note>
+  We're not knocking alyze, or the general-purpose engines that make the
+  opposite choice. A search engine like
+  [Tantivy](https://github.com/quickwit-oss/tantivy) (which powers ParadeDB)
+  exposes tokenizers and token filters as composable, reorderable building
+  blocks, and it owns each token's text so filters can rewrite it freely. That
+  composability is the whole point: it's how you get configurable stemmers,
+  stopword lists, and per-field tokenizers. Zero-copy and a fixed chain buy
+  speed by giving that up.
+</Note>
+
+So the fair summary: alyze is fast partly because of the DFA, and partly because it opted out of the flexibility a search engine's tokenizer layer needs.
+
+## Porting it into ParadeDB
+
+We wanted to try alyze in ParadeDB, and luckily Tantivy's (our underlying search library) tokenizers are pluggable. Each one implements the `Tokenizer` trait, and we register a family of them: `pdb.simple`, `pdb.lindera`, `pdb.ngram`, and so on. One of those is `pdb.unicode_words`, our **default** text tokenizer.
+
+That default exists because Tantivy doesn't ship a UAX #29 word tokenizer of its own. Its built-in `SimpleTokenizer` just splits on non-alphanumeric characters, which mangles things like "won't" and handles scripts inconsistently. So ParadeDB does proper Unicode word segmentation itself, on top of the [`unicode-segmentation`](https://crates.io/crates/unicode-segmentation) crate.
+
+alyze does the same job with a different engine, so we dropped it in as another plugin: `pdb.alyze`. The integration was fairly easy.
+
+To make alyze fit Tantivy's API, we took the **segmenter** and left its **analyzer** behind (and even the segmenter doesn't survive the trip fully intact):
+
+- **The analyzer isn't used.** We run ParadeDB's own composable Tantivy filters in its place, rather than alyze's fixed, compiled-in pipeline, because that configurability is where all of our per-field tokenizer options live.
+- **The segmenter loses its zero-copy.** Tantivy's `Token` owns its text as a `String`, so we copy each token's bytes into it. That's the price of Tantivy's pull-based, mutable-token API.
+- **We calculate positions.** Two different things hide behind "where a token is." A boundary is a byte offset: where the token sits in the text, so it can be sliced out or highlighted. A position is the token's ordinal rank in the document (`0`, `1`, `2`, and so on), which is what phrase and proximity queries run on (`"quick brown"` matches when `brown` is at `quick`'s position plus one). The segmenter only reports boundaries; assigning positions was the analyzer's job, and we dropped the analyzer, so this falls to us.
+
+## A surprising result
+
+With `pdb.alyze` working, we rebuilt the BM25 index on a Hacker News dataset, 28.7 million rows of titles and comment text, and compared it against the same index built with the default `pdb.unicode_words`.
+
+alyze's index was **smaller, and faster to build**. Not by a little: the default tokenizer produced an 8 GB index, and alyze produced one under 5 GB. Same data, same fields, same everything except the tokenizer on two columns.
+
+This was odd though, while alyze might be faster due to efficiency two UAX #29 tokenizers that segment text the same way should produce nearly identical indexes. A 40% gap isn't a small difference. It means something we believed was true wasn't. So we went looking.
+
+## Chasing the difference
+
+The first job was finding out where the bytes were differing. ParadeDB exposes `paradedb.index_info()`, which breaks an index down by component. Both indexes were fully merged into 4 segments with 0 deleted docs, over the identical 28.7M documents, but straight away something jumped out:
+
+| component     | `pdb.alyze` | `pdb.unicode_words` |
+| ------------- | ----------- | ------------------- |
+| term dict     | 266 MB      | 265 MB              |
+| postings      | 2183 MB     | 2183 MB             |
+| **positions** | **1850 MB** | **5046 MB**         |
+| fast fields   | 513 MB      | 515 MB              |
+| fieldnorms    | 55 MB       | 55 MB               |
+| **total**     | **4867 MB** | **8064 MB**         |
+
+Every component matched to the megabyte except one. The whole difference was the positions index: 5046 MB against 1850 MB, a factor of 2.7.
+
+That rules out most explanations. Identical term dictionaries mean the same vocabulary. Identical postings mean the same terms appear in the same documents with the same frequencies. We checked directly by materializing the per-document token counts for both tokenizers across all 28.7M rows: **1,722,166,199 against 1,722,174,314**, identical to within 0.0005% (alyze emits a few thousand more, for an unrelated reason[^1]). Only 670 documents out of 28.7 million tokenized differently at all.
+
+Same tokens, same token counts, the same number of positions, but a positions file 2.7x bigger on one side. What threw us was that every SQL probe said the two tokenizers were identical. Casting with `(::pdb.alyze)::text[]` and `(::pdb.unicode_words)::text[]` produced the same tokens at the same positions, every time.
+
+That ended up being our clue, those functions build a **fresh** tokenizer for each call, and the difference we were seeing only existed during indexing.
+
+## The bug
+
+When we looked at the indexing path it became clear. Tantivy reuses **one tokenizer instance for every document in a segment** (the self-contained chunk it builds an index from, often millions of documents), and the `Token` it fills in, including the `position` counter, lives on that instance. Tantivy's own tokenizers know this, so they reset the token at the start of each document:
+
+```rust
+// tantivy's SimpleTokenizer / WhitespaceTokenizer
+fn token_stream<'a>(&'a mut self, text: &'a str) -> Self::TokenStream<'a> {
+    self.token.reset();   // position back to 0 for this document
+    ...
+}
+```
+
+Our `unicode_words` tokenizer didn't (oops!). It handed the reused token straight to the stream and bumped its position with `wrapping_add(1)`:
+
+```rust
+// pg_search's unicode_words: the bug
+fn token_stream<'a>(&'a mut self, text: &'a str) -> Self::TokenStream<'a> {
+    UnicodeWordsTokenStream {
+        token: &mut self.token,   // reused across documents, never reset
+        ...
+    }
+}
+```
+
+So the counter never went back to zero. Document 1 ended at position 50, and document 2's first token was position 51 instead of 0. Across a 28.7-million-document segment it climbed into the **hundreds of millions**. Our alyze wrapper, written from scratch, happened to reset its position per document, which is the only reason its index came out smaller. alyze wasn't better here. `unicode_words` was buggy.
+
+### Why bigger numbers cost 2.7x the bytes
+
+A leaked counter just means bigger position numbers. You'd expect that to be free: a position is an integer, and an integer is an integer, whether the value is 5 or 500 million. But Tantivy doesn't store positions as fixed-width integers. A token's position is its ordinal within its own document (the `0`, `1`, `2`, from before), but the index is inverted, so it files those positions away by term rather than by document: for each term, the positions where it appears in each document. Tantivy delta-encodes them, resetting the baseline at each document, so a term's first position in a document is stored as an absolute value and any repeats are small gaps. Those values are bit-packed in fixed 128-value blocks, using only as many bits as the **largest value in the block** needs.
+
+Most documents use a given term just once, so most of what gets stored is those absolute first positions, and the leak inflates every one of them:
+
+- **Correct:** a term's position within its document, from 0 up to the document length. For a long Hacker News comment that tops out around a couple thousand, so roughly **10 to 11 bits**.
+- **Buggy:** the running segment-wide counter. Hundreds of millions, so roughly **28 to 29 bits**.
+
+The inflated values aren't rare outliers a block could shrug off (there's no exception path here, just plain bit-packing); they're most of the block, so the block has to widen to fit them. Roughly 28 bits where 10 would do, across the whole positions file. That bit-width ratio is the story, and it lines up with the size blowup we measured: `5046 / 1850 = 2.73`. It isn't a fixed factor. It grows with segment size and shrinks with longer documents. On this corpus it landed on 40% of the total index.
+
+## The impact: wasteful, not wrong
+
+The good news is that this never produced a wrong result.
+
+- **Terms, frequencies, and BM25 scores are untouched.** The position counter doesn't change which tokens are indexed or how many there are. Term and boolean queries, and all relevance scoring, were always correct.
+- **Phrase and proximity queries are correct too.** Within a document the leak shifts every token's position by the same amount (the counter just keeps climbing from where the previous document left off, so a document's tokens are all offset by one constant). Phrase and proximity matching only ever compares positions within a single document, by their difference, and a shared offset cancels in a difference: `brown` is still exactly one past `quick` whether they're stored as `0, 1` or `1000051, 1000052`. Nothing compares positions across documents, so the inflated values change the file size, not the answers.
+
+So the cost was a bloated positions index and a little extra work decoding it at query time. There's one sharp edge worth naming: Tantivy stores positions as `u32`, and a counter that climbs across an entire segment could, on a large enough index, cross 4.29 billion and overflow.[^2] Our Hacker News corpus sat well under that, which is why we only ever saw size, never wrong answers.
+
+## The fix
+
+The fix is the line Tantivy's own tokenizers already had:
+
+```rust
+fn token_stream<'a>(&'a mut self, text: &'a str) -> Self::TokenStream<'a> {
+    self.token.reset();   // positions restart at 0 for each document
+    UnicodeWordsTokenStream { token: &mut self.token, ... }
+}
+```
+
+We added a regression test that reuses one tokenizer across two documents and asserts the second document's positions restart at `0`. It fails (`[3, 4]`) without the reset and passes (`[0, 1]`) with it, so it can't quietly come back. We also audited the rest of our tokenizers: `lindera` reuses the token but overwrites the position with an absolute value, and `cjk`, `icu`, `edge_ngram`, and `ngram` build a fresh token per call. `unicode_words`, the default, was the only one affected.
+
+Rebuilt with the fix, the default tokenizer's index dropped from 8064 MB to 4867 MB, with positions falling from 5046 MB to 1850 MB. That's byte-for-byte identical to the alyze build (same 4 segments, same 28.7M documents, every component matching to the megabyte), which confirms what the token counts implied: the two were always the same index underneath, and the whole gap was the leaked positions.
+
+The best part is that you don't get this by switching tokenizers: fixing the default helps any index that uses `unicode_words`. It isn't retroactive, though. The fix changes how positions are written, so existing segments keep their bloat until those rows are re-tokenized. A `REINDEX` collapses the whole index in one step, and newly inserted or updated rows pick it up as they're written. A plain segment merge won't do it, because merging copies the old positions forward without re-running the tokenizer. The old and new segments coexist fine in the meantime: each segment's positions are internally consistent on their own, so one index can hold buggy-era and fixed-era segments at once and still answer every query correctly. You can find the fix [here](https://github.com/paradedb/paradedb/pull/PR_NUMBER). {/* TODO: replace PR_NUMBER with the real PR */}
+
+## One difference that wasn't a bug
+
+The size difference was a bug, and once it's fixed the two tokenizers produce identical indexes. But that first comparison flagged two things, smaller and faster to build, and the second one is real.
+
+Building the same index at 2 parallel workers on the same machine:
+
+| build                      | time  |
+| -------------------------- | ----- |
+| `unicode_words`, unpatched | 17:03 |
+| `unicode_words`, patched   | 14:55 |
+| `alyze`                    | 12:31 |
+
+Two takeaways. The fix didn't only shrink the index, it cut ~12% off the build (17:03 to 14:55), because there's far less position data to encode and write. And even after the fix, alyze builds about 16% faster than `unicode_words` (14:55 to 12:31). That gap isn't a bug; it's the DFA doing in one pass what `unicode-segmentation` does in two: cut on word boundaries, then re-scan each piece to decide whether it's a word.
+
+The tokenizers now produce byte-identical indexes, so the only thing left to compete on is speed, and alyze's segmenter is the faster engine. Making our default faster, whether by adopting that hand-rolled deterministic finite automaton or trimming our own overhead, is our next step.
+
+## Curiosity is a good debugger
+
+We didn't set out to optimize anything. We read someone else's tokenizer because it was interesting, ported it because we wanted an honest comparison, and noticed a number that didn't make sense. The bug had been sitting in our most-used tokenizer the whole time, invisible from the outside: every tool we had for inspecting tokenization built a fresh tokenizer, so none of them could reproduce it.
+
+The takeaway isn't just "reset your token state" (though, do that). A bug that's invisible to every one of your own tools can't be found by looking harder from the inside; it takes an outside reference that doesn't share your blind spots, plus the discipline to treat a too-good result as a symptom rather than a win. Porting alyze gave us the reference; refusing to accept a 40% gap we couldn't explain did the rest. Thanks to the Turbopuffer team for open-sourcing alyze and giving us the excuse.
+
+[Get started with ParadeDB](https://docs.paradedb.com/documentation/getting-started/install), and if this is the kind of thing you enjoy, [give us a star](https://github.com/paradedb/paradedb).
+
+---
+
+[^1]: alyze treats any character whose Unicode Script is a real writing system as word-like, so it indexes a handful of decorative-script tokens ([Braille ASCII art](https://news.ycombinator.com/item?id=11512323), [Tibetan "donger" brackets](https://www.reddit.com/r/speedrun/comments/1grtl3/where_did_the_whole_raise_ur_dongers_thing_come/)) that `unicode-segmentation`'s word filter drops. A few thousand tokens across 28.7M documents, harmless either way.
+
+[^2]: Inside a document the positions stay consecutive, so the only thing an overflow could corrupt is the one document straddling each 4.29 billion boundary. Resetting per document keeps positions tied to document length, which is always far below that ceiling.
