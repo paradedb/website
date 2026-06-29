@@ -9,12 +9,7 @@ import {
 import { cx } from "@/lib/utils";
 
 export type CalloutVariant =
-  | "info"
-  | "note"
-  | "warning"
-  | "success"
-  | "danger"
-  | "tip";
+  "info" | "note" | "warning" | "success" | "danger" | "tip";
 
 export interface CalloutProps {
   variant: CalloutVariant;
