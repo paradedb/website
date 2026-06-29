@@ -313,7 +313,7 @@ export default function Architecture() {
                           {benefit.icon}
                         </span>
                         <div>
-                          <div className="font-sans text-sm font-semibold text-indigo-950 dark:text-white">
+                          <div className="font-sans text-base font-semibold text-indigo-950 dark:text-white tracking-tight">
                             {benefit.title}
                           </div>
                           <div className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400 min-h-[2lh]">
