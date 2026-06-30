@@ -17,7 +17,7 @@ const FADE_END = 14;
 const HIGHLIGHT = "#4f46e5"; // solid main indigo
 const FRAME_MS = 33;
 const SPAWN_MS = 220;
-const GLOW_SPAWN_MS = 130; // snappier highlight cadence in glow (hover) mode
+const GLOW_SPAWN_MS = 280; // highlight spawn cadence in glow (hover) mode
 const HOVER_FADE_MS = 220; // base slate -> indigo crossfade on hover
 
 const hexToRgb = (hex: string): [number, number, number] => {
@@ -179,7 +179,7 @@ export default function PixelShadow({
         if (!active.has(idx))
           active.set(idx, {
             start: now,
-            dur: glow ? 550 + Math.random() * 500 : 1000 + Math.random() * 900,
+            dur: glow ? 1200 + Math.random() * 1000 : 1000 + Math.random() * 900,
           });
       }
     };
