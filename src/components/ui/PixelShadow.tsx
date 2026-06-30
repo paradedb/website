@@ -17,18 +17,43 @@ const FADE_END = 14;
 const HIGHLIGHT = "#4f46e5"; // solid main indigo
 const FRAME_MS = 33;
 const SPAWN_MS = 220;
+const GLOW_SPAWN_MS = 280; // highlight spawn cadence in glow (hover) mode
+const HOVER_FADE_MS = 220; // base slate -> indigo crossfade on hover
+
+const hexToRgb = (hex: string): [number, number, number] => {
+  const n = parseInt(hex.slice(1), 16);
+  return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
+};
+// Fraction of the shadow's pixels that light up per spawn tick when glowing —
+// keeps the highlight a sparse, random subset rather than the whole outline.
+const GLOW_SPAWN_FRACTION = 0.13;
 
 // Canvas pixel shadow: a static grid of pixels anchored to the bottom-right
 // (matching the CSS pixel shadow), with a rotating random subset that smoothly
-// fades up to solid indigo and back.
+// fades up to solid indigo and back. When `glow` is set, the rotating subset is
+// only spawned while `active` is true, so the shadow can light up on hover and
+// settle back to its static grid when idle.
 export default function PixelShadow({
   color,
   glow = false,
+  active = true,
+  baseAlpha = 1,
+  activeColor,
+  activeBaseAlpha,
 }: {
   color: string;
   glow?: boolean;
+  active?: boolean;
+  baseAlpha?: number;
+  activeColor?: string;
+  activeBaseAlpha?: number;
 }) {
   const ref = useRef<HTMLCanvasElement>(null);
+  const activeRef = useRef(active);
+
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
 
   useEffect(() => {
     const canvas = ref.current;
@@ -41,7 +66,16 @@ export default function PixelShadow({
     let w = 0;
     let h = 0;
     const active = new Map<number, { start: number; dur: number }>();
+    // Grid indices that fall inside the visible shadow band — the pool the glow
+    // highlight draws from so sparkles never appear away from the outline.
+    const edgeCells: number[] = [];
     let lastSpawn = 0;
+    // Eased 0..1 hover progress used to crossfade the static base from `color`
+    // (slate) to `activeColor` (indigo) and up to `activeBaseAlpha`.
+    let hoverT = 0;
+    const baseRgb = hexToRgb(color);
+    const activeRgb = activeColor ? hexToRgb(activeColor) : null;
+    const hoverAlpha = activeBaseAlpha ?? baseAlpha;
 
     // Opacity from the box's signed distance field: max near the edge, fading
     // outward by Euclidean distance so the shadow traces the box outline.
@@ -63,6 +97,16 @@ export default function PixelShadow({
       cols = Math.ceil(w / GRID) + 1;
       rows = Math.ceil(h / GRID) + 1;
       active.clear();
+      edgeCells.length = 0;
+      for (let r = 0; r < rows; r++) {
+        const y = Math.round(h + OFFSET - (r + 1) * GRID);
+        if (y + PIX > h || y < 0) continue;
+        for (let c = 0; c < cols; c++) {
+          const x = Math.round(w + OFFSET - (c + 1) * GRID);
+          if (x + PIX > w || x < 0) continue;
+          if (alphaAt(x, y) > 0.001) edgeCells.push(r * cols + c);
+        }
+      }
     };
 
     const render = (now: number) => {
@@ -74,7 +118,21 @@ export default function PixelShadow({
         if ((now - a.start) / a.dur >= 1) active.delete(idx);
       }
 
-      ctx.fillStyle = color;
+      if (activeRgb && hoverT > 0) {
+        const br = Math.round(
+          baseRgb[0] + (activeRgb[0] - baseRgb[0]) * hoverT,
+        );
+        const bg = Math.round(
+          baseRgb[1] + (activeRgb[1] - baseRgb[1]) * hoverT,
+        );
+        const bb = Math.round(
+          baseRgb[2] + (activeRgb[2] - baseRgb[2]) * hoverT,
+        );
+        ctx.fillStyle = `rgb(${br},${bg},${bb})`;
+      } else {
+        ctx.fillStyle = color;
+      }
+      const baseA = baseAlpha + (hoverAlpha - baseAlpha) * hoverT;
       for (let r = 0; r < rows; r++) {
         const y = Math.round(h + OFFSET - (r + 1) * GRID);
         if (y + PIX > h) continue;
@@ -84,12 +142,12 @@ export default function PixelShadow({
           if (x + PIX > w) continue;
           if (x < 0) break;
           if (!glow && active.has(r * cols + c)) continue;
-          ctx.globalAlpha = alphaAt(x, y);
+          ctx.globalAlpha = alphaAt(x, y) * baseA;
           ctx.fillRect(x, y, PIX, PIX);
         }
       }
 
-      ctx.fillStyle = glow ? HIGHLIGHT : color;
+      ctx.fillStyle = glow ? (activeColor ?? HIGHLIGHT) : color;
       for (const [idx, a] of active) {
         const t = (now - a.start) / a.dur;
         if (t >= 1) {
@@ -102,12 +160,10 @@ export default function PixelShadow({
         const y = Math.round(h + OFFSET - (r + 1) * GRID);
         if (x < 0 || y < 0 || x + PIX > w || y + PIX > h) continue;
         ctx.globalAlpha = glow
-          ? // fade up to solid indigo, hold, then fade out
-            t < 0.25
-            ? t / 0.25
-            : t > 0.75
-              ? (1 - t) / 0.25
-              : 1
+          ? // fade up to solid indigo, hold, then fade out — kept inside the
+            // shadow band by the distance-field alpha so sparkles trace the edge
+            (t < 0.25 ? t / 0.25 : t > 0.75 ? (1 - t) / 0.25 : 1) *
+            alphaAt(x, y)
           : // smoothly fade the pixel away and back
             alphaAt(x, y) * (1 - Math.sin(t * Math.PI));
         ctx.fillRect(x, y, PIX, PIX);
@@ -115,28 +171,59 @@ export default function PixelShadow({
       ctx.globalAlpha = 1;
     };
 
+    const spawn = (now: number) => {
+      const pool = glow ? edgeCells : null;
+      const poolLen = pool ? pool.length : cols * rows;
+      if (poolLen === 0) return;
+      const n = Math.max(
+        1,
+        Math.round(poolLen * (glow ? GLOW_SPAWN_FRACTION : 0.045)),
+      );
+      for (let i = 0; i < n; i++) {
+        const idx = pool
+          ? pool[Math.floor(Math.random() * pool.length)]
+          : Math.floor(Math.random() * poolLen);
+        if (!active.has(idx))
+          active.set(idx, {
+            start: now,
+            dur: glow
+              ? 1200 + Math.random() * 1000
+              : 1000 + Math.random() * 900,
+          });
+      }
+    };
+
     sync();
+    render(performance.now());
 
     const reduce = window.matchMedia(
       "(prefers-reduced-motion: reduce)",
     ).matches;
     let timer: number | null = null;
-    if (reduce) {
-      render(0);
-    } else {
+    let lastTick = performance.now();
+    if (!reduce) {
       timer = window.setInterval(() => {
         const now = performance.now();
-        if (now - lastSpawn > SPAWN_MS) {
-          lastSpawn = now;
-          const total = cols * rows;
-          const n = Math.max(1, Math.round(total * (glow ? 0.02 : 0.045)));
-          for (let i = 0; i < n; i++) {
-            const idx = Math.floor(Math.random() * total);
-            if (!active.has(idx))
-              active.set(idx, { start: now, dur: 1000 + Math.random() * 900 });
-          }
+        const target = activeRef.current ? 1 : 0;
+        if (hoverT !== target) {
+          const step = (now - lastTick) / HOVER_FADE_MS;
+          hoverT =
+            target > hoverT
+              ? Math.min(target, hoverT + step)
+              : Math.max(target, hoverT - step);
         }
-        render(performance.now());
+        lastTick = now;
+        if (
+          activeRef.current &&
+          now - lastSpawn > (glow ? GLOW_SPAWN_MS : SPAWN_MS)
+        ) {
+          lastSpawn = now;
+          spawn(now);
+        }
+        // Idle (settled, not active, base fully faded) frames need no redraw —
+        // the static base from the last render stays on the canvas.
+        if (activeRef.current || active.size > 0 || hoverT > 0.0001)
+          render(now);
       }, FRAME_MS);
     }
 
@@ -150,7 +237,7 @@ export default function PixelShadow({
       if (timer) clearInterval(timer);
       ro.disconnect();
     };
-  }, [color]);
+  }, [color, glow, baseAlpha, activeColor, activeBaseAlpha]);
 
   return (
     <div

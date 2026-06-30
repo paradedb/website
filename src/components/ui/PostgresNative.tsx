@@ -1,8 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useTheme } from "next-themes";
 import { cx } from "@/lib/utils";
 import { Badge } from "./Badge";
+import PixelShadow from "./PixelShadow";
 import { Button } from "../Button";
 import Link from "next/link";
 import { documentation, social } from "@/lib/links";
@@ -59,6 +61,64 @@ const KEEPS = [
     code: "CREATE EXTENSION vector;",
   },
 ];
+
+function KeepCard({
+  item,
+  index,
+  isWide,
+  visible,
+}: {
+  item: (typeof KEEPS)[number];
+  index: number;
+  isWide: boolean;
+  visible: boolean;
+}) {
+  const [hovered, setHovered] = useState(false);
+  const { resolvedTheme } = useTheme();
+  const activeColor = resolvedTheme === "dark" ? "#4f46e5" : "#64748b";
+
+  return (
+    <div
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      className={cx(
+        "relative transition-all duration-700",
+        isWide && "lg:col-span-2",
+        visible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2",
+      )}
+      style={{ transitionDelay: `${index * 70}ms` }}
+    >
+      <PixelShadow
+        color="#94a3b8"
+        activeColor={activeColor}
+        glow
+        active={hovered}
+        baseAlpha={0.28}
+        activeBaseAlpha={0.05}
+      />
+      <div className="relative flex flex-col border border-slate-200 dark:border-slate-800 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group h-full">
+        <div className="absolute top-3 right-3 font-mono text-[10px] text-slate-400 dark:text-slate-600">
+          0{index + 1}
+        </div>
+        <div className="flex items-center gap-3 mb-3">
+          <div className="inline-flex p-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400">
+            {item.icon}
+          </div>
+          <h3 className="font-semibold text-base text-indigo-950 dark:text-white tracking-tight">
+            {item.title}
+          </h3>
+        </div>
+        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
+          {item.body}
+        </p>
+        <div className="mt-auto self-start font-mono text-[11px] text-slate-500 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 inline-flex">
+          <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">›</span>
+          {item.code}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function PostgresNative() {
   const sectionRef = useRef<HTMLDivElement>(null);
@@ -133,54 +193,15 @@ export default function PostgresNative() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 pr-2.5 pb-2.5 max-w-[1128px] mx-auto">
-              {KEEPS.map((item, i) => {
-                const isWide = i === KEEPS.length - 1;
-                return (
-                  <div
-                    key={item.title}
-                    className={cx(
-                      "relative transition-all duration-700",
-                      isWide && "lg:col-span-2",
-                      visible
-                        ? "opacity-100 translate-y-0"
-                        : "opacity-0 translate-y-2",
-                    )}
-                    style={{ transitionDelay: `${i * 70}ms` }}
-                  >
-                    <div
-                      className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
-                      aria-hidden="true"
-                      style={{
-                        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%2394a3b8' fill-opacity='0.5'/%3E%3C/svg%3E")`,
-                        backgroundSize: "5px 5px",
-                        backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
-                      }}
-                    />
-                    <div className="relative flex flex-col border border-slate-200 dark:border-slate-800 px-6 py-7 md:px-7 md:py-8 bg-white dark:bg-slate-950 group h-full">
-                      <div className="absolute top-3 right-3 font-mono text-[10px] text-slate-400 dark:text-slate-600">
-                        0{i + 1}
-                      </div>
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="inline-flex p-2 bg-indigo-50 dark:bg-indigo-950/30 text-indigo-600 dark:text-indigo-400">
-                          {item.icon}
-                        </div>
-                        <h3 className="font-semibold text-base text-indigo-950 dark:text-white tracking-tight">
-                          {item.title}
-                        </h3>
-                      </div>
-                      <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed mb-4">
-                        {item.body}
-                      </p>
-                      <div className="mt-auto self-start font-mono text-[11px] text-slate-500 dark:text-slate-500 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5 inline-flex">
-                        <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">
-                          ›
-                        </span>
-                        {item.code}
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
+              {KEEPS.map((item, i) => (
+                <KeepCard
+                  key={item.title}
+                  item={item}
+                  index={i}
+                  isWide={i === KEEPS.length - 1}
+                  visible={visible}
+                />
+              ))}
             </div>
           </div>
         </section>
