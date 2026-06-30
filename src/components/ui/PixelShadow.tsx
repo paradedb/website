@@ -119,9 +119,15 @@ export default function PixelShadow({
       }
 
       if (activeRgb && hoverT > 0) {
-        const br = Math.round(baseRgb[0] + (activeRgb[0] - baseRgb[0]) * hoverT);
-        const bg = Math.round(baseRgb[1] + (activeRgb[1] - baseRgb[1]) * hoverT);
-        const bb = Math.round(baseRgb[2] + (activeRgb[2] - baseRgb[2]) * hoverT);
+        const br = Math.round(
+          baseRgb[0] + (activeRgb[0] - baseRgb[0]) * hoverT,
+        );
+        const bg = Math.round(
+          baseRgb[1] + (activeRgb[1] - baseRgb[1]) * hoverT,
+        );
+        const bb = Math.round(
+          baseRgb[2] + (activeRgb[2] - baseRgb[2]) * hoverT,
+        );
         ctx.fillStyle = `rgb(${br},${bg},${bb})`;
       } else {
         ctx.fillStyle = color;
@@ -156,7 +162,8 @@ export default function PixelShadow({
         ctx.globalAlpha = glow
           ? // fade up to solid indigo, hold, then fade out — kept inside the
             // shadow band by the distance-field alpha so sparkles trace the edge
-            (t < 0.25 ? t / 0.25 : t > 0.75 ? (1 - t) / 0.25 : 1) * alphaAt(x, y)
+            (t < 0.25 ? t / 0.25 : t > 0.75 ? (1 - t) / 0.25 : 1) *
+            alphaAt(x, y)
           : // smoothly fade the pixel away and back
             alphaAt(x, y) * (1 - Math.sin(t * Math.PI));
         ctx.fillRect(x, y, PIX, PIX);
@@ -179,7 +186,9 @@ export default function PixelShadow({
         if (!active.has(idx))
           active.set(idx, {
             start: now,
-            dur: glow ? 1200 + Math.random() * 1000 : 1000 + Math.random() * 900,
+            dur: glow
+              ? 1200 + Math.random() * 1000
+              : 1000 + Math.random() * 900,
           });
       }
     };
@@ -204,7 +213,10 @@ export default function PixelShadow({
               : Math.max(target, hoverT - step);
         }
         lastTick = now;
-        if (activeRef.current && now - lastSpawn > (glow ? GLOW_SPAWN_MS : SPAWN_MS)) {
+        if (
+          activeRef.current &&
+          now - lastSpawn > (glow ? GLOW_SPAWN_MS : SPAWN_MS)
+        ) {
           lastSpawn = now;
           spawn(now);
         }
@@ -228,7 +240,10 @@ export default function PixelShadow({
   }, [color, glow, baseAlpha, activeColor, activeBaseAlpha]);
 
   return (
-    <div aria-hidden="true" className="absolute top-3 left-3 -right-3 -bottom-3">
+    <div
+      aria-hidden="true"
+      className="absolute top-3 left-3 -right-3 -bottom-3"
+    >
       <canvas ref={ref} className="block h-full w-full" />
     </div>
   );
