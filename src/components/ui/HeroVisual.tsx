@@ -30,8 +30,6 @@ export function HeroVisual() {
     return () => observer.disconnect();
   }, []);
 
-  if (!mounted) return null;
-
   return (
     <div
       ref={ref}
@@ -39,7 +37,7 @@ export function HeroVisual() {
     >
       <div className="relative w-full h-[120px] md:h-[180px] flex items-center justify-center overflow-hidden">
         {/* Paper Dithering Background */}
-        {isVisible && (
+        {mounted && isVisible && (
           <div className="absolute inset-0 pointer-events-none opacity-100">
             <Dithering
               width="100%"
