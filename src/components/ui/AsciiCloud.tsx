@@ -31,10 +31,6 @@ const CLOUD_W_MIN = 820;
 const CLOUD_W_MAX = 1120;
 const ASPECT = 0.6; // cloud height / cloud width
 
-// Below this viewport width, skip the cloud shape and just fill the hero with
-// an even dither (a wide-short cloud reads badly on tall, narrow phones).
-const MOBILE_BP = 640;
-const MOBILE_FILL = 0.62;
 
 // Keep the dither fully clear above the cloud page's top shaded region (its
 // bottom line is at top-[96px] / md:top-[128px]) so nothing shows behind the
@@ -172,7 +168,6 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
       const falloff = EDGE_FALLOFF_FRAC * cw;
       const lineW = LINE_WIDTH_FRAC * cw;
-      const narrow = w < MOBILE_BP;
 
       // Fully clear above the shaded region's bottom line; fade in just below.
       const fadeStart = w >= SHADED_MD_BP ? SHADED_BOTTOM_MD : SHADED_BOTTOM_SM;
@@ -194,21 +189,6 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
           const sideT = Math.abs(px - w / 2) / (w / 2);
           const st = Math.min(1, Math.max(0, (sideT - 0.45) / 0.55));
           const sideFade = 1 - st * st * (3 - 2 * st);
-
-          if (narrow) {
-            // Mobile: no cloud shape, just an even dither across the hero.
-            cells.push({
-              x: px,
-              y: py,
-              c: cc,
-              r: rr,
-              density: MOBILE_FILL * sideFade * topFade,
-              line: 0,
-              hash: hash(cc, rr),
-              dc: Math.hypot(px - w / 2, py - h / 2),
-            });
-            continue;
-          }
 
           // Union of the pieces: negative inside, 0 on the outline.
           const sdf = Math.min(
@@ -362,7 +342,10 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
   }, [color]);
 
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 hidden sm:block"
+    >
       <canvas ref={ref} className="block h-full w-full" />
     </div>
   );
