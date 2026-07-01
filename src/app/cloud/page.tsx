@@ -48,6 +48,10 @@ export default function CloudPage() {
             No spam. We&apos;ll only email you about ParadeDB Cloud.
           </p>
         </div>
+
+        {/* Global vertical lines, matching the homepage hero chrome */}
+        <div className="pointer-events-none absolute top-[64px] bottom-0 left-4 z-30 w-px bg-white/20 md:top-[80px] md:left-12" />
+        <div className="pointer-events-none absolute top-[64px] bottom-0 right-4 z-30 w-px bg-white/20 md:top-[80px] md:right-12" />
       </section>
     </main>
   );
