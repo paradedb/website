@@ -38,8 +38,8 @@ const MOBILE_FILL = 0.62;
 
 // Fade the dither out at the very top so it isn't visible behind the navbar
 // (which is ~64px tall on mobile, ~80px on desktop).
-const TOP_FADE_START = 64; // px; fully clear above this
-const TOP_FADE_END = 240; // px; full strength below this
+const TOP_FADE_START = 56; // px; fully clear above this
+const TOP_FADE_END = 132; // px; full strength below this
 
 // Signup ripple: an expanding bright ring that sweeps outward on success.
 const BURST_MS = 1100;
@@ -151,7 +151,7 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
       glow = { cx: w / 2, cy: h / 2, top, cw, ch };
 
       // Silhouette pieces, in cloud-width fractions.
-      const base = { cx: lx(0.5), cy: ly(0.42), hx: 0.47 * cw, hy: 0.17 * cw, rad: 0.17 * cw };
+      const base = { cx: lx(0.5), cy: ly(0.38), hx: 0.47 * cw, hy: 0.13 * cw, rad: 0.13 * cw };
       const big = { cx: lx(0.35), cy: ly(0.25), rad: 0.26 * cw };
       const med = { cx: lx(0.62), cy: ly(0.27), rad: 0.18 * cw };
       const small = { cx: lx(0.82), cy: ly(0.33), rad: 0.12 * cw };
