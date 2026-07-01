@@ -31,15 +31,33 @@ const CLOUD_W_MIN = 820;
 const CLOUD_W_MAX = 1120;
 const ASPECT = 0.6; // cloud height / cloud width
 
-// Below this viewport width, skip the cloud shape and just fill the hero with
-// an even dither (a wide-short cloud reads badly on tall, narrow phones).
-const MOBILE_BP = 640;
-const MOBILE_FILL = 0.62;
+
+// Keep the dither fully clear above the cloud page's top shaded region (its
+// bottom line is at top-[96px] / md:top-[128px]) so nothing shows behind the
+// hatch, then fade it in just below.
+const SHADED_BOTTOM_SM = 96;
+const SHADED_BOTTOM_MD = 128;
+const SHADED_MD_BP = 768; // Tailwind md breakpoint
+const TOP_FADE_RAMP = 44; // px over which the dither fades in below the line
+
+// Drop the cloud's centre below the canvas centre so it roughly lines up with
+// the page content (nudged down via the cloud page's mt-24). Kept a touch above
+// the exact text centre so the top fade doesn't make the top read lighter than
+// the bottom.
+const CONTENT_DROP = 16;
+// The silhouette's centre sits this many cloud-widths below `top` (crown at
+// top - 0.01cw, base at top + 0.51cw).
+const CLOUD_CENTER_FRAC = 0.25;
 
 // Signup ripple: an expanding bright ring that sweeps outward on success.
 const BURST_MS = 1100;
 const BURST_STRENGTH = 1.1;
 const RING_WIDTH = 70; // px thickness of the ripple ring
+
+// Load-in reveal: each symbol fades in independently at its own random moment,
+// so the cloud accretes symbol-by-symbol rather than appearing all at once.
+const INTRO_MS = 2600;
+const INTRO_FADE = 0.22; // per-symbol fade duration, fraction of the timeline
 
 type Cell = {
   x: number;
@@ -98,6 +116,10 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
     // Timestamp of the last successful-signup ripple (-1 = inactive).
     let burstT0 = -1;
+    // Timestamp of the load-in reveal (-1 = not started / already complete).
+    let introT0 = -1;
+
+    const smoothstep = (t: number) => t * t * (3 - 2 * t);
 
     // Cheap deterministic per-cell noise, for a static shimmer phase.
     const hash = (c: number, r: number) => {
@@ -129,26 +151,36 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
       );
       const ch = cw * ASPECT;
       const left = w / 2 - cw / 2;
-      const top = h / 2 - ch / 2;
+      // Centre the cloud on the page content rather than the canvas.
+      const cloudCy = h / 2 + CONTENT_DROP;
+      const top = cloudCy - CLOUD_CENTER_FRAC * cw;
       // Local fractions -> screen px (x and y both scaled by cw so circles stay
       // round; y fractions run 0..ASPECT).
       const lx = (f: number) => left + f * cw;
       const ly = (f: number) => top + f * cw;
-      glow = { cx: w / 2, cy: h / 2, top, cw, ch };
+      glow = { cx: w / 2, cy: cloudCy, top, cw, ch };
 
       // Silhouette pieces, in cloud-width fractions.
-      const base = { cx: lx(0.5), cy: ly(0.42), hx: 0.47 * cw, hy: 0.17 * cw, rad: 0.17 * cw };
+      const base = { cx: lx(0.5), cy: ly(0.38), hx: 0.47 * cw, hy: 0.13 * cw, rad: 0.13 * cw };
       const big = { cx: lx(0.35), cy: ly(0.25), rad: 0.26 * cw };
       const med = { cx: lx(0.62), cy: ly(0.27), rad: 0.18 * cw };
       const small = { cx: lx(0.82), cy: ly(0.33), rad: 0.12 * cw };
 
       const falloff = EDGE_FALLOFF_FRAC * cw;
       const lineW = LINE_WIDTH_FRAC * cw;
-      const narrow = w < MOBILE_BP;
+
+      // Fully clear above the shaded region's bottom line; fade in just below.
+      const fadeStart = w >= SHADED_MD_BP ? SHADED_BOTTOM_MD : SHADED_BOTTOM_SM;
 
       cells = [];
       for (let rr = 0; rr < rows; rr++) {
         const py = rr * CELL_H + CELL_H / 2;
+
+        // Fade the fill out toward the top so nothing shows behind the
+        // shaded region.
+        const tt = Math.min(1, Math.max(0, (py - fadeStart) / TOP_FADE_RAMP));
+        const topFade = tt * tt * (3 - 2 * tt);
+
         for (let cc = 0; cc < cols; cc++) {
           const px = cc * charW + charW / 2;
 
@@ -157,21 +189,6 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
           const sideT = Math.abs(px - w / 2) / (w / 2);
           const st = Math.min(1, Math.max(0, (sideT - 0.45) / 0.55));
           const sideFade = 1 - st * st * (3 - 2 * st);
-
-          if (narrow) {
-            // Mobile: no cloud shape, just an even dither across the hero.
-            cells.push({
-              x: px,
-              y: py,
-              c: cc,
-              r: rr,
-              density: MOBILE_FILL * sideFade,
-              line: 0,
-              hash: hash(cc, rr),
-              dc: Math.hypot(px - w / 2, py - h / 2),
-            });
-            continue;
-          }
 
           // Union of the pieces: negative inside, 0 on the outline.
           const sdf = Math.min(
@@ -185,9 +202,10 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
           // Fill everything outside; denser near the edge, floor far away.
           const edge = Math.exp(-sdf / falloff);
-          const density = (FILL_FLOOR + (1 - FILL_FLOOR) * edge) * sideFade;
+          const density =
+            (FILL_FLOOR + (1 - FILL_FLOOR) * edge) * sideFade * topFade;
           // Bright line: 1 right on the edge, fading out over lineW.
-          const line = Math.max(0, 1 - sdf / lineW);
+          const line = Math.max(0, 1 - sdf / lineW) * topFade;
 
           cells.push({
             x: px,
@@ -223,6 +241,14 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
         ctx.fillRect(0, 0, w, h);
       }
 
+      // Load-in reveal progress (linear). 1 = fully revealed.
+      let introP = 1;
+      if (introT0 >= 0) {
+        const it = (now - introT0) / INTRO_MS;
+        if (it >= 1) introT0 = -1;
+        else introP = Math.max(0, it);
+      }
+
       // Expanding ripple ring after a successful signup.
       let ringR = -1;
       let ringFade = 0;
@@ -237,6 +263,18 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
       ctx.fillStyle = color;
       for (const cell of cells) {
+        // Load-in: each symbol fades in independently, starting at its own
+        // random moment (from the per-cell hash) so the cloud accretes
+        // symbol-by-symbol rather than appearing all at once.
+        let reveal = 1;
+        if (introP < 1) {
+          const start = cell.hash * (1 - INTRO_FADE);
+          reveal = smoothstep(
+            Math.min(1, Math.max(0, (introP - start) / INTRO_FADE)),
+          );
+          if (reveal <= 0) continue;
+        }
+
         // Two drifting sine waves give an organic, moving dither; the second
         // term (- now * 0.0009 on the column) slides the pattern sideways.
         const wobble =
@@ -263,10 +301,9 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
         const level = Math.max(fillLevel, lineLevel);
         if (level < LEVEL_CUTOFF) continue;
         const idx = Math.min(RAMP.length - 1, Math.floor(level * RAMP.length));
-        ctx.globalAlpha = Math.min(
-          1,
-          Math.max(MAX_ALPHA * fillLevel, LINE_ALPHA * lineLevel),
-        );
+        ctx.globalAlpha =
+          Math.min(1, Math.max(MAX_ALPHA * fillLevel, LINE_ALPHA * lineLevel)) *
+          reveal;
         ctx.fillText(RAMP[idx], cell.x, cell.y);
       }
       ctx.globalAlpha = 1;
@@ -280,6 +317,7 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
     if (reduce) {
       render(0);
     } else {
+      introT0 = performance.now();
       timer = window.setInterval(() => render(performance.now()), FRAME_MS);
     }
 
@@ -304,7 +342,10 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
   }, [color]);
 
   return (
-    <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-0 hidden sm:block"
+    >
       <canvas ref={ref} className="block h-full w-full" />
     </div>
   );
