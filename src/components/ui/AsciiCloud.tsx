@@ -41,6 +41,11 @@ const BURST_MS = 1100;
 const BURST_STRENGTH = 1.1;
 const RING_WIDTH = 70; // px thickness of the ripple ring
 
+// Load-in reveal: each symbol fades in independently at its own random moment,
+// so the cloud accretes symbol-by-symbol rather than appearing all at once.
+const INTRO_MS = 2600;
+const INTRO_FADE = 0.22; // per-symbol fade duration, fraction of the timeline
+
 type Cell = {
   x: number;
   y: number;
@@ -98,6 +103,10 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
     // Timestamp of the last successful-signup ripple (-1 = inactive).
     let burstT0 = -1;
+    // Timestamp of the load-in reveal (-1 = not started / already complete).
+    let introT0 = -1;
+
+    const smoothstep = (t: number) => t * t * (3 - 2 * t);
 
     // Cheap deterministic per-cell noise, for a static shimmer phase.
     const hash = (c: number, r: number) => {
@@ -223,6 +232,14 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
         ctx.fillRect(0, 0, w, h);
       }
 
+      // Load-in reveal progress (linear). 1 = fully revealed.
+      let introP = 1;
+      if (introT0 >= 0) {
+        const it = (now - introT0) / INTRO_MS;
+        if (it >= 1) introT0 = -1;
+        else introP = Math.max(0, it);
+      }
+
       // Expanding ripple ring after a successful signup.
       let ringR = -1;
       let ringFade = 0;
@@ -237,6 +254,18 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
       ctx.fillStyle = color;
       for (const cell of cells) {
+        // Load-in: each symbol fades in independently, starting at its own
+        // random moment (from the per-cell hash) so the cloud accretes
+        // symbol-by-symbol rather than appearing all at once.
+        let reveal = 1;
+        if (introP < 1) {
+          const start = cell.hash * (1 - INTRO_FADE);
+          reveal = smoothstep(
+            Math.min(1, Math.max(0, (introP - start) / INTRO_FADE)),
+          );
+          if (reveal <= 0) continue;
+        }
+
         // Two drifting sine waves give an organic, moving dither; the second
         // term (- now * 0.0009 on the column) slides the pattern sideways.
         const wobble =
@@ -263,10 +292,9 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
         const level = Math.max(fillLevel, lineLevel);
         if (level < LEVEL_CUTOFF) continue;
         const idx = Math.min(RAMP.length - 1, Math.floor(level * RAMP.length));
-        ctx.globalAlpha = Math.min(
-          1,
-          Math.max(MAX_ALPHA * fillLevel, LINE_ALPHA * lineLevel),
-        );
+        ctx.globalAlpha =
+          Math.min(1, Math.max(MAX_ALPHA * fillLevel, LINE_ALPHA * lineLevel)) *
+          reveal;
         ctx.fillText(RAMP[idx], cell.x, cell.y);
       }
       ctx.globalAlpha = 1;
@@ -280,6 +308,7 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
     if (reduce) {
       render(0);
     } else {
+      introT0 = performance.now();
       timer = window.setInterval(() => render(performance.now()), FRAME_MS);
     }
 
