@@ -36,6 +36,11 @@ const ASPECT = 0.6; // cloud height / cloud width
 const MOBILE_BP = 640;
 const MOBILE_FILL = 0.62;
 
+// Fade the dither out at the very top so it isn't visible behind the navbar
+// (which is ~64px tall on mobile, ~80px on desktop).
+const TOP_FADE_START = 64; // px; fully clear above this
+const TOP_FADE_END = 240; // px; full strength below this
+
 // Signup ripple: an expanding bright ring that sweeps outward on success.
 const BURST_MS = 1100;
 const BURST_STRENGTH = 1.1;
@@ -158,6 +163,14 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
       cells = [];
       for (let rr = 0; rr < rows; rr++) {
         const py = rr * CELL_H + CELL_H / 2;
+
+        // Fade the fill out toward the top so it clears the navbar.
+        const tt = Math.min(
+          1,
+          Math.max(0, (py - TOP_FADE_START) / (TOP_FADE_END - TOP_FADE_START)),
+        );
+        const topFade = tt * tt * (3 - 2 * tt);
+
         for (let cc = 0; cc < cols; cc++) {
           const px = cc * charW + charW / 2;
 
@@ -174,7 +187,7 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
               y: py,
               c: cc,
               r: rr,
-              density: MOBILE_FILL * sideFade,
+              density: MOBILE_FILL * sideFade * topFade,
               line: 0,
               hash: hash(cc, rr),
               dc: Math.hypot(px - w / 2, py - h / 2),
@@ -194,9 +207,10 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
 
           // Fill everything outside; denser near the edge, floor far away.
           const edge = Math.exp(-sdf / falloff);
-          const density = (FILL_FLOOR + (1 - FILL_FLOOR) * edge) * sideFade;
+          const density =
+            (FILL_FLOOR + (1 - FILL_FLOOR) * edge) * sideFade * topFade;
           // Bright line: 1 right on the edge, fading out over lineW.
-          const line = Math.max(0, 1 - sdf / lineW);
+          const line = Math.max(0, 1 - sdf / lineW) * topFade;
 
           cells.push({
             x: px,
