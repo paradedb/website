@@ -27,6 +27,14 @@ export default function CloudPage() {
       <AsciiCloud />
 
       <section className="relative mx-auto flex w-full max-w-[1440px] flex-1 items-center px-4 md:px-12">
+        {/* Top shaded region, lifted from the homepage hero chrome */}
+        <div className="absolute top-[64px] md:top-[80px] left-4 md:left-12 right-4 md:right-12 z-20">
+          <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white border-b border-white/20 bg-indigo-700/20 opacity-60" />
+        </div>
+
+        {/* Horizontal line below top shaded region - constrained to vertical lines */}
+        <div className="absolute top-[96px] md:top-[128px] left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />
+
         <div className="relative z-20 mx-auto flex w-full flex-col items-center px-6 py-20 text-center sm:px-0 sm:py-32">
           <span className="mb-5 inline-flex items-center border border-white/25 bg-white/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-indigo-50">
             Coming soon
