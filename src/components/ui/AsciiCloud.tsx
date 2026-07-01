@@ -41,10 +41,11 @@ const MOBILE_FILL = 0.62;
 const TOP_FADE_START = 56; // px; fully clear above this
 const TOP_FADE_END = 132; // px; full strength below this
 
-// Drop the cloud's centre below the canvas centre so it lines up with the page
-// content, which the cloud page nudges down via its mt-24 (~96px) margin — a
-// centred flex block ends up offset by ~half that.
-const CONTENT_DROP = 48;
+// Drop the cloud's centre below the canvas centre so it roughly lines up with
+// the page content (nudged down via the cloud page's mt-24). Kept a touch above
+// the exact text centre so the top fade doesn't make the top read lighter than
+// the bottom.
+const CONTENT_DROP = 16;
 // The silhouette's centre sits this many cloud-widths below `top` (crown at
 // top - 0.01cw, base at top + 0.51cw).
 const CLOUD_CENTER_FRAC = 0.25;
