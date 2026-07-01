@@ -41,6 +41,14 @@ const MOBILE_FILL = 0.62;
 const TOP_FADE_START = 56; // px; fully clear above this
 const TOP_FADE_END = 132; // px; full strength below this
 
+// Drop the cloud's centre below the canvas centre so it lines up with the page
+// content, which the cloud page nudges down via its mt-24 (~96px) margin — a
+// centred flex block ends up offset by ~half that.
+const CONTENT_DROP = 48;
+// The silhouette's centre sits this many cloud-widths below `top` (crown at
+// top - 0.01cw, base at top + 0.51cw).
+const CLOUD_CENTER_FRAC = 0.25;
+
 // Signup ripple: an expanding bright ring that sweeps outward on success.
 const BURST_MS = 1100;
 const BURST_STRENGTH = 1.1;
@@ -143,12 +151,14 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
       );
       const ch = cw * ASPECT;
       const left = w / 2 - cw / 2;
-      const top = h / 2 - ch / 2;
+      // Centre the cloud on the page content rather than the canvas.
+      const cloudCy = h / 2 + CONTENT_DROP;
+      const top = cloudCy - CLOUD_CENTER_FRAC * cw;
       // Local fractions -> screen px (x and y both scaled by cw so circles stay
       // round; y fractions run 0..ASPECT).
       const lx = (f: number) => left + f * cw;
       const ly = (f: number) => top + f * cw;
-      glow = { cx: w / 2, cy: h / 2, top, cw, ch };
+      glow = { cx: w / 2, cy: cloudCy, top, cw, ch };
 
       // Silhouette pieces, in cloud-width fractions.
       const base = { cx: lx(0.5), cy: ly(0.38), hx: 0.47 * cw, hy: 0.13 * cw, rad: 0.13 * cw };
