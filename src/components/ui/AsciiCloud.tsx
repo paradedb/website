@@ -36,10 +36,13 @@ const ASPECT = 0.6; // cloud height / cloud width
 const MOBILE_BP = 640;
 const MOBILE_FILL = 0.62;
 
-// Fade the dither out at the very top so it isn't visible behind the navbar
-// (which is ~64px tall on mobile, ~80px on desktop).
-const TOP_FADE_START = 56; // px; fully clear above this
-const TOP_FADE_END = 132; // px; full strength below this
+// Keep the dither fully clear above the cloud page's top shaded region (its
+// bottom line is at top-[96px] / md:top-[128px]) so nothing shows behind the
+// hatch, then fade it in just below.
+const SHADED_BOTTOM_SM = 96;
+const SHADED_BOTTOM_MD = 128;
+const SHADED_MD_BP = 768; // Tailwind md breakpoint
+const TOP_FADE_RAMP = 44; // px over which the dither fades in below the line
 
 // Drop the cloud's centre below the canvas centre so it roughly lines up with
 // the page content (nudged down via the cloud page's mt-24). Kept a touch above
@@ -171,15 +174,16 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
       const lineW = LINE_WIDTH_FRAC * cw;
       const narrow = w < MOBILE_BP;
 
+      // Fully clear above the shaded region's bottom line; fade in just below.
+      const fadeStart = w >= SHADED_MD_BP ? SHADED_BOTTOM_MD : SHADED_BOTTOM_SM;
+
       cells = [];
       for (let rr = 0; rr < rows; rr++) {
         const py = rr * CELL_H + CELL_H / 2;
 
-        // Fade the fill out toward the top so it clears the navbar.
-        const tt = Math.min(
-          1,
-          Math.max(0, (py - TOP_FADE_START) / (TOP_FADE_END - TOP_FADE_START)),
-        );
+        // Fade the fill out toward the top so nothing shows behind the
+        // shaded region.
+        const tt = Math.min(1, Math.max(0, (py - fadeStart) / TOP_FADE_RAMP));
         const topFade = tt * tt * (3 - 2 * tt);
 
         for (let cc = 0; cc < cols; cc++) {
