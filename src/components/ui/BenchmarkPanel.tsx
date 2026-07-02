@@ -34,6 +34,13 @@ function axisTicks(maxVal: number) {
   return { ticks, niceMax };
 }
 
+// Chart geometry (responsive via viewBox).
+const CW = 660;
+const CH = 300;
+const CM = { top: 12, right: 14, bottom: 28, left: 40 };
+const CPW = CW - CM.left - CM.right;
+const CPH = CH - CM.top - CM.bottom;
+
 // ── shared pieces ─────────────────────────────────────────────────────────
 function Legend() {
   return (
@@ -110,155 +117,120 @@ function TermTabs({
   );
 }
 
-// ── latency: box-and-whisker with an ms axis and a value table beneath ─────
-const PCTL = [
-  { label: "p5", pct: 5 },
-  { label: "p25", pct: 25 },
-  { label: "p50", pct: 50 },
-  { label: "p75", pct: 75 },
-  { label: "p95", pct: 95 },
-];
-
+// ── latency: empirical CDF — % of queries completed by each latency ────────
 function LatencyBody() {
   const [active, setActive] = useState(0);
   const term = elasticsearchCdfByTerm[active];
-  const at = (pts: number[][], pct: number) =>
-    pts.find((p) => p[1] === pct)?.[0] ?? 0;
-  const stats = (pts: number[][]) => ({
-    low: at(pts, 5),
-    q1: at(pts, 25),
-    med: at(pts, 50),
-    q3: at(pts, 75),
-    high: at(pts, 95),
-  });
-  const us = stats(term.us);
-  const them = stats(term.them);
-  const { ticks, niceMax } = axisTicks(Math.max(us.high, them.high));
-  const pc = (v: number) => (v / niceMax) * 100;
-
-  const plot = (
-    s: { low: number; q1: number; med: number; q3: number; high: number },
-    solid: string,
-    border: string,
-    soft: string,
-  ) => (
-    <div className="relative h-8">
-      {/* whisker p5–p95 */}
-      <div
-        className={`absolute top-1/2 -translate-y-1/2 h-px ${solid}`}
-        style={{ left: `${pc(s.low)}%`, width: `${pc(s.high) - pc(s.low)}%` }}
-      />
-      <div
-        className={`absolute top-1/2 -translate-y-1/2 h-2.5 w-px ${solid}`}
-        style={{ left: `${pc(s.low)}%` }}
-      />
-      <div
-        className={`absolute top-1/2 -translate-y-1/2 h-2.5 w-px ${solid}`}
-        style={{ left: `${pc(s.high)}%` }}
-      />
-      {/* box p25–p75 */}
-      <div
-        className={`absolute top-1/2 -translate-y-1/2 h-5 border ${border} ${soft}`}
-        style={{ left: `${pc(s.q1)}%`, width: `${pc(s.q3) - pc(s.q1)}%` }}
-      />
-      {/* median p50 */}
-      <div
-        className={`absolute top-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-0.5 ${solid}`}
-        style={{ left: `${pc(s.med)}%` }}
-      />
-    </div>
-  );
+  const { ticks } = axisTicks(term.axisMax);
+  const xMax = ticks[ticks.length - 1];
+  const xOf = (lat: number) => CM.left + (Math.min(lat, xMax) / xMax) * CPW;
+  const yOf = (pct: number) => CM.top + CPH - (pct / 100) * CPH;
+  const path = (pts: number[][]) =>
+    pts
+      .map(
+        (p, i) =>
+          `${i === 0 ? "M" : "L"}${xOf(p[0]).toFixed(1)},${yOf(p[1]).toFixed(1)}`,
+      )
+      .join(" ");
+  const yTicks = [0, 25, 50, 75, 100];
 
   return (
     <>
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
         <TermTabs active={active} setActive={setActive} />
-        <span className="font-mono text-[10px] uppercase tracking-[0.12em] text-slate-400 dark:text-slate-500">
-          box p25–p75 · line p50 · whiskers p5–p95
-        </span>
+        <Legend />
       </div>
 
       <QueryChip value={term.example} quoted />
-      <Caption text="Latency · ms · lower is better" />
+      <Caption text="Latency CDF · % of queries ≤ latency (ms) · left is faster" />
 
-      <div className="relative">
-        <div aria-hidden="true" className="absolute inset-0 pointer-events-none">
-          {ticks.map((t) => (
-            <div
-              key={t}
-              className="absolute top-0 bottom-0 w-px bg-slate-100 dark:bg-slate-800"
-              style={{ left: `${pc(t)}%` }}
+      <svg
+        viewBox={`0 0 ${CW} ${CH}`}
+        className="w-full h-auto"
+        role="img"
+        aria-label={`Latency CDF for ${term.term} queries: ParadeDB versus Elasticsearch`}
+      >
+        {/* y gridlines + % labels */}
+        {yTicks.map((p) => (
+          <g key={`y${p}`}>
+            <line
+              x1={CM.left}
+              x2={CW - CM.right}
+              y1={yOf(p)}
+              y2={yOf(p)}
+              className="stroke-slate-100 dark:stroke-slate-800"
+              strokeWidth={1}
             />
-          ))}
-        </div>
-        <div className="relative space-y-4">
-          {plot(
-            us,
-            "bg-indigo-500",
-            "border-indigo-400 dark:border-indigo-500",
-            "bg-indigo-500/15 dark:bg-indigo-500/20",
-          )}
-          {plot(
-            them,
-            "bg-slate-400 dark:bg-slate-500",
-            "border-slate-300 dark:border-slate-600",
-            "bg-slate-400/15 dark:bg-slate-500/15",
-          )}
-        </div>
-      </div>
-
-      {/* ms axis */}
-      <div className="relative mt-2 h-4" aria-hidden="true">
-        {ticks.map((t) => (
-          <span
-            key={t}
-            className="absolute top-0 -translate-x-1/2 font-mono text-[10px] tabular-nums text-slate-400 dark:text-slate-500"
-            style={{ left: `${pc(t)}%` }}
-          >
-            {t}
-          </span>
-        ))}
-      </div>
-      <div className="mt-1 text-center font-mono text-[9px] uppercase tracking-[0.1em] text-slate-400 dark:text-slate-500">
-        latency (ms)
-      </div>
-
-      {/* value table beneath */}
-      <div className="mt-5 grid grid-cols-[6rem_repeat(5,minmax(0,1fr))] sm:grid-cols-[7rem_repeat(5,minmax(0,1fr))] items-center gap-x-2 sm:gap-x-4 gap-y-2.5 font-mono text-[10px] sm:text-[11px] tabular-nums">
-        <span aria-hidden />
-        {PCTL.map((p) => (
-          <span
-            key={p.label}
-            className="text-right uppercase tracking-wide text-slate-400 dark:text-slate-500"
-          >
-            {p.label}
-          </span>
+            <text
+              x={CM.left - 8}
+              y={yOf(p)}
+              textAnchor="end"
+              dominantBaseline="middle"
+              className="font-mono text-[10px] tabular-nums fill-slate-400 dark:fill-slate-500"
+            >
+              {p}%
+            </text>
+          </g>
         ))}
 
-        <span className="whitespace-nowrap text-[9px] sm:text-[10px] uppercase tracking-[0.1em] text-indigo-600 dark:text-indigo-400">
-          ParadeDB
-        </span>
-        {PCTL.map((p) => (
-          <span
-            key={p.label}
-            className="text-right font-medium text-indigo-600 dark:text-indigo-400"
-          >
-            {at(term.us, p.pct).toFixed(2)}
-          </span>
+        {/* x gridlines + ms labels */}
+        {ticks.map((tk) => (
+          <g key={`x${tk}`}>
+            <line
+              x1={xOf(tk)}
+              x2={xOf(tk)}
+              y1={CM.top}
+              y2={CM.top + CPH}
+              className="stroke-slate-100 dark:stroke-slate-800"
+              strokeWidth={1}
+            />
+            <text
+              x={xOf(tk)}
+              y={CH - CM.bottom + 16}
+              textAnchor="middle"
+              className="font-mono text-[10px] tabular-nums fill-slate-400 dark:fill-slate-500"
+            >
+              {tk}
+            </text>
+          </g>
         ))}
 
-        <span className="whitespace-nowrap text-[9px] sm:text-[10px] uppercase tracking-[0.1em] text-slate-500 dark:text-slate-400">
-          Elasticsearch
-        </span>
-        {PCTL.map((p) => (
-          <span
-            key={p.label}
-            className="text-right text-slate-600 dark:text-slate-300"
-          >
-            {at(term.them, p.pct).toFixed(2)}
-          </span>
-        ))}
-      </div>
+        {/* Elasticsearch (behind) */}
+        <path
+          d={path(term.them)}
+          fill="none"
+          className="stroke-slate-400 dark:stroke-slate-500"
+          strokeWidth={2}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+        {/* ParadeDB (on top) */}
+        <path
+          d={path(term.us)}
+          fill="none"
+          className="stroke-indigo-500"
+          strokeWidth={2}
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
+
+        {/* axis titles */}
+        <text
+          x={CM.left + CPW / 2}
+          y={CH - 2}
+          textAnchor="middle"
+          className="font-mono text-[9px] uppercase tracking-[0.1em] fill-slate-400 dark:fill-slate-500"
+        >
+          latency (ms)
+        </text>
+        <text
+          transform={`translate(10 ${CM.top + CPH / 2}) rotate(-90)`}
+          textAnchor="middle"
+          className="font-mono text-[9px] uppercase tracking-[0.1em] fill-slate-400 dark:fill-slate-500"
+        >
+          % of queries ≤
+        </text>
+      </svg>
     </>
   );
 }
