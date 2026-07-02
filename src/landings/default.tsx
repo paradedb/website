@@ -2,6 +2,7 @@ import Hero from "@/components/ui/Hero";
 import Architecture from "@/components/ui/Architecture";
 import SearchFeatures from "@/components/ui/SearchFeatures";
 import PostgresNative from "@/components/ui/PostgresNative";
+import Benchmark from "@/components/ui/Benchmark";
 import SocialProof from "@/components/ui/SocialProof";
 import CommunityProof from "@/components/ui/CommunityProof";
 import Pricing from "@/components/ui/Pricing";
@@ -15,6 +16,7 @@ export default function DefaultLanding() {
       <Architecture />
       <SearchFeatures />
       <PostgresNative />
+      <Benchmark />
       <SocialProof />
       <CommunityProof />
       <AgentReady />
