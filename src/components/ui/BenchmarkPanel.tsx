@@ -96,11 +96,12 @@ function TermTabs({
   );
 }
 
-// ── latency: p50 / p90 / p95 as grouped bars (matches the throughput tab) ──
+// ── latency: dumbbell — ParadeDB vs Elasticsearch per percentile ───────────
+// Two dots joined by the gap; each value sits just outside its own dot (left
+// value left of the left dot, right value right of the right dot).
 function LatencyBody() {
   const [active, setActive] = useState(0);
   const term = elasticsearchCdfByTerm[active];
-  // p50/p90/p95 are exact sampled levels in the CDF points.
   const at = (pts: number[][], pct: number) =>
     pts.find((p) => p[1] === pct)?.[0] ?? 0;
   const rows = [
@@ -108,24 +109,11 @@ function LatencyBody() {
     { label: "p90", us: at(term.us, 90), them: at(term.them, 90) },
     { label: "p95", us: at(term.us, 95), them: at(term.them, 95) },
   ];
-  const max = Math.max(...rows.flatMap((r) => [r.us, r.them]));
-
-  const bar = (value: number, solid: string, valueClass: string) => (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 min-w-0 h-7 bg-slate-100 dark:bg-slate-800/50 relative">
-        <div
-          className={`absolute inset-y-0 left-0 ${solid}`}
-          style={{ width: `${(value / max) * 100}%` }}
-        />
-      </div>
-      <span
-        className={`w-16 shrink-0 text-right font-mono text-sm tabular-nums ${valueClass}`}
-      >
-        {value.toFixed(2)}
-        <span className="text-slate-400 dark:text-slate-500"> ms</span>
-      </span>
-    </div>
-  );
+  const dataMax = Math.max(...rows.flatMap((r) => [r.us, r.them]));
+  // Leave headroom on the right so the right-hand value never runs off the end.
+  const pc = (v: number) => (v / dataMax) * 70;
+  const indigo = "text-indigo-600 dark:text-indigo-400";
+  const slate = "text-slate-500 dark:text-slate-400";
 
   return (
     <>
@@ -138,21 +126,51 @@ function LatencyBody() {
       <Caption text="Latency · ms · lower is better" />
 
       <div className="space-y-6">
-        {rows.map((row) => (
-          <div key={row.label}>
-            <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {row.label}
+        {rows.map((row) => {
+          const usX = pc(row.us);
+          const themX = pc(row.them);
+          const leftX = Math.min(usX, themX);
+          const rightX = Math.max(usX, themX);
+          const usLeft = row.us <= row.them;
+          const leftVal = usLeft ? row.us : row.them;
+          const rightVal = usLeft ? row.them : row.us;
+          return (
+            <div key={row.label} className="flex items-center gap-3">
+              <div className="w-9 shrink-0 font-mono text-[11px] uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+                {row.label}
+              </div>
+              <div className="relative h-6 flex-1">
+                <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-px bg-slate-200 dark:bg-slate-800" />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2 h-[3px] rounded-full bg-slate-300 dark:bg-slate-600"
+                  style={{ left: `${leftX}%`, width: `${rightX - leftX}%` }}
+                />
+                <span
+                  className="absolute top-1/2 z-10 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-indigo-500 ring-2 ring-white dark:ring-slate-900"
+                  style={{ left: `${usX}%` }}
+                />
+                <span
+                  className="absolute top-1/2 z-10 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full bg-slate-400 dark:bg-slate-500 ring-2 ring-white dark:ring-slate-900"
+                  style={{ left: `${themX}%` }}
+                />
+                {/* value just left of the left dot */}
+                <span
+                  className={`absolute top-1/2 -ml-2 -translate-x-full -translate-y-1/2 font-mono text-[11px] tabular-nums ${usLeft ? indigo : slate}`}
+                  style={{ left: `${leftX}%` }}
+                >
+                  {leftVal.toFixed(2)} ms
+                </span>
+                {/* value just right of the right dot */}
+                <span
+                  className={`absolute top-1/2 ml-2 -translate-y-1/2 font-mono text-[11px] tabular-nums ${usLeft ? slate : indigo}`}
+                  style={{ left: `${rightX}%` }}
+                >
+                  {rightVal.toFixed(2)} ms
+                </span>
+              </div>
             </div>
-            <div className="space-y-1.5">
-              {bar(row.us, "bg-indigo-500", "text-slate-900 dark:text-white")}
-              {bar(
-                row.them,
-                "bg-slate-400 dark:bg-slate-500",
-                "text-slate-600 dark:text-slate-300",
-              )}
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </>
   );
