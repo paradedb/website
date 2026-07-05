@@ -15,7 +15,7 @@ import FacetingChart from "./FacetingChart";
 <AuthorSection metadata={blogMetadata} />
 <HeroImage src={heroImage} metadata={blogMetadata} />
 
-Picture this: you've built a perfectly reasonable search app. Users type "dinosaur," get results, everybody's happy. Then someone asks, "but how many of these are carnivores?" So you add filters. Then they want to know how many results each filter would give them *before* they click it. Welcome to ~Jurassic park~ faceted search.
+Picture this: you've built a perfectly reasonable search app. Users type "dinosaur," get results, everybody's happy. Then someone asks, "but how many of these are carnivores?" So you add filters. Then they want to know how many results each filter would give them _before_ they click it. Welcome to ~Jurassic park~ faceted search.
 
 In this post, we'll break down how we brought **Elasticsearch-style faceting directly into PostgreSQL;** the syntax, the planner integration, and the execution strategy that makes it possible. We'll show you how we structured the SQL API using window functions, and the results we can get from pushing as much work as possible down into our underlying search library (spoiler alert: [over an order of magnitude faster](#performance-why-this-matters) for large result sets).
 
@@ -242,7 +242,7 @@ We inject a custom execution node at plan time, intercepting the planning proces
 2. **Custom Scan Injection.** When queries combine full-text search, `ORDER BY`, `LIMIT`, and our placeholder `WindowAgg` node we take over planning. This is the entry point for Top K faceting queries. The planner swaps in a `PdbScan` node capable of executing both the search and the aggregation in one pass, making sure that the parts of the query that aren’t handled by ParadeDB (non-search WHERE clauses, outer clauses / CTEs, FILTERS) are delegated back to PostgreSQL as normal.
 3. **WindowAgg Extraction**. Extracts and converts the `pdb.agg()` placeholder into a form Tantivy (our underlying search library) understands, adding the information to the custom `PdbScan`. This is where we parse the JSONB definition and build the aggregation tree (terms, range, etc.) to run inside the search engine.
 
-The key insight is timing, this integration happens *before* PostgreSQL attempts standard window function execution. By execution time the window function doesn’t exist and PostgreSQL is running what it sees as a normal custom scan node.
+The key insight is timing, this integration happens _before_ PostgreSQL attempts standard window function execution. By execution time the window function doesn’t exist and PostgreSQL is running what it sees as a normal custom scan node.
 
 ## **How Faceting Executes Inside ParadeDB**
 

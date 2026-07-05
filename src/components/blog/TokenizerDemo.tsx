@@ -4,11 +4,7 @@ import React, { useState, useMemo, useRef, useEffect } from "react";
 import { stemmer } from "porter-stemmer";
 
 type DemoMode =
-  | "character-filtering"
-  | "tokenization"
-  | "stemming"
-  | "stopwords"
-  | "display";
+  "character-filtering" | "tokenization" | "stemming" | "stopwords" | "display";
 type TokenizationMethod = "whitespace" | "trigram";
 
 interface TokenizerDemoProps {
