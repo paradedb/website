@@ -434,7 +434,7 @@ export default function BenchmarkPanel() {
               type="button"
               onClick={() => setMetric(m.key)}
               aria-pressed={on}
-              className={`-mb-0.5 flex-1 sm:flex-none text-center border-2 px-2 sm:px-4 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em] sm:tracking-[0.18em] whitespace-nowrap transition-colors ${
+              className={`touch-manipulation -mb-0.5 flex-1 sm:flex-none text-center border-2 px-2 sm:px-4 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em] sm:tracking-[0.18em] whitespace-nowrap transition-colors ${
                 on
                   ? "relative z-10 py-2 border-indigo-500 bg-indigo-500 text-white"
                   : "py-1.5 border-indigo-400 dark:border-indigo-500 bg-slate-50 dark:bg-slate-800/40 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
@@ -447,7 +447,7 @@ export default function BenchmarkPanel() {
       </div>
 
       {/* Content box — the active box's body */}
-      <div className="relative">
+      <div className="relative z-0">
         <div
           className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5 pointer-events-none"
           aria-hidden="true"
