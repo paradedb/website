@@ -1,9 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { RiCheckLine, RiLoader2Fill } from "@remixicon/react";
+import { RiLoader2Fill, RiMailSendLine } from "@remixicon/react";
 
 type Status = "idle" | "loading" | "success" | "error";
+
+// First-touch attribution forwarded with the signup. Read at submit time
+// from the current URL / document.referrer; the API preserves first touch
+// on duplicates, so re-submissions can't overwrite an earlier source.
+function attribution() {
+  if (typeof window === "undefined") return {};
+  const params = new URLSearchParams(window.location.search);
+  return {
+    utm_source: params.get("utm_source") ?? undefined,
+    utm_medium: params.get("utm_medium") ?? undefined,
+    utm_campaign: params.get("utm_campaign") ?? undefined,
+    referrer: document.referrer || undefined,
+  };
+}
 
 export default function CloudWaitlist() {
   const [email, setEmail] = useState("");
@@ -19,7 +33,7 @@ export default function CloudWaitlist() {
       const res = await fetch("/api/cloud-waitlist", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
+        body: JSON.stringify({ email, ...attribution() }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -36,11 +50,13 @@ export default function CloudWaitlist() {
   }
 
   if (status === "success") {
+    // Double opt-in: signing up sends a confirmation email; they're only on
+    // the list once they click it. The copy must say so.
     return (
       <div className="mx-auto flex max-w-md items-center justify-center gap-2.5 border border-white/25 bg-white/10 px-5 py-3.5 text-sm font-medium text-white">
-        <RiCheckLine className="size-5 shrink-0" />
-        You&apos;re on the list. We&apos;ll be in touch the moment ParadeDB
-        Cloud is ready.
+        <RiMailSendLine className="size-5 shrink-0" />
+        Almost there — check your inbox and click the confirmation link to
+        secure your spot.
       </div>
     );
   }

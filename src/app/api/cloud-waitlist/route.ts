@@ -1,16 +1,34 @@
-// Submits waitlist signups to a HubSpot form via the Forms Submission API.
-// Configure with HUBSPOT_PORTAL_ID and HUBSPOT_FORM_GUID (both found in
-// HubSpot: Marketing -> Forms -> your form -> Share / embed code). No secret
-// token is required for this endpoint. For an EU data-residency portal, set
-// HUBSPOT_REGION=eu.
+// Submits waitlist signups to the self-hosted double opt-in waitlist API
+// (SAM stack on james.international), server-to-server with a shared secret.
+//
+// Trust model (see the waitlist repo's README): this route is the ONE
+// legitimate caller of the API. Bot/humanness filtering is THIS side's job;
+// the API enforces per-email send caps and token semantics regardless. The
+// end user's IP is forwarded explicitly in the body (`client_ip`) because
+// the API only ever sees this server's egress IP on the connection.
+//
+// Config: WAITLIST_API_URL (the API's base URL, no trailing slash) and
+// WAITLIST_API_KEY (the X-Waitlist-Key shared secret, from SSM parameter
+// /waitlist/signup-key).
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-export async function POST(request: Request) {
-  const portalId = process.env.HUBSPOT_PORTAL_ID;
-  const formGuid = process.env.HUBSPOT_FORM_GUID;
+const optionalString = (v: unknown, max = 512): string | undefined =>
+  typeof v === "string" && v.trim().length > 0
+    ? v.trim().slice(0, max)
+    : undefined;
 
-  let body: { email?: unknown };
+export async function POST(request: Request) {
+  const apiUrl = process.env.WAITLIST_API_URL;
+  const apiKey = process.env.WAITLIST_API_KEY;
+
+  let body: {
+    email?: unknown;
+    utm_source?: unknown;
+    utm_medium?: unknown;
+    utm_campaign?: unknown;
+    referrer?: unknown;
+  };
   try {
     body = await request.json();
   } catch {
@@ -25,9 +43,9 @@ export async function POST(request: Request) {
     );
   }
 
-  if (!portalId || !formGuid) {
+  if (!apiUrl || !apiKey) {
     console.error(
-      "Cloud waitlist: HUBSPOT_PORTAL_ID / HUBSPOT_FORM_GUID not configured.",
+      "Cloud waitlist: WAITLIST_API_URL / WAITLIST_API_KEY not configured.",
     );
     return Response.json(
       { error: "The waitlist is temporarily unavailable. Please try again later." },
@@ -35,40 +53,43 @@ export async function POST(request: Request) {
     );
   }
 
-  // Pass the HubSpot tracking cookie through for lead attribution, if present.
-  const cookies = request.headers.get("cookie") ?? "";
-  const hutk = cookies.match(/hubspotutk=([^;]+)/)?.[1];
-
-  const host =
-    process.env.HUBSPOT_REGION === "eu"
-      ? "api-eu1.hsforms.com"
-      : "api.hsforms.com";
-  const endpoint = `https://${host}/submissions/v3/integration/submit/${portalId}/${formGuid}`;
+  // First entry of X-Forwarded-For is the client (Vercel/standard proxies).
+  // The API validates the syntax and stores null rather than reject.
+  const xff = request.headers.get("x-forwarded-for") ?? "";
+  const clientIp = xff.split(",")[0]?.trim() || undefined;
 
   try {
-    const hsRes = await fetch(endpoint, {
+    const apiRes = await fetch(`${apiUrl}/waitlist`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "X-Waitlist-Key": apiKey,
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify({
-        fields: [{ objectTypeId: "0-1", name: "email", value: email }],
-        context: {
-          pageUri: "https://www.paradedb.com/cloud",
-          pageName: "ParadeDB Cloud — Join the waitlist",
-          ...(hutk ? { hutk } : {}),
-        },
+        email,
+        client_ip: clientIp,
+        tags: ["cloud-waitlist"],
+        metadata: { signup_source: "website" },
+        // First-touch attribution, forwarded from the browser when present.
+        utm_source: optionalString(body.utm_source, 64),
+        utm_medium: optionalString(body.utm_medium, 64),
+        utm_campaign: optionalString(body.utm_campaign, 64),
+        referrer: optionalString(body.referrer),
       }),
     });
 
-    if (!hsRes.ok) {
-      const detail = await hsRes.text().catch(() => "");
-      console.error("Cloud waitlist: HubSpot submit failed", hsRes.status, detail);
+    if (!apiRes.ok) {
+      // The API returns identical 200s for new/duplicate/rate-limited, so
+      // any non-OK here is a real problem (bad key, validation, outage).
+      const detail = await apiRes.text().catch(() => "");
+      console.error("Cloud waitlist: API submit failed", apiRes.status, detail);
       return Response.json(
         { error: "Something went wrong. Please try again." },
         { status: 502 },
       );
     }
   } catch (err) {
-    console.error("Cloud waitlist: HubSpot request threw", err);
+    console.error("Cloud waitlist: API request threw", err);
     return Response.json(
       { error: "Something went wrong. Please try again." },
       { status: 502 },
