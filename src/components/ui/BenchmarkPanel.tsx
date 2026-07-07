@@ -1,23 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
-  BENCHMARK_COLUMNS,
-  type BenchmarkColumnKey,
-  elasticsearchCdfByColumn,
-  elasticsearchThroughputByColumn,
+  elasticsearchCdf,
   type TermCdf,
 } from "@/components/vs/elasticsearch-benchmark";
-
-const pixelShadow = (color: string) => ({
-  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='5' height='5'%3E%3Crect width='2' height='2' fill='%23${color}' fill-opacity='0.5'/%3E%3C/svg%3E")`,
-  backgroundSize: "5px 5px",
-  backgroundPosition: "calc(100% + 3px) calc(100% + 3px)",
-});
-const indigoShadowStyle = pixelShadow("4f46e5");
-
-const fieldOf = (column: BenchmarkColumnKey) =>
-  BENCHMARK_COLUMNS.find((c) => c.key === column)!.field;
 
 /** Build ~4 evenly spaced "nice" axis ticks from 0 up past maxVal. */
 function axisTicks(maxVal: number) {
@@ -53,7 +40,7 @@ function Legend() {
       </span>
       <span className="flex items-center gap-2">
         <span
-          className="inline-block size-2.5 rounded-full bg-slate-400 dark:bg-slate-500"
+          className="inline-block size-2.5 rounded-full bg-slate-200 dark:bg-slate-600"
           aria-hidden
         />
         Elasticsearch
@@ -73,11 +60,16 @@ function QueryChip({
 }) {
   const q = quoted ? "'" : "";
   return (
-    <div className="mb-4 overflow-x-auto whitespace-nowrap font-mono text-[11px] text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5">
-      <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">›</span>
-      WHERE {field} ||| {q}
-      <span className="text-indigo-600 dark:text-indigo-400">{value}</span>
-      {q} ORDER BY pdb.score(id) DESC LIMIT 10
+    <div className="mb-4 overflow-x-auto font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-4">
+      <div className="whitespace-nowrap">
+        <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">›</span>
+        SELECT * FROM hackernews
+      </div>
+      <div className="whitespace-nowrap pl-3">
+        WHERE {field} ||| {q}
+        <span className="text-indigo-600 dark:text-indigo-400">{value}</span>
+        {q} ORDER BY pdb.score(id) DESC LIMIT 10
+      </div>
     </div>
   );
 }
@@ -152,46 +144,63 @@ function TermTabs({
   );
 }
 
-// ── latency: p50 / p90 / p95 bars, with a throughput (QPS) summary below ──
-function LatencyBarsBody({ column }: { column: BenchmarkColumnKey }) {
+// ── latency: p90 / p95 bars ────────────────────────────────────────────────
+function LatencyBarsBody({ animate }: { animate: boolean }) {
   const [active, setActive] = useState(0);
-  const terms = elasticsearchCdfByColumn[column];
+  const terms = elasticsearchCdf;
   const term = terms[active];
-  const tp = elasticsearchThroughputByColumn[column][active];
-  // p50/p90/p95 are exact sampled levels in the CDF points.
+  // p90/p95 are exact sampled levels in the CDF points.
   const at = (pts: number[][], pct: number) =>
     pts.find((p) => p[1] === pct)?.[0] ?? 0;
   const rows = [
-    { label: "p50", us: at(term.us, 50), them: at(term.them, 50) },
     { label: "p90", us: at(term.us, 90), them: at(term.them, 90) },
     { label: "p95", us: at(term.us, 95), them: at(term.them, 95) },
   ];
   const max = Math.max(...rows.flatMap((r) => [r.us, r.them]));
 
+  // Bars grow in when the panel scrolls into view and replay on every tab or
+  // term change. Collapse instantly (no transition), then grow with one.
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    if (!animate) {
+      setGrown(false);
+      return;
+    }
+    setGrown(false);
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => setGrown(true)),
+    );
+    return () => cancelAnimationFrame(id);
+  }, [animate, active]);
+
   const bar = (value: number, solid: string, valueClass: string) => (
     <div className="flex items-center gap-3">
       <div className="flex-1 min-w-0 h-6 bg-slate-100 dark:bg-slate-800/50 relative">
         <div
-          className={`absolute inset-y-0 left-0 ${solid}`}
+          className={`absolute inset-y-0 left-0 origin-left ${solid} ${
+            grown
+              ? "scale-x-100 transition-transform duration-700 ease-out"
+              : "scale-x-0"
+          }`}
           style={{ width: `${(value / max) * 100}%` }}
         />
       </div>
       <span
         className={`w-20 shrink-0 whitespace-nowrap text-right font-mono text-sm tabular-nums ${valueClass}`}
       >
-        {value.toFixed(2)}
-        <span className="text-slate-400 dark:text-slate-500"> ms</span>
+        {value.toFixed(2)} ms
       </span>
     </div>
   );
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <TermTabs terms={terms} active={active} setActive={setActive} />
+        <Legend />
       </div>
 
-      <QueryChip field={fieldOf(column)} value={term.example} quoted />
+      <QueryChip field="text" value={term.example} quoted />
       <Caption text="Latency · ms · lower is better" />
 
       <div className="space-y-4">
@@ -201,51 +210,51 @@ function LatencyBarsBody({ column }: { column: BenchmarkColumnKey }) {
               {row.label}
             </div>
             <div className="space-y-1.5">
-              {bar(row.us, "bg-indigo-500", "text-slate-900 dark:text-white")}
+              {bar(
+                row.us,
+                "bg-indigo-500",
+                "text-indigo-600 dark:text-indigo-400",
+              )}
               {bar(
                 row.them,
-                "bg-slate-400 dark:bg-slate-500",
-                "text-slate-600 dark:text-slate-300",
+                "bg-slate-200 dark:bg-slate-600",
+                "text-slate-400 dark:text-slate-500",
               )}
             </div>
           </div>
         ))}
       </div>
-
-      {tp && (
-        <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800">
-          <div className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-            Throughput · QPS · higher is better
-          </div>
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
-            <div className="flex items-baseline gap-2">
-              <span className="font-mono text-lg font-semibold tabular-nums text-indigo-600 dark:text-indigo-400">
-                {tp.us}
-              </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                ParadeDB
-              </span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="font-mono text-lg font-semibold tabular-nums text-slate-600 dark:text-slate-300">
-                {tp.them}
-              </span>
-              <span className="text-xs text-slate-500 dark:text-slate-400">
-                Elasticsearch
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </>
   );
 }
 
 // ── latency: empirical CDF — % of queries completed by each latency ────────
-function LatencyCdfBody({ column }: { column: BenchmarkColumnKey }) {
+function LatencyCdfBody({ animate }: { animate: boolean }) {
   const [active, setActive] = useState(0);
-  const terms = elasticsearchCdfByColumn[column];
+  const terms = elasticsearchCdf;
   const term = terms[active];
+
+  // Lines draw in when the panel scrolls into view; replay on tab/term change.
+  const [grown, setGrown] = useState(false);
+  useEffect(() => {
+    if (!animate) {
+      setGrown(false);
+      return;
+    }
+    setGrown(false);
+    const id = requestAnimationFrame(() =>
+      requestAnimationFrame(() => setGrown(true)),
+    );
+    return () => cancelAnimationFrame(id);
+  }, [animate, active]);
+  const drawStyle = (delayMs: number) => ({
+    strokeDasharray: 1,
+    strokeDashoffset: grown ? 0 : 1,
+    transition: grown
+      ? `stroke-dashoffset 900ms ease-out ${delayMs}ms`
+      : "none",
+  });
+
   const { ticks } = axisTicks(term.axisMax);
   const xMax = ticks[ticks.length - 1];
   const xOf = (lat: number) => CM.left + (Math.min(lat, xMax) / xMax) * CPW;
@@ -261,11 +270,12 @@ function LatencyCdfBody({ column }: { column: BenchmarkColumnKey }) {
 
   return (
     <>
-      <div className="mb-4">
+      <div className="mb-4 mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <TermTabs terms={terms} active={active} setActive={setActive} />
+        <Legend />
       </div>
 
-      <QueryChip field={fieldOf(column)} value={term.example} quoted />
+      <QueryChip field="text" value={term.example} quoted />
       <Caption text="Latency CDF · % of queries ≤ latency (ms) · left is faster" />
 
       <svg
@@ -323,19 +333,23 @@ function LatencyCdfBody({ column }: { column: BenchmarkColumnKey }) {
         <path
           d={path(term.them)}
           fill="none"
-          className="stroke-slate-400 dark:stroke-slate-500"
+          pathLength={1}
+          className="stroke-slate-300 dark:stroke-slate-600"
           strokeWidth={2}
           strokeLinejoin="round"
           strokeLinecap="round"
+          style={drawStyle(0)}
         />
         {/* ParadeDB (on top) */}
         <path
           d={path(term.us)}
           fill="none"
+          pathLength={1}
           className="stroke-indigo-500"
           strokeWidth={2}
           strokeLinejoin="round"
           strokeLinecap="round"
+          style={drawStyle(120)}
         />
 
         {/* axis titles */}
@@ -380,7 +394,6 @@ const REPRODUCE_LINES = [
 function ReproduceBody() {
   return (
     <>
-      <Caption text="Reproduce · on your own hardware" />
       <div className="overflow-x-auto bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-4 font-mono text-[11px] leading-[1.9]">
         {REPRODUCE_LINES.map((line, i) => (
           <div
@@ -418,109 +431,128 @@ const METRICS = [
 
 export default function BenchmarkPanel() {
   const [metric, setMetric] = useState<(typeof METRICS)[number]["key"]>("bars");
-  const [column, setColumn] = useState<BenchmarkColumnKey>("text");
-  const columnNote = BENCHMARK_COLUMNS.find((c) => c.key === column)!.note;
+
+  // Fire the bar animation once the card scrolls into view.
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) setInView(true);
+      },
+      { threshold: 0.2 },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   return (
-    <div className="relative">
-      {/* Tabs — the boxes' lids, sitting on the top edge of the frame */}
-      <div className="relative z-10 flex items-end gap-1 sm:gap-1.5 pl-0 sm:pl-3">
-        {METRICS.map((m) => {
-          const on = m.key === metric;
-          return (
-            <button
-              key={m.key}
-              type="button"
-              onClick={() => setMetric(m.key)}
-              aria-pressed={on}
-              className={`touch-manipulation -mb-0.5 flex-1 sm:flex-none text-center border-2 px-2 sm:px-4 font-mono text-[10px] sm:text-[11px] uppercase tracking-[0.08em] sm:tracking-[0.18em] whitespace-nowrap transition-colors ${
-                on
-                  ? "relative z-10 py-2 border-indigo-500 bg-indigo-500 text-white"
-                  : "py-1.5 border-indigo-400 dark:border-indigo-500 bg-slate-50 dark:bg-slate-800/40 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-              }`}
-            >
-              {m.label}
-            </button>
-          );
-        })}
-      </div>
+    // Card — the active view's body. No right border at xl, where the
+    // section's right inner grid line falls exactly on the card's edge.
+    <div
+      ref={cardRef}
+      className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 xl:border-r-0 p-4 sm:p-6"
+    >
+      {/* At xl, extend the card's top and bottom borders left to the
+          section's left inner grid line (503px = text column width + gap,
+          constant since the content column is a fixed 1128px). */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-px -left-[504px] hidden h-px w-[504px] bg-slate-200 xl:block dark:bg-slate-800"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-px -left-[504px] hidden h-px w-[504px] bg-slate-200 xl:block dark:bg-slate-800"
+      />
 
-      {/* Content box — the active box's body */}
-      <div className="relative z-0">
+      {/* View tabs — underline style matching the Architecture section, on a
+          full-bleed bottom rule that divides them from the body. The tablist
+          pulls down 1px so the active tab's underline covers the rule rather
+          than doubling it. */}
+      <div className="-mx-4 -mt-4 mb-5 border-b border-slate-200 px-4 sm:-mx-6 sm:-mt-6 sm:px-6 dark:border-slate-800">
         <div
-          className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5 pointer-events-none"
-          aria-hidden="true"
-          style={indigoShadowStyle}
-        />
-        <div className="relative bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-500 p-4 sm:p-6">
-          {/* Column toggle + legend — applies to every data tab */}
-          {metric !== "reproduce" && (
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-5 pb-4 border-b border-slate-200 dark:border-slate-800">
-              <div className="flex items-center gap-3">
-                <Segmented
-                  ariaLabel="Indexed column"
-                  options={BENCHMARK_COLUMNS.map((c) => ({
-                    key: c.key,
-                    label: c.label,
-                  }))}
-                  active={column}
-                  setActive={setColumn}
-                />
-                <span className="hidden sm:inline text-xs text-slate-500 dark:text-slate-400">
-                  {columnNote}
+          role="tablist"
+          aria-label="Benchmark view"
+          className="-mb-px flex w-full min-w-max items-end overflow-x-auto no-scrollbar"
+        >
+          {METRICS.map((m, i) => {
+            const on = m.key === metric;
+            return (
+              <button
+                key={m.key}
+                type="button"
+                role="tab"
+                aria-selected={on}
+                onClick={() => setMetric(m.key)}
+                className={`group flex flex-shrink-0 sm:flex-1 items-center justify-center gap-2.5 whitespace-nowrap border-b-2 px-4 py-3 outline-none transition-colors ${
+                  on
+                    ? "border-indigo-600 text-indigo-900 dark:text-white"
+                    : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                }`}
+              >
+                <span
+                  className={`font-mono text-xs font-semibold ${
+                    on ? "text-indigo-600 dark:text-indigo-400" : "opacity-50"
+                  }`}
+                >
+                  {String(i + 1).padStart(2, "0")}
                 </span>
-              </div>
-              <Legend />
-            </div>
-          )}
-
-          {/* Every body shares one grid cell, so the box always reserves the
-              tallest and never changes height on toggle. min-w-0 keeps long
-              lines (query chip, code) from stretching the box on mobile. */}
-          <div className="grid min-w-0">
-            <div
-              className={`col-start-1 row-start-1 min-w-0 ${
-                metric === "bars" ? "" : "invisible pointer-events-none"
-              }`}
-              aria-hidden={metric !== "bars"}
-            >
-              <LatencyBarsBody column={column} />
-            </div>
-            <div
-              className={`col-start-1 row-start-1 min-w-0 ${
-                metric === "cdf" ? "" : "invisible pointer-events-none"
-              }`}
-              aria-hidden={metric !== "cdf"}
-            >
-              <LatencyCdfBody column={column} />
-            </div>
-            <div
-              className={`col-start-1 row-start-1 min-w-0 ${
-                metric === "reproduce" ? "" : "invisible pointer-events-none"
-              }`}
-              aria-hidden={metric !== "reproduce"}
-            >
-              <ReproduceBody />
-            </div>
-          </div>
-
-          {/* Measurement + dataset facts + raw data */}
-          <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an
-            identical 4-CPU, 16 GB Docker container queried by a single client,
-            second run after JVM warmup over a rotating pool of 50 queries.
-            Hacker News dataset, 28M rows.{" "}
-            <a
-              href={`/benchmarks/topk_10_hn_${column}.json`}
-              download
-              className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
-            >
-              Download raw result JSON
-            </a>
-            .
-          </p>
+                <span className="text-sm font-semibold tracking-tight">
+                  {m.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </div>
+
+      {/* Every body shares one grid cell, so the box always reserves the
+              tallest and never changes height on toggle. min-w-0 keeps long
+              lines (query chip, code) from stretching the box on mobile. */}
+      <div className="grid min-w-0">
+        <div
+          className={`col-start-1 row-start-1 min-w-0 ${
+            metric === "bars" ? "" : "invisible pointer-events-none"
+          }`}
+          aria-hidden={metric !== "bars"}
+        >
+          <LatencyBarsBody animate={metric === "bars" && inView} />
+        </div>
+        <div
+          className={`col-start-1 row-start-1 min-w-0 ${
+            metric === "cdf" ? "" : "invisible pointer-events-none"
+          }`}
+          aria-hidden={metric !== "cdf"}
+        >
+          <LatencyCdfBody animate={metric === "cdf" && inView} />
+        </div>
+        <div
+          className={`col-start-1 row-start-1 min-w-0 ${
+            metric === "reproduce" ? "" : "invisible pointer-events-none"
+          }`}
+          aria-hidden={metric !== "reproduce"}
+        >
+          <ReproduceBody />
+        </div>
+      </div>
+
+      {/* Measurement + dataset facts + raw data */}
+      <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+        Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
+        4-CPU, 16 GB Docker container queried by a single client, second run
+        after JVM warmup over a rotating pool of 50 queries. Hacker News
+        dataset, 28M rows.{" "}
+        <a
+          href="/benchmarks/topk_10_hn_text.json"
+          download
+          className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
+        >
+          Download raw result JSON
+        </a>
+        .
+      </p>
     </div>
   );
 }
