@@ -412,7 +412,7 @@ function ReproduceBody() {
 // ── panel: three boxes, tab toggle drawn into the frame ────────────────────
 const METRICS = [
   { key: "bars", label: "Latency" },
-  { key: "cdf", label: "Latency CDF" },
+  { key: "cdf", label: "Distribution" },
   { key: "reproduce", label: "Reproduce" },
 ] as const;
 
@@ -508,11 +508,11 @@ export default function BenchmarkPanel() {
           {/* Measurement + dataset facts + raw data */}
           <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
             Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an
-            identical 4-CPU, 16 GB Docker container under 4 concurrent
-            connections, second run after JVM warmup over a rotating pool of 50
-            queries. Hacker News dataset, 28M rows.{" "}
+            identical 4-CPU, 16 GB Docker container queried by a single client,
+            second run after JVM warmup over a rotating pool of 50 queries.
+            Hacker News dataset, 28M rows.{" "}
             <a
-              href={`/paradedb-vs-elasticsearch-${column}.json`}
+              href={`/benchmarks/topk_10_hn_${column}.json`}
               download
               className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
             >

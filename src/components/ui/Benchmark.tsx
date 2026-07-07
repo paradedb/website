@@ -20,9 +20,9 @@ export default function Benchmark() {
               <span className="text-highlight-blink">Postgres</span>.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl leading-relaxed">
-              On a TopK BM25 relevance search over 28M Hacker News rows, running on
-              identical hardware. In both latency and throughput, ParadeDB matches
-              Elasticsearch on a single term and pulls ahead as the number of terms grows.
+              Same hardware, same queries: a top-10 BM25 relevance search over
+              28M Hacker News rows. ParadeDB keeps pace with Elasticsearch on
+              single terms and pulls ahead as search terms grow.
             </p>
           </div>
 

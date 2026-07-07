@@ -6,9 +6,11 @@ import type { BenchmarkData } from "./BenchmarkChart";
  * Two runs, one per indexed column of the Hacker News dataset (28M rows):
  *   - `text`  — the long comment/story body field
  *   - `title` — the short headline field
- * Both are a LIMIT 10 BM25 relevance search, single virtual user, closed loop,
- * from the benchmarker dashboard exports of 2026-07-06. Percentiles are over the
- * full latency sample; throughput is 1000 / mean latency (QPS).
+ * Both are a LIMIT 10 BM25 relevance search from a single client in a closed
+ * loop, from the benchmarker exports of 2026-07-06 — the same files served at
+ * /benchmarks/topk_10_hn_{text,title}.json, so the raw download always matches
+ * these figures. Percentiles are over the full latency sample; throughput is
+ * completed queries / wall-clock duration (QPS).
  */
 
 /** Which indexed column the query matches against. */
@@ -32,22 +34,22 @@ export const BENCHMARK_COLUMNS: BenchmarkColumnMeta[] = [
 
 export type ThroughputRow = { label: string; us: number; them: number };
 
-/** Queries per second (1000 / mean latency) per term shape, per column. */
+/** Queries per second (completed / wall-clock) per term shape, per column. */
 export const elasticsearchThroughputByColumn: Record<
   BenchmarkColumnKey,
   ThroughputRow[]
 > = {
   text: [
-    { label: "Single term", us: 338, them: 356 },
-    { label: "Two terms", us: 135, them: 107 },
-    { label: "Three terms", us: 131, them: 96 },
-    { label: "Multi-term", us: 69, them: 59 },
+    { label: "Single term", us: 331, them: 346 },
+    { label: "Two terms", us: 134, them: 106 },
+    { label: "Three terms", us: 130, them: 94 },
+    { label: "Multi-term", us: 68, them: 59 },
   ],
   title: [
-    { label: "Single term", us: 436, them: 475 },
-    { label: "Two terms", us: 301, them: 258 },
-    { label: "Three terms", us: 240, them: 228 },
-    { label: "Multi-term", us: 167, them: 130 },
+    { label: "Single term", us: 426, them: 458 },
+    { label: "Two terms", us: 296, them: 252 },
+    { label: "Three terms", us: 236, them: 223 },
+    { label: "Multi-term", us: 164, them: 129 },
   ],
 };
 
@@ -68,10 +70,10 @@ export type TermCdf = {
 
 /**
  * Empirical latency CDF per term shape, per column, computed directly from the
- * raw benchmarker dashboard exports (single-VU closed loop, 2026-07-06). Each
- * point is [latency ms, % of queries at or below]. ParadeDB's curve sitting
- * left of Elasticsearch's = more queries done sooner. The p50/p90/p95 the bar
- * view shows are read straight off these points.
+ * raw exports in /public/benchmarks (single client, closed loop, 2026-07-06).
+ * Each point is [latency ms, % of queries at or below]. ParadeDB's curve
+ * sitting left of Elasticsearch's = more queries done sooner. The p50/p90/p95
+ * the bar view shows are read straight off these points.
  */
 export const elasticsearchCdfByColumn: Record<BenchmarkColumnKey, TermCdf[]> = {
   text: [
@@ -104,7 +106,7 @@ export const elasticsearchCdfByColumn: Record<BenchmarkColumnKey, TermCdf[]> = {
  */
 export const elasticsearchBenchmark: BenchmarkData = {
   subhead:
-    "A LIMIT 10 TopK relevance search over a slice of the Hacker News archive, ordered by BM25 score and run as a single virtual user in a closed loop. Everything is held constant except the term shape.",
+    "A LIMIT 10 TopK relevance search over a slice of the Hacker News archive, ordered by BM25 score and run from a single client in a closed loop. Everything is held constant except the term shape.",
   metrics: [
     {
       key: "throughput",
