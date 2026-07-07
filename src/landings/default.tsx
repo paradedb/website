@@ -14,9 +14,9 @@ export default function DefaultLanding() {
     <main className="flex flex-col overflow-hidden px-0">
       <Hero />
       <Architecture />
+      <Benchmark />
       <SearchFeatures />
       <PostgresNative />
-      <Benchmark />
       <SocialProof />
       <CommunityProof />
       <AgentReady />

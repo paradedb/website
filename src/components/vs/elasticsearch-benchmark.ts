@@ -2,8 +2,105 @@ import type { BenchmarkData } from "./BenchmarkChart";
 
 /**
  * Head-to-head TopK benchmark numbers for ParadeDB vs Elasticsearch.
- * Shared by the /vs/elasticsearch comparison page and the homepage benchmark
- * section so both surfaces render the exact same figures.
+ *
+ * Two runs, one per indexed column of the Hacker News dataset (28M rows):
+ *   - `text`  — the long comment/story body field
+ *   - `title` — the short headline field
+ * Both are a LIMIT 10 BM25 relevance search, single virtual user, closed loop,
+ * from the benchmarker dashboard exports of 2026-07-06. Percentiles are over the
+ * full latency sample; throughput is 1000 / mean latency (QPS).
+ */
+
+/** Which indexed column the query matches against. */
+export type BenchmarkColumnKey = "text" | "title";
+
+export type BenchmarkColumnMeta = {
+  key: BenchmarkColumnKey;
+  /** Toggle label */
+  label: string;
+  /** Column name bound into the SQL query chip, e.g. `WHERE text ||| $1` */
+  field: string;
+  /** One-line shape hint shown beside the toggle */
+  note: string;
+};
+
+/** Toggle order: the long body field first, then the short title field. */
+export const BENCHMARK_COLUMNS: BenchmarkColumnMeta[] = [
+  { key: "text", label: "Text", field: "text", note: "long body field" },
+  { key: "title", label: "Title", field: "title", note: "short title field" },
+];
+
+export type ThroughputRow = { label: string; us: number; them: number };
+
+/** Queries per second (1000 / mean latency) per term shape, per column. */
+export const elasticsearchThroughputByColumn: Record<
+  BenchmarkColumnKey,
+  ThroughputRow[]
+> = {
+  text: [
+    { label: "Single term", us: 338, them: 356 },
+    { label: "Two terms", us: 135, them: 107 },
+    { label: "Three terms", us: 131, them: 96 },
+    { label: "Multi-term", us: 69, them: 59 },
+  ],
+  title: [
+    { label: "Single term", us: 436, them: 475 },
+    { label: "Two terms", us: 301, them: 258 },
+    { label: "Three terms", us: 240, them: 228 },
+    { label: "Multi-term", us: 167, them: 130 },
+  ],
+};
+
+/** A point on a latency CDF: [latency ms, cumulative % of queries ≤ it]. */
+export type CdfPoint = [number, number];
+
+/** Latency CDF per term shape, ParadeDB vs Elasticsearch. */
+export type TermCdf = {
+  /** Tab label, e.g. "2 terms" */
+  term: string;
+  /** Representative `$1` term bound into the query, e.g. "rust arc" */
+  example: string;
+  /** x-axis cap in ms (~p99), so tail outliers don't flatten the curve */
+  axisMax: number;
+  us: CdfPoint[];
+  them: CdfPoint[];
+};
+
+/**
+ * Empirical latency CDF per term shape, per column, computed directly from the
+ * raw benchmarker dashboard exports (single-VU closed loop, 2026-07-06). Each
+ * point is [latency ms, % of queries at or below]. ParadeDB's curve sitting
+ * left of Elasticsearch's = more queries done sooner. The p50/p90/p95 the bar
+ * view shows are read straight off these points.
+ */
+export const elasticsearchCdfByColumn: Record<BenchmarkColumnKey, TermCdf[]> = {
+  text: [
+    { term: "1 term", example: "privacy", axisMax: 13.28,
+      us: [[1.89,0],[2.01,2],[2.05,5],[2.09,10],[2.13,15],[2.18,20],[2.24,25],[2.3,30],[2.38,35],[2.45,40],[2.51,45],[2.56,50],[2.6,55],[2.65,60],[2.7,65],[2.76,70],[2.85,75],[2.97,80],[3.12,85],[3.3,88],[4.33,90],[4.65,92],[5.39,94],[6.09,95],[6.3,96],[6.46,97],[11.37,98],[11.53,99]],
+      them: [[1.63,0],[1.77,2],[1.81,5],[1.86,10],[1.9,15],[1.93,20],[1.95,25],[1.97,30],[1.99,35],[2.01,40],[2.02,45],[2.04,50],[2.06,55],[2.07,60],[2.09,65],[2.12,70],[2.14,75],[2.18,80],[2.25,85],[2.35,88],[5.25,90],[6.38,92],[9.42,94],[9.98,95],[10.21,96],[10.36,97],[13.14,98],[13.28,99]] },
+    { term: "2 terms", example: "rust arc", axisMax: 32.97,
+      us: [[2.68,0],[2.88,2],[3.02,5],[3.21,10],[3.33,15],[3.47,20],[4.36,25],[4.72,30],[4.87,35],[5.19,40],[5.64,45],[6.05,50],[6.41,55],[6.64,60],[6.93,65],[8.23,70],[9.17,75],[9.86,80],[10.44,85],[11.38,88],[11.54,90],[11.78,92],[13.65,94],[16.96,95],[20.06,96],[20.35,97],[32.7,98],[32.97,99]],
+      them: [[3.23,0],[3.46,2],[3.66,5],[4.32,10],[4.48,15],[4.67,20],[5.52,25],[5.84,30],[6.33,35],[6.67,40],[7.41,45],[8.24,50],[8.76,55],[9.36,60],[10.14,65],[10.98,70],[13.04,75],[13.32,80],[14.58,85],[16.05,88],[16.5,90],[16.86,92],[17.11,94],[17.56,95],[17.82,96],[18.06,97],[27.36,98],[27.52,99]] },
+    { term: "3 terms", example: "rust arc clone", axisMax: 23.25,
+      us: [[3.58,0],[3.73,2],[3.85,5],[4.24,10],[4.43,15],[4.79,20],[4.94,25],[5.15,30],[5.48,35],[6.25,40],[6.78,45],[6.99,50],[7.6,55],[7.98,60],[8.5,65],[9.04,70],[9.28,75],[9.67,80],[10.77,85],[11.43,88],[12.45,90],[12.93,92],[14.3,94],[14.67,95],[14.8,96],[14.97,97],[16.66,98],[16.76,99]],
+      them: [[4.06,0],[4.28,2],[4.54,5],[4.98,10],[5.46,15],[5.67,20],[6.08,25],[6.39,30],[6.61,35],[7.13,40],[8.22,45],[9.84,50],[10.96,55],[11.47,60],[12.27,65],[13.54,70],[13.9,75],[14.13,80],[15.1,85],[18.26,88],[18.48,90],[18.81,92],[19.99,94],[20.69,95],[21.02,96],[21.26,97],[22.99,98],[23.25,99]] },
+  ],
+  title: [
+    { term: "1 term", example: "privacy", axisMax: 6.76,
+      us: [[1.47,0],[1.53,2],[1.61,5],[1.72,10],[1.8,15],[1.84,20],[1.87,25],[1.91,30],[1.95,35],[1.98,40],[2.02,45],[2.06,50],[2.09,55],[2.13,60],[2.18,65],[2.25,70],[2.33,75],[2.4,80],[2.51,85],[2.65,88],[3.06,90],[3.24,92],[3.68,94],[4.63,95],[5.14,96],[5.25,97],[6.07,98],[6.15,99]],
+      them: [[1.35,0],[1.45,2],[1.49,5],[1.53,10],[1.57,15],[1.6,20],[1.62,25],[1.64,30],[1.66,35],[1.68,40],[1.7,45],[1.72,50],[1.74,55],[1.75,60],[1.77,65],[1.79,70],[1.82,75],[1.86,80],[1.92,85],[2.01,88],[4.35,90],[4.61,92],[4.98,94],[6.37,95],[6.54,96],[6.61,97],[6.68,98],[6.76,99]] },
+    { term: "2 terms", example: "rust arc", axisMax: 6.82,
+      us: [[2.03,0],[2.28,2],[2.47,5],[2.62,10],[2.75,15],[2.83,20],[2.9,25],[2.96,30],[3.01,35],[3.06,40],[3.12,45],[3.18,50],[3.23,55],[3.3,60],[3.36,65],[3.44,70],[3.52,75],[3.64,80],[3.79,85],[3.91,88],[4.16,90],[4.34,92],[4.5,94],[5.01,95],[5.24,96],[5.36,97],[6.09,98],[6.23,99]],
+      them: [[1.84,0],[2.06,2],[2.82,5],[3,10],[3.08,15],[3.18,20],[3.32,25],[3.42,30],[3.48,35],[3.52,40],[3.57,45],[3.62,50],[3.69,55],[3.77,60],[3.83,65],[3.94,70],[4.4,75],[4.58,80],[4.8,85],[4.98,88],[5.13,90],[5.29,92],[5.45,94],[6.4,95],[6.6,96],[6.68,97],[6.75,98],[6.82,99]] },
+    { term: "3 terms", example: "rust arc clone", axisMax: 8.14,
+      us: [[2.94,0],[3.15,2],[3.24,5],[3.34,10],[3.44,15],[3.52,20],[3.6,25],[3.68,30],[3.75,35],[3.82,40],[3.9,45],[3.98,50],[4.06,55],[4.14,60],[4.22,65],[4.33,70],[4.5,75],[4.64,80],[4.96,85],[5.28,88],[5.41,90],[5.54,92],[5.63,94],[5.68,95],[5.72,96],[5.79,97],[6.74,98],[6.89,99]],
+      them: [[2.78,0],[3.05,2],[3.27,5],[3.42,10],[3.49,15],[3.57,20],[3.66,25],[3.79,30],[3.93,35],[4.07,40],[4.24,45],[4.32,50],[4.39,55],[4.46,60],[4.53,65],[4.62,70],[4.72,75],[4.83,80],[5.04,85],[5.52,88],[5.64,90],[5.78,92],[5.9,94],[5.95,95],[6.01,96],[6.13,97],[8.02,98],[8.14,99]] },
+  ],
+};
+
+/**
+ * Full BenchmarkData for the /vs/elasticsearch comparison page — the `text`
+ * column figures, including box (p5/p25/p50/p75/p95) latency stats.
  */
 export const elasticsearchBenchmark: BenchmarkData = {
   subhead:
@@ -14,12 +111,7 @@ export const elasticsearchBenchmark: BenchmarkData = {
       label: "Throughput",
       unit: "QPS",
       hint: "higher is better",
-      rows: [
-        { label: "Single term", us: 277, them: 286 },
-        { label: "Two terms", us: 129, them: 119 },
-        { label: "Three terms", us: 115, them: 97 },
-        { label: "Multi-term", us: 67, them: 59 },
-      ],
+      rows: elasticsearchThroughputByColumn.text,
     },
     {
       key: "latency",
@@ -33,23 +125,23 @@ export const elasticsearchBenchmark: BenchmarkData = {
       rows: [
         {
           label: "Single term",
-          us: { low: 2.28, q1: 2.56, med: 2.99, q3: 3.32, high: 8.94 },
-          them: { low: 1.98, q1: 2.19, med: 2.44, q3: 3.17, high: 9.6 },
+          us: { low: 2.05, q1: 2.24, med: 2.56, q3: 2.85, high: 6.09 },
+          them: { low: 1.81, q1: 1.95, med: 2.04, q3: 2.14, high: 9.98 },
         },
         {
           label: "Two terms",
-          us: { low: 3.08, q1: 4.3, med: 6.2, q3: 9.33, high: 16.57 },
-          them: { low: 3.4, q1: 4.91, med: 7.36, q3: 11.58, high: 15.44 },
+          us: { low: 3.02, q1: 4.36, med: 6.05, q3: 9.17, high: 16.96 },
+          them: { low: 3.66, q1: 5.52, med: 8.24, q3: 13.04, high: 17.56 },
         },
         {
           label: "Three terms",
-          us: { low: 4.11, q1: 5.55, med: 8.28, q3: 10.22, high: 17.19 },
-          them: { low: 4.35, q1: 5.94, med: 10.08, q3: 13.7, high: 20.25 },
+          us: { low: 3.85, q1: 4.94, med: 6.99, q3: 9.28, high: 14.67 },
+          them: { low: 4.54, q1: 6.08, med: 9.84, q3: 13.9, high: 20.69 },
         },
         {
           label: "Multi-term",
-          us: { low: 4.89, q1: 6.41, med: 13.0, q3: 18.75, high: 39.74 },
-          them: { low: 4.63, q1: 7.87, med: 18.36, q3: 24.63, high: 32.32 },
+          us: { low: 4.7, q1: 5.9, med: 11.71, q3: 18.76, high: 37.7 },
+          them: { low: 4.95, q1: 8, med: 19.08, q3: 23.9, high: 31.21 },
         },
       ],
     },
@@ -59,89 +151,5 @@ export const elasticsearchBenchmark: BenchmarkData = {
     label: "Full methodology and benchmark detail",
   },
   footnote:
-    "Measured on ParadeDB 0.24.0 and Elasticsearch 8.17 on identical hardware, taken from the second run after JVM warmup over a rotating pool of 50 queries.",
+    "Measured on ParadeDB 0.24.1 and Elasticsearch 8.17 on identical hardware, taken from the second run after JVM warmup over a rotating pool of 50 queries.",
 };
-
-/** A point on a latency CDF: [latency ms, cumulative % of queries ≤ it]. */
-export type CdfPoint = [number, number];
-
-/** Latency CDF per term shape, ParadeDB 0.24.0 vs Elasticsearch. */
-export type TermCdf = {
-  /** Tab label, e.g. "2 terms" */
-  term: string;
-  /** Representative `$1` term bound into the query, e.g. "rust arc" */
-  example: string;
-  /** x-axis cap in ms (~p99), so tail outliers don't flatten the curve */
-  axisMax: number;
-  us: CdfPoint[];
-  them: CdfPoint[];
-};
-
-/**
- * Empirical latency CDF per term shape, computed directly from the raw
- * benchmarker dashboard export (single-VU closed loop, HN TopK run of
- * 2026-06-10). Each point is [latency ms, % of queries completed at or below].
- * ParadeDB's curve sitting left of Elasticsearch's = more queries done sooner.
- */
-export const elasticsearchCdfByTerm: TermCdf[] = [
-  {
-    term: "1 term",
-    example: "privacy",
-    axisMax: 16.0,
-    us: [[2.17,0],[2.24,2],[2.28,5],[2.35,10],[2.43,15],[2.5,20],[2.56,25],[2.64,30],[2.77,35],[2.85,40],[2.92,45],[2.99,50],[3.04,55],[3.09,60],[3.14,65],[3.21,70],[3.32,75],[3.41,80],[3.51,85],[3.61,88],[5.84,90],[6.08,92],[7.23,94],[8.94,95],[9.1,96],[9.26,97],[15.86,98],[16.0,99]],
-    them: [[1.74,0],[1.9,2],[1.98,5],[2.04,10],[2.1,15],[2.14,20],[2.19,25],[2.23,30],[2.28,35],[2.33,40],[2.38,45],[2.44,50],[2.51,55],[2.59,60],[2.7,65],[2.89,70],[3.17,75],[3.59,80],[4.67,85],[5.59,88],[6.19,90],[8.48,92],[9.26,94],[9.6,95],[9.94,96],[11.27,97],[12.17,98],[12.63,99]],
-  },
-  {
-    term: "2 terms",
-    example: "rust arc",
-    axisMax: 32.59,
-    us: [[2.88,0],[3.0,2],[3.08,5],[3.39,10],[3.57,15],[3.74,20],[4.3,25],[4.73,30],[4.96,35],[5.57,40],[5.97,45],[6.2,50],[6.47,55],[6.77,60],[7.87,65],[9.1,70],[9.34,75],[10.25,80],[10.67,85],[11.26,88],[13.23,90],[13.53,92],[16.19,94],[18.29,95],[19.92,96],[20.06,97],[32.44,98],[32.59,99]],
-    them: [[2.96,0],[3.2,2],[3.4,5],[3.95,10],[4.11,15],[4.29,20],[4.94,25],[5.29,30],[5.73,35],[6.0,40],[6.63,45],[7.36,50],[7.75,55],[8.44,60],[9.1,65],[10.27,70],[11.58,75],[11.95,80],[12.92,85],[14.21,88],[14.58,90],[14.95,92],[15.2,94],[15.44,95],[15.66,96],[15.89,97],[24.53,98],[24.72,99]],
-  },
-  {
-    term: "3 terms",
-    example: "rust arc clone",
-    axisMax: 22.4,
-    us: [[3.5,0],[3.76,2],[4.11,5],[4.64,10],[4.94,15],[5.15,20],[5.56,25],[6.32,30],[6.68,35],[7.0,40],[7.81,45],[8.28,50],[8.59,55],[8.91,60],[9.37,65],[9.99,70],[10.22,75],[10.55,80],[12.15,85],[14.36,88],[15.06,90],[15.61,92],[16.38,94],[17.21,95],[17.73,96],[17.81,97],[18.12,98],[18.23,99]],
-    them: [[3.85,0],[4.06,2],[4.35,5],[4.82,10],[5.2,15],[5.53,20],[5.94,25],[6.28,30],[6.44,35],[6.96,40],[8.35,45],[10.08,50],[10.63,55],[11.19,60],[12.06,65],[13.36,70],[13.7,75],[13.88,80],[17.23,85],[17.56,88],[18.03,90],[18.51,92],[19.91,94],[20.26,95],[20.45,96],[20.65,97],[22.24,98],[22.4,99]],
-  },
-];
-
-/** A backend's smoothed log-density ridge (0..1 per bin) + percentile markers. */
-export type RidgeSeries = {
-  density: number[];
-  p50: number;
-  p90: number;
-  p99: number;
-};
-
-/** Latency distribution ridgelines per term shape, ParadeDB vs Elasticsearch. */
-export type TermRidge = {
-  term: string;
-  example: string;
-  /** log10 x-domain bounds the density bins are spread across */
-  lxmin: number;
-  lxmax: number;
-  /** ms tick values (nice 1/2/5 log ticks within the domain) */
-  ticks: number[];
-  us: RidgeSeries;
-  them: RidgeSeries;
-};
-
-/**
- * Latency distributions as smoothed log-density ridgelines, computed from the
- * raw benchmarker samples (HN TopK run of 2026-06-10). Each `density` array is
- * a normalised histogram over log-spaced latency bins; markers are the real
- * p50/p90/p99. Mirrors the benchmarker dashboard's ridgeline view.
- */
-export const elasticsearchRidgeByTerm: TermRidge[] = [
-  { term: "1 term", example: "privacy", lxmin: 0.2228, lxmax: 1.2834, ticks: [2, 5, 10, 20],
-    us: { density: [0.0,0.0,0.0,0.023,0.136,0.355,0.583,0.705,0.709,0.722,0.856,1.0,0.981,0.805,0.555,0.29,0.098,0.02,0.004,0.002,0.002,0.001,0.007,0.032,0.066,0.07,0.049,0.056,0.077,0.06,0.022,0.016,0.053,0.079,0.055,0.016,0.001,0.001,0.0,0.001,0.001,0.0,0.014,0.054,0.081,0.054,0.014,0.0], p50: 2.99, p90: 5.84, p99: 16.0 },
-    them: { density: [0.034,0.125,0.314,0.588,0.847,0.984,0.971,0.842,0.65,0.462,0.327,0.257,0.219,0.186,0.153,0.122,0.091,0.072,0.071,0.082,0.087,0.077,0.069,0.071,0.078,0.077,0.061,0.04,0.024,0.017,0.02,0.043,0.078,0.101,0.097,0.069,0.041,0.04,0.061,0.068,0.048,0.023,0.011,0.007,0.004,0.002,0.001,0.0], p50: 2.44, p90: 6.19, p99: 12.63 } },
-  { term: "2 terms", example: "rust arc", lxmin: 0.4417, lxmax: 1.5923, ticks: [5, 10, 20],
-    us: { density: [0.261,0.499,0.616,0.703,0.779,0.664,0.462,0.426,0.517,0.595,0.598,0.548,0.599,0.807,1.0,0.945,0.646,0.384,0.316,0.367,0.489,0.618,0.678,0.731,0.724,0.498,0.218,0.139,0.163,0.125,0.101,0.141,0.136,0.092,0.118,0.161,0.112,0.032,0.002,0.0,0.0,0.0,0.027,0.107,0.162,0.11,0.03,0.002], p50: 6.2, p90: 13.23, p99: 32.59 },
-    them: { density: [0.043,0.163,0.319,0.377,0.352,0.471,0.754,0.869,0.647,0.388,0.42,0.623,0.715,0.674,0.589,0.515,0.538,0.655,0.716,0.671,0.602,0.536,0.438,0.342,0.388,0.614,0.77,0.662,0.492,0.505,0.565,0.433,0.187,0.038,0.003,0.001,0.0,0.027,0.107,0.162,0.11,0.03,0.002,0.0,0.0,0.0,0.0,0.0], p50: 7.36, p90: 14.58, p99: 24.72 } },
-  { term: "3 terms", example: "rust arc clone", lxmin: 0.5261, lxmax: 1.4295, ticks: [5, 10, 20],
-    us: { density: [0.049,0.132,0.221,0.293,0.348,0.357,0.342,0.436,0.655,0.766,0.63,0.439,0.354,0.334,0.424,0.617,0.664,0.497,0.397,0.541,0.794,0.944,0.913,0.807,0.846,0.941,0.774,0.447,0.23,0.114,0.078,0.155,0.261,0.288,0.282,0.31,0.318,0.32,0.336,0.254,0.102,0.017,0.001,0.0,0.0,0.0,0.0,0.0], p50: 8.28, p90: 15.06, p99: 18.23 },
-    them: { density: [0.0,0.015,0.075,0.174,0.295,0.412,0.436,0.378,0.394,0.503,0.572,0.579,0.654,0.818,0.867,0.708,0.512,0.38,0.234,0.112,0.146,0.272,0.281,0.18,0.201,0.409,0.629,0.706,0.63,0.5,0.508,0.796,1.0,0.692,0.219,0.041,0.12,0.307,0.438,0.426,0.383,0.354,0.295,0.218,0.125,0.038,0.003,0.0], p50: 10.08, p90: 18.03, p99: 22.4 } },
-];

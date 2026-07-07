@@ -20,16 +20,14 @@ export default function Benchmark() {
               <span className="text-highlight-blink">Postgres</span>.
             </h2>
             <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl leading-relaxed">
-              A LIMIT 10 TopK relevance search over the Hacker News archive,
-              ordered by BM25 score, on identical hardware. Across latency and
-              throughput, ParadeDB runs level with a dedicated search engine on a
-              single term, and pulls ahead as queries grow to two and three
-              terms.
+              On a TopK BM25 relevance search over 28M Hacker News rows, running on
+              identical hardware. In both latency and throughput, ParadeDB matches
+              Elasticsearch on a single term and pulls ahead as the number of terms grows.
             </p>
           </div>
 
           {/* Chart */}
-          <div className="px-4 md:px-12">
+          <div className="px-6 md:px-12">
             <div className="max-w-3xl mx-auto">
               <BenchmarkPanel />
             </div>

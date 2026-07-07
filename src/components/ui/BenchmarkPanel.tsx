@@ -1,10 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { type BarMetric } from "@/components/vs/BenchmarkChart";
 import {
-  elasticsearchBenchmark,
-  elasticsearchCdfByTerm,
+  BENCHMARK_COLUMNS,
+  type BenchmarkColumnKey,
+  elasticsearchCdfByColumn,
+  elasticsearchThroughputByColumn,
+  type TermCdf,
 } from "@/components/vs/elasticsearch-benchmark";
 
 const pixelShadow = (color: string) => ({
@@ -14,11 +16,8 @@ const pixelShadow = (color: string) => ({
 });
 const indigoShadowStyle = pixelShadow("4f46e5");
 
-const throughputMetric = elasticsearchBenchmark.metrics.find(
-  (m): m is BarMetric => m.key === "throughput",
-);
-// Just 1/2/3 terms — drop the "Multi-term" row.
-const THROUGHPUT_ROWS = (throughputMetric?.rows ?? []).slice(0, 3);
+const fieldOf = (column: BenchmarkColumnKey) =>
+  BENCHMARK_COLUMNS.find((c) => c.key === column)!.field;
 
 /** Build ~4 evenly spaced "nice" axis ticks from 0 up past maxVal. */
 function axisTicks(maxVal: number) {
@@ -36,7 +35,7 @@ function axisTicks(maxVal: number) {
 
 // Chart geometry (responsive via viewBox).
 const CW = 660;
-const CH = 300;
+const CH = 250;
 const CM = { top: 12, right: 14, bottom: 28, left: 40 };
 const CPW = CW - CM.left - CM.right;
 const CPH = CH - CM.top - CM.bottom;
@@ -63,12 +62,20 @@ function Legend() {
   );
 }
 
-function QueryChip({ value, quoted }: { value: string; quoted: boolean }) {
+function QueryChip({
+  field,
+  value,
+  quoted,
+}: {
+  field: string;
+  value: string;
+  quoted: boolean;
+}) {
   const q = quoted ? "'" : "";
   return (
     <div className="mb-4 overflow-x-auto whitespace-nowrap font-mono text-[11px] text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-1.5">
       <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">›</span>
-      WHERE text ||| {q}
+      WHERE {field} ||| {q}
       <span className="text-indigo-600 dark:text-indigo-400">{value}</span>
       {q} ORDER BY pdb.score(id) DESC LIMIT 10
     </div>
@@ -83,25 +90,33 @@ function Caption({ text }: { text: string }) {
   );
 }
 
-/** Segmented sub-toggle (term shapes) styled like the site's small tab boxes. */
-function TermTabs({
+/** Small segmented control styled like the site's tab boxes. */
+function Segmented<T extends string>({
+  options,
   active,
   setActive,
+  ariaLabel,
 }: {
-  active: number;
-  setActive: (i: number) => void;
+  options: { key: T; label: string }[];
+  active: T;
+  setActive: (k: T) => void;
+  ariaLabel?: string;
 }) {
   return (
-    <div className="inline-flex self-start border border-slate-200 dark:border-slate-700">
-      {elasticsearchCdfByTerm.map((t, i) => {
-        const on = i === active;
+    <div
+      role="group"
+      aria-label={ariaLabel}
+      className="inline-grid auto-cols-fr grid-flow-col self-start border border-slate-200 dark:border-slate-700"
+    >
+      {options.map((o, i) => {
+        const on = o.key === active;
         return (
           <button
-            key={t.term}
+            key={o.key}
             type="button"
-            onClick={() => setActive(i)}
+            onClick={() => setActive(o.key)}
             aria-pressed={on}
-            className={`px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-[0.15em] transition-colors ${
+            className={`px-3.5 py-1.5 text-center font-mono text-[11px] uppercase tracking-[0.15em] transition-colors ${
               i > 0 ? "border-l border-slate-200 dark:border-slate-700" : ""
             } ${
               on
@@ -109,7 +124,7 @@ function TermTabs({
                 : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
             }`}
           >
-            {t.term}
+            {o.label}
           </button>
         );
       })}
@@ -117,10 +132,120 @@ function TermTabs({
   );
 }
 
-// ── latency: empirical CDF — % of queries completed by each latency ────────
-function LatencyBody() {
+/** Term-shape sub-toggle (1 / 2 / 3 terms). */
+function TermTabs({
+  terms,
+  active,
+  setActive,
+}: {
+  terms: TermCdf[];
+  active: number;
+  setActive: (i: number) => void;
+}) {
+  return (
+    <Segmented
+      ariaLabel="Number of terms"
+      active={String(active)}
+      setActive={(k) => setActive(Number(k))}
+      options={terms.map((t, i) => ({ key: String(i), label: t.term }))}
+    />
+  );
+}
+
+// ── latency: p50 / p90 / p95 bars, with a throughput (QPS) summary below ──
+function LatencyBarsBody({ column }: { column: BenchmarkColumnKey }) {
   const [active, setActive] = useState(0);
-  const term = elasticsearchCdfByTerm[active];
+  const terms = elasticsearchCdfByColumn[column];
+  const term = terms[active];
+  const tp = elasticsearchThroughputByColumn[column][active];
+  // p50/p90/p95 are exact sampled levels in the CDF points.
+  const at = (pts: number[][], pct: number) =>
+    pts.find((p) => p[1] === pct)?.[0] ?? 0;
+  const rows = [
+    { label: "p50", us: at(term.us, 50), them: at(term.them, 50) },
+    { label: "p90", us: at(term.us, 90), them: at(term.them, 90) },
+    { label: "p95", us: at(term.us, 95), them: at(term.them, 95) },
+  ];
+  const max = Math.max(...rows.flatMap((r) => [r.us, r.them]));
+
+  const bar = (value: number, solid: string, valueClass: string) => (
+    <div className="flex items-center gap-3">
+      <div className="flex-1 min-w-0 h-6 bg-slate-100 dark:bg-slate-800/50 relative">
+        <div
+          className={`absolute inset-y-0 left-0 ${solid}`}
+          style={{ width: `${(value / max) * 100}%` }}
+        />
+      </div>
+      <span
+        className={`w-20 shrink-0 whitespace-nowrap text-right font-mono text-sm tabular-nums ${valueClass}`}
+      >
+        {value.toFixed(2)}
+        <span className="text-slate-400 dark:text-slate-500"> ms</span>
+      </span>
+    </div>
+  );
+
+  return (
+    <>
+      <div className="mb-4">
+        <TermTabs terms={terms} active={active} setActive={setActive} />
+      </div>
+
+      <QueryChip field={fieldOf(column)} value={term.example} quoted />
+      <Caption text="Latency · ms · lower is better" />
+
+      <div className="space-y-4">
+        {rows.map((row) => (
+          <div key={row.label}>
+            <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+              {row.label}
+            </div>
+            <div className="space-y-1.5">
+              {bar(row.us, "bg-indigo-500", "text-slate-900 dark:text-white")}
+              {bar(
+                row.them,
+                "bg-slate-400 dark:bg-slate-500",
+                "text-slate-600 dark:text-slate-300",
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {tp && (
+        <div className="mt-5 pt-4 border-t border-slate-200 dark:border-slate-800">
+          <div className="mb-2.5 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+            Throughput · QPS · higher is better
+          </div>
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-lg font-semibold tabular-nums text-indigo-600 dark:text-indigo-400">
+                {tp.us}
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                ParadeDB
+              </span>
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-lg font-semibold tabular-nums text-slate-600 dark:text-slate-300">
+                {tp.them}
+              </span>
+              <span className="text-xs text-slate-500 dark:text-slate-400">
+                Elasticsearch
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+// ── latency: empirical CDF — % of queries completed by each latency ────────
+function LatencyCdfBody({ column }: { column: BenchmarkColumnKey }) {
+  const [active, setActive] = useState(0);
+  const terms = elasticsearchCdfByColumn[column];
+  const term = terms[active];
   const { ticks } = axisTicks(term.axisMax);
   const xMax = ticks[ticks.length - 1];
   const xOf = (lat: number) => CM.left + (Math.min(lat, xMax) / xMax) * CPW;
@@ -136,12 +261,11 @@ function LatencyBody() {
 
   return (
     <>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4">
-        <TermTabs active={active} setActive={setActive} />
-        <Legend />
+      <div className="mb-4">
+        <TermTabs terms={terms} active={active} setActive={setActive} />
       </div>
 
-      <QueryChip value={term.example} quoted />
+      <QueryChip field={fieldOf(column)} value={term.example} quoted />
       <Caption text="Latency CDF · % of queries ≤ latency (ms) · left is faster" />
 
       <svg
@@ -235,67 +359,12 @@ function LatencyBody() {
   );
 }
 
-// ── throughput: grouped bars across terms ─────────────────────────────────
-function ThroughputBody() {
-  const rows = THROUGHPUT_ROWS.map((r, i) => ({
-    label: elasticsearchCdfByTerm[i]?.term ?? r.label,
-    us: r.us,
-    them: r.them,
-  }));
-  const max = Math.max(...rows.flatMap((r) => [r.us, r.them]));
-
-  const bar = (value: number, solid: string, valueClass: string) => (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 min-w-0 h-7 bg-slate-100 dark:bg-slate-800/50 relative">
-        <div
-          className={`absolute inset-y-0 left-0 ${solid}`}
-          style={{ width: `${(value / max) * 100}%` }}
-        />
-      </div>
-      <span
-        className={`w-14 shrink-0 text-right font-mono text-sm tabular-nums ${valueClass}`}
-      >
-        {value}
-      </span>
-    </div>
-  );
-
-  return (
-    <>
-      <div className="flex justify-end mb-4">
-        <Legend />
-      </div>
-
-      <QueryChip value="$1" quoted={false} />
-      <Caption text="Throughput · QPS · higher is better" />
-
-      <div className="space-y-6">
-        {rows.map((row) => (
-          <div key={row.label}>
-            <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {row.label}
-            </div>
-            <div className="space-y-1.5">
-              {bar(row.us, "bg-indigo-500", "text-slate-900 dark:text-white")}
-              {bar(
-                row.them,
-                "bg-slate-400 dark:bg-slate-500",
-                "text-slate-600 dark:text-slate-300",
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
-  );
-}
-
 // ── reproduce: the commands to run it yourself ────────────────────────────
 const REPRODUCE_LINES = [
   "git clone https://github.com/paradedb/benchmarker.git",
   "cd benchmarker && make",
   "",
-  "# Pull the Hacker News dataset",
+  "# Pull the Hacker News dataset (28M rows)",
   "./bin/loader pull --dataset hn --anonymous \\",
   "    --source s3://paradedb-benchmarker/datasets/hn",
   "",
@@ -342,14 +411,16 @@ function ReproduceBody() {
 
 // ── panel: three boxes, tab toggle drawn into the frame ────────────────────
 const METRICS = [
-  { key: "latency", label: "Latency" },
-  { key: "throughput", label: "Throughput" },
+  { key: "bars", label: "Latency" },
+  { key: "cdf", label: "Latency CDF" },
   { key: "reproduce", label: "Reproduce" },
 ] as const;
 
 export default function BenchmarkPanel() {
   const [metric, setMetric] =
-    useState<(typeof METRICS)[number]["key"]>("latency");
+    useState<(typeof METRICS)[number]["key"]>("bars");
+  const [column, setColumn] = useState<BenchmarkColumnKey>("text");
+  const columnNote = BENCHMARK_COLUMNS.find((c) => c.key === column)!.note;
 
   return (
     <div className="relative">
@@ -378,30 +449,51 @@ export default function BenchmarkPanel() {
       {/* Content box — the active box's body */}
       <div className="relative">
         <div
-          className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
+          className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5 pointer-events-none"
           aria-hidden="true"
           style={indigoShadowStyle}
         />
         <div className="relative bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-500 p-4 sm:p-6">
-          {/* Both bodies share one grid cell, so the box always reserves the
+          {/* Column toggle + legend — applies to every data tab */}
+          {metric !== "reproduce" && (
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-5 pb-4 border-b border-slate-200 dark:border-slate-800">
+              <div className="flex items-center gap-3">
+                <Segmented
+                  ariaLabel="Indexed column"
+                  options={BENCHMARK_COLUMNS.map((c) => ({
+                    key: c.key,
+                    label: c.label,
+                  }))}
+                  active={column}
+                  setActive={setColumn}
+                />
+                <span className="hidden sm:inline text-xs text-slate-500 dark:text-slate-400">
+                  {columnNote}
+                </span>
+              </div>
+              <Legend />
+            </div>
+          )}
+
+          {/* Every body shares one grid cell, so the box always reserves the
               tallest and never changes height on toggle. min-w-0 keeps long
               lines (query chip, code) from stretching the box on mobile. */}
           <div className="grid min-w-0">
             <div
               className={`col-start-1 row-start-1 min-w-0 ${
-                metric === "latency" ? "" : "invisible pointer-events-none"
+                metric === "bars" ? "" : "invisible pointer-events-none"
               }`}
-              aria-hidden={metric !== "latency"}
+              aria-hidden={metric !== "bars"}
             >
-              <LatencyBody />
+              <LatencyBarsBody column={column} />
             </div>
             <div
               className={`col-start-1 row-start-1 min-w-0 ${
-                metric === "throughput" ? "" : "invisible pointer-events-none"
+                metric === "cdf" ? "" : "invisible pointer-events-none"
               }`}
-              aria-hidden={metric !== "throughput"}
+              aria-hidden={metric !== "cdf"}
             >
-              <ThroughputBody />
+              <LatencyCdfBody column={column} />
             </div>
             <div
               className={`col-start-1 row-start-1 min-w-0 ${
@@ -413,21 +505,20 @@ export default function BenchmarkPanel() {
             </div>
           </div>
 
-          {/* Footnote + source */}
+          {/* Measurement + dataset facts + raw data */}
           <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-            {elasticsearchBenchmark.footnote}
-            {elasticsearchBenchmark.source && (
-              <>
-                {" "}
-                <a
-                  href={elasticsearchBenchmark.source.href}
-                  className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
-                >
-                  {elasticsearchBenchmark.source.label}
-                </a>
-                .
-              </>
-            )}
+            Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an
+            identical 4-CPU, 16 GB Docker container under 4 concurrent
+            connections, second run after JVM warmup over a rotating pool of 50
+            queries. Hacker News dataset, 28M rows.{" "}
+            <a
+              href={`/paradedb-vs-elasticsearch-${column}.json`}
+              download
+              className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
+            >
+              Download raw result JSON
+            </a>
+            .
           </p>
         </div>
       </div>
