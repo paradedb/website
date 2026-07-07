@@ -38,7 +38,7 @@ export default function Benchmark() {
           <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
           <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-          <div className="mx-auto w-full max-w-[1128px] px-6 xl:px-0">
+          <div className="mx-auto w-full max-w-[1128px] px-8 sm:px-12 xl:px-0">
             <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
               {/* Header */}
               <div className="flex flex-col items-start text-left xl:pl-6">

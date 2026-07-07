@@ -453,7 +453,7 @@ export default function BenchmarkPanel() {
     // section's right inner grid line falls exactly on the card's edge.
     <div
       ref={cardRef}
-      className="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 xl:border-r-0 p-4 sm:p-6"
+      className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 xl:border-r-0 p-4 sm:p-6"
     >
       {/* At xl, extend the card's top and bottom borders left to the
           section's left inner grid line (503px = text column width + gap,
