@@ -2,17 +2,17 @@
   "name": "paradedb-website",
   "version": "0.2.0",
   "private": true,
-  "license": "Apache-2.0",
   "description": "ParadeDB marketing website",
   "repository": {
     "type": "git",
     "url": "https://github.com/paradedb/website.git"
   },
+  "license": "Apache-2.0",
   "scripts": {
-    "dev": "node scripts/generate-content-index.js && next dev --webpack",
     "build": "node scripts/generate-content-index.js && next build --webpack && next-sitemap && node scripts/generate-llms-txt.js && node scripts/generate-markdown.js",
-    "start": "next start",
-    "lint": "eslint ."
+    "dev": "node scripts/generate-content-index.js && next dev --webpack",
+    "lint": "eslint .",
+    "start": "next start"
   },
   "dependencies": {
     "@headlessui/react": "^2.2.10",
@@ -70,10 +70,11 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.4",
     "postcss": "^8.5.12",
-    "prettier": "^3.8.3",
+    "prettier": "^3.9.4",
     "prettier-plugin-tailwindcss": "^0.7.3",
     "shiki": "^4.0.2",
     "tailwindcss": "^4.2.4",
     "typescript": "^6.0.3"
-  }
+  },
+  "packageManager": "pnpm@11.10.0"
 }
