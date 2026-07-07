@@ -5,7 +5,7 @@ import CloudShell from "@/components/ui/CloudShell";
 export const metadata: Metadata = {
   title: "ParadeDB Cloud — Join the waitlist",
   description:
-    "ParadeDB Cloud is fully managed Postgres with full-text search, vector retrieval, and analytics built in. Join the waitlist for early access.",
+    "ParadeDB Cloud is fully managed Postgres with production-grade full-text search, vector retrieval, and aggregations built in. Join the waitlist for early access.",
   alternates: { canonical: "/cloud" },
   openGraph: {
     title: "ParadeDB Cloud — Join the waitlist",
