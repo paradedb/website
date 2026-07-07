@@ -41,7 +41,7 @@ export default function Benchmark() {
           <div className="mx-auto w-full max-w-[1128px] px-8 sm:px-12 xl:px-0">
             <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:gap-14">
               {/* Header */}
-              <div className="flex flex-col items-start text-left xl:pl-6">
+              <div className="flex flex-col items-start text-left xl:pl-12">
                 <Badge className="mb-5">Benchmark</Badge>
                 <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
                   Elastic-quality{" "}
