@@ -417,8 +417,7 @@ const METRICS = [
 ] as const;
 
 export default function BenchmarkPanel() {
-  const [metric, setMetric] =
-    useState<(typeof METRICS)[number]["key"]>("bars");
+  const [metric, setMetric] = useState<(typeof METRICS)[number]["key"]>("bars");
   const [column, setColumn] = useState<BenchmarkColumnKey>("text");
   const columnNote = BENCHMARK_COLUMNS.find((c) => c.key === column)!.note;
 
