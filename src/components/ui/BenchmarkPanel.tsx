@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState } from "react";
 import {
   elasticsearchCdf,
   type TermCdf,
@@ -22,25 +22,32 @@ function axisTicks(maxVal: number) {
 
 // Chart geometry (responsive via viewBox).
 const CW = 660;
-const CH = 250;
+const CH = 205;
 const CM = { top: 12, right: 14, bottom: 28, left: 40 };
 const CPW = CW - CM.left - CM.right;
 const CPH = CH - CM.top - CM.bottom;
 
+// SQL syntax-highlight token colors.
+const SQL_KW = "text-indigo-600 dark:text-indigo-400";
+const SQL_STR = "text-emerald-600 dark:text-emerald-400";
+const SQL_FN = "text-sky-600 dark:text-sky-400";
+const SQL_NUM = "text-amber-600 dark:text-amber-500";
+const SQL_PUNC = "text-slate-400 dark:text-slate-500";
+
 // ── shared pieces ─────────────────────────────────────────────────────────
 function Legend() {
   return (
-    <div className="flex items-center gap-4 text-xs text-slate-600 dark:text-slate-300">
+    <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-500 sm:gap-4 sm:text-[11px] sm:tracking-[0.18em] dark:text-slate-400">
       <span className="flex items-center gap-2">
         <span
-          className="inline-block size-2.5 rounded-full bg-indigo-500"
+          className="inline-block size-3 rounded-full bg-indigo-500"
           aria-hidden
         />
         ParadeDB
       </span>
       <span className="flex items-center gap-2">
         <span
-          className="inline-block size-2.5 rounded-full bg-slate-200 dark:bg-slate-600"
+          className="inline-block size-3 rounded-full bg-slate-300 dark:bg-slate-500"
           aria-hidden
         />
         Elasticsearch
@@ -49,85 +56,91 @@ function Legend() {
   );
 }
 
-function QueryChip({
-  field,
+/** A SQL "editor": the query on top, its chart output below in the same box,
+    so it reads like running the query yields the graph. Spans the full card. */
+function QueryEditor({
   value,
-  quoted,
+  caption,
+  legend = true,
+  children,
 }: {
-  field: string;
   value: string;
-  quoted: boolean;
-}) {
-  const q = quoted ? "'" : "";
-  return (
-    <div className="mb-4 overflow-x-auto font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-4">
-      <div className="whitespace-nowrap text-slate-400 dark:text-slate-500">
-        -- Top 10 posts by BM25 relevance
-      </div>
-      <div className="whitespace-nowrap">
-        <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">›</span>
-        SELECT * FROM hackernews
-      </div>
-      <div className="whitespace-nowrap pl-3">
-        WHERE {field} ||| {q}
-        <span className="text-indigo-600 dark:text-indigo-400">{value}</span>
-        {q} ORDER BY pdb.score(id) DESC LIMIT 10
-      </div>
-    </div>
-  );
-}
-
-function Caption({ text }: { text: string }) {
-  return (
-    <div className="mb-4 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-      {text}
-    </div>
-  );
-}
-
-/** Small segmented control styled like the site's tab boxes. */
-function Segmented<T extends string>({
-  options,
-  active,
-  setActive,
-  ariaLabel,
-}: {
-  options: { key: T; label: string }[];
-  active: T;
-  setActive: (k: T) => void;
-  ariaLabel?: string;
+  caption: string;
+  legend?: boolean;
+  children: ReactNode;
 }) {
   return (
-    <div
-      role="group"
-      aria-label={ariaLabel}
-      className="inline-grid auto-cols-fr grid-flow-col self-start border border-slate-200 dark:border-slate-700"
-    >
-      {options.map((o, i) => {
-        const on = o.key === active;
-        return (
-          <button
-            key={o.key}
-            type="button"
-            onClick={() => setActive(o.key)}
-            aria-pressed={on}
-            className={`px-3.5 py-1.5 text-center font-mono text-[11px] uppercase tracking-[0.15em] transition-colors ${
-              i > 0 ? "border-l border-slate-200 dark:border-slate-700" : ""
-            } ${
-              on
-                ? "bg-indigo-500 text-white"
-                : "text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white"
-            }`}
-          >
-            {o.label}
-          </button>
-        );
-      })}
+    <div className="flex flex-1 flex-col border border-slate-200 dark:border-slate-800">
+      <div className="flex flex-1 flex-col sm:flex-row">
+        {/* Query (left) — editor with line-number gutter + syntax colors */}
+        <div className="flex shrink-0 overflow-x-auto border-b border-slate-200 bg-slate-50 py-3 font-mono text-[13px] leading-6 sm:w-96 sm:border-b-0 sm:border-r dark:border-slate-800 dark:bg-slate-900/60">
+          <div className="shrink-0 select-none border-r border-slate-200 px-3 text-right text-slate-400 dark:border-slate-800 dark:text-slate-600">
+            <div>1</div>
+            <div>2</div>
+            <div>3</div>
+            <div>4</div>
+          </div>
+          <div className="px-3 text-slate-700 dark:text-slate-300">
+            <div className="whitespace-nowrap">
+              <span className={SQL_KW}>SELECT</span>{" "}
+              <span className={SQL_PUNC}>*</span>{" "}
+              <span className={SQL_KW}>FROM</span> hackernews
+            </div>
+            <div className="whitespace-nowrap">
+              <span className={SQL_KW}>WHERE</span> text{" "}
+              <span className={SQL_PUNC}>|||</span>{" "}
+              <span className={SQL_STR}>&apos;{value}&apos;</span>
+            </div>
+            <div className="whitespace-nowrap">
+              <span className={SQL_KW}>ORDER BY</span>{" "}
+              <span className={SQL_FN}>pdb.score</span>
+              <span className={SQL_PUNC}>(</span>id
+              <span className={SQL_PUNC}>)</span>
+            </div>
+            <div className="whitespace-nowrap">
+              <span className={SQL_KW}>DESC LIMIT</span>{" "}
+              <span className={SQL_NUM}>10</span>
+            </div>
+          </div>
+        </div>
+        {/* Output (right) */}
+        <div className="min-w-0 flex-1 p-4">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-slate-500 sm:text-[11px] sm:tracking-[0.18em] dark:text-slate-400">
+              {caption}
+            </span>
+            {legend && <Legend />}
+          </div>
+          {children}
+        </div>
+      </div>
     </div>
   );
 }
 
-/** Term-shape sub-toggle (1 / 2 / 3 terms). */
+/** Measurement + dataset facts + raw-data link, shown under the data tabs. */
+function MeasurementNote() {
+  return (
+    <p className="mt-auto pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+      Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
+      4-CPU, 16 GB Docker container queried by a single client, second run after
+      JVM warmup over a rotating pool of 50 queries. Hacker News dataset, 28M
+      rows.{" "}
+      <a
+        href="/benchmarks/topk_10_hn_text.json"
+        download
+        className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
+      >
+        Download raw result JSON
+      </a>
+      .
+    </p>
+  );
+}
+
+/** Term-shape tabs (1 / 2 / 3 terms) that sit flush on top of the query box,
+    like tabs coming out of it. The active tab drops its bottom border so it
+    reads as connected to the box; inactive tabs share the box's fill. */
 function TermTabs({
   terms,
   active,
@@ -138,12 +151,32 @@ function TermTabs({
   setActive: (i: number) => void;
 }) {
   return (
-    <Segmented
-      ariaLabel="Number of terms"
-      active={String(active)}
-      setActive={(k) => setActive(Number(k))}
-      options={terms.map((t, i) => ({ key: String(i), label: t.term }))}
-    />
+    <div
+      role="group"
+      aria-label="Number of terms"
+      className="relative z-10 -mb-px flex w-full sm:w-fit"
+    >
+      {terms.map((t, i) => {
+        const on = i === active;
+        return (
+          <button
+            key={t.term}
+            type="button"
+            aria-pressed={on}
+            onClick={() => setActive(i)}
+            className={`flex-1 whitespace-nowrap border-t border-r px-2 py-1.5 text-center font-mono text-[11px] uppercase tracking-[0.15em] transition-colors sm:flex-none sm:px-3.5 ${
+              i === 0 ? "border-l" : ""
+            } ${
+              on
+                ? "border-indigo-500 bg-indigo-500 text-white"
+                : "border-b border-slate-200 bg-slate-50 text-slate-500 hover:text-slate-900 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400 dark:hover:text-white"
+            }`}
+          >
+            {t.term}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -177,8 +210,8 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
   }, [animate, active]);
 
   const bar = (value: number, solid: string, valueClass: string) => (
-    <div className="flex items-center gap-3">
-      <div className="flex-1 min-w-0 h-6 relative">
+    <div className="flex items-center gap-2 sm:gap-3">
+      <div className="flex-1 min-w-0 h-6 bg-slate-100 dark:bg-slate-800/50 relative">
         <div
           className={`absolute inset-y-0 left-0 origin-left ${solid} ${
             grown
@@ -189,7 +222,7 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
         />
       </div>
       <span
-        className={`w-20 shrink-0 whitespace-nowrap text-right font-mono text-sm tabular-nums ${valueClass}`}
+        className={`w-16 shrink-0 whitespace-nowrap text-right font-mono text-[11px] tabular-nums sm:w-20 ${valueClass}`}
       >
         {value.toFixed(2)} ms
       </span>
@@ -197,37 +230,33 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
   );
 
   return (
-    <>
-      <div className="mb-4 mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <TermTabs terms={terms} active={active} setActive={setActive} />
-        <Legend />
-      </div>
-
-      <QueryChip field="text" value={term.example} quoted />
-      <Caption text="Latency · ms · lower is better" />
-
-      <div className="space-y-4">
-        {rows.map((row) => (
-          <div key={row.label}>
-            <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-              {row.label}
+    <div className="flex h-full flex-col">
+      <TermTabs terms={terms} active={active} setActive={setActive} />
+      <QueryEditor value={term.example} caption="Latency · lower is better">
+        <div className="space-y-4">
+          {rows.map((row) => (
+            <div key={row.label}>
+              <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                {row.label}
+              </div>
+              <div className="space-y-1.5">
+                {bar(
+                  row.us,
+                  "bg-indigo-500",
+                  "text-indigo-600 dark:text-indigo-400",
+                )}
+                {bar(
+                  row.them,
+                  "bg-slate-300 dark:bg-slate-600",
+                  "text-slate-400 dark:text-slate-500",
+                )}
+              </div>
             </div>
-            <div className="space-y-1.5">
-              {bar(
-                row.us,
-                "bg-indigo-500",
-                "text-indigo-600 dark:text-indigo-400",
-              )}
-              {bar(
-                row.them,
-                "bg-slate-200 dark:bg-slate-600",
-                "text-slate-400 dark:text-slate-300",
-              )}
-            </div>
-          </div>
-        ))}
-      </div>
-    </>
+          ))}
+        </div>
+      </QueryEditor>
+      <MeasurementNote />
+    </div>
   );
 }
 
@@ -272,107 +301,103 @@ function LatencyCdfBody({ animate }: { animate: boolean }) {
   const yTicks = [0, 25, 50, 75, 100];
 
   return (
-    <>
-      <div className="mb-4 mt-2 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <TermTabs terms={terms} active={active} setActive={setActive} />
-        <Legend />
-      </div>
-
-      <QueryChip field="text" value={term.example} quoted />
-      <Caption text="Latency CDF · % of queries ≤ latency (ms) · left is faster" />
-
-      <svg
-        viewBox={`0 0 ${CW} ${CH}`}
-        className="w-full h-auto"
-        role="img"
-        aria-label={`Latency CDF for ${term.term} queries: ParadeDB versus Elasticsearch`}
-      >
-        {/* y gridlines + % labels */}
-        {yTicks.map((p) => (
-          <g key={`y${p}`}>
-            <line
-              x1={CM.left}
-              x2={CW - CM.right}
-              y1={yOf(p)}
-              y2={yOf(p)}
-              className="stroke-slate-100 dark:stroke-slate-800"
-              strokeWidth={1}
-            />
-            <text
-              x={CM.left - 8}
-              y={yOf(p)}
-              textAnchor="end"
-              dominantBaseline="middle"
-              className="font-mono text-[10px] tabular-nums fill-slate-400 dark:fill-slate-500"
-            >
-              {p}%
-            </text>
-          </g>
-        ))}
-
-        {/* x gridlines + ms labels */}
-        {ticks.map((tk) => (
-          <g key={`x${tk}`}>
-            <line
-              x1={xOf(tk)}
-              x2={xOf(tk)}
-              y1={CM.top}
-              y2={CM.top + CPH}
-              className="stroke-slate-100 dark:stroke-slate-800"
-              strokeWidth={1}
-            />
-            <text
-              x={xOf(tk)}
-              y={CH - CM.bottom + 16}
-              textAnchor="middle"
-              className="font-mono text-[10px] tabular-nums fill-slate-400 dark:fill-slate-500"
-            >
-              {tk}
-            </text>
-          </g>
-        ))}
-
-        {/* Elasticsearch (behind) */}
-        <path
-          d={path(term.them)}
-          fill="none"
-          pathLength={1}
-          className="stroke-slate-300 dark:stroke-slate-600"
-          strokeWidth={2}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          style={drawStyle(0)}
-        />
-        {/* ParadeDB (on top) */}
-        <path
-          d={path(term.us)}
-          fill="none"
-          pathLength={1}
-          className="stroke-indigo-500"
-          strokeWidth={2}
-          strokeLinejoin="round"
-          strokeLinecap="round"
-          style={drawStyle(120)}
-        />
-
-        {/* axis titles */}
-        <text
-          x={CM.left + CPW / 2}
-          y={CH - 2}
-          textAnchor="middle"
-          className="font-mono text-[9px] uppercase tracking-[0.1em] fill-slate-400 dark:fill-slate-500"
+    <div className="flex h-full flex-col">
+      <TermTabs terms={terms} active={active} setActive={setActive} />
+      <QueryEditor value={term.example} caption="% ≤ latency · left is faster">
+        <svg
+          viewBox={`0 0 ${CW} ${CH}`}
+          className="h-auto w-full"
+          role="img"
+          aria-label={`Latency CDF for ${term.term} queries: ParadeDB versus Elasticsearch`}
         >
-          latency (ms)
-        </text>
-        <text
-          transform={`translate(10 ${CM.top + CPH / 2}) rotate(-90)`}
-          textAnchor="middle"
-          className="font-mono text-[9px] uppercase tracking-[0.1em] fill-slate-400 dark:fill-slate-500"
-        >
-          % of queries ≤
-        </text>
-      </svg>
-    </>
+          {/* y gridlines + % labels */}
+          {yTicks.map((p) => (
+            <g key={`y${p}`}>
+              <line
+                x1={CM.left}
+                x2={CW - CM.right}
+                y1={yOf(p)}
+                y2={yOf(p)}
+                className="stroke-slate-100 dark:stroke-slate-800"
+                strokeWidth={1}
+              />
+              <text
+                x={CM.left - 8}
+                y={yOf(p)}
+                textAnchor="end"
+                dominantBaseline="middle"
+                className="font-mono text-[10px] tabular-nums fill-slate-400 dark:fill-slate-500"
+              >
+                {p}%
+              </text>
+            </g>
+          ))}
+
+          {/* x gridlines + ms labels */}
+          {ticks.map((tk) => (
+            <g key={`x${tk}`}>
+              <line
+                x1={xOf(tk)}
+                x2={xOf(tk)}
+                y1={CM.top}
+                y2={CM.top + CPH}
+                className="stroke-slate-100 dark:stroke-slate-800"
+                strokeWidth={1}
+              />
+              <text
+                x={xOf(tk)}
+                y={CH - CM.bottom + 16}
+                textAnchor="middle"
+                className="font-mono text-[10px] tabular-nums fill-slate-400 dark:fill-slate-500"
+              >
+                {tk}
+              </text>
+            </g>
+          ))}
+
+          {/* Elasticsearch (behind) */}
+          <path
+            d={path(term.them)}
+            fill="none"
+            pathLength={1}
+            className="stroke-slate-300 dark:stroke-slate-600"
+            strokeWidth={2}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            style={drawStyle(0)}
+          />
+          {/* ParadeDB (on top) */}
+          <path
+            d={path(term.us)}
+            fill="none"
+            pathLength={1}
+            className="stroke-indigo-500"
+            strokeWidth={2}
+            strokeLinejoin="round"
+            strokeLinecap="round"
+            style={drawStyle(120)}
+          />
+
+          {/* axis titles */}
+          <text
+            x={CM.left + CPW / 2}
+            y={CH - 2}
+            textAnchor="middle"
+            className="font-mono text-[9px] uppercase tracking-[0.1em] fill-slate-400 dark:fill-slate-500"
+          >
+            latency (ms)
+          </text>
+          <text
+            transform={`translate(10 ${CM.top + CPH / 2}) rotate(-90)`}
+            textAnchor="middle"
+            className="font-mono text-[9px] uppercase tracking-[0.1em] fill-slate-400 dark:fill-slate-500"
+          >
+            % of queries ≤
+          </text>
+        </svg>
+      </QueryEditor>
+      <MeasurementNote />
+    </div>
   );
 }
 
@@ -452,33 +477,22 @@ export default function BenchmarkPanel() {
   }, []);
 
   return (
-    // Card — the active view's body. No right border at xl, where the
-    // section's right inner grid line falls exactly on the card's edge.
+    // Card — the active view's body. The card spans the full content column,
+    // so at xl both side borders fall on the section's inner grid lines and are
+    // dropped to avoid doubling them.
     <div
       ref={cardRef}
-      className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-900 xl:border-r-0 p-4 sm:p-6"
+      className="relative bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-900 xl:border-x-0 p-4 sm:p-6"
     >
-      {/* At xl, extend the card's top and bottom borders left to the
-          section's left inner grid line (503px = text column width + gap,
-          constant since the content column is a fixed 1128px). */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-px -left-[504px] hidden h-px w-[504px] bg-slate-200 xl:block dark:bg-slate-900"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -bottom-px -left-[504px] hidden h-px w-[504px] bg-slate-200 xl:block dark:bg-slate-900"
-      />
-
       {/* View tabs — underline style matching the Architecture section, on a
           full-bleed bottom rule that divides them from the body. The tablist
           pulls down 1px so the active tab's underline covers the rule rather
           than doubling it. */}
-      <div className="-mx-4 -mt-4 mb-5 border-b border-slate-200 px-4 sm:-mx-6 sm:-mt-6 sm:px-6 dark:border-slate-800">
+      <div className="hidden -mx-4 -mt-4 mb-7 border-b border-slate-200 px-4 sm:block sm:-mx-6 sm:-mt-6 sm:px-6 dark:border-slate-900">
         <div
           role="tablist"
           aria-label="Benchmark view"
-          className="-mb-px flex w-full min-w-max items-end overflow-x-auto no-scrollbar"
+          className="-mb-px flex w-full items-end"
         >
           {METRICS.map((m, i) => {
             const on = m.key === metric;
@@ -489,20 +503,20 @@ export default function BenchmarkPanel() {
                 role="tab"
                 aria-selected={on}
                 onClick={() => setMetric(m.key)}
-                className={`group flex flex-shrink-0 sm:flex-1 items-center justify-center gap-2.5 whitespace-nowrap border-b-2 px-4 py-3 outline-none transition-colors ${
+                className={`group ${m.key === "bars" ? "flex" : "hidden sm:flex"} min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap border-b-2 px-2 py-3 outline-none transition-colors sm:gap-2.5 sm:px-4 ${
                   on
                     ? "border-indigo-600 text-indigo-900 dark:text-white"
                     : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
                 }`}
               >
                 <span
-                  className={`font-mono text-xs font-semibold ${
+                  className={`hidden font-mono text-xs font-semibold sm:inline ${
                     on ? "text-indigo-600 dark:text-indigo-400" : "opacity-50"
                   }`}
                 >
                   {String(i + 1).padStart(2, "0")}
                 </span>
-                <span className="text-sm font-semibold tracking-tight">
+                <span className="text-[13px] font-semibold tracking-tight sm:text-sm">
                   {m.label}
                 </span>
               </button>
@@ -517,45 +531,29 @@ export default function BenchmarkPanel() {
       <div className="grid min-w-0">
         <div
           className={`col-start-1 row-start-1 min-w-0 ${
-            metric === "bars" ? "" : "invisible pointer-events-none"
+            metric === "bars" ? "" : "sm:invisible sm:pointer-events-none"
           }`}
           aria-hidden={metric !== "bars"}
         >
           <LatencyBarsBody animate={metric === "bars" && inView} />
         </div>
         <div
-          className={`col-start-1 row-start-1 min-w-0 ${
-            metric === "cdf" ? "" : "invisible pointer-events-none"
+          className={`col-start-1 row-start-1 hidden min-w-0 sm:block ${
+            metric === "cdf" ? "" : "sm:invisible sm:pointer-events-none"
           }`}
           aria-hidden={metric !== "cdf"}
         >
           <LatencyCdfBody animate={metric === "cdf" && inView} />
         </div>
         <div
-          className={`col-start-1 row-start-1 min-w-0 ${
-            metric === "reproduce" ? "" : "invisible pointer-events-none"
+          className={`col-start-1 row-start-1 hidden min-w-0 sm:block ${
+            metric === "reproduce" ? "" : "sm:invisible sm:pointer-events-none"
           }`}
           aria-hidden={metric !== "reproduce"}
         >
           <ReproduceBody />
         </div>
       </div>
-
-      {/* Measurement + dataset facts + raw data */}
-      <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-300 leading-relaxed">
-        Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
-        4-CPU, 16 GB Docker container queried by a single client, second run
-        after JVM warmup over a rotating pool of 50 queries. Hacker News
-        dataset, 28M rows.{" "}
-        <a
-          href="/benchmarks/topk_10_hn_text.json"
-          download
-          className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
-        >
-          Download raw result JSON
-        </a>
-        .
-      </p>
     </div>
   );
 }
