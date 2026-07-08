@@ -1,5 +1,3 @@
-import type { BenchmarkData } from "./BenchmarkChart";
-
 /**
  * Head-to-head TopK benchmark numbers for ParadeDB vs Elasticsearch.
  *
@@ -46,7 +44,7 @@ export type TermCdf = {
 export const elasticsearchCdf: TermCdf[] = [
   {
     term: "1 term",
-    example: "privacy",
+    example: "rust",
     axisMax: 13.28,
     us: [
       [1.89, 0],
@@ -240,59 +238,3 @@ export const elasticsearchCdf: TermCdf[] = [
     ],
   },
 ];
-
-/**
- * Full BenchmarkData for the /vs/elasticsearch comparison page — the `text`
- * column figures, including box (p5/p25/p50/p75/p95) latency stats.
- */
-export const elasticsearchBenchmark: BenchmarkData = {
-  subhead:
-    "A LIMIT 10 TopK relevance search over a slice of the Hacker News archive, ordered by BM25 score and run from a single client in a closed loop. Everything is held constant except the term shape.",
-  metrics: [
-    {
-      key: "throughput",
-      label: "Throughput",
-      unit: "QPS",
-      hint: "higher is better",
-      rows: elasticsearchThroughput,
-    },
-    {
-      key: "latency",
-      kind: "box",
-      label: "Latency",
-      unit: "ms",
-      hint: "lower is better",
-      lowerIsBetter: true,
-      decimals: 2,
-      summary: { box: "p25–p75", line: "p50", whisker: "p5–p95" },
-      rows: [
-        {
-          label: "Single term",
-          us: { low: 2.05, q1: 2.24, med: 2.56, q3: 2.85, high: 6.09 },
-          them: { low: 1.81, q1: 1.95, med: 2.04, q3: 2.14, high: 9.98 },
-        },
-        {
-          label: "Two terms",
-          us: { low: 3.02, q1: 4.36, med: 6.05, q3: 9.17, high: 16.96 },
-          them: { low: 3.66, q1: 5.52, med: 8.24, q3: 13.04, high: 17.56 },
-        },
-        {
-          label: "Three terms",
-          us: { low: 3.85, q1: 4.94, med: 6.99, q3: 9.28, high: 14.67 },
-          them: { low: 4.54, q1: 6.08, med: 9.84, q3: 13.9, high: 20.69 },
-        },
-        {
-          label: "Multi-term",
-          us: { low: 4.7, q1: 5.9, med: 11.71, q3: 18.76, high: 37.7 },
-          them: { low: 4.95, q1: 8, med: 19.08, q3: 23.9, high: 31.21 },
-        },
-      ],
-    },
-  ],
-  source: {
-    href: "/blog/paradedb-vs-elasticsearch",
-    label: "Full methodology and benchmark detail",
-  },
-  footnote:
-    "Measured on ParadeDB 0.24.1 and Elasticsearch 8.17 on identical hardware, taken from the second run after JVM warmup over a rotating pool of 50 queries.",
-};

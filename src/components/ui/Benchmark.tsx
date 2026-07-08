@@ -1,5 +1,6 @@
-import Link from "next/link";
-import { RiArrowRightLine } from "@remixicon/react";
+// Link + arrow used by the commented-out "See the full comparison" CTA below.
+// import Link from "next/link";
+// import { RiArrowRightLine } from "@remixicon/react";
 import { Badge } from "./Badge";
 import BenchmarkPanel from "./BenchmarkPanel";
 
@@ -48,10 +49,11 @@ export default function Benchmark() {
                   <span className="text-highlight-blink">performance</span>.
                 </h2>
                 <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed">
-                  Built on Tantivy, the Rust port of Lucene, ParadeDB keeps pace
-                  with or pulls ahead of Elasticsearch on full text search.
+                  Built on Tantivy, the Rust port of Lucene, ParadeDB goes
+                  toe-to-toe with Elasticsearch on full text search, often
+                  coming out on top.
                 </p>
-
+                {/* Hidden until the /vs/elasticsearch page ships
                 <Link
                   href="/vs/elasticsearch"
                   className="group mt-8 inline-flex items-center gap-2 text-indigo-950 dark:text-white font-semibold hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors duration-200"
@@ -59,6 +61,7 @@ export default function Benchmark() {
                   See the full comparison
                   <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </Link>
+                */}
               </div>
 
               {/* Chart */}

@@ -60,7 +60,10 @@ function QueryChip({
 }) {
   const q = quoted ? "'" : "";
   return (
-    <div className="mb-4 overflow-x-auto font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-4">
+    <div className="mb-4 overflow-x-auto font-mono text-[11px] leading-relaxed text-slate-600 dark:text-slate-300 bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 px-2.5 py-4">
+      <div className="whitespace-nowrap text-slate-400 dark:text-slate-500">
+        -- Top 10 posts by BM25 relevance
+      </div>
       <div className="whitespace-nowrap">
         <span className="text-indigo-500 dark:text-indigo-400 mr-1.5">›</span>
         SELECT * FROM hackernews
@@ -144,16 +147,16 @@ function TermTabs({
   );
 }
 
-// ── latency: p90 / p95 bars ────────────────────────────────────────────────
+// ── latency: p50 / p95 bars ────────────────────────────────────────────────
 function LatencyBarsBody({ animate }: { animate: boolean }) {
   const [active, setActive] = useState(0);
   const terms = elasticsearchCdf;
   const term = terms[active];
-  // p90/p95 are exact sampled levels in the CDF points.
+  // p50/p95 are exact sampled levels in the CDF points.
   const at = (pts: number[][], pct: number) =>
     pts.find((p) => p[1] === pct)?.[0] ?? 0;
   const rows = [
-    { label: "p90", us: at(term.us, 90), them: at(term.them, 90) },
+    { label: "p50", us: at(term.us, 50), them: at(term.them, 50) },
     { label: "p95", us: at(term.us, 95), them: at(term.them, 95) },
   ];
   const max = Math.max(...rows.flatMap((r) => [r.us, r.them]));
@@ -175,7 +178,7 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
 
   const bar = (value: number, solid: string, valueClass: string) => (
     <div className="flex items-center gap-3">
-      <div className="flex-1 min-w-0 h-6 bg-slate-100 dark:bg-slate-800/50 relative">
+      <div className="flex-1 min-w-0 h-6 relative">
         <div
           className={`absolute inset-y-0 left-0 origin-left ${solid} ${
             grown
@@ -218,7 +221,7 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
               {bar(
                 row.them,
                 "bg-slate-200 dark:bg-slate-600",
-                "text-slate-400 dark:text-slate-500",
+                "text-slate-400 dark:text-slate-300",
               )}
             </div>
           </div>
@@ -378,9 +381,9 @@ const REPRODUCE_LINES = [
   "git clone https://github.com/paradedb/benchmarker.git",
   "cd benchmarker && make",
   "",
-  "# Pull the Hacker News dataset (28M rows)",
+  "# Pull the Hacker News dataset (28M rows, 5GB, could take a while)",
   "./bin/loader pull --dataset hn --anonymous \\",
-  "    --source s3://paradedb-benchmarker/datasets/hn",
+  "    --source s3://paradedb-benchmarker/datasets/hn-elasticsearch-bm25.tar.gz",
   "",
   "# Start ParadeDB + Elasticsearch, load, restart for symmetric caches",
   "docker compose -f ./datasets/hn/docker-compose.yml --profile all up -d --wait",
@@ -388,7 +391,7 @@ const REPRODUCE_LINES = [
   "./bin/loader load --backend elasticsearch ./datasets/hn",
   "",
   "# Run the term-size benchmark",
-  "./k6 run --out dashboard=json,html ./datasets/hn/k6/term_sizes.js",
+  "./k6 run --out dashboard=json,html,live ./datasets/hn/k6/elasticsearch-topk.js",
 ];
 
 function ReproduceBody() {
@@ -539,7 +542,7 @@ export default function BenchmarkPanel() {
       </div>
 
       {/* Measurement + dataset facts + raw data */}
-      <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+      <p className="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800 text-xs text-slate-500 dark:text-slate-300 leading-relaxed">
         Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
         4-CPU, 16 GB Docker container queried by a single client, second run
         after JVM warmup over a rotating pool of 50 queries. Hacker News
