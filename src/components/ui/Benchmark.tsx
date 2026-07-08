@@ -12,6 +12,9 @@ export default function Benchmark() {
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
+        {/* Diagonal-hatch divider introducing the section */}
+        <div className="relative z-20 h-8 md:h-12 w-full bg-diagonal-hatch border-b border-x border-slate-200 dark:border-slate-900 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
+
         <section className="relative py-10 md:py-14 border-b border-r border-l border-slate-200 dark:border-slate-900 bg-indigo-50/40 dark:bg-indigo-950/20">
           {/* Inner grid lines — bound the 1128px content column, xl and up */}
           <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
