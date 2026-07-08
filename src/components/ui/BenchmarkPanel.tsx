@@ -488,7 +488,7 @@ export default function BenchmarkPanel() {
           full-bleed bottom rule that divides them from the body. The tablist
           pulls down 1px so the active tab's underline covers the rule rather
           than doubling it. */}
-      <div className="hidden -mx-4 -mt-4 mb-7 border-b border-slate-200 px-4 sm:block sm:-mx-6 sm:-mt-6 sm:px-6 dark:border-slate-900">
+      <div className="hidden -mx-4 -mt-4 mb-7 border-b border-slate-200 sm:block sm:-mx-6 sm:-mt-6 dark:border-slate-900">
         <div
           role="tablist"
           aria-label="Benchmark view"
@@ -505,8 +505,8 @@ export default function BenchmarkPanel() {
                 onClick={() => setMetric(m.key)}
                 className={`group ${m.key === "bars" ? "flex" : "hidden sm:flex"} min-w-0 flex-1 items-center justify-center gap-1.5 whitespace-nowrap border-b-2 px-2 py-3 outline-none transition-colors sm:gap-2.5 sm:px-4 ${
                   on
-                    ? "border-indigo-600 text-indigo-900 dark:text-white"
-                    : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300"
+                    ? "border-indigo-600 bg-slate-50 text-indigo-900 dark:bg-slate-900 dark:text-white"
+                    : "border-transparent text-slate-500 hover:bg-slate-50 hover:text-slate-700 dark:hover:bg-slate-900 dark:hover:text-slate-300"
                 }`}
               >
                 <span
