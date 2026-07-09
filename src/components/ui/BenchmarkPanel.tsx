@@ -1,6 +1,7 @@
 "use client";
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { RiGithubFill } from "@remixicon/react";
 import {
   elasticsearchCdf,
   type TermCdf,
@@ -124,23 +125,41 @@ function QueryEditor({
   );
 }
 
+/** GitHub-mark link to the benchmark harness repo. */
+function RepoLink() {
+  return (
+    <a
+      href="https://github.com/paradedb/benchmarker"
+      className="mt-3 inline-flex items-center gap-2 font-mono text-xs text-slate-700 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
+    >
+      <RiGithubFill size={16} className="shrink-0" aria-hidden />
+      <span className="underline underline-offset-2">
+        paradedb/benchmarker
+      </span>
+    </a>
+  );
+}
+
 /** Measurement + dataset facts + raw-data link, shown under the data tabs. */
 function MeasurementNote() {
   return (
-    <p className="mt-auto pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-      Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
-      4-CPU, 16 GB Docker container queried by a single client, second run after
-      JVM warmup over a rotating pool of 40 queries. Hacker News dataset, 28M
-      rows.{" "}
-      <a
-        href="/benchmarks/topk_10_hn_text.json"
-        download
-        className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
-      >
-        Download raw result JSON
-      </a>
-      .
-    </p>
+    <div className="mt-auto pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+      <p>
+        Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
+        4-CPU, 16 GB Docker container queried by a single client, second run
+        after JVM warmup over a rotating pool of 40 queries. Hacker News
+        dataset, 28M rows.{" "}
+        <a
+          href="/benchmarks/topk_10_hn_text.json"
+          download
+          className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
+        >
+          Download raw result JSON
+        </a>
+        .
+      </p>
+      <RepoLink />
+    </div>
   );
 }
 
@@ -442,16 +461,10 @@ function ReproduceBody() {
           </div>
         ))}
       </div>
-      <p className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-        Dataset, loader, and k6 script live in the{" "}
-        <a
-          href="https://github.com/paradedb/benchmarker"
-          className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
-        >
-          Benchmarker repo
-        </a>
-        .
-      </p>
+      <div className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+        <p>Dataset, loader, and k6 script live in the Benchmarker repo.</p>
+        <RepoLink />
+      </div>
     </>
   );
 }
