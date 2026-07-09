@@ -33,6 +33,7 @@ function attribution() {
 
 export default function CloudWaitlist() {
   const [email, setEmail] = useState("");
+  const [building, setBuilding] = useState("");
   const [status, setStatus] = useState<Status>("idle");
   const [message, setMessage] = useState("");
 
@@ -60,7 +61,13 @@ export default function CloudWaitlist() {
           "Content-Type": "application/json",
           Accept: "application/json",
         },
-        body: JSON.stringify({ email: email.trim(), ...attribution() }),
+        body: JSON.stringify({
+          email: email.trim(),
+          // Free-text "what are you building" — lands in the subscriber's
+          // custom_fields metadata in Waitlister.
+          building: building.trim() || undefined,
+          ...attribution(),
+        }),
       });
       const data = await res.json().catch(() => ({}));
       // Waitlister's message is state-aware (new signup vs confirmation
@@ -101,6 +108,7 @@ export default function CloudWaitlist() {
       noValidate
     >
       <div className="flex flex-col gap-3 sm:flex-row">
+        {/* "Work email" is a nudge only — deliberately not enforced. */}
         <input
           type="email"
           required
@@ -111,8 +119,8 @@ export default function CloudWaitlist() {
           }}
           placeholder="you@company.com"
           autoComplete="email"
-          aria-label="Email address"
-          className="flex-1 border border-white/25 bg-white/10 px-4 py-3 text-sm text-white outline-none placeholder:text-indigo-200 focus:border-white/70"
+          aria-label="Work email address"
+          className="flex-1 border border-white/25 bg-white/10 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-indigo-200/80 hover:border-white/40 focus:border-white/70 focus:bg-white/15"
         />
         <button
           type="submit"
@@ -125,6 +133,18 @@ export default function CloudWaitlist() {
           {status === "loading" ? "Joining…" : "Join the waitlist"}
         </button>
       </div>
+      <textarea
+        value={building}
+        onChange={(e) => {
+          setBuilding(e.target.value);
+          if (status === "error") setStatus("idle");
+        }}
+        placeholder="What are you building? (optional)"
+        aria-label="What are you building? (optional)"
+        rows={2}
+        maxLength={500}
+        className="mt-3 w-full resize-none border border-white/25 bg-white/10 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-indigo-200/80 hover:border-white/40 focus:border-white/70 focus:bg-white/15"
+      />
       {status === "error" && (
         <p className="mt-2 text-left text-sm text-red-200">{message}</p>
       )}
