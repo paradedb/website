@@ -25,7 +25,7 @@ export default function CloudShell({
         {/* Horizontal line below top shaded region - constrained to vertical lines */}
         <div className="absolute top-[96px] md:top-[128px] left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />
 
-        <div className="relative z-20 mx-auto flex w-full flex-col items-center px-6 pb-16 pt-32 text-center sm:mt-24 sm:px-0 sm:py-32">
+        <div className="relative z-20 mx-auto flex w-full flex-col items-center px-6 pb-16 pt-36 text-center sm:mt-28 sm:px-0 sm:py-32">
           {children}
         </div>
 
