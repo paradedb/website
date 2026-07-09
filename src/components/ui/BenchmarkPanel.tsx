@@ -138,10 +138,10 @@ function RepoLink() {
   );
 }
 
-/** Measurement + dataset facts + raw-data link, shown under the data tabs. */
+/** Measurement + dataset facts + raw-data link, shown once under all tabs. */
 function MeasurementNote() {
   return (
-    <div className="mt-auto pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
+    <div className="pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
       <p>
         Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
         4-CPU, 16 GB Docker container queried by a single client, second run
@@ -278,7 +278,6 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
           ))}
         </div>
       </QueryEditor>
-      <MeasurementNote />
     </div>
   );
 }
@@ -419,7 +418,6 @@ function LatencyCdfBody({ animate }: { animate: boolean }) {
           </text>
         </svg>
       </QueryEditor>
-      <MeasurementNote />
     </div>
   );
 }
@@ -444,26 +442,20 @@ const REPRODUCE_LINES = [
 
 function ReproduceBody() {
   return (
-    <>
-      <div className="overflow-x-auto bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-4 font-mono text-[11px] leading-[1.9]">
-        {REPRODUCE_LINES.map((line, i) => (
-          <div
-            key={i}
-            className={`whitespace-pre ${
-              line.startsWith("#")
-                ? "text-slate-400 dark:text-slate-500"
-                : "text-slate-700 dark:text-slate-300"
-            }`}
-          >
-            {line || " "}
-          </div>
-        ))}
-      </div>
-      <div className="mt-3 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
-        <p>Dataset, loader, and k6 script live in the Benchmarker repo.</p>
-        <RepoLink />
-      </div>
-    </>
+    <div className="overflow-x-auto bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 p-4 font-mono text-[11px] leading-[1.9]">
+      {REPRODUCE_LINES.map((line, i) => (
+        <div
+          key={i}
+          className={`whitespace-pre ${
+            line.startsWith("#")
+              ? "text-slate-400 dark:text-slate-500"
+              : "text-slate-700 dark:text-slate-300"
+          }`}
+        >
+          {line || " "}
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -571,6 +563,10 @@ export default function BenchmarkPanel() {
           <ReproduceBody />
         </div>
       </div>
+
+      {/* Shared footer, outside the tab bodies so it never moves or changes
+          when switching views. */}
+      <MeasurementNote />
     </div>
   );
 }
