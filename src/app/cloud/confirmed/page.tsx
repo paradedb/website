@@ -20,8 +20,8 @@ export default function CloudConfirmedPage() {
         You&apos;re on the list
       </h1>
       <p className="mt-4 max-w-2xl text-base text-indigo-50 sm:text-lg">
-        Your email is confirmed and your spot on the ParadeDB Cloud waitlist
-        is locked in. We&apos;ll be in touch the moment early access opens.
+        Your email is confirmed and your spot on the ParadeDB Cloud waitlist is
+        locked in. We&apos;ll be in touch the moment early access opens.
       </p>
 
       <div className="mt-8 mx-auto flex max-w-md items-center justify-center gap-2.5 border border-white/25 bg-white/10 px-5 py-3.5 text-sm font-medium text-white">

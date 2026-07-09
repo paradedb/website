@@ -46,7 +46,9 @@ export default function CloudWaitlist() {
     }
     if (!SIGNUP_ACTION) {
       setStatus("error");
-      setMessage("The waitlist is temporarily unavailable. Please try again later.");
+      setMessage(
+        "The waitlist is temporarily unavailable. Please try again later.",
+      );
       return;
     }
     setStatus("loading");
@@ -93,7 +95,11 @@ export default function CloudWaitlist() {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mx-auto w-full max-w-md" noValidate>
+    <form
+      onSubmit={handleSubmit}
+      className="mx-auto w-full max-w-md"
+      noValidate
+    >
       <div className="flex flex-col gap-3 sm:flex-row">
         <input
           type="email"

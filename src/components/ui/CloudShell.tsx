@@ -3,7 +3,11 @@ import AsciiCloud from "@/components/ui/AsciiCloud";
 
 // The /cloud page chrome (indigo hero, drifting dither, hatch band, vertical
 // rules). Children render inside the centered column.
-export default function CloudShell({ children }: { children: React.ReactNode }) {
+export default function CloudShell({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <main className="relative flex w-full flex-col bg-indigo-600 sm:min-h-screen">
       {/* Subtle dark-mode tint, matching the homepage hero */}

@@ -27,8 +27,7 @@ export default function CloudPage() {
       </h1>
       <p className="mt-4 max-w-2xl text-base text-indigo-50 sm:text-lg">
         We&apos;re building a fully managed ParadeDB: one Postgres for your
-        application data, full-text search, vector retrieval, and
-        aggregations.
+        application data, full-text search, vector retrieval, and aggregations.
       </p>
 
       <div className="mt-8 w-full">
@@ -36,8 +35,8 @@ export default function CloudPage() {
       </div>
 
       <p className="mt-4 text-xs text-indigo-200">
-        No spam. We&apos;ll only email you about ParadeDB Cloud. You&apos;ll
-        get one confirmation email, click it and you&apos;re in.
+        No spam. We&apos;ll only email you about ParadeDB Cloud. You&apos;ll get
+        one confirmation email, click it and you&apos;re in.
       </p>
     </CloudShell>
   );

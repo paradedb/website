@@ -31,7 +31,6 @@ const CLOUD_W_MIN = 820;
 const CLOUD_W_MAX = 1120;
 const ASPECT = 0.6; // cloud height / cloud width
 
-
 // Keep the dither fully clear above the cloud page's top shaded region (its
 // bottom line is at top-[96px] / md:top-[128px]) so nothing shows behind the
 // hatch, then fade it in just below.
@@ -161,7 +160,13 @@ export default function AsciiCloud({ color = "#c7d2fe" }: { color?: string }) {
       glow = { cx: w / 2, cy: cloudCy, top, cw, ch };
 
       // Silhouette pieces, in cloud-width fractions.
-      const base = { cx: lx(0.5), cy: ly(0.38), hx: 0.47 * cw, hy: 0.13 * cw, rad: 0.13 * cw };
+      const base = {
+        cx: lx(0.5),
+        cy: ly(0.38),
+        hx: 0.47 * cw,
+        hy: 0.13 * cw,
+        rad: 0.13 * cw,
+      };
       const big = { cx: lx(0.35), cy: ly(0.25), rad: 0.26 * cw };
       const med = { cx: lx(0.62), cy: ly(0.27), rad: 0.18 * cw };
       const small = { cx: lx(0.82), cy: ly(0.33), rad: 0.12 * cw };
