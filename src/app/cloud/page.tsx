@@ -37,7 +37,7 @@ export default function CloudPage() {
 
       <p className="mt-4 text-xs text-indigo-200">
         No spam. We&apos;ll only email you about ParadeDB Cloud. You&apos;ll
-        get one confirmation email — click it and you&apos;re in.
+        get one confirmation email, click it and you&apos;re in.
       </p>
     </CloudShell>
   );

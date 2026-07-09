@@ -30,21 +30,21 @@ export default function CloudConfirmedPage() {
       </div>
 
       <p className="mt-6 text-sm text-indigo-200">
-        In the meantime,{" "}
+        You can find{" "}
         <a
           href="https://github.com/paradedb/paradedb"
           className="underline decoration-indigo-300 underline-offset-4 hover:text-white"
         >
-          star ParadeDB on GitHub
-        </a>{" "}
-        or read the{" "}
+          ParadeDB on GitHub
+        </a>
+        , or read the{" "}
         <a
           href="/blog"
           className="underline decoration-indigo-300 underline-offset-4 hover:text-white"
         >
           blog
-        </a>
-        .
+        </a>{" "}
+        to see what we&apos;re building.
       </p>
     </CloudShell>
   );
