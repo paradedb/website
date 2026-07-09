@@ -2,8 +2,7 @@ import { DarkModeOverlay } from "@/components/ui/DarkModeOverlay";
 import AsciiCloud from "@/components/ui/AsciiCloud";
 
 // The /cloud page chrome (indigo hero, drifting dither, hatch band, vertical
-// rules), extracted so the waitlist confirm/confirmed pages are visually
-// identical to the signup page. Children render inside the centered column.
+// rules). Children render inside the centered column.
 export default function CloudShell({ children }: { children: React.ReactNode }) {
   return (
     <main className="relative flex w-full flex-col bg-indigo-600 sm:min-h-screen">

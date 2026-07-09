@@ -8,8 +8,8 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-// Landing page for the waitlist API's post-confirmation 303 redirect
-// (ConfirmedRedirectUrl). Also where an already-confirmed re-click lands.
+// Landing page for Waitlister's post-confirmation redirect (the double
+// opt-in "redirect after confirmation" setting in the dashboard points here).
 export default function CloudConfirmedPage() {
   return (
     <CloudShell>

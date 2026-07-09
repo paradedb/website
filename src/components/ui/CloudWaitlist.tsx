@@ -5,13 +5,25 @@ import { RiLoader2Fill, RiMailSendLine } from "@remixicon/react";
 
 type Status = "idle" | "loading" | "success" | "error";
 
-// First-touch attribution forwarded with the signup. Read at submit time
-// from the current URL / document.referrer; the API preserves first touch
-// on duplicates, so re-submissions can't overwrite an earlier source.
+// Waitlister form action endpoint (https://waitlister.me/docs/form-action-endpoint):
+// a keyless browser POST, protected by the domain whitelist configured in the
+// Waitlister dashboard plus per-IP rate limits. The waitlist key is public by
+// nature — it's visible in every signup request.
+const SIGNUP_ACTION = process.env.NEXT_PUBLIC_WAITLISTER_KEY
+  ? `https://waitlister.me/s/${process.env.NEXT_PUBLIC_WAITLISTER_KEY}`
+  : "";
+
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Attribution forwarded with the signup, read at submit time. Waitlister
+// stores unknown fields (the UTMs, referrer) as subscriber metadata;
+// `referred_by` is the ?ref= code Waitlister appends to subscribers'
+// referral links, and is what credits the referrer.
 function attribution() {
   if (typeof window === "undefined") return {};
   const params = new URLSearchParams(window.location.search);
   return {
+    referred_by: params.get("ref") ?? undefined,
     utm_source: params.get("utm_source") ?? undefined,
     utm_medium: params.get("utm_medium") ?? undefined,
     utm_campaign: params.get("utm_campaign") ?? undefined,
@@ -27,18 +39,31 @@ export default function CloudWaitlist() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (status === "loading") return;
+    if (!EMAIL_RE.test(email.trim())) {
+      setStatus("error");
+      setMessage("Please enter a valid email address.");
+      return;
+    }
+    if (!SIGNUP_ACTION) {
+      setStatus("error");
+      setMessage("The waitlist is temporarily unavailable. Please try again later.");
+      return;
+    }
     setStatus("loading");
     setMessage("");
     try {
-      const res = await fetch("/api/cloud-waitlist", {
+      const res = await fetch(SIGNUP_ACTION, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, ...attribution() }),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({ email: email.trim(), ...attribution() }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
+      if (!res.ok || data.success !== true) {
         setStatus("error");
-        setMessage(data.error ?? "Something went wrong. Please try again.");
+        setMessage("Something went wrong. Please try again.");
         return;
       }
       setStatus("success");
