@@ -117,7 +117,7 @@ export default function CloudWaitlist() {
             setEmail(e.target.value);
             if (status === "error") setStatus("idle");
           }}
-          placeholder="Work email"
+          placeholder="you@company.com"
           autoComplete="email"
           aria-label="Work email address"
           className="flex-1 border border-white/25 bg-white/10 px-4 py-3 text-sm text-white outline-none transition-colors placeholder:text-indigo-200/80 hover:border-white/40 focus:border-white/70 focus:bg-white/15"
