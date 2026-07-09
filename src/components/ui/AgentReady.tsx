@@ -315,7 +315,7 @@ export default function AgentReady() {
           <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
           <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-indigo-50/60 dark:bg-indigo-950/20 -z-10" />
+            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100/60 dark:bg-slate-900/40 -z-10" />
             <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
             <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
