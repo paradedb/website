@@ -4,11 +4,18 @@
  * the indigo footer.
  *
  * This is the live homepage ("/") plus the /preview routes used to test landing
- * variants, so a preview matches exactly what the variant looks like when live.
+ * variants, so a preview matches exactly what the variant looks like when live,
+ * and the /cloud waitlist pages (signup and post-confirmation), which are full
+ * indigo landing pages sharing the CloudShell chrome.
  *
  * Keep this dependency-free: it is imported by client components and must not
  * pull in the landings registry (which references server components).
  */
 export function isLandingRoute(pathname: string): boolean {
-  return pathname === "/" || pathname.startsWith("/preview");
+  return (
+    pathname === "/" ||
+    pathname === "/cloud" ||
+    pathname.startsWith("/cloud/") ||
+    pathname.startsWith("/preview")
+  );
 }
