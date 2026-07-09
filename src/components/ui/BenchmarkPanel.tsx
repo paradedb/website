@@ -84,9 +84,7 @@ function QueryEditor({
           </div>
           <div className="px-3 text-slate-700 dark:text-slate-300">
             <div className="whitespace-nowrap">
-              <span className={SQL_COMMENT}>
-                -- TopK ordered by BM25 score
-              </span>
+              <span className={SQL_COMMENT}>-- TopK ordered by BM25 score</span>
             </div>
             <div className="whitespace-nowrap">
               <span className={SQL_KW}>SELECT</span>{" "}
