@@ -33,6 +33,7 @@ const SQL_STR = "text-emerald-600 dark:text-emerald-400";
 const SQL_FN = "text-sky-600 dark:text-sky-400";
 const SQL_NUM = "text-amber-600 dark:text-amber-500";
 const SQL_PUNC = "text-slate-400 dark:text-slate-500";
+const SQL_COMMENT = "text-slate-400 dark:text-slate-500";
 
 // ── shared pieces ─────────────────────────────────────────────────────────
 function Legend() {
@@ -79,8 +80,14 @@ function QueryEditor({
             <div>2</div>
             <div>3</div>
             <div>4</div>
+            <div>5</div>
           </div>
           <div className="px-3 text-slate-700 dark:text-slate-300">
+            <div className="whitespace-nowrap">
+              <span className={SQL_COMMENT}>
+                -- TopK ordered by BM25 score
+              </span>
+            </div>
             <div className="whitespace-nowrap">
               <span className={SQL_KW}>SELECT</span>{" "}
               <span className={SQL_PUNC}>*</span>{" "}
@@ -95,10 +102,11 @@ function QueryEditor({
               <span className={SQL_KW}>ORDER BY</span>{" "}
               <span className={SQL_FN}>pdb.score</span>
               <span className={SQL_PUNC}>(</span>id
-              <span className={SQL_PUNC}>)</span>
+              <span className={SQL_PUNC}>)</span>{" "}
+              <span className={SQL_KW}>DESC</span>
             </div>
             <div className="whitespace-nowrap">
-              <span className={SQL_KW}>DESC LIMIT</span>{" "}
+              <span className={SQL_KW}>LIMIT</span>{" "}
               <span className={SQL_NUM}>10</span>
             </div>
           </div>
@@ -124,7 +132,7 @@ function MeasurementNote() {
     <p className="mt-auto pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
       Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
       4-CPU, 16 GB Docker container queried by a single client, second run after
-      JVM warmup over a rotating pool of 50 queries. Hacker News dataset, 28M
+      JVM warmup over a rotating pool of 40 queries. Hacker News dataset, 28M
       rows.{" "}
       <a
         href="/benchmarks/topk_10_hn_text.json"
@@ -415,7 +423,7 @@ const REPRODUCE_LINES = [
   "./bin/loader load --backend paradedb      ./datasets/hn",
   "./bin/loader load --backend elasticsearch ./datasets/hn",
   "",
-  "# Run the term-size benchmark",
+  "# Run the benchmark, running twice will eliminate warmup",
   "./k6 run --out dashboard=json,html,live ./datasets/hn/k6/elasticsearch-topk.js",
 ];
 
