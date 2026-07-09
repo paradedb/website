@@ -133,9 +133,7 @@ function RepoLink() {
       className="mt-3 inline-flex items-center gap-2 font-mono text-xs text-slate-700 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
     >
       <RiGithubFill size={16} className="shrink-0" aria-hidden />
-      <span className="underline underline-offset-2">
-        paradedb/benchmarker
-      </span>
+      <span className="underline underline-offset-2">paradedb/benchmarker</span>
     </a>
   );
 }
