@@ -61,12 +61,17 @@ export default function CloudWaitlist() {
         body: JSON.stringify({ email: email.trim(), ...attribution() }),
       });
       const data = await res.json().catch(() => ({}));
+      // Waitlister's message is state-aware (new signup vs confirmation
+      // already sent vs already registered) — surface it when present.
+      const apiMessage =
+        typeof data.message === "string" ? data.message.trim() : "";
       if (!res.ok || data.success !== true) {
         setStatus("error");
-        setMessage("Something went wrong. Please try again.");
+        setMessage(apiMessage || "Something went wrong. Please try again.");
         return;
       }
       setStatus("success");
+      setMessage(apiMessage);
       window.dispatchEvent(new Event("cloud-waitlist:success"));
     } catch {
       setStatus("error");
@@ -75,13 +80,14 @@ export default function CloudWaitlist() {
   }
 
   if (status === "success") {
-    // Double opt-in: signing up sends a confirmation email; they're only on
-    // the list once they click it. The copy must say so.
+    // Double opt-in: they're only on the list once they click the emailed
+    // link. Prefer Waitlister's message (it distinguishes a fresh signup from
+    // a resend / already-registered email); fall back to our own copy.
     return (
       <div className="mx-auto flex max-w-md items-center justify-center gap-2.5 border border-white/25 bg-white/10 px-5 py-3.5 text-sm font-medium text-white">
         <RiMailSendLine className="size-5 shrink-0" />
-        Almost there — check your inbox and click the confirmation link to
-        secure your spot.
+        {message ||
+          "Almost there — check your inbox and click the confirmation link to secure your spot."}
       </div>
     );
   }
