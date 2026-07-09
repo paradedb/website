@@ -30,7 +30,7 @@ export default function Benchmark() {
               </h2>
               <p className="max-w-2xl text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed">
                 Built on Tantivy, the Rust port of Lucene, ParadeDB goes
-                toe-to-toe with Elasticsearch on full text search, often coming
+                toe-to-toe with dedicated search-engines on full text search, often coming
                 out on top.
               </p>
               {/* Hidden until the /vs/elasticsearch page ships
