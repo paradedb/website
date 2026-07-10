@@ -56,9 +56,9 @@ const PricingCard = ({
       >
         <Link
           href={buttonLink}
-          target={buttonLink.startsWith("mailto:") ? undefined : "_blank"}
+          target={buttonLink.startsWith("http") ? "_blank" : undefined}
           rel={
-            buttonLink.startsWith("mailto:") ? undefined : "noopener noreferrer"
+            buttonLink.startsWith("http") ? "noopener noreferrer" : undefined
           }
         >
           {buttonText}
@@ -134,10 +134,10 @@ export default function Pricing() {
                     "Everything in Enterprise",
                     "Fully managed",
                     "One-click deployments",
-                    "Currently in private beta",
+                    "Coming soon",
                   ]}
-                  buttonText="Join Private Beta"
-                  buttonLink={social.CALENDLY}
+                  buttonText="Join the Waitlist"
+                  buttonLink="/cloud"
                   buttonVariant="light"
                 />
               </div>
