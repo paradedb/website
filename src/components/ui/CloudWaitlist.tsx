@@ -15,19 +15,23 @@ const SIGNUP_ACTION = process.env.NEXT_PUBLIC_WAITLISTER_KEY
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-// Attribution forwarded with the signup, read at submit time. Waitlister
-// stores unknown fields (the UTMs, referrer) as subscriber metadata;
-// `referred_by` is the ?ref= code Waitlister appends to subscribers'
-// referral links, and is what credits the referrer.
+// Attribution forwarded with the signup, read at submit time. `referred_by`
+// is the ?ref= code Waitlister appends to subscribers' referral links, and is
+// what credits the referrer; it's a reserved field and stays top-level. The
+// UTMs and referrer are returned separately for the `metadata` object —
+// Waitlister only stores fields as subscriber custom fields when they're
+// nested inside `metadata`, not when sent top-level.
 function attribution() {
-  if (typeof window === "undefined") return {};
+  if (typeof window === "undefined") return { referred_by: undefined, meta: {} };
   const params = new URLSearchParams(window.location.search);
   return {
     referred_by: params.get("ref") ?? undefined,
-    utm_source: params.get("utm_source") ?? undefined,
-    utm_medium: params.get("utm_medium") ?? undefined,
-    utm_campaign: params.get("utm_campaign") ?? undefined,
-    referrer: document.referrer || undefined,
+    meta: {
+      utm_source: params.get("utm_source") ?? undefined,
+      utm_medium: params.get("utm_medium") ?? undefined,
+      utm_campaign: params.get("utm_campaign") ?? undefined,
+      referrer: document.referrer || undefined,
+    },
   };
 }
 
@@ -55,6 +59,7 @@ export default function CloudWaitlist() {
     setStatus("loading");
     setMessage("");
     try {
+      const { referred_by, meta } = attribution();
       const res = await fetch(SIGNUP_ACTION, {
         method: "POST",
         headers: {
@@ -63,10 +68,13 @@ export default function CloudWaitlist() {
         },
         body: JSON.stringify({
           email: email.trim(),
-          // Free-text "what are you building" — lands in the subscriber's
-          // custom_fields metadata in Waitlister.
-          building: building.trim() || undefined,
-          ...attribution(),
+          referred_by,
+          metadata: {
+            // Free-text "what are you building" — lands in the
+            // subscriber's custom_fields in Waitlister.
+            building: building.trim() || undefined,
+            ...meta,
+          },
         }),
       });
       const data = await res.json().catch(() => ({}));
