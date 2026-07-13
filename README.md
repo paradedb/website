@@ -1,9 +1,9 @@
 <h1 align="center">
   <a href="https://paradedb.com">
     <picture align=center>
-      <source media="(prefers-color-scheme: dark)" srcset="public/brand/paradedb-logo-dark.svg">
-      <source media="(prefers-color-scheme: light)" srcset="public/brand/paradedb-logo-light.svg">
-      <img alt="The ParadeDB logo." src="public/brand/paradedb-logo-light.svg">
+      <source media="(prefers-color-scheme: dark)" srcset="https://github.com/paradedb/paradedb/raw/main/docs/logo/paradedb-logo-dark-large.svg">
+      <source media="(prefers-color-scheme: light)" srcset="https://github.com/paradedb/paradedb/raw/main/docs/logo/paradedb-logo-light-large.svg">
+      <img alt="The ParadeDB logo." src="https://github.com/paradedb/paradedb/raw/main/docs/logo/paradedb-logo-light-large.svg">
     </picture>
   </a>
   <br>
