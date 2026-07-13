@@ -1,5 +1,6 @@
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import { documentation } from "@/lib/links";
+import { siteConfig } from "@/app/siteConfig";
 import Link from "next/link";
 import { Button } from "../Button";
 import LogoCloud from "./LogoCloud";
@@ -61,11 +62,10 @@ export default async function Hero() {
                   className="text-md hover:group hover:bg-white/10 bg-transparent border-none h-10 px-4 hover:bg-transparent dark:hover:bg-transparent w-full sm:w-auto"
                 >
                   <Link
-                    href={documentation.BASE}
+                    href={siteConfig.baseLinks.cloud}
                     className="text-white flex items-center justify-center gap-2 w-full"
-                    target="_blank"
                   >
-                    Documentation
+                    Cloud Early Access
                     <ArrowAnimated
                       className="stroke-white"
                       aria-hidden="true"

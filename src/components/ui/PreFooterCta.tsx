@@ -1,6 +1,6 @@
 "use client";
 
-import { documentation } from "@/lib/links";
+import { siteConfig } from "@/app/siteConfig";
 import Link from "next/link";
 import { Button } from "../Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
@@ -60,14 +60,13 @@ export default function PreFooterCta() {
                 <Button
                   asChild
                   variant="ghost"
-                  className="text-md hover:group hover:bg-white/10 bg-transparent border-0 h-10 px-4 dark:hover:bg-transparent"
+                  className="text-md hover:group bg-transparent border-0 h-10 px-4 hover:bg-transparent dark:hover:bg-transparent"
                 >
                   <Link
-                    href={documentation.BASE}
+                    href={siteConfig.baseLinks.cloud}
                     className="text-white flex items-center gap-2"
-                    target="_blank"
                   >
-                    Documentation
+                    Cloud Early Access
                     <ArrowAnimated
                       className="stroke-white"
                       aria-hidden="true"
