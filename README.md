@@ -23,7 +23,7 @@
 </h3>
 
 <p align="center">
-  <a href="https://github.com/paradedb/website?tab=Apache-2.0-1-ov-file#readme"><img src="https://img.shields.io/github/license/paradedb/website?color=blue" alt="License"></a>&nbsp;
+  <a href="https://github.com/paradedb/paradedb?tab=AGPL-3.0-1-ov-file#readme"><img src="https://img.shields.io/github/license/paradedb/paradedb?color=blue" alt="License"></a>&nbsp;
   <a href="https://paradedb.com/slack"><img src="https://img.shields.io/badge/Community-Join%20Slack-purple?logo=slack" alt="Community"></a>&nbsp;
   <a href="https://x.com/paradedb"><img src="https://img.shields.io/twitter/follow/paradedb" alt="Follow @paradedb"></a>
 </p>
