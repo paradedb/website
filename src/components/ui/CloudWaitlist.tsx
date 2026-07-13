@@ -22,7 +22,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Waitlister only stores fields as subscriber custom fields when they're
 // nested inside `metadata`, not when sent top-level.
 function attribution() {
-  if (typeof window === "undefined") return { referred_by: undefined, meta: {} };
+  if (typeof window === "undefined")
+    return { referred_by: undefined, meta: {} };
   const params = new URLSearchParams(window.location.search);
   return {
     referred_by: params.get("ref") ?? undefined,
