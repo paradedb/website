@@ -135,6 +135,9 @@ echo ""
 printf "  %sIf you find ParadeDB useful, a star on GitHub means the world to us:%s\n" "$BOLD" "$RESET"
 printf "  %shttps://github.com/paradedb/paradedb%s\n" "$CYAN" "$RESET"
 echo ""
+printf "  %sWe're building a managed cloud. Request early access:%s\n" "$BOLD" "$RESET"
+printf "  %shttps://paradedb.com/cloud%s\n" "$CYAN" "$RESET"
+echo ""
 
 if [ "$SILENT" = false ]; then
   printf "  Continue? [Y/n] "
