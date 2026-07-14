@@ -27,7 +27,7 @@ export default function CloudPage() {
       </h1>
       <p className="mt-4 max-w-2xl text-base text-indigo-50 sm:text-lg">
         We&apos;re building a fully managed ParadeDB: one Postgres for your
-        application data, full-text search, vector retrieval, and aggregations.
+        application data, full-text search, vector retrieval, and aggregations. Waitlist open now.
       </p>
 
       <div className="mt-8 w-full">

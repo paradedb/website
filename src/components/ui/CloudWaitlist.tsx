@@ -139,7 +139,7 @@ export default function CloudWaitlist() {
           {status === "loading" && (
             <RiLoader2Fill className="size-4 animate-spin" />
           )}
-          {status === "loading" ? "Joining…" : "Join the waitlist"}
+          {status === "loading" ? "Joining…" : "Get early access"}
         </button>
       </div>
       <textarea
