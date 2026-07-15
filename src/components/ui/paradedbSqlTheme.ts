@@ -30,7 +30,10 @@ const scopes = (c: {
     scope: ["punctuation", "meta.brace", "keyword.operator.symbol"],
     settings: { foreground: c.muted },
   },
-  { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: c.muted } },
+  {
+    scope: ["comment", "punctuation.definition.comment"],
+    settings: { foreground: c.muted },
+  },
 ];
 
 export const paradedbSqlLight: ThemeRegistrationAny = {
