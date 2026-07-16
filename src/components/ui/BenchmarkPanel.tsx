@@ -150,6 +150,7 @@ function MeasurementNote() {
         <a
           href="/benchmarks/topk_10_hn_text.json"
           download
+          rel="nofollow"
           className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-500"
         >
           Download raw result JSON
