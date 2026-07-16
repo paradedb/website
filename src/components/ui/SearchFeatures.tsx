@@ -1,5 +1,6 @@
 import Code from "../Code";
 import SearchFeaturesClient from "./SearchFeaturesClient";
+import { paradedbSqlLight, paradedbSqlDark } from "./paradedbSqlTheme";
 import {
   RiSearchEyeLine,
   RiTranslate2,
@@ -70,6 +71,8 @@ export default async function SearchFeatures() {
         <Code
           code={indexingCode}
           lang="sql"
+          themeLight={paradedbSqlLight}
+          themeDark={paradedbSqlDark}
           className="[&_pre]:!bg-transparent"
           copy={false}
         />
@@ -97,6 +100,8 @@ export default async function SearchFeatures() {
         <Code
           code={fullTextCode}
           lang="sql"
+          themeLight={paradedbSqlLight}
+          themeDark={paradedbSqlDark}
           className="[&_pre]:!bg-transparent"
           copy={false}
         />
@@ -124,6 +129,8 @@ export default async function SearchFeatures() {
         <Code
           code={vectorCode}
           lang="sql"
+          themeLight={paradedbSqlLight}
+          themeDark={paradedbSqlDark}
           className="[&_pre]:!bg-transparent"
           copy={false}
         />
@@ -151,6 +158,8 @@ export default async function SearchFeatures() {
         <Code
           code={filteringCode}
           lang="sql"
+          themeLight={paradedbSqlLight}
+          themeDark={paradedbSqlDark}
           className="[&_pre]:!bg-transparent"
           copy={false}
         />
@@ -178,6 +187,8 @@ export default async function SearchFeatures() {
         <Code
           code={aggregationsCode}
           lang="sql"
+          themeLight={paradedbSqlLight}
+          themeDark={paradedbSqlDark}
           className="[&_pre]:!bg-transparent"
           copy={false}
         />

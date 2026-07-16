@@ -1,12 +1,19 @@
 import { cx } from "@/lib/utils";
-import type { BundledLanguage, BundledTheme } from "shiki";
+import type {
+  BundledLanguage,
+  BundledTheme,
+  ThemeRegistrationAny,
+} from "shiki";
 import { codeToHtml } from "shiki";
 import CopyToClipboard from "./CopyToClipboard";
+
+type Theme = BundledTheme | ThemeRegistrationAny;
 
 type Props = {
   code: string;
   lang?: BundledLanguage;
-  theme?: BundledTheme;
+  themeLight?: Theme;
+  themeDark?: Theme;
   filename?: string;
   className?: string;
   copy?: boolean;
@@ -15,17 +22,19 @@ type Props = {
 export default async function Code({
   code,
   lang = "typescript",
+  themeLight = "github-light",
+  themeDark = "github-dark",
   className,
   copy = true,
 }: Props) {
   const htmlLight = await codeToHtml(code, {
     lang,
-    theme: "github-light",
+    theme: themeLight,
   });
 
   const htmlDark = await codeToHtml(code, {
     lang,
-    theme: "github-dark",
+    theme: themeDark,
   });
 
   return (
