@@ -18,6 +18,9 @@ concurrency:
   group: check-opengraph-images-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   check-opengraph-images:
     name: Check OpenGraph Images

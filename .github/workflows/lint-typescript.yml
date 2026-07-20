@@ -18,6 +18,9 @@ concurrency:
   group: lint-typescript-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   lint-typescript:
     name: Lint TypeScript Files
