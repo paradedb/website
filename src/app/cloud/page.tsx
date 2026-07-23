@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "ParadeDB Cloud — Join the waitlist",
     description:
-      "Fully managed ParadeDB. Join the waitlist for early access to ParadeDB Cloud.",
+      "One Postgres for your application data, full-text search, vector retrieval, and aggregations. Join the waitlist for early access.",
     url: "/cloud",
     type: "website",
   },
