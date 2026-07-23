@@ -13,14 +13,30 @@ export default function DefaultLanding() {
   return (
     <main className="flex flex-col overflow-hidden px-0">
       <Hero />
-      <Architecture />
-      <SearchFeatures />
-      <PostgresNative />
-      <Benchmark />
-      <SocialProof />
-      <CommunityProof />
-      <AgentReady />
-      <Pricing />
+      <div id="architecture">
+        <Architecture />
+      </div>
+      <div id="features">
+        <SearchFeatures />
+      </div>
+      <div id="postgres">
+        <PostgresNative />
+      </div>
+      <div id="benchmarks">
+        <Benchmark />
+      </div>
+      <div id="customers">
+        <SocialProof />
+      </div>
+      <div id="community">
+        <CommunityProof />
+      </div>
+      <div id="agents">
+        <AgentReady />
+      </div>
+      <div id="pricing">
+        <Pricing />
+      </div>
       <PreFooterCta />
     </main>
   );
