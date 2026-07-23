@@ -1,0 +1,1 @@
+ParadeDB Cloud: one Postgres for your application data, full-text search, vector retrieval, and aggregations.
