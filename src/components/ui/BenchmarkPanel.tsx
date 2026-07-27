@@ -4,8 +4,16 @@ import { type ReactNode, useEffect, useRef, useState } from "react";
 import { RiGithubFill } from "@remixicon/react";
 import {
   elasticsearchCdf,
+  elasticsearchThroughput,
   type TermCdf,
 } from "@/components/vs/elasticsearch-benchmark";
+
+/** CDF tab label → throughput row label. */
+const THROUGHPUT_LABEL: Record<string, string> = {
+  "1 term": "Single term",
+  "2 terms": "Two terms",
+  "3 terms": "Three terms",
+};
 
 /** Build ~4 evenly spaced "nice" axis ticks from 0 up past maxVal. */
 function axisTicks(maxVal: number) {
@@ -144,9 +152,9 @@ function MeasurementNote() {
     <div className="pt-6 text-xs text-slate-500 dark:text-slate-400 leading-relaxed">
       <p>
         Measured on ParadeDB 0.24.1 and Elasticsearch 8.17, each in an identical
-        4-CPU, 16 GB Docker container queried by a single client, second run
-        after JVM warmup over a rotating pool of 40 queries. Hacker News
-        dataset, 28M rows.{" "}
+        Docker container with 4 pinned CPUs and 8 GB of memory, queried by a
+        single client, second run after JVM warmup over a rotating pool of 40
+        queries. Hacker News dataset, 28M rows.{" "}
         <a
           href="/benchmarks/topk_10_hn_text.json"
           download
@@ -217,6 +225,9 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
     { label: "p95", us: at(term.us, 95), them: at(term.them, 95) },
   ];
   const max = Math.max(...rows.flatMap((r) => [r.us, r.them]));
+  const tp = elasticsearchThroughput.find(
+    (r) => r.label === THROUGHPUT_LABEL[term.term],
+  );
 
   // Bars grow in when the panel scrolls into view and replay on every tab or
   // term change. Collapse instantly (no transition), then grow with one.
@@ -277,6 +288,29 @@ function LatencyBarsBody({ animate }: { animate: boolean }) {
               </div>
             </div>
           ))}
+          {tp && (
+            <div>
+              <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                Throughput
+              </div>
+              <div className="flex items-center gap-4 font-mono text-[11px] tabular-nums sm:gap-6">
+                <span className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
+                  <span
+                    className="inline-block size-3 rounded-full bg-indigo-500"
+                    aria-hidden
+                  />
+                  {tp.us} QPS
+                </span>
+                <span className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
+                  <span
+                    className="inline-block size-3 rounded-full bg-slate-300 dark:bg-slate-500"
+                    aria-hidden
+                  />
+                  {tp.them} QPS
+                </span>
+              </div>
+            </div>
+          )}
         </div>
       </QueryEditor>
     </div>
