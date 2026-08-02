@@ -1,5 +1,5 @@
 import { createMcpHandler } from "mcp-handler";
-import { ResourceTemplate } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { ResourceTemplate } from "@modelcontextprotocol/server";
 import { z } from "zod";
 import {
   getPage,
@@ -22,7 +22,7 @@ const READ_ONLY = {
   openWorldHint: false,
 } as const;
 
-const searchResultShape = {
+const searchResultSchema = z.object({
   results: z.array(
     z.object({
       title: z.string(),
@@ -34,9 +34,9 @@ const searchResultShape = {
       score: z.number(),
     }),
   ),
-};
+});
 
-const listItemShape = {
+const listItemSchema = z.object({
   items: z.array(
     z.object({
       title: z.string(),
@@ -47,9 +47,9 @@ const listItemShape = {
       date: z.string(),
     }),
   ),
-};
+});
 
-const productInfoShape = {
+const productInfoSchema = z.object({
   name: z.string(),
   tagline: z.string(),
   description: z.string(),
@@ -67,7 +67,7 @@ const productInfoShape = {
     customers: z.number(),
     learn: z.number(),
   }),
-};
+});
 
 function text(value: string, isError = false) {
   return { content: [{ type: "text" as const, text: value }], isError };
@@ -81,7 +81,7 @@ const handler = createMcpHandler(
         title: "Search ParadeDB content",
         description:
           "Search ParadeDB's blog posts, customer stories, and learn articles by keyword. Returns ranked results with title, URL, and a snippet. Use get_page to fetch a result's full Markdown.",
-        inputSchema: {
+        inputSchema: z.object({
           query: z
             .string()
             .describe(
@@ -97,8 +97,8 @@ const handler = createMcpHandler(
             .max(20)
             .optional()
             .describe("Max results (default 8)."),
-        },
-        outputSchema: searchResultShape,
+        }),
+        outputSchema: searchResultSchema,
         annotations: { title: "Search ParadeDB content", ...READ_ONLY },
       },
       async ({ query, section, limit }) => {
@@ -118,13 +118,13 @@ const handler = createMcpHandler(
         title: "Get a ParadeDB page",
         description:
           "Fetch the full Markdown of a ParadeDB page by its path (e.g. '/blog/elasticsearch-was-never-a-database') or slug. Use search_content or list_content to discover paths.",
-        inputSchema: {
+        inputSchema: z.object({
           path: z
             .string()
             .describe(
               "Page path or slug, e.g. '/learn/search-concepts/bm25' or 'bm25'.",
             ),
-        },
+        }),
         annotations: { title: "Get a ParadeDB page", ...READ_ONLY },
       },
       async ({ path }) => {
@@ -140,12 +140,12 @@ const handler = createMcpHandler(
         title: "List ParadeDB content",
         description:
           "List all available ParadeDB blog posts, customer stories, and learn articles with their titles and URLs. Optionally filter by section.",
-        inputSchema: {
+        inputSchema: z.object({
           section: sectionEnum
             .optional()
             .describe("Restrict to one content section."),
-        },
-        outputSchema: listItemShape,
+        }),
+        outputSchema: listItemSchema,
         annotations: { title: "List ParadeDB content", ...READ_ONLY },
       },
       async ({ section }) => {
@@ -165,7 +165,7 @@ const handler = createMcpHandler(
         title: "Get ParadeDB product info",
         description:
           "Get a structured overview of ParadeDB: what it is, how to install it, and key links (docs, GitHub, blog). Useful for grounding before answering questions.",
-        outputSchema: productInfoShape,
+        outputSchema: productInfoSchema,
         annotations: { title: "Get ParadeDB product info", ...READ_ONLY },
       },
       async () => {
@@ -218,11 +218,11 @@ const handler = createMcpHandler(
         title: "Answer a question about ParadeDB",
         description:
           "Builds a prompt instructing the assistant to answer a question using the ParadeDB MCP tools and cite source URLs.",
-        argsSchema: {
+        argsSchema: z.object({
           question: z
             .string()
             .describe("The question about ParadeDB to answer."),
-        },
+        }),
       },
       ({ question }) => ({
         messages: [
@@ -240,15 +240,14 @@ const handler = createMcpHandler(
     );
   },
   {
+    // mcp-handler 2 takes a single options object: the SDK's server options
+    // plus the handler extras. Routing is the host framework's job now, so the
+    // v1 `basePath`/`maxDuration`/`disableSse` config is gone — this route file
+    // already places the streamable HTTP endpoint at /mcp, `maxDuration` is
+    // exported above for Vercel, and the legacy SSE transport no longer exists.
     serverInfo: { name: "paradedb", version: "1.0.0" },
     instructions:
       "This MCP server exposes ParadeDB's content (blog posts, customer stories, and learn articles) about full-text search and analytics in Postgres. Use search_content to find relevant pages, get_page to read a page's full Markdown, list_content to browse, and get_product_info for an overview. The same pages are available as resources under paradedb://content/. When answering questions about ParadeDB, ground answers in this content and cite source URLs.",
-  },
-  {
-    // Route lives at app/mcp/route.ts, so the streamable HTTP endpoint is /mcp.
-    basePath: "",
-    maxDuration: 60,
-    disableSse: true,
     verboseLogs: false,
   },
 );
