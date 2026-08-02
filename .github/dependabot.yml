@@ -20,22 +20,6 @@ updates:
     ignore:
       - dependency-name: "*"
         update-types: ["version-update:semver-patch"]
-      # TypeScript 7 is the native (tsgo) rewrite and drops the JavaScript
-      # compiler API that Next.js uses to read tsconfig.json, so the `paths`
-      # aliases are silently lost and every `@/...` import fails to resolve.
-      # Unpin once Next.js supports it.
-      - dependency-name: "typescript"
-        update-types: ["version-update:semver-major"]
-      # ESLint 10 removes the context APIs that eslint-plugin-react (pulled in
-      # by eslint-config-next) still calls, so every lint run crashes. Unpin
-      # once eslint-config-next ships a compatible plugin set.
-      - dependency-name: "eslint"
-        update-types: ["version-update:semver-major"]
-      # mcp-handler 2 is built on @modelcontextprotocol/server 2, which ships
-      # its own incompatible copy of the types we use from
-      # @modelcontextprotocol/sdk 1. Unpin alongside an SDK v2 migration.
-      - dependency-name: "mcp-handler"
-        update-types: ["version-update:semver-major"]
     groups:
       npm-dependencies:
         patterns:
