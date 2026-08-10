@@ -16,10 +16,10 @@ export type VsConfig = {
     subhead?: string;
     rows: { feature: ReactNode; us: ReactNode; them: ReactNode }[];
   };
-  /** Optional head-to-head benchmark: a subhead plus the chart panel to render */
-  benchmark?: { title?: string; subhead: string; panel: ReactNode };
-  /** Honest "which one fits when" — two columns */
-  fits: {
+  /** Optional head-to-head benchmark: a title, optional subhead, and the panel */
+  benchmark?: { title?: string; subhead?: string; panel: ReactNode };
+  /** Optional "which one fits when" — two columns */
+  fits?: {
     /** Section subhead */
     subhead: string;
     us: string[];
@@ -51,15 +51,33 @@ export default function VsPage({ config }: { config: VsConfig }) {
         )}
       </header>
 
+      {/* ============ Benchmark (tabbed panel) ============ */}
+      {config.benchmark && (
+        <section>
+          <div className="mb-8">
+            <Badge className="mb-4">Benchmark</Badge>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-indigo-950 dark:text-white mb-3">
+              {config.benchmark.title ?? "Latency and throughput"}
+            </h2>
+            {config.benchmark.subhead && (
+              <p className="text-base text-gray-800 dark:text-slate-300 leading-relaxed">
+                {config.benchmark.subhead}
+              </p>
+            )}
+          </div>
+          {config.benchmark.panel}
+        </section>
+      )}
+
       {/* ============ Technical differences table ============ */}
       <section>
         <div className="mb-8">
-          <Badge className="mb-4">Side by side</Badge>
+          <Badge className="mb-4">Comparison</Badge>
           <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-indigo-950 dark:text-white mb-3">
-            Every dimension that matters.
+            How they differ
           </h2>
           {config.techTable.subhead && (
-            <p className="text-base text-gray-800 dark:text-slate-300 max-w-2xl leading-relaxed">
+            <p className="text-base text-gray-800 dark:text-slate-300 leading-relaxed">
               {config.techTable.subhead}
             </p>
           )}
@@ -105,23 +123,8 @@ export default function VsPage({ config }: { config: VsConfig }) {
         </div>
       </section>
 
-      {/* ============ Benchmark (tabbed panel) ============ */}
-      {config.benchmark && (
-        <section>
-          <div className="mb-8">
-            <Badge className="mb-4">Benchmark</Badge>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-indigo-950 dark:text-white mb-3">
-              {config.benchmark.title ?? "TopK search, head to head."}
-            </h2>
-            <p className="text-base text-gray-800 dark:text-slate-300 max-w-2xl leading-relaxed">
-              {config.benchmark.subhead}
-            </p>
-          </div>
-          {config.benchmark.panel}
-        </section>
-      )}
-
       {/* ============ Which fits when (two-column) ============ */}
+      {config.fits && (
       <section>
         <div className="mb-8">
           <Badge className="mb-4">Which fits when</Badge>
@@ -185,6 +188,7 @@ export default function VsPage({ config }: { config: VsConfig }) {
           </div>
         </div>
       </section>
+      )}
     </div>
   );
 }

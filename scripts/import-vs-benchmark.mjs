@@ -6,9 +6,11 @@
 // Usage:
 //   node scripts/import-vs-benchmark.mjs bench-data/pdb-vs-fts-closed-2026-08-05.json
 //
-// Scenario names are expected in pdb-vs-fts.js form:
+// Scenario names are expected in pdb-vs-fts.js / pdb-vs-es.js form:
 //   {backend}_{workload}[_{field}][_l{limit}][_{terms}]_{c|r}{load}
 //   e.g. paradedb_topk_title_l10_one_c4, fts_count_text_one_c1
+// The competitor (fts or es) is detected from the scenario names and picks
+// the output paths and environment blurb.
 //
 // Cells the matrix expects but the export lacks (every query timed out, so
 // no latency was recorded) are emitted with n=0 and timedOut=true.
@@ -20,7 +22,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
 
 const SCENARIO_RE =
-  /^(paradedb|fts)_(topk|filtered_range|filtered_literal|count)_(title|text)(?:_l(\d+))?(?:_(one|two|five|ten))?_(c|r)(\d+)$/;
+  /^(paradedb|fts|es)_(topk|filtered_range|filtered_literal|count)_(title|text)(?:_l(\d+))?(?:_(one|two|five|ten))?_(c|r)(\d+)$/;
 
 const args = process.argv.slice(2);
 if (args.length < 1) {
@@ -28,8 +30,30 @@ if (args.length < 1) {
   process.exit(1);
 }
 
-const OUT_MODULE = "src/components/vs/postgres-benchmark-data.json";
-const OUT_PUBLIC = "public/benchmarks/pdb-vs-fts.json";
+const COMPETITORS = {
+  fts: {
+    name: "Postgres FTS",
+    outModule: "src/components/vs/postgres-benchmark-data.json",
+    outPublic: "public/benchmarks/pdb-vs-fts.json",
+    them: "Postgres 18, tsvector stored generated columns, GIN + btree",
+    note: [
+      "ParadeDB (pg_search 0.24.1 on Postgres 18) ran against stock Postgres 18 full-text search in its best case: stored generated tsvector columns, a GIN index on each, and btree indexes for the filters.",
+      "Both engines ran on identical hardware, four pinned CPUs and 8 GB of memory each, over the full 28.7-million-row Hacker News dataset, queried through pgbouncer in transaction pooling mode.",
+      "Every workload below ran for 30 seconds against a rotating pool of 40 query terms, after an identical 30-second warmup, and any query that took longer than 30 seconds was cancelled.",
+    ],
+  },
+  es: {
+    name: "Elasticsearch",
+    outModule: "src/components/vs/elasticsearch-benchmark-data.json",
+    outPublic: "public/benchmarks/pdb-vs-es.json",
+    them: "Elasticsearch 8.17, one shard, force-merged to a single segment",
+    note: [
+      "ParadeDB (pg_search 0.24.1 on Postgres 18) ran against Elasticsearch 8.17, force-merged to a single segment for its ideal read-only layout.",
+      "Both engines ran on identical hardware, four pinned CPUs and 8 GB of memory each, over the full 28.7-million-row Hacker News dataset. ParadeDB was queried through pgbouncer in transaction pooling mode and Elasticsearch over its native HTTP client.",
+      "Every workload below ran for 30 seconds against a rotating pool of 40 query terms, after an identical 30-second warmup, and any query that took longer than 30 seconds was cancelled.",
+    ],
+  },
+};
 
 function pct(sorted, p) {
   const idx = Math.max(0, Math.ceil((p / 100) * sorted.length) - 1);
@@ -37,6 +61,14 @@ function pct(sorted, p) {
 }
 
 const round1 = (v) => Math.round(v * 10) / 10;
+
+// Shared percentile grid for the distribution (CDF) view. Denser through the
+// body and near the tail so the curve reads smoothly; stored once, each cell
+// keeps only the latency at each step.
+const CDF_PCTS = [
+  0, 2, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 88,
+  90, 92, 94, 95, 96, 97, 98, 99,
+];
 
 const cells = new Map(); // key -> cell
 const sources = [];
@@ -46,6 +78,7 @@ for (const file of args) {
   sources.push(basename(file));
   for (const run of Object.values(doc.runs ?? {})) {
     for (const [name, q] of Object.entries(run.queries ?? {})) {
+      if (name.startsWith("warm_")) continue; // warmup pass, not a result
       const m = name.match(SCENARIO_RE);
       if (!m) {
         console.warn(`skipping unrecognized scenario: ${name}`);
@@ -53,10 +86,17 @@ for (const file of args) {
       }
       const [, backend, workload, field, limit, terms, modelChar, load] = m;
       const lat = (q.latencies ?? []).slice().sort((a, b) => a - b);
-      const secs =
-        q.timestamps && q.timestamps.length > 1
-          ? (Math.max(...q.timestamps) - Math.min(...q.timestamps)) / 1000
-          : 0;
+      // Iterative min/max: spreading 100k+ timestamps overflows the stack.
+      let secs = 0;
+      if (q.timestamps && q.timestamps.length > 1) {
+        let lo = Infinity;
+        let hi = -Infinity;
+        for (const t of q.timestamps) {
+          if (t < lo) lo = t;
+          if (t > hi) hi = t;
+        }
+        secs = (hi - lo) / 1000;
+      }
       const cell = {
         backend,
         workload,
@@ -71,6 +111,8 @@ for (const file of args) {
         p95: lat.length ? round1(pct(lat, 95)) : null,
         p99: lat.length ? round1(pct(lat, 99)) : null,
         max: lat.length ? round1(lat[lat.length - 1]) : null,
+        // Latency at each CDF_PCTS step; null when nothing completed.
+        cdf: lat.length ? CDF_PCTS.map((p) => round1(pct(lat, p))) : null,
         // No samples at all, or the median pinned at the FTS server-side
         // statement_timeout (30s), means the workload did not complete.
         timedOut: lat.length === 0 || pct(lat, 50) >= 29000,
@@ -87,6 +129,13 @@ for (const file of args) {
       cells.set(key, cell);
     }
   }
+}
+
+const competitorKey = [...cells.values()].find((c) => c.backend !== "paradedb")?.backend;
+const competitor = COMPETITORS[competitorKey];
+if (!competitor) {
+  console.error(`could not detect competitor from scenario names (saw: ${competitorKey})`);
+  process.exit(1);
 }
 
 // Fill in expected-but-missing cells as timeouts so the panel can render an
@@ -111,7 +160,7 @@ for (const model of seenModels) {
   }
 }
 
-for (const backend of ["paradedb", "fts"]) {
+for (const backend of ["paradedb", competitorKey]) {
   for (const e of expected) {
     const key = [backend, e.workload, e.field, e.limit, e.terms, e.model, e.load].join("|");
     if (!cells.has(key)) {
@@ -124,6 +173,7 @@ for (const backend of ["paradedb", "fts"]) {
         p95: null,
         p99: null,
         max: null,
+        cdf: null,
         timedOut: true,
       });
     }
@@ -133,11 +183,12 @@ for (const backend of ["paradedb", "fts"]) {
 const out = {
   generated: new Date().toISOString().slice(0, 10),
   sources,
-  competitor: { key: "fts", name: "Postgres FTS" },
+  competitor: { key: competitorKey, name: competitor.name },
+  percentiles: CDF_PCTS,
   environment: {
     paradedb: "ParadeDB (pg_search 0.24.1, Postgres 18)",
-    fts: "Postgres 18, tsvector stored generated columns, GIN + btree",
-    note: "4 pinned CPUs and 8GB per engine, pgbouncer transaction pooling, Hacker News dataset (28.7M rows), rotating pool of 40 query terms, 30s per scenario, engines restarted before the run. FTS queries were capped by a 30s statement_timeout.",
+    them: competitor.them,
+    note: competitor.note,
   },
   termExamples: {
     one: "rust",
@@ -152,15 +203,15 @@ const out = {
   ),
 };
 
-writeFileSync(OUT_MODULE, JSON.stringify(out, null, 2) + "\n");
-writeFileSync(OUT_PUBLIC, JSON.stringify(out) + "\n");
+writeFileSync(competitor.outModule, JSON.stringify(out, null, 2) + "\n");
+writeFileSync(competitor.outPublic, JSON.stringify(out) + "\n");
 
 const byModel = {};
 for (const c of out.cells) byModel[c.model] = (byModel[c.model] ?? 0) + 1;
 console.log(
   `wrote ${out.cells.length} cells (${Object.entries(byModel)
     .map(([m, n]) => `${m}: ${n}`)
-    .join(", ")}) -> ${OUT_MODULE}, ${OUT_PUBLIC}`,
+    .join(", ")}) -> ${competitor.outModule}, ${competitor.outPublic}`,
 );
 console.log(
   `timeouts: ${out.cells.filter((c) => c.timedOut).length} (all ${

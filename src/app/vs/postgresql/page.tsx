@@ -64,6 +64,23 @@ const config: VsConfig = {
       "Stock FTS is real search: parsing, stemming, indexes. The gap opens at ranking quality, and at how each side executes TopK, filters, and counts once the corpus stops being small.",
     rows: [
       {
+        feature: "Index structure",
+        us: (
+          <>
+            One index: a segmented inverted index (
+            <A href="/learn/tantivy/introduction">Tantivy</A>), columnar storage,
+            and a SPANN-style HNSW vector index
+          </>
+        ),
+        them: (
+          <>
+            <A href={`${PG}/gin.html`}>GIN posting trees</A> over{" "}
+            <C>tsvector</C>, plus a pending list; vectors need a separate{" "}
+            <A href="/learn/postgresql/what-is-pgvector">pgvector</A> index
+          </>
+        ),
+      },
+      {
         feature: "Relevance scoring",
         us: (
           <>
@@ -81,42 +98,67 @@ const config: VsConfig = {
         ),
       },
       {
-        feature: "Index structure",
+        feature: "TopK execution",
         us: (
           <>
-            Segmented inverted index (
-            <A href="/learn/tantivy/introduction">Tantivy</A>) with columnar
-            fast fields
+            Score-ordered iterator with{" "}
+            <A href="/learn/search-concepts/block-wand">block-max WAND</A>:
+            skips matches that can&apos;t reach the top k, so work stays
+            sublinear in match count
           </>
         ),
         them: (
           <>
-            <A href={`${PG}/gin.html`}>GIN posting trees</A> over{" "}
-            <C>tsvector</C>, plus a pending list
+            No score order, so bitmap every match, <C>ts_rank</C> each from the
+            heap, sort, then <C>LIMIT</C>: cost tracks match count
           </>
         ),
       },
       {
-        feature: "TopK execution",
+        feature: (
+          <>
+            <A href="/learn/search-concepts/vector-search">Semantic</A> search
+          </>
+        ),
         us: (
           <>
-            <A href="/learn/search-concepts/block-wand">
-              Ordered by score inside the index
-            </A>
-            ; cost tracks k
+            Dense and sparse vectors indexed and scored alongside BM25, on the
+            same live rows
           </>
         ),
         them: (
           <>
-            Bitmap all matches, <C>ts_rank</C> each row, sort, then{" "}
-            <C>LIMIT</C>; cost tracks match count
+            FTS is lexical only;{" "}
+            <A href="/learn/postgresql/what-is-pgvector">pgvector</A> is a
+            separate extension and index to add, sync, and tune
           </>
         ),
       },
       {
         feature: "Filtered search",
-        us: "Numbers, dates, and literals are fast fields in the same index scan",
+        us: "Numbers, dates, and literals are stored columnar in the same index scan",
         them: "GIN AND btree via BitmapAnd, then rank whatever survives",
+      },
+      {
+        feature: (
+          <>
+            <A href="/learn/search-concepts/hybrid-search">Hybrid</A> ranking
+          </>
+        ),
+        us: (
+          <>
+            Vector and BM25 scored in a single index pass, fused with{" "}
+            <A href="/learn/search-concepts/reciprocal-rank-fusion">RRF</A>{" "}
+            (native RRF coming soon)
+          </>
+        ),
+        them: (
+          <>
+            <A href="/learn/postgresql/what-is-pgvector">pgvector</A> and GIN as
+            two separate index scans, then{" "}
+            <A href="/learn/search-concepts/reciprocal-rank-fusion">RRF</A>-fused
+          </>
+        ),
       },
       {
         feature: (
@@ -201,10 +243,9 @@ const config: VsConfig = {
         feature: "Write path",
         us: (
           <>
-            MVCC; background{" "}
-            <A href="/learn/database-concepts/lsm-trees">
-              LSM-style segment merges
-            </A>
+            MVCC; segments merge in the background (
+            <A href="/learn/database-concepts/lsm-trees">LSM-style</A>), with an
+            optional in-memory mutable segment to absorb high write rates
           </>
         ),
         them: (
@@ -216,17 +257,6 @@ const config: VsConfig = {
             , flushed on the unlucky write
           </>
         ),
-      },
-      {
-        feature: "Hybrid (BM25 + vector)",
-        us: (
-          <>
-            <A href="/learn/search-concepts/hybrid-search">
-              Scored together in one query
-            </A>
-          </>
-        ),
-        them: "pgvector is a separate index; fused in application code",
       },
       {
         feature: "Where it runs",
@@ -244,28 +274,8 @@ const config: VsConfig = {
   },
 
   benchmark: {
-    title: "The table above, measured.",
-    subhead:
-      "Every claim in the comparison, run head to head: 28.7M Hacker News documents, each engine on its own 4 pinned CPUs with 8GB, queried through pgbouncer in a closed loop at 1, 4, and 8 connections. FTS ran its best-case schema (stored tsvector columns, GIN, btree filters) with a 30s statement timeout; cells where no query returned are marked as such.",
+    title: "Latency and throughput",
     panel: <VsBenchmarkPanel data={benchmarkData as VsBenchData} />,
-  },
-
-  fits: {
-    subhead:
-      "Stock FTS earns its place through ubiquity: it is already installed everywhere Postgres runs. The question is how far it carries you.",
-    us: [
-      "Ranking quality matters: users expect BM25 ordering from a search box, not frequency-sorted matches.",
-      "The corpus is in the millions of rows, where ranking every match before the LIMIT stops being viable.",
-      "Search runs with filters, facets, or counts on the same query path.",
-      "You need fuzzy matching, boosting, fast highlighting, or hybrid BM25 + vector scoring.",
-      "You stood up Elasticsearch for exactly these gaps and want to delete it.",
-    ],
-    them: [
-      "The corpus is small (hundreds of thousands of rows) and will stay that way.",
-      "Matching is boolean: does the document contain these words, with no ranking pressure.",
-      "You are on a managed Postgres that allows no third-party extensions, and migrating is off the table.",
-      "A zero-dependency policy outweighs search quality; FTS is already in the box.",
-    ],
   },
 };
 
