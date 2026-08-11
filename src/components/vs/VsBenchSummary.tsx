@@ -24,17 +24,94 @@ type Row = {
 };
 
 const ROWS: Row[] = [
-  { type: "Top K", detail: "1 term · top 10", workload: "topk", field: "title", limit: 10, terms: "one" },
-  { type: "Top K", detail: "1 term · top 10", workload: "topk", field: "text", limit: 10, terms: "one" },
-  { type: "Top K", detail: "10 terms · top 10", workload: "topk", field: "text", limit: 10, terms: "ten" },
-  { type: "Filtered", detail: "score > 10", workload: "filtered_range", field: "text", limit: 10, terms: "one" },
-  { type: "Filtered", detail: "type = 'story'", workload: "filtered_literal", field: "text", limit: 10, terms: "one" },
-  { type: "Count", detail: "—", workload: "count", field: "title", limit: null, terms: "one" },
-  { type: "Count", detail: "—", workload: "count", field: "text", limit: null, terms: "one" },
-  { type: "Faceting", detail: "terms", workload: "facet_terms", field: "text", limit: null, terms: "one" },
-  { type: "Faceting", detail: "histogram", workload: "facet_histogram", field: "text", limit: null, terms: "one" },
-  { type: "Highlighting", detail: "—", workload: "highlight", field: "title", limit: null, terms: "one" },
-  { type: "Highlighting", detail: "—", workload: "highlight", field: "text", limit: null, terms: "one" },
+  {
+    type: "Top K",
+    detail: "1 term · top 10",
+    workload: "topk",
+    field: "title",
+    limit: 10,
+    terms: "one",
+  },
+  {
+    type: "Top K",
+    detail: "1 term · top 10",
+    workload: "topk",
+    field: "text",
+    limit: 10,
+    terms: "one",
+  },
+  {
+    type: "Top K",
+    detail: "10 terms · top 10",
+    workload: "topk",
+    field: "text",
+    limit: 10,
+    terms: "ten",
+  },
+  {
+    type: "Filtered",
+    detail: "score > 10",
+    workload: "filtered_range",
+    field: "text",
+    limit: 10,
+    terms: "one",
+  },
+  {
+    type: "Filtered",
+    detail: "type = 'story'",
+    workload: "filtered_literal",
+    field: "text",
+    limit: 10,
+    terms: "one",
+  },
+  {
+    type: "Count",
+    detail: "—",
+    workload: "count",
+    field: "title",
+    limit: null,
+    terms: "one",
+  },
+  {
+    type: "Count",
+    detail: "—",
+    workload: "count",
+    field: "text",
+    limit: null,
+    terms: "one",
+  },
+  {
+    type: "Faceting",
+    detail: "terms",
+    workload: "facet_terms",
+    field: "text",
+    limit: null,
+    terms: "one",
+  },
+  {
+    type: "Faceting",
+    detail: "histogram",
+    workload: "facet_histogram",
+    field: "text",
+    limit: null,
+    terms: "one",
+  },
+  {
+    type: "Highlighting",
+    detail: "—",
+    workload: "highlight",
+    field: "title",
+    limit: null,
+    terms: "one",
+  },
+  {
+    type: "Highlighting",
+    detail: "—",
+    workload: "highlight",
+    field: "text",
+    limit: null,
+    terms: "one",
+  },
 ];
 
 const LOADS = [1, 4, 8];
@@ -90,13 +167,18 @@ export default function VsBenchSummary({ data }: { data: VsBenchData }) {
     LOADS.flatMap((load) => METRICS.map((m) => ({ r, load, m }))),
   );
 
-  const usClass = "text-right font-mono text-[13px] tabular-nums text-indigo-700 dark:text-indigo-300";
-  const themClass = "text-right font-mono text-[13px] tabular-nums text-slate-600 dark:text-slate-400";
+  const usClass =
+    "text-right font-mono text-[13px] tabular-nums text-indigo-700 dark:text-indigo-300";
+  const themClass =
+    "text-right font-mono text-[13px] tabular-nums text-slate-600 dark:text-slate-400";
 
   return (
     <details className="group border border-slate-200 dark:border-slate-800">
       <summary className="flex cursor-pointer list-none items-center gap-2 px-4 py-3 font-mono text-[11px] uppercase tracking-[0.15em] text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200">
-        <span className="inline-block transition-transform group-open:rotate-90" aria-hidden>
+        <span
+          className="inline-block transition-transform group-open:rotate-90"
+          aria-hidden
+        >
           ▸
         </span>
         Full results table · all workloads at every concurrency
@@ -105,8 +187,8 @@ export default function VsBenchSummary({ data }: { data: VsBenchData }) {
         <table className="w-full text-left text-sm">
           <caption className="border-b border-slate-200 px-4 py-3 text-left text-xs text-slate-500 dark:border-slate-800 dark:text-slate-400">
             One row per workload, concurrency, and metric. Latency is in
-            milliseconds; throughput is completed queries per second. All figures
-            come from the downloadable data.
+            milliseconds; throughput is completed queries per second. All
+            figures come from the downloadable data.
           </caption>
           <thead>
             <tr>
@@ -125,24 +207,43 @@ export default function VsBenchSummary({ data }: { data: VsBenchData }) {
               const t = cell(r, key, load);
               const dnf = !t || t.timedOut;
               const zebra =
-                i % 2 === 0 ? "bg-white dark:bg-slate-950" : "bg-slate-50/40 dark:bg-slate-900/30";
+                i % 2 === 0
+                  ? "bg-white dark:bg-slate-950"
+                  : "bg-slate-50/40 dark:bg-slate-900/30";
               return (
-                <tr key={`${r.type}-${r.field}-${r.detail}-${load}-${m.metric}`} className={zebra}>
-                  <td className={`${TD} font-medium text-slate-900 dark:text-white`}>{r.type}</td>
-                  <td className={`${TD} font-mono text-[13px] text-slate-700 dark:text-slate-300`}>
+                <tr
+                  key={`${r.type}-${r.field}-${r.detail}-${load}-${m.metric}`}
+                  className={zebra}
+                >
+                  <td
+                    className={`${TD} font-medium text-slate-900 dark:text-white`}
+                  >
+                    {r.type}
+                  </td>
+                  <td
+                    className={`${TD} font-mono text-[13px] text-slate-700 dark:text-slate-300`}
+                  >
                     {r.field}
                   </td>
-                  <td className={`${TD} font-mono text-[13px] text-slate-600 dark:text-slate-400`}>
+                  <td
+                    className={`${TD} font-mono text-[13px] text-slate-600 dark:text-slate-400`}
+                  >
                     {r.detail}
                   </td>
-                  <td className={`${TD} text-right font-mono text-[13px] tabular-nums text-slate-700 dark:text-slate-300`}>
+                  <td
+                    className={`${TD} text-right font-mono text-[13px] tabular-nums text-slate-700 dark:text-slate-300`}
+                  >
                     {load}
                   </td>
-                  <td className={`${TD} border-l font-mono text-[13px] text-slate-700 dark:text-slate-300`}>
+                  <td
+                    className={`${TD} border-l font-mono text-[13px] text-slate-700 dark:text-slate-300`}
+                  >
                     {m.metric}
                   </td>
                   <td className={`${TD} border-l ${usClass}`}>{m.fmt(u)}</td>
-                  <td className={`${TD} ${themClass}`}>{dnf ? m.dnf : m.fmt(t)}</td>
+                  <td className={`${TD} ${themClass}`}>
+                    {dnf ? m.dnf : m.fmt(t)}
+                  </td>
                 </tr>
               );
             })}

@@ -125,69 +125,69 @@ export default function VsPage({ config }: { config: VsConfig }) {
 
       {/* ============ Which fits when (two-column) ============ */}
       {config.fits && (
-      <section>
-        <div className="mb-8">
-          <Badge className="mb-4">Which fits when</Badge>
-          <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-indigo-950 dark:text-white mb-3">
-            Pick by your workload.
-          </h2>
-          <p className="text-base text-gray-800 dark:text-slate-300 max-w-2xl leading-relaxed">
-            {config.fits.subhead}
-          </p>
-        </div>
-        <div className="grid md:grid-cols-2 gap-6">
-          <div className="relative">
-            <div
-              className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
-              aria-hidden="true"
-              style={indigoShadowStyle}
-            />
-            <div className="relative bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-500 p-6 h-full">
-              <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 mb-3">
-                Reach for ParadeDB when
+        <section>
+          <div className="mb-8">
+            <Badge className="mb-4">Which fits when</Badge>
+            <h2 className="text-2xl md:text-3xl font-bold tracking-tight text-indigo-950 dark:text-white mb-3">
+              Pick by your workload.
+            </h2>
+            <p className="text-base text-gray-800 dark:text-slate-300 max-w-2xl leading-relaxed">
+              {config.fits.subhead}
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 gap-6">
+            <div className="relative">
+              <div
+                className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
+                aria-hidden="true"
+                style={indigoShadowStyle}
+              />
+              <div className="relative bg-white dark:bg-slate-900 border-2 border-indigo-400 dark:border-indigo-500 p-6 h-full">
+                <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-indigo-600 dark:text-indigo-400 mb-3">
+                  Reach for ParadeDB when
+                </div>
+                <ul className="space-y-3">
+                  {config.fits.us.map((item, i) => (
+                    <li
+                      key={i}
+                      className="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed flex gap-3"
+                    >
+                      <span className="font-mono text-slate-400 dark:text-slate-600 select-none">
+                        ·
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-3">
-                {config.fits.us.map((item, i) => (
-                  <li
-                    key={i}
-                    className="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed flex gap-3"
-                  >
-                    <span className="font-mono text-slate-400 dark:text-slate-600 select-none">
-                      ·
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
+            </div>
+            <div className="relative">
+              <div
+                className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
+                aria-hidden="true"
+                style={slateShadowStyle}
+              />
+              <div className="relative bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-600 p-6 h-full">
+                <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400 mb-3">
+                  Reach for {config.competitor.name} when
+                </div>
+                <ul className="space-y-3">
+                  {config.fits.them.map((item, i) => (
+                    <li
+                      key={i}
+                      className="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed flex gap-3"
+                    >
+                      <span className="font-mono text-slate-400 dark:text-slate-600 select-none">
+                        ·
+                      </span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           </div>
-          <div className="relative">
-            <div
-              className="absolute top-2.5 left-2.5 -right-2.5 -bottom-2.5"
-              aria-hidden="true"
-              style={slateShadowStyle}
-            />
-            <div className="relative bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-600 p-6 h-full">
-              <div className="font-mono text-[11px] uppercase tracking-[0.2em] text-slate-600 dark:text-slate-400 mb-3">
-                Reach for {config.competitor.name} when
-              </div>
-              <ul className="space-y-3">
-                {config.fits.them.map((item, i) => (
-                  <li
-                    key={i}
-                    className="text-sm sm:text-base text-slate-800 dark:text-slate-200 leading-relaxed flex gap-3"
-                  >
-                    <span className="font-mono text-slate-400 dark:text-slate-600 select-none">
-                      ·
-                    </span>
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
+        </section>
       )}
     </div>
   );
