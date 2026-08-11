@@ -17,10 +17,8 @@
 # To uninstall, just run: docker rm -f paradedb && docker volume rm paradedb_data
 # ---------------------------------------------------------
 
-# The body of this script is POSIX-compatible, so it runs under dash (which is
-# /bin/sh on Debian and Ubuntu) as well as bash. Keep it that way: no `local`,
-# no `$'...'` escapes, no `set -o pipefail`. People pipe this into `sh` from
-# stale copies of the install command, and dash aborts on the first bashism.
+# The body of this script is intentionally POSIX-compatible, so it runs
+# under dash (which is /bin/sh on Debian and Ubuntu) as well as bash.
 #
 # `pipefail` is intentionally omitted because dash does not implement it.
 # @paradedb-skip-check-pipefail
