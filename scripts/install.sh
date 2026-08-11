@@ -19,9 +19,7 @@
 # ---------------------------------------------------------
 
 # The body of this script is intentionally POSIX-compatible, so it runs
-# under dash (which is /bin/sh on Debian and Ubuntu) as well as bash. The
-# `# shellcheck shell=sh` directive at the top enforces that in CI: it
-# overrides the shebang, so any bashism fails the build.
+# under dash (which is /bin/sh on Debian and Ubuntu) as well as bash.
 #
 # `pipefail` is intentionally omitted because dash does not implement it.
 # @paradedb-skip-check-pipefail
