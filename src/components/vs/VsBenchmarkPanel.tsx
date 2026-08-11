@@ -741,7 +741,7 @@ function reproduceLines(competitorKey: "fts" | "es", kind: string): string[] {
       : [
           "# Load both engines; postgres gets stored tsvectors + GIN + btree",
           "./bin/loader load --backend paradedb ./datasets/hn",
-          "./bin/loader load --backend postgres --workers 4 ./datasets/hn",
+          "./bin/loader load --backend postgres ./datasets/hn",
           "",
           "# Cap runaway FTS queries so a stalled scenario can't wedge the run",
           "docker exec postgres psql -U postgres -c \\",
@@ -749,18 +749,34 @@ function reproduceLines(competitorKey: "fts" | "es", kind: string): string[] {
         ];
   const script = competitorKey === "es" ? "pdb-vs-es.js" : "pdb-vs-fts.js";
   const workload = WORKLOAD_ENV[kind] ?? kind;
+  const profiles =
+    competitorKey === "es"
+      ? "--profile paradedb --profile elasticsearch"
+      : "--profile paradedb --profile postgres";
   return [
     "git clone https://github.com/paradedb/benchmarker.git",
     "cd benchmarker && make",
     "",
     "# Pull the Hacker News dataset (28M rows)",
     "./bin/loader pull --dataset hn --anonymous \\",
-    "    --source s3://paradedb-benchmarker/datasets/hn-elasticsearch-bm25.tar.gz",
+    "    --source s3://paradedb-benchmarker/datasets/hn-benchmarker.tar.gz",
+    "",
+    "# Stop everything first: postgres and elasticsearch share cores 4-7, so",
+    "# only the two engines for this comparison should ever be running.",
+    "docker compose -f datasets/hn/docker-compose.yml --profile all stop",
+    "",
+    "# Start the engines and their pgbouncers via compose profiles. CPU pins",
+    "# keep them isolated: paradedb 0-3, postgres/elasticsearch 4-7, bouncers",
+    "# 8-11, and the k6 runner on 12-15, so no engine shares cores.",
+    `docker compose -f datasets/hn/docker-compose.yml ${profiles} \\`,
+    "    up -d --wait",
     "",
     ...setup,
     "",
-    "# This workload only, closed loop at 1/4/8 connections",
-    "./k6 run --out dashboard=json,html -e MODE=closed \\",
+    "# This workload only, closed loop at 1/4/8 connections. Each scenario",
+    "# warms before it measures; run the command twice and take the second",
+    "# for fully hot, steady-state numbers.",
+    `taskset -c 12-15 ./k6 run --out dashboard=json,html -e MODE=closed \\`,
     `    -e WORKLOADS=${workload} datasets/hn/k6/${script}`,
   ];
 }
