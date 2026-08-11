@@ -1,4 +1,5 @@
 #!/bin/bash
+# shellcheck shell=sh
 
 # ---------------------------------------------------------
 # Hi, savvy user! Thanks for reading the source.
@@ -17,8 +18,13 @@
 # To uninstall, just run: docker rm -f paradedb && docker volume rm paradedb_data
 # ---------------------------------------------------------
 
+# The body of this script is intentionally POSIX-compatible, so it runs
+# under dash (which is /bin/sh on Debian and Ubuntu) as well as bash.
+#
+# `pipefail` is intentionally omitted because dash does not implement it.
+# @paradedb-skip-check-pipefail
 # Exit on subcommand errors
-set -Eeuo pipefail
+set -eu
 
 SILENT=false
 for arg in "$@"; do
@@ -45,12 +51,13 @@ PG_DATABASE="${PDB_PG_DATABASE:-paradedb}"
 
 # Color support
 if [ -t 1 ] && [ "$(tput colors 2>/dev/null)" -ge 8 ] 2>/dev/null; then
-  RED=$'\033[0;31m'
-  GREEN=$'\033[0;32m'
-  CYAN=$'\033[0;36m'
-  PURPLE=$'\033[38;5;99m'
-  BOLD=$'\033[1m'
-  RESET=$'\033[0m'
+  # printf rather than $'...', which dash does not understand
+  RED=$(printf '\033[0;31m')
+  GREEN=$(printf '\033[0;32m')
+  CYAN=$(printf '\033[0;36m')
+  PURPLE=$(printf '\033[38;5;99m')
+  BOLD=$(printf '\033[1m')
+  RESET=$(printf '\033[0m')
 else
   RED=''
   GREEN=''
@@ -184,8 +191,8 @@ else
 fi
 
 wait_for_postgres() {
-  local retries=0
-  local max_retries=10
+  retries=0
+  max_retries=10
   until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" -d "$PG_DATABASE" > /dev/null 2>&1; do
     retries=$((retries + 1))
     if [ "$retries" -ge "$max_retries" ]; then
