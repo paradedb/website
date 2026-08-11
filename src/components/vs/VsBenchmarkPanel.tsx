@@ -13,7 +13,14 @@ import { RiGithubFill } from "@remixicon/react";
 
 export type VsBenchCell = {
   backend: "paradedb" | "fts" | "es";
-  workload: "topk" | "filtered_range" | "filtered_literal" | "count";
+  workload:
+    | "topk"
+    | "filtered_range"
+    | "filtered_literal"
+    | "count"
+    | "facet_terms"
+    | "facet_histogram"
+    | "highlight";
   field: "title" | "text";
   limit: number | null;
   terms: string | null;
@@ -58,9 +65,16 @@ function fmtMs(v: number | null): string {
 
 // ── minimal SQL highlighting ───────────────────────────────────────────────
 const SQL_TOKEN =
-  /('[^']*')|(\b(?:SELECT|FROM|WHERE|ORDER BY|AND|DESC|LIMIT|CREATE|TABLE|INDEX|USING|GENERATED|ALWAYS|AS|STORED|PRIMARY KEY|ON)\b)|(\b(?:websearch_to_tsquery|ts_rank_cd|to_tsvector|count)\b|pdb\.score)|(\b\d+\b)/g;
+  /('[^']*')|(\b(?:SELECT|FROM|WHERE|ORDER BY|AND|DESC|LIMIT|CREATE|TABLE|INDEX|USING|GENERATED|ALWAYS|AS|STORED|PRIMARY KEY|ON)\b)|(\b(?:websearch_to_tsquery|ts_rank_cd|to_tsvector|ts_headline|count)\b|pdb\.(?:score|snippet|agg))|(\b\d+\b)/g;
 
 function sqlLine(line: string, key: number): ReactNode {
+  if (/^\s*--/.test(line)) {
+    return (
+      <div key={key} className="whitespace-pre-wrap break-words text-slate-400 dark:text-slate-500">
+        {line}
+      </div>
+    );
+  }
   const out: ReactNode[] = [];
   let last = 0;
   let m: RegExpExecArray | null;
@@ -83,7 +97,7 @@ function sqlLine(line: string, key: number): ReactNode {
   }
   if (last < line.length) out.push(line.slice(last));
   return (
-    <div key={key} className="whitespace-pre">
+    <div key={key} className="whitespace-pre-wrap break-words">
       {out.length ? out : " "}
     </div>
   );
@@ -116,7 +130,7 @@ function jsonLine(line: string, key: number): ReactNode {
   }
   if (last < line.length) out.push(line.slice(last));
   return (
-    <div key={key} className="whitespace-pre">
+    <div key={key} className="whitespace-pre-wrap break-words">
       {out.length ? out : " "}
     </div>
   );
@@ -162,6 +176,29 @@ function pdbLines(sel: Sel, example: string): string[] {
   if (sel.workload === "count") {
     return ["SELECT count(*) FROM hn_items", `WHERE ${sel.field} ||| '${example}'`];
   }
+  if (sel.workload === "highlight") {
+    return [
+      `SELECT id, title, pdb.snippet(${sel.field})`,
+      "FROM hn_items",
+      `WHERE ${sel.field} ||| '${example}'`,
+      "ORDER BY pdb.score(id) DESC",
+      "LIMIT 10",
+    ];
+  }
+  if (sel.workload === "facet_terms" || sel.workload === "facet_histogram") {
+    const agg =
+      sel.workload === "facet_terms"
+        ? `'{"terms": {"field": "type"}}'`
+        : `'{"histogram": {"field": "score", "interval": 50}}'`;
+    return [
+      "SELECT id,",
+      `  pdb.agg(${agg}) OVER ()`,
+      "FROM hn_items",
+      `WHERE text ||| '${example}'`,
+      "ORDER BY pdb.score(id) DESC",
+      "LIMIT 10",
+    ];
+  }
   return [
     "SELECT id, title, by, score",
     "FROM hn_items",
@@ -186,6 +223,43 @@ function ftsLines(sel: Sel, example: string): string[] {
       "SELECT count(*) FROM hn_items",
       `WHERE ${sel.field}_tsv @@`,
       `      ${tsq}`,
+    ];
+  }
+  if (sel.workload === "highlight") {
+    return [
+      "SELECT id, title,",
+      `  ts_headline('english', ${sel.field},`,
+      `    ${tsq})`,
+      `FROM hn_items`,
+      `WHERE ${sel.field}_tsv @@ ${tsq}`,
+      `ORDER BY ts_rank_cd(${sel.field}_tsv,`,
+      `      ${tsq}) DESC`,
+      "LIMIT 10",
+    ];
+  }
+  if (sel.workload === "facet_terms" || sel.workload === "facet_histogram") {
+    const groupExpr =
+      sel.workload === "facet_terms" ? "type" : "(score/50)*50";
+    const col = sel.workload === "facet_terms" ? "type" : "score";
+    return [
+      "WITH hits AS (",
+      `  SELECT id, ${col},`,
+      "    ts_rank_cd(text_tsv, q) r",
+      "  FROM hn_items,",
+      "    websearch_to_tsquery(",
+      `      'english', '${or}') q`,
+      "  WHERE text_tsv @@ q",
+      ")",
+      "SELECT",
+      "  -- pass 1: the facet buckets",
+      "  (SELECT jsonb_object_agg(k, c)",
+      `   FROM (SELECT ${groupExpr} k,`,
+      "           count(*) c FROM hits",
+      "         GROUP BY 1) t),",
+      "  -- pass 2: the top 10 hits",
+      "  (SELECT jsonb_agg(h)",
+      "   FROM (SELECT * FROM hits",
+      "         ORDER BY r DESC LIMIT 10) h)",
     ];
   }
   return [
@@ -500,7 +574,13 @@ function CompareBody({
   ];
   const max = Math.max(1, ...rows.flatMap((r) => [r.us ?? 0, r.them ?? 0]));
 
-  const bar = (value: number | null, dnf: boolean, solid: string, valueClass: string) => (
+  const bar = (
+    value: number | null,
+    dnf: boolean,
+    solid: string,
+    valueClass: string,
+    ratio: string,
+  ) => (
     <div className="flex items-center gap-2 sm:gap-3">
       <div className="relative h-6 min-w-0 flex-1 bg-slate-100 dark:bg-slate-800/50">
         {dnf ? (
@@ -524,6 +604,13 @@ function CompareBody({
             }}
           />
         )}
+        {ratio && (
+          <span
+            className={`absolute inset-y-0 right-2 flex items-center whitespace-nowrap font-mono text-[11px] font-semibold tabular-nums ${valueClass}`}
+          >
+            {ratio}
+          </span>
+        )}
       </div>
       <span
         className={`w-16 shrink-0 whitespace-nowrap text-right font-mono text-[11px] tabular-nums sm:w-20 ${valueClass}`}
@@ -532,6 +619,20 @@ function CompareBody({
       </span>
     </div>
   );
+
+  // Ratio of the slower engine's latency to the faster one, shown next to the
+  // winner. e.g. ParadeDB 3ms vs FTS 739ms -> "224× faster" on ParadeDB.
+  const fmtRatio = (slow: number, fast: number) => {
+    const r = slow / fast;
+    return `${r >= 10 ? Math.round(r) : Math.round(r * 10) / 10}×`;
+  };
+  const ratios = (usVal: number | null, themVal: number | null) => {
+    if (themDnf || usVal == null || themVal == null || usVal <= 0 || themVal <= 0)
+      return { us: "", them: "" };
+    return usVal <= themVal
+      ? { us: fmtRatio(themVal, usVal), them: "" }
+      : { us: "", them: fmtRatio(usVal, themVal) };
+  };
 
   return (
     <div className="flex flex-1 flex-col border border-slate-200 dark:border-slate-800">
@@ -573,17 +674,20 @@ function CompareBody({
                 animate={animate}
               />
             ) : (
-              rows.map((row) => (
-                <div key={row.label}>
-                  <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
-                    {row.label}
+              rows.map((row) => {
+                const r = ratios(row.us, row.them);
+                return (
+                  <div key={row.label}>
+                    <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
+                      {row.label}
+                    </div>
+                    <div className="space-y-1.5">
+                      {bar(row.us, false, "bg-indigo-500", "text-indigo-600 dark:text-indigo-400", r.us)}
+                      {bar(row.them, themDnf, "bg-slate-300 dark:bg-slate-600", "text-slate-400 dark:text-slate-500", r.them)}
+                    </div>
                   </div>
-                  <div className="space-y-1.5">
-                    {bar(row.us, false, "bg-indigo-500", "text-indigo-600 dark:text-indigo-400")}
-                    {bar(row.them, themDnf, "bg-slate-300 dark:bg-slate-600", "text-slate-400 dark:text-slate-500")}
-                  </div>
-                </div>
-              ))
+                );
+              })
             )}
             <div>
               <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
@@ -617,45 +721,58 @@ function CompareBody({
 }
 
 // ── reproduce ──────────────────────────────────────────────────────────────
-const REPRODUCE_LINES: Record<"fts" | "es", string[]> = {
-  fts: [
-    "git clone https://github.com/paradedb/benchmarker.git",
-    "cd benchmarker && make",
-    "",
-    "# Pull the Hacker News dataset (28M rows)",
-    "./bin/loader pull --dataset hn --anonymous \\",
-    "    --source s3://paradedb-benchmarker/datasets/hn-elasticsearch-bm25.tar.gz",
-    "",
-    "# Load both engines; postgres gets stored tsvectors + GIN + btree",
-    "./bin/loader load --backend paradedb ./datasets/hn",
-    "./bin/loader load --backend postgres --workers 4 ./datasets/hn",
-    "",
-    "# Cap runaway FTS queries so a stalled scenario can't wedge the run",
-    "docker exec postgres psql -U postgres -c \\",
-    "    \"ALTER ROLE postgres IN DATABASE benchmark SET statement_timeout='30s'\"",
-    "",
-    "# Closed-loop matrix at 1/4/8 connections",
-    "./k6 run --out dashboard=json,html -e MODE=closed datasets/hn/k6/pdb-vs-fts.js",
-  ],
-  es: [
-    "git clone https://github.com/paradedb/benchmarker.git",
-    "cd benchmarker && make",
-    "",
-    "# Pull the Hacker News dataset (28M rows)",
-    "./bin/loader pull --dataset hn --anonymous \\",
-    "    --source s3://paradedb-benchmarker/datasets/hn-elasticsearch-bm25.tar.gz",
-    "",
-    "# Load both engines; ES is force-merged to one segment by post.json",
-    "./bin/loader load --backend paradedb      ./datasets/hn",
-    "./bin/loader load --backend elasticsearch ./datasets/hn",
-    "",
-    "# Closed-loop matrix at 1/4/8 connections",
-    "./k6 run --out dashboard=json,html -e MODE=closed datasets/hn/k6/pdb-vs-es.js",
-  ],
+// Each box reproduces only its own workload via -e WORKLOADS=<kind>.
+const WORKLOAD_ENV: Record<string, string> = {
+  topk: "topk",
+  filtered: "filtered",
+  count: "count",
+  facet: "facet",
+  highlight: "highlight",
 };
 
-function ReproduceBody({ competitorKey }: { competitorKey: "fts" | "es" }) {
-  const lines = REPRODUCE_LINES[competitorKey];
+function reproduceLines(competitorKey: "fts" | "es", kind: string): string[] {
+  const setup =
+    competitorKey === "es"
+      ? [
+          "# Load both engines; ES is force-merged to one segment by post.json",
+          "./bin/loader load --backend paradedb      ./datasets/hn",
+          "./bin/loader load --backend elasticsearch ./datasets/hn",
+        ]
+      : [
+          "# Load both engines; postgres gets stored tsvectors + GIN + btree",
+          "./bin/loader load --backend paradedb ./datasets/hn",
+          "./bin/loader load --backend postgres --workers 4 ./datasets/hn",
+          "",
+          "# Cap runaway FTS queries so a stalled scenario can't wedge the run",
+          "docker exec postgres psql -U postgres -c \\",
+          "    \"ALTER ROLE postgres IN DATABASE benchmark SET statement_timeout='30s'\"",
+        ];
+  const script = competitorKey === "es" ? "pdb-vs-es.js" : "pdb-vs-fts.js";
+  const workload = WORKLOAD_ENV[kind] ?? kind;
+  return [
+    "git clone https://github.com/paradedb/benchmarker.git",
+    "cd benchmarker && make",
+    "",
+    "# Pull the Hacker News dataset (28M rows)",
+    "./bin/loader pull --dataset hn --anonymous \\",
+    "    --source s3://paradedb-benchmarker/datasets/hn-elasticsearch-bm25.tar.gz",
+    "",
+    ...setup,
+    "",
+    "# This workload only, closed loop at 1/4/8 connections",
+    "./k6 run --out dashboard=json,html -e MODE=closed \\",
+    `    -e WORKLOADS=${workload} datasets/hn/k6/${script}`,
+  ];
+}
+
+function ReproduceBody({
+  competitorKey,
+  kind,
+}: {
+  competitorKey: "fts" | "es";
+  kind: string;
+}) {
+  const lines = reproduceLines(competitorKey, kind);
   return (
     <div className="overflow-x-auto border border-slate-200 bg-slate-50 p-4 font-mono text-[11px] leading-[1.9] dark:border-slate-800 dark:bg-slate-900/60">
       {lines.map((line, i) => (
@@ -759,6 +876,8 @@ function SchemaBody({
 }
 
 // ── one box per workload family ────────────────────────────────────────────
+type WorkloadKind = "topk" | "filtered" | "count" | "facet" | "highlight";
+
 function WorkloadCard({
   index,
   title,
@@ -767,7 +886,7 @@ function WorkloadCard({
 }: {
   index: number;
   title: string;
-  kind: "topk" | "filtered" | "count";
+  kind: WorkloadKind;
   data: VsBenchData;
 }) {
   const [view, setView] = useState<
@@ -779,6 +898,9 @@ function WorkloadCard({
   const [conns, setConns] = useState(1);
   const [variant, setVariant] = useState<"filtered_range" | "filtered_literal">(
     "filtered_range",
+  );
+  const [facet, setFacet] = useState<"facet_terms" | "facet_histogram">(
+    "facet_terms",
   );
 
   const cardRef = useRef<HTMLDivElement>(null);
@@ -801,7 +923,11 @@ function WorkloadCard({
       ? { workload: variant, field: "text", limit: 10, terms: "one" }
       : kind === "count"
         ? { workload: "count", field, limit: null, terms: "one" }
-        : { workload: "topk", field, limit, terms };
+        : kind === "facet"
+          ? { workload: facet, field: "text", limit: null, terms: "one" }
+          : kind === "highlight"
+            ? { workload: "highlight", field, limit: null, terms: "one" }
+            : { workload: "topk", field, limit, terms };
 
   const find = (backend: "paradedb" | "fts" | "es") =>
     data.cells.find(
@@ -856,7 +982,7 @@ function WorkloadCard({
 
       <div className="p-4 sm:p-6">
         {view === "reproduce" ? (
-          <ReproduceBody competitorKey={data.competitor.key} />
+          <ReproduceBody competitorKey={data.competitor.key} kind={kind} />
         ) : view === "schema" ? (
           <SchemaBody
             competitorKey={data.competitor.key}
@@ -908,7 +1034,7 @@ function WorkloadCard({
                   onChange={setVariant}
                 />
               )}
-              {kind === "count" && (
+              {(kind === "count" || kind === "highlight") && (
                 <Seg
                   label="Field"
                   options={[
@@ -917,6 +1043,17 @@ function WorkloadCard({
                   ]}
                   value={field}
                   onChange={setField}
+                />
+              )}
+              {kind === "facet" && (
+                <Seg
+                  label="Facet"
+                  options={[
+                    { value: "facet_terms" as const, label: "terms" },
+                    { value: "facet_histogram" as const, label: "histogram" },
+                  ]}
+                  value={facet}
+                  onChange={setFacet}
                 />
               )}
               <Seg
@@ -944,8 +1081,61 @@ function WorkloadCard({
   );
 }
 
+// ── coming-soon placeholder box (vector / hybrid workloads) ────────────────
+const VECTOR_QUERY = [
+  "SELECT id, title",
+  "FROM hn_items",
+  "ORDER BY embedding <=> $query_vec",
+  "LIMIT 10",
+];
+
+function ComingSoonCard({ index, title }: { index: number; title: string }) {
+  return (
+    <div className="border border-slate-200 bg-white dark:border-slate-900 dark:bg-slate-950">
+      <div className="flex items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 sm:px-6 dark:border-slate-900">
+        <div className="flex items-center gap-2.5">
+          <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+            {String(index).padStart(2, "0")}
+          </span>
+          <span className="text-[13px] font-semibold tracking-tight text-slate-900 sm:text-sm dark:text-white">
+            {title}
+          </span>
+        </div>
+        <span className="rounded-full border border-slate-300 px-2.5 py-0.5 font-mono text-[10px] uppercase tracking-[0.15em] text-slate-500 dark:border-slate-700 dark:text-slate-400">
+          Coming soon
+        </span>
+      </div>
+      <div className="p-4 sm:p-6">
+        <div className="grid items-center gap-4 sm:grid-cols-2">
+          <div className="overflow-x-auto border border-slate-200 bg-slate-50 p-4 opacity-60 dark:border-slate-800 dark:bg-slate-900/60">
+            <QueryBlock label="ParadeDB" lines={VECTOR_QUERY} />
+          </div>
+          <p className="text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+            Dense and sparse vector search, plus hybrid BM25 and vector ranking,
+            all served from the same index. We&apos;re adding these workloads to
+            the benchmark next.
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── panel: methodology note, then stacked workload boxes ───────────────────
 export default function VsBenchmarkPanel({ data }: { data: VsBenchData }) {
+  const has = (wl: VsBenchCell["workload"]) =>
+    data.cells.some((c) => c.workload === wl && !c.timedOut);
+
+  // Only render a box when the run actually covered its workload, so a
+  // matchup without facet/highlight data doesn't show empty boxes.
+  const boxes: { title: string; kind: WorkloadKind }[] = [
+    { title: "Top K search", kind: "topk" },
+    { title: "Filtered search", kind: "filtered" },
+    { title: "Count over search", kind: "count" },
+    ...(has("facet_terms") ? [{ title: "Faceting", kind: "facet" as const }] : []),
+    ...(has("highlight") ? [{ title: "Highlighting", kind: "highlight" as const }] : []),
+  ];
+
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-4 text-base leading-relaxed text-gray-800 dark:text-slate-300">
@@ -954,9 +1144,16 @@ export default function VsBenchmarkPanel({ data }: { data: VsBenchData }) {
         ))}
       </div>
 
-      <WorkloadCard index={1} title="TopK search" kind="topk" data={data} />
-      <WorkloadCard index={2} title="Filtered search" kind="filtered" data={data} />
-      <WorkloadCard index={3} title="Count over search" kind="count" data={data} />
+      {boxes.map((b, i) => (
+        <WorkloadCard
+          key={b.kind}
+          index={i + 1}
+          title={b.title}
+          kind={b.kind}
+          data={data}
+        />
+      ))}
+      <ComingSoonCard index={boxes.length + 1} title="Vector search" />
 
       <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-slate-500 dark:text-slate-400">
         <a

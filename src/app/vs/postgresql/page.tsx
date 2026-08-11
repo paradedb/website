@@ -3,6 +3,7 @@ import VsPage, { type VsConfig } from "@/components/vs/VsPage";
 import VsBenchmarkPanel, {
   type VsBenchData,
 } from "@/components/vs/VsBenchmarkPanel";
+import VsBenchSummary from "@/components/vs/VsBenchSummary";
 import benchmarkData from "@/components/vs/postgres-benchmark-data.json";
 import type { ReactNode } from "react";
 
@@ -33,7 +34,7 @@ const DOCS = "https://docs.paradedb.com";
 export const metadata: Metadata = {
   title: "Comparing ParadeDB and Postgres Full-Text Search",
   description:
-    "An honest comparison of ParadeDB and Postgres full-text search: how each one ranks, executes TopK, filters, and counts, and where stock FTS stops scaling.",
+    "An honest comparison of ParadeDB and Postgres full-text search: how each one ranks, executes Top K, filters, and counts, and where stock FTS stops scaling.",
   alternates: { canonical: "/vs/postgresql" },
 };
 
@@ -53,7 +54,7 @@ const config: VsConfig = {
         , and that is exactly what every managed Postgres (RDS, Cloud SQL,
         Azure, Supabase, Neon) bundles as search. ParadeDB replaces that
         machinery with a{" "}
-        <A href={`${DOCS}/welcome/architecture`}>full inverted-index engine</A>{" "}
+        <A href={`${DOCS}/welcome/architecture`}>dedicated search engine</A>{" "}
         living in the same database.
       </>
     ),
@@ -61,7 +62,7 @@ const config: VsConfig = {
 
   techTable: {
     subhead:
-      "Stock FTS is real search: parsing, stemming, indexes. The gap opens at ranking quality, and at how each side executes TopK, filters, and counts once the corpus stops being small.",
+      "Stock FTS is real search: parsing, stemming, indexes. The gap opens at ranking quality, and at how each side executes Top K, filters, and counts once the corpus stops being small.",
     rows: [
       {
         feature: "Index structure",
@@ -69,7 +70,7 @@ const config: VsConfig = {
           <>
             One index: a segmented inverted index (
             <A href="/learn/tantivy/introduction">Tantivy</A>), columnar storage,
-            and a SPANN-style HNSW vector index
+            and a SPANN-style IVF vector index
           </>
         ),
         them: (
@@ -98,7 +99,7 @@ const config: VsConfig = {
         ),
       },
       {
-        feature: "TopK execution",
+        feature: "Top K execution",
         us: (
           <>
             Score-ordered iterator with{" "}
@@ -136,8 +137,8 @@ const config: VsConfig = {
       },
       {
         feature: "Filtered search",
-        us: "Numbers, dates, and literals are stored columnar in the same index scan",
-        them: "GIN AND btree via BitmapAnd, then rank whatever survives",
+        us: "Numbers, dates, and literals are stored columnar and queried in the same index scan",
+        them: "GIN and btree via BitmapAnd, then rank whatever survives",
       },
       {
         feature: (
@@ -275,7 +276,12 @@ const config: VsConfig = {
 
   benchmark: {
     title: "Latency and throughput",
-    panel: <VsBenchmarkPanel data={benchmarkData as VsBenchData} />,
+    panel: (
+      <div className="flex flex-col gap-6">
+        <VsBenchmarkPanel data={benchmarkData as VsBenchData} />
+        <VsBenchSummary data={benchmarkData as VsBenchData} />
+      </div>
+    ),
   },
 };
 

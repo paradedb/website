@@ -22,7 +22,7 @@ import { readFileSync, writeFileSync } from "node:fs";
 import { basename } from "node:path";
 
 const SCENARIO_RE =
-  /^(paradedb|fts|es)_(topk|filtered_range|filtered_literal|count)_(title|text)(?:_l(\d+))?(?:_(one|two|five|ten))?_(c|r)(\d+)$/;
+  /^(paradedb|fts|es)_(topk|filtered_range|filtered_literal|count|facet_terms|facet_histogram|highlight)_(title|text)(?:_l(\d+))?(?:_(one|two|five|ten))?_(c|r)(\d+)$/;
 
 const args = process.argv.slice(2);
 if (args.length < 1) {
@@ -157,6 +157,10 @@ for (const model of seenModels) {
       expected.push({ workload, field: "text", limit: 10, terms: "one", model, load });
     for (const field of ["title", "text"])
       expected.push({ workload: "count", field, limit: null, terms: "one", model, load });
+    for (const workload of ["facet_terms", "facet_histogram"])
+      expected.push({ workload, field: "text", limit: null, terms: "one", model, load });
+    for (const field of ["title", "text"])
+      expected.push({ workload: "highlight", field, limit: null, terms: "one", model, load });
   }
 }
 
