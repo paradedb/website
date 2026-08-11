@@ -9,7 +9,7 @@ import { DarkModeOverlay } from "./DarkModeOverlay";
 import Code from "@/components/Code";
 import CopyToClipboard from "@/components/CopyToClipboard";
 
-const installCommand = `curl -fsSL https://paradedb.com/install.sh | sh`;
+const installCommand = `curl -fsSL https://paradedb.com/install.sh | bash`;
 
 export default async function Hero() {
   return (

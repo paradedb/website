@@ -10,9 +10,12 @@ export async function GET(request: Request) {
   const source = url.searchParams.get("source") ?? "direct";
 
   let script = readFileSync(scriptPath, "utf-8");
+  // Matches the whole `IMAGE=` assignment so the substitution survives edits to
+  // the script (e.g. the `${PDB_IMAGE:-...}` default). Uses a replacer function
+  // so `$` in the replacement is not treated as a capture reference.
   script = script.replace(
-    'IMAGE="paradedb/paradedb:latest"',
-    `IMAGE="paradedb/paradedb:${tag}"`,
+    /^IMAGE=.*$/m,
+    () => `IMAGE="\${PDB_IMAGE:-paradedb/paradedb:${tag}}"`,
   );
 
   // Fire GA4 Measurement Protocol event (fire-and-forget)
