@@ -20,8 +20,7 @@ export default function VsLayoutClient({
     pathname.endsWith(`/${c.slug}`),
   );
   const canGoBackward = !isIndex && currentPageIdx > 0;
-  const canGoForward =
-    !isIndex && currentPageIdx < VS_COMPETITORS.length - 1;
+  const canGoForward = !isIndex && currentPageIdx < VS_COMPETITORS.length - 1;
   const nextHref = canGoForward
     ? `${VS_BASE}/${VS_COMPETITORS[currentPageIdx + 1].slug}`
     : undefined;

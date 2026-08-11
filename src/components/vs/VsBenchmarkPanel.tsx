@@ -70,7 +70,10 @@ const SQL_TOKEN =
 function sqlLine(line: string, key: number): ReactNode {
   if (/^\s*--/.test(line)) {
     return (
-      <div key={key} className="whitespace-pre-wrap break-words text-slate-400 dark:text-slate-500">
+      <div
+        key={key}
+        className="whitespace-pre-wrap break-words text-slate-400 dark:text-slate-500"
+      >
         {line}
       </div>
     );
@@ -174,7 +177,10 @@ function pdbLines(sel: Sel, example: string): string[] {
         ? ["  AND type = 'story'"]
         : [];
   if (sel.workload === "count") {
-    return ["SELECT count(*) FROM hn_items", `WHERE ${sel.field} ||| '${example}'`];
+    return [
+      "SELECT count(*) FROM hn_items",
+      `WHERE ${sel.field} ||| '${example}'`,
+    ];
   }
   if (sel.workload === "highlight") {
     return [
@@ -238,8 +244,7 @@ function ftsLines(sel: Sel, example: string): string[] {
     ];
   }
   if (sel.workload === "facet_terms" || sel.workload === "facet_histogram") {
-    const groupExpr =
-      sel.workload === "facet_terms" ? "type" : "(score/50)*50";
+    const groupExpr = sel.workload === "facet_terms" ? "type" : "(score/50)*50";
     const col = sel.workload === "facet_terms" ? "type" : "score";
     return [
       "WITH hits AS (",
@@ -286,7 +291,10 @@ function esLines(sel: Sel, example: string): string[] {
       "}",
     ];
   }
-  if (sel.workload === "filtered_range" || sel.workload === "filtered_literal") {
+  if (
+    sel.workload === "filtered_range" ||
+    sel.workload === "filtered_literal"
+  ) {
     const filter =
       sel.workload === "filtered_range"
         ? '{ "range": { "score": { "gt": 10 } } }'
@@ -411,7 +419,9 @@ function CdfChart({
   const drawStyle = (delayMs: number) => ({
     strokeDasharray: 1,
     strokeDashoffset: grown ? 0 : 1,
-    transition: grown ? `stroke-dashoffset 900ms ease-out ${delayMs}ms` : "none",
+    transition: grown
+      ? `stroke-dashoffset 900ms ease-out ${delayMs}ms`
+      : "none",
   });
 
   // Share one x-axis: the larger of the two p99s so both curves fit.
@@ -423,7 +433,10 @@ function CdfChart({
   const yOf = (p: number) => CM.top + CPH - (p / 100) * CPH;
   const path = (vals: number[]) =>
     vals
-      .map((lat, i) => `${i === 0 ? "M" : "L"}${xOf(lat).toFixed(1)},${yOf(pcts[i]).toFixed(1)}`)
+      .map(
+        (lat, i) =>
+          `${i === 0 ? "M" : "L"}${xOf(lat).toFixed(1)},${yOf(pcts[i]).toFixed(1)}`,
+      )
       .join(" ");
   const yTicks = [0, 25, 50, 75, 100];
 
@@ -627,7 +640,13 @@ function CompareBody({
     return `${r >= 10 ? Math.round(r) : Math.round(r * 10) / 10}×`;
   };
   const ratios = (usVal: number | null, themVal: number | null) => {
-    if (themDnf || usVal == null || themVal == null || usVal <= 0 || themVal <= 0)
+    if (
+      themDnf ||
+      usVal == null ||
+      themVal == null ||
+      usVal <= 0 ||
+      themVal <= 0
+    )
       return { us: "", them: "" };
     return usVal <= themVal
       ? { us: fmtRatio(themVal, usVal), them: "" }
@@ -650,15 +669,23 @@ function CompareBody({
         <div className="min-w-0 flex-1 p-4">
           <div className="mb-4 flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
             <span className="whitespace-nowrap font-mono text-[10px] uppercase tracking-[0.12em] text-slate-500 sm:text-[11px] sm:tracking-[0.18em] dark:text-slate-400">
-              {view === "cdf" ? "% ≤ latency · left is faster" : "Latency · lower is better"}
+              {view === "cdf"
+                ? "% ≤ latency · left is faster"
+                : "Latency · lower is better"}
             </span>
             <div className="flex items-center gap-3 font-mono text-[10px] uppercase tracking-[0.12em] text-slate-500 sm:gap-4 sm:text-[11px] dark:text-slate-400">
               <span className="flex items-center gap-2">
-                <span className="inline-block size-3 rounded-full bg-indigo-500" aria-hidden />
+                <span
+                  className="inline-block size-3 rounded-full bg-indigo-500"
+                  aria-hidden
+                />
                 ParadeDB
               </span>
               <span className="flex items-center gap-2">
-                <span className="inline-block size-3 rounded-full bg-slate-300 dark:bg-slate-500" aria-hidden />
+                <span
+                  className="inline-block size-3 rounded-full bg-slate-300 dark:bg-slate-500"
+                  aria-hidden
+                />
                 {competitorName}
               </span>
             </div>
@@ -682,8 +709,20 @@ function CompareBody({
                       {row.label}
                     </div>
                     <div className="space-y-1.5">
-                      {bar(row.us, false, "bg-indigo-500", "text-indigo-600 dark:text-indigo-400", r.us)}
-                      {bar(row.them, themDnf, "bg-slate-300 dark:bg-slate-600", "text-slate-400 dark:text-slate-500", r.them)}
+                      {bar(
+                        row.us,
+                        false,
+                        "bg-indigo-500",
+                        "text-indigo-600 dark:text-indigo-400",
+                        r.us,
+                      )}
+                      {bar(
+                        row.them,
+                        themDnf,
+                        "bg-slate-300 dark:bg-slate-600",
+                        "text-slate-400 dark:text-slate-500",
+                        r.them,
+                      )}
                     </div>
                   </div>
                 );
@@ -695,11 +734,17 @@ function CompareBody({
               </div>
               <div className="flex flex-wrap items-center gap-x-6 gap-y-1 font-mono text-[11px] tabular-nums">
                 <span className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400">
-                  <span className="inline-block size-3 rounded-full bg-indigo-500" aria-hidden />
+                  <span
+                    className="inline-block size-3 rounded-full bg-indigo-500"
+                    aria-hidden
+                  />
                   {us?.qps != null ? `${us.qps} QPS` : "n/a"}
                 </span>
                 <span className="flex items-center gap-2 text-slate-400 dark:text-slate-500">
-                  <span className="inline-block size-3 rounded-full bg-slate-300 dark:bg-slate-500" aria-hidden />
+                  <span
+                    className="inline-block size-3 rounded-full bg-slate-300 dark:bg-slate-500"
+                    aria-hidden
+                  />
                   {themDnf
                     ? "0 QPS"
                     : them?.qps != null
@@ -975,24 +1020,26 @@ function WorkloadCard({
           </span>
         </div>
         <div className="flex font-mono text-[10px] uppercase tracking-[0.15em]">
-          {(["latency", "distribution", "schema", "reproduce"] as const).map((v) => {
-            const on = view === v;
-            return (
-              <button
-                key={v}
-                type="button"
-                aria-pressed={on}
-                onClick={() => setView(v)}
-                className={`px-2.5 py-1 transition-colors ${
-                  on
-                    ? "text-indigo-600 underline underline-offset-4 dark:text-indigo-400"
-                    : "text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
-                }`}
-              >
-                {v}
-              </button>
-            );
-          })}
+          {(["latency", "distribution", "schema", "reproduce"] as const).map(
+            (v) => {
+              const on = view === v;
+              return (
+                <button
+                  key={v}
+                  type="button"
+                  aria-pressed={on}
+                  onClick={() => setView(v)}
+                  className={`px-2.5 py-1 transition-colors ${
+                    on
+                      ? "text-indigo-600 underline underline-offset-4 dark:text-indigo-400"
+                      : "text-slate-400 hover:text-slate-700 dark:text-slate-500 dark:hover:text-slate-300"
+                  }`}
+                >
+                  {v}
+                </button>
+              );
+            },
+          )}
         </div>
       </div>
 
@@ -1044,7 +1091,10 @@ function WorkloadCard({
                   label="Filter"
                   options={[
                     { value: "filtered_range" as const, label: "score > 10" },
-                    { value: "filtered_literal" as const, label: "type = 'story'" },
+                    {
+                      value: "filtered_literal" as const,
+                      label: "type = 'story'",
+                    },
                   ]}
                   value={variant}
                   onChange={setVariant}
@@ -1148,8 +1198,12 @@ export default function VsBenchmarkPanel({ data }: { data: VsBenchData }) {
     { title: "Top K search", kind: "topk" },
     { title: "Filtered search", kind: "filtered" },
     { title: "Count over search", kind: "count" },
-    ...(has("facet_terms") ? [{ title: "Faceting", kind: "facet" as const }] : []),
-    ...(has("highlight") ? [{ title: "Highlighting", kind: "highlight" as const }] : []),
+    ...(has("facet_terms")
+      ? [{ title: "Faceting", kind: "facet" as const }]
+      : []),
+    ...(has("highlight")
+      ? [{ title: "Highlighting", kind: "highlight" as const }]
+      : []),
   ];
 
   return (

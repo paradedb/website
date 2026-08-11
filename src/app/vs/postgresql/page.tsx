@@ -69,8 +69,8 @@ const config: VsConfig = {
         us: (
           <>
             One index: a segmented inverted index (
-            <A href="/learn/tantivy/introduction">Tantivy</A>), columnar storage,
-            and a SPANN-style IVF vector index
+            <A href="/learn/tantivy/introduction">Tantivy</A>), columnar
+            storage, and a SPANN-style IVF vector index
           </>
         ),
         them: (
@@ -157,7 +157,8 @@ const config: VsConfig = {
           <>
             <A href="/learn/postgresql/what-is-pgvector">pgvector</A> and GIN as
             two separate index scans, then{" "}
-            <A href="/learn/search-concepts/reciprocal-rank-fusion">RRF</A>-fused
+            <A href="/learn/search-concepts/reciprocal-rank-fusion">RRF</A>
+            -fused
           </>
         ),
       },
