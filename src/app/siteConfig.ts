@@ -8,6 +8,7 @@ export const siteConfig = {
     home: "/",
     blog: "/blog",
     cloud: "/cloud",
+    contact: "/contact",
     customers: "/customers",
     resources: "/learn",
     brand: "/brand",

@@ -40,8 +40,8 @@ const navigation = {
     { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
   ],
   resources: [
+    { name: "Contact", href: siteConfig.baseLinks.contact, external: false },
     { name: "Careers", href: company.CAREERS, external: true },
-    { name: "Contact", href: social.CALENDLY, external: true },
     { name: "Sales", href: social.CALENDLY, external: true },
     { name: "Support", href: email.SUPPORT, external: true },
   ],
@@ -115,7 +115,8 @@ export default function Footer() {
                       : "text-gray-600 dark:text-slate-400",
                   )}
                 >
-                  Search without a second system.
+                  One Postgres for your application data, full-text search,
+                  vector retrieval, and aggregations.
                 </p>
                 <div className="md:pt-4">
                   <Button
@@ -127,7 +128,7 @@ export default function Footer() {
                         : "bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white",
                     )}
                   >
-                    <Link href={email.HELLO}>
+                    <Link href={siteConfig.baseLinks.contact}>
                       <RiMailLine className="mr-2 size-4" />
                       Contact Us
                     </Link>

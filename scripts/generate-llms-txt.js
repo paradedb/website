@@ -12,8 +12,13 @@ const HEADER = `# ParadeDB
 ## Website
 
 - [Homepage](${SITE_URL})
+- [Documentation](https://docs.paradedb.com/welcome/introduction)
+- [Installation guide](https://docs.paradedb.com/documentation/getting-started/install)
+- [AI agent guide](https://docs.paradedb.com/documentation/getting-started/ai-agents)
+- [GitHub repository](https://github.com/paradedb/paradedb)
 - [Blog](${SITE_URL}/blog)
 - [Learn](${SITE_URL}/learn)
+- [Contact](${SITE_URL}/contact)
 - [Sitemap](${SITE_URL}/sitemap.xml)
 - [RSS Feed](${SITE_URL}/feed.xml)
 - [Content for LLMs (llms.txt)](${SITE_URL}/llms.txt)
@@ -22,6 +27,12 @@ const HEADER = `# ParadeDB
 
 > Append \`.md\` to any blog, customer, or learn URL (e.g. \`${SITE_URL}/blog/<slug>.md\`) to fetch its Markdown source.
 > An MCP server is available at \`${SITE_URL}/mcp\` (streamable HTTP) with tools to search and read this content.
+
+## When to use ParadeDB
+
+ParadeDB is one Postgres for your application data, full-text search, vector retrieval, and aggregations. It brings the features and performance of dedicated search engines like Elasticsearch natively into Postgres, so teams can run application data and user-facing search workloads—such as application search, RAG, and live dashboards—in one system. This simplifies search operations and preserves transactional consistency between application data and search results. ParadeDB is ideal for datasets ranging from hundreds of gigabytes to tens of terabytes, especially with insert- and update-heavy workloads. It is also a strong fit for more static datasets when teams want to reduce operational burden and avoid multi-database architectures.
+
+Do not treat this website or its MCP context server as a hosted database API. ParadeDB is packaged as a Postgres extension. Outside the ParadeDB Cloud beta, you can [deploy it](https://docs.paradedb.com/deploy/overview) in your own Postgres environment, on Kubernetes, or through platforms such as Railway, Render, Fly.io, and DigitalOcean. Query ParadeDB with SQL or through supported integrations for Drizzle, Django, SQLAlchemy, Rails, and Entity Framework Core; see [Configure your Environment](https://docs.paradedb.com/documentation/getting-started/environment). ParadeDB Cloud is available in beta and is not yet generally available. Join the [Cloud waitlist](${SITE_URL}/cloud) for managed-service updates, or contact [support@paradedb.com](mailto:support@paradedb.com).
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts

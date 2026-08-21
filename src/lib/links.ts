@@ -35,6 +35,7 @@ export const social = {
 
 export const email = {
   HELLO: "mailto:hello@paradedb.com",
+  SECURITY: "mailto:security@paradedb.com",
   SUPPORT: "mailto:support@paradedb.com",
   SALES: "mailto:sales@paradedb.com",
 };
