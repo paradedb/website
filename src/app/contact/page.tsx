@@ -27,9 +27,9 @@ const contactOptions = [
   {
     title: "Open-source development",
     description:
-      "Report reproducible bugs, propose features, and contribute code in the ParadeDB GitHub repository.",
-    label: "Open GitHub",
-    href: github.REPO,
+      "Report reproducible bugs, propose features, and contribute code across ParadeDB's GitHub repositories.",
+    label: "Explore GitHub",
+    href: github.ORG,
   },
   {
     title: "Community questions",
