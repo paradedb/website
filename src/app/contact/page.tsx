@@ -103,12 +103,12 @@ export default function ContactPage() {
           <p className="mt-3 leading-7 text-slate-600 dark:text-slate-400">
             If you believe you found a security vulnerability, please avoid
             posting exploit details in a public issue. Send the report privately
-            to the support team at{" "}
+            to{" "}
             <Link
               className="text-indigo-600 hover:underline dark:text-indigo-400"
-              href={email.SUPPORT}
+              href={email.SECURITY}
             >
-              support@paradedb.com
+              security@paradedb.com
             </Link>{" "}
             with steps to reproduce and the affected version or service.
           </p>
