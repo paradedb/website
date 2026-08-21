@@ -1,5 +1,5 @@
-import { Logos } from "./Logos";
 import Link from "next/link";
+import Image from "next/image";
 import { RiArrowRightLine } from "@remixicon/react";
 import { Badge } from "./Badge";
 
@@ -87,7 +87,13 @@ export default function SocialProof() {
                   <CaseStudyCard
                     href="/customers/case-study-bilt"
                     logo={
-                      <Logos.BiltRewards className="h-4 w-auto dark:brightness-0 dark:invert opacity-80" />
+                      <Image
+                        src="/brand/customers/bilt-rewards.svg"
+                        alt="Bilt Rewards"
+                        width={179}
+                        height={30}
+                        className="h-4 w-auto opacity-80 dark:brightness-0 dark:invert"
+                      />
                     }
                     quote="“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”"
                     initials="JK"
@@ -100,7 +106,13 @@ export default function SocialProof() {
                   <CaseStudyCard
                     href="/customers/case-study-alibaba"
                     logo={
-                      <Logos.Alibaba className="h-8 w-auto dark:brightness-0 dark:invert opacity-80" />
+                      <Image
+                        src="/brand/customers/alibaba.svg"
+                        alt="Alibaba"
+                        width={127}
+                        height={30}
+                        className="h-8 w-auto opacity-80 dark:brightness-0 dark:invert"
+                      />
                     }
                     quote="“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”"
                     initials="PB"
