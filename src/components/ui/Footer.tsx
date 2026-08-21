@@ -115,7 +115,8 @@ export default function Footer() {
                       : "text-gray-600 dark:text-slate-400",
                   )}
                 >
-                  Search without a second system.
+                  One Postgres for your application data, full-text search,
+                  vector retrieval, and aggregations.
                 </p>
                 <div className="md:pt-4">
                   <Button
