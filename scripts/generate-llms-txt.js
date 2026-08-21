@@ -12,8 +12,13 @@ const HEADER = `# ParadeDB
 ## Website
 
 - [Homepage](${SITE_URL})
+- [Documentation](https://docs.paradedb.com/welcome/introduction)
+- [Installation guide](https://docs.paradedb.com/documentation/getting-started/install)
+- [AI agent guide](https://docs.paradedb.com/documentation/getting-started/ai-agents)
+- [GitHub repository](https://github.com/paradedb/paradedb)
 - [Blog](${SITE_URL}/blog)
 - [Learn](${SITE_URL}/learn)
+- [Contact](${SITE_URL}/contact)
 - [Sitemap](${SITE_URL}/sitemap.xml)
 - [RSS Feed](${SITE_URL}/feed.xml)
 - [Content for LLMs (llms.txt)](${SITE_URL}/llms.txt)
@@ -22,6 +27,12 @@ const HEADER = `# ParadeDB
 
 > Append \`.md\` to any blog, customer, or learn URL (e.g. \`${SITE_URL}/blog/<slug>.md\`) to fetch its Markdown source.
 > An MCP server is available at \`${SITE_URL}/mcp\` (streamable HTTP) with tools to search and read this content.
+
+## When to use ParadeDB
+
+Use ParadeDB when an application needs full-text search, hybrid search, faceting, or analytical queries directly in Postgres, especially when keeping a separate search system synchronized would add operational complexity. ParadeDB is a good fit when transactional consistency and SQL access matter alongside search performance.
+
+Do not treat this website or its MCP content server as a hosted database API. ParadeDB is installed as a Postgres extension and queried with SQL. ParadeDB Cloud is not yet generally available; join the [Cloud waitlist](${SITE_URL}/cloud) for managed-service updates.
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts

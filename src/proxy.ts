@@ -30,22 +30,50 @@ function isLeafArticle(pathname: string): boolean {
   return depth !== undefined && parts.length === depth;
 }
 
+function withAcceptVary(response: NextResponse): NextResponse {
+  const values = new Set(
+    (response.headers.get("Vary") ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean),
+  );
+  values.add("Accept");
+  response.headers.set("Vary", Array.from(values).join(", "));
+  return response;
+}
+
 export function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Give agents a concise representation at the canonical homepage URL while
+  // keeping the browser experience unchanged. Vary keeps CDN variants apart.
+  if (pathname === "/") {
+    if (clientPrefersMarkdown(req.headers.get("accept"))) {
+      const url = req.nextUrl.clone();
+      url.pathname = "/llms.txt";
+      const response = NextResponse.rewrite(url);
+      response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+      return withAcceptVary(response);
+    }
+
+    return withAcceptVary(NextResponse.next());
+  }
+
   if (pathname.endsWith(".md") || !isLeafArticle(pathname)) {
-    return NextResponse.next();
+    return withAcceptVary(NextResponse.next());
   }
 
   if (clientPrefersMarkdown(req.headers.get("accept"))) {
     const url = req.nextUrl.clone();
     url.pathname = `${pathname.replace(/\/$/, "")}.md`;
-    return NextResponse.rewrite(url);
+    const response = NextResponse.rewrite(url);
+    response.headers.set("Content-Type", "text/markdown; charset=utf-8");
+    return withAcceptVary(response);
   }
 
-  return NextResponse.next();
+  return withAcceptVary(NextResponse.next());
 }
 
 export const config = {
-  matcher: ["/blog/:path*", "/customers/:path*", "/learn/:path*"],
+  matcher: ["/", "/blog/:path*", "/customers/:path*", "/learn/:path*"],
 };

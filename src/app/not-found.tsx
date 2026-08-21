@@ -2,6 +2,7 @@ import { Button } from "@/components/Button";
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import Link from "next/link";
 import { siteConfig } from "./siteConfig";
+import { documentation } from "@/lib/links";
 
 export default function NotFound() {
   return (
@@ -24,19 +25,40 @@ export default function NotFound() {
             <h1 className="mt-4 text-2xl font-semibold text-slate-900 dark:text-white text-center">
               Page not found
             </h1>
-            <p className="mt-2 text-base text-slate-600 dark:text-slate-400 max-w-sm text-center">
+            <p className="mt-2 text-base text-slate-600 dark:text-slate-400 max-w-lg text-center">
               Sorry, we couldn’t find the page you’re looking for. It might have
-              been moved or deleted.
+              been moved or deleted. Try the ParadeDB documentation, browse the
+              sitemap, or use our agent-friendly content index.
             </p>
-            <Button asChild className="group mt-8" variant="light">
-              <Link href={siteConfig.baseLinks.home}>
-                Go to home page
-                <ArrowAnimated
-                  className="stroke-slate-900 dark:stroke-white"
-                  aria-hidden="true"
-                />
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Button asChild className="group" variant="light">
+                <Link href={siteConfig.baseLinks.home}>
+                  Go to home page
+                  <ArrowAnimated
+                    className="stroke-slate-900 dark:stroke-white"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </Button>
+              <Link
+                href={documentation.BASE}
+                className="px-3 py-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                Documentation
               </Link>
-            </Button>
+              <Link
+                href="/sitemap.xml"
+                className="px-3 py-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                Sitemap
+              </Link>
+              <Link
+                href="/llms.txt"
+                className="px-3 py-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                LLM content index
+              </Link>
+            </div>
           </div>
 
           {/* Shaded Hatch Region above footer */}
