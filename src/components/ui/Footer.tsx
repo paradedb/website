@@ -40,8 +40,8 @@ const navigation = {
     { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
   ],
   resources: [
-    { name: "Careers", href: company.CAREERS, external: true },
     { name: "Contact", href: siteConfig.baseLinks.contact, external: false },
+    { name: "Careers", href: company.CAREERS, external: true },
     { name: "Sales", href: social.CALENDLY, external: true },
     { name: "Support", href: email.SUPPORT, external: true },
   ],
