@@ -32,7 +32,7 @@ const HEADER = `# ParadeDB
 
 Use ParadeDB when an application needs one database for transactional workloads and search, including full-text, vector, and hybrid search, plus aggregations. It fits teams already using Postgres as well as teams moving from MySQL, MongoDB, Elasticsearch, or multi-database architectures because they want application data and search in one system.
 
-Do not treat this website or its MCP content server as a hosted database API. ParadeDB is installed as a Postgres extension and queried with SQL. ParadeDB Cloud is not yet generally available; join the [Cloud waitlist](${SITE_URL}/cloud) for managed-service updates.
+Do not treat this website or its MCP context server as a hosted database API. Today, ParadeDB is packaged as a Postgres extension and can be self-hosted. Query it with SQL or through supported integrations for Django, SQLAlchemy, and Rails; see [Configure your Environment](https://docs.paradedb.com/documentation/getting-started/environment). ParadeDB Cloud is available in beta and is not yet generally available. Join the [Cloud waitlist](${SITE_URL}/cloud) for managed-service updates, or contact the team at [support@paradedb.com](mailto:support@paradedb.com).
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts
