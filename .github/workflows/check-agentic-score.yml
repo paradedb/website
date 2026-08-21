@@ -1,8 +1,6 @@
 # workflows/check-agentic-score.yml
 #
-# Monitor ParadeDB's latest published Is Agentic report. The public report API
-# is read-only and does not start scans, so rescan from is-agentic.com after a
-# deployment when fresh results are needed.
+# Start a fresh Is Agentic scan of ParadeDB and enforce a minimum score.
 
 name: Check Is Agentic Score
 
@@ -20,9 +18,8 @@ permissions:
   contents: read
 
 env:
-  # Reports are keyed by the URL submitted for the scan. This report was
-  # created for the apex URL and follows its redirect to the canonical site.
-  REPORT_API: https://is-agentic.com/api/v1/report?url=https%3A%2F%2Fparadedb.com
+  SCAN_API: https://is-agentic.com/api/scan/stream
+  SCAN_TARGET: https://paradedb.com
   REPORT_URL: https://is-agentic.com/scan/paradedb.com
   SCORE_THRESHOLD: "80"
 
@@ -30,42 +27,48 @@ jobs:
   check-agentic-score:
     name: Require Is Agentic score of at least 80
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
 
     steps:
-      - name: Fetch latest published report
+      - name: Run a fresh scan
         id: report
         shell: bash
         run: |
           set +e
-          response=$(curl --fail-with-body --silent --show-error \
-            --retry 3 --retry-all-errors \
-            "$REPORT_API")
+          curl --fail-with-body --silent --show-error --no-buffer \
+            --max-time 840 \
+            --get \
+            --data-urlencode "target=$SCAN_TARGET" \
+            --data-urlencode "force=1" \
+            "$SCAN_API" > scan-events.sse
           curl_status=$?
           set -e
 
           if [[ $curl_status -ne 0 ]]; then
             {
               echo "status=error"
-              echo "reason=The Is Agentic report API could not be reached."
+              echo "reason=The fresh Is Agentic scan failed or timed out."
             } >> "$GITHUB_OUTPUT"
             {
               echo "## Is Agentic score check"
-              echo "The report API could not be reached after three attempts."
+              echo "The fresh scan failed or timed out before returning a result."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
 
-          if ! score=$(jq -er '.score | numbers' <<< "$response") ||
-             ! scanned_at=$(jq -er '.scanned_at | strings' <<< "$response") ||
-             ! label=$(jq -er '.score_label // "Unlabelled" | strings' <<< "$response"); then
+          result=$(sed -n 's/^data: //p' scan-events.sse | \
+            jq -sc 'map(select(.type == "scan_complete")) | last.result')
+
+          if ! score=$(jq -er '.score | numbers' <<< "$result") ||
+             ! scanned_at=$(jq -er '.scannedAt | strings' <<< "$result") ||
+             ! grade=$(jq -er '.grade // "Unlabelled" | strings' <<< "$result"); then
             {
               echo "status=error"
-              echo "reason=The Is Agentic report API returned an invalid response."
+              echo "reason=The fresh Is Agentic scan returned an invalid response."
             } >> "$GITHUB_OUTPUT"
             {
               echo "## Is Agentic score check"
-              echo "The report API returned a response without a valid score or scan timestamp."
+              echo "The fresh scan did not return a valid score or scan timestamp."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
@@ -81,7 +84,7 @@ jobs:
             echo "| ---: | ---: | --- |"
             echo "| [$score/100]($REPORT_URL) | $SCORE_THRESHOLD/100 | $scanned_at |"
             echo ""
-            echo "$label"
+            echo "Grade: $grade"
           } >> "$GITHUB_STEP_SUMMARY"
 
           if (( score < SCORE_THRESHOLD )); then
