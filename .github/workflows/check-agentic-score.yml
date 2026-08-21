@@ -1,0 +1,133 @@
+# workflows/check-agentic-score.yml
+#
+# Monitor ParadeDB's latest published Is Agentic report. The public report API
+# is read-only and does not start scans, so rescan from is-agentic.com after a
+# deployment when fresh results are needed.
+
+name: Check Is Agentic Score
+
+on:
+  schedule:
+    # 9 AM PST (17:00 UTC), weekdays; 10 AM during PDT.
+    - cron: "0 17 * * 1-5"
+  workflow_dispatch:
+
+concurrency:
+  group: check-agentic-score
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  # Reports are keyed by the URL submitted for the scan. This report was
+  # created for the apex URL and follows its redirect to the canonical site.
+  REPORT_API: https://is-agentic.com/api/v1/report?url=https%3A%2F%2Fparadedb.com
+  REPORT_URL: https://is-agentic.com/scan/paradedb.com
+  SCORE_THRESHOLD: "80"
+
+jobs:
+  check-agentic-score:
+    name: Require Is Agentic score of at least 80
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Fetch latest published report
+        id: report
+        shell: bash
+        run: |
+          set +e
+          response=$(curl --fail-with-body --silent --show-error \
+            --retry 3 --retry-all-errors \
+            "$REPORT_API")
+          curl_status=$?
+          set -e
+
+          if [[ $curl_status -ne 0 ]]; then
+            {
+              echo "status=error"
+              echo "reason=The Is Agentic report API could not be reached."
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "## Is Agentic score check"
+              echo "The report API could not be reached after three attempts."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          if ! score=$(jq -er '.score | numbers' <<< "$response") ||
+             ! scanned_at=$(jq -er '.scanned_at | strings' <<< "$response") ||
+             ! label=$(jq -er '.score_label // "Unlabelled" | strings' <<< "$response"); then
+            {
+              echo "status=error"
+              echo "reason=The Is Agentic report API returned an invalid response."
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "## Is Agentic score check"
+              echo "The report API returned a response without a valid score or scan timestamp."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          {
+            echo "score=$score"
+            echo "scanned_at=$scanned_at"
+          } >> "$GITHUB_OUTPUT"
+          {
+            echo "## Is Agentic score check"
+            echo ""
+            echo "| Score | Minimum | Latest scan |"
+            echo "| ---: | ---: | --- |"
+            echo "| [$score/100]($REPORT_URL) | $SCORE_THRESHOLD/100 | $scanned_at |"
+            echo ""
+            echo "$label"
+          } >> "$GITHUB_STEP_SUMMARY"
+
+          if (( score < SCORE_THRESHOLD )); then
+            {
+              echo "status=regressed"
+              echo "reason=Score regressed to $score/100 (minimum: $SCORE_THRESHOLD/100)."
+            } >> "$GITHUB_OUTPUT"
+            echo "::error::Is Agentic score is $score/100; expected at least $SCORE_THRESHOLD/100."
+            exit 1
+          fi
+
+          {
+            echo "status=healthy"
+            echo "reason=Score is $score/100 (minimum: $SCORE_THRESHOLD/100)."
+          } >> "$GITHUB_OUTPUT"
+          echo "Is Agentic score is $score/100."
+
+      - name: Build Slack failure payload
+        if: always() && (steps.report.outputs.status == 'regressed' || steps.report.outputs.status == 'error')
+        env:
+          MONITOR_STATUS: ${{ steps.report.outputs.status }}
+          MONITOR_REASON: ${{ steps.report.outputs.reason }}
+          SCANNED_AT: ${{ steps.report.outputs.scanned_at }}
+          REPO: ${{ github.repository }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          node > agentic-score-payload.json <<'NODE'
+          process.stdout.write(JSON.stringify({
+            text: "🚨 ParadeDB's Is Agentic score needs attention - <!subteam^S0BLL9VCQ4A|@cloud-maintainers>",
+            attachments: [{
+              color: "danger",
+              fields: [
+                { title: "Status", value: process.env.MONITOR_STATUS, short: true },
+                { title: "Repository", value: process.env.REPO, short: true },
+                { title: "Details", value: process.env.MONITOR_REASON, short: false },
+                { title: "Latest Scan", value: process.env.SCANNED_AT || "Unavailable", short: false },
+                { title: "Report", value: "<https://is-agentic.com/scan/paradedb.com|View report>", short: true },
+                { title: "Logs", value: `<${process.env.RUN_URL}|View workflow run>`, short: true }
+              ]
+            }]
+          }))
+          NODE
+
+      - name: Ping Slack on regression
+        if: always() && (steps.report.outputs.status == 'regressed' || steps.report.outputs.status == 'error')
+        uses: paradedb/actions/slack-alert@v10
+        with:
+          webhook_url: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
+          payload_file: agentic-score-payload.json
