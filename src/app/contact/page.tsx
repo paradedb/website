@@ -34,7 +34,7 @@ const contactOptions = [
   {
     title: "Community questions",
     description:
-      "Ask implementation questions and connect with other people running search and analytics in Postgres.",
+      "Ask implementation questions and connect with other people building with ParadeDB.",
     label: "Join the Slack community",
     href: social.SLACK,
   },
