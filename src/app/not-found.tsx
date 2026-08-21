@@ -1,5 +1,3 @@
-import { Button } from "@/components/Button";
-import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import Link from "next/link";
 import { siteConfig } from "./siteConfig";
 import { documentation } from "@/lib/links";
@@ -31,15 +29,12 @@ export default function NotFound() {
               sitemap, or use our agent-friendly content index.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild className="group" variant="light">
-                <Link href={siteConfig.baseLinks.home}>
-                  Go to home page
-                  <ArrowAnimated
-                    className="stroke-slate-900 dark:stroke-white"
-                    aria-hidden="true"
-                  />
-                </Link>
-              </Button>
+              <Link
+                href={siteConfig.baseLinks.home}
+                className="px-3 py-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
+              >
+                Home page
+              </Link>
               <Link
                 href={documentation.BASE}
                 className="px-3 py-2 text-sm font-medium text-indigo-600 hover:underline dark:text-indigo-400"
