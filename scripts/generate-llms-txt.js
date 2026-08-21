@@ -30,7 +30,7 @@ const HEADER = `# ParadeDB
 
 ## When to use ParadeDB
 
-Use ParadeDB when an application needs full-text search, hybrid search, faceting, or analytical queries directly in Postgres, especially when keeping a separate search system synchronized would add operational complexity. ParadeDB is a good fit when transactional consistency and SQL access matter alongside search performance.
+Use ParadeDB when an application needs one database for transactional workloads and search, including full-text, vector, and hybrid search, plus aggregations. It fits teams already using Postgres as well as teams moving from MySQL, MongoDB, Elasticsearch, or multi-database architectures because they want application data and search in one system.
 
 Do not treat this website or its MCP content server as a hosted database API. ParadeDB is installed as a Postgres extension and queried with SQL. ParadeDB Cloud is not yet generally available; join the [Cloud waitlist](${SITE_URL}/cloud) for managed-service updates.
 `;

@@ -52,10 +52,10 @@ export default function ContactPage() {
             How can we help?
           </h1>
           <p className="mt-6 text-lg leading-8 text-slate-600 dark:text-slate-300">
-            ParadeDB is the Postgres-native search and analytics engine behind
-            the pg_search extension. Choose the route below that best matches
-            your question so it reaches the right people. For general company
-            questions that do not fit another category, email us at{" "}
+            One Postgres for your application data, full-text search, vector
+            retrieval, and aggregations. Choose the route below that best
+            matches your question so it reaches the right people. For general
+            company questions that do not fit another category, email us at{" "}
             <Link
               className="text-indigo-600 hover:underline dark:text-indigo-400"
               href={email.HELLO}
