@@ -32,6 +32,14 @@ export function organizationSchema() {
     },
     description: siteConfig.description,
     email: mailto(email.HELLO),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: "169 Madison Avenue, #2470",
+      addressLocality: "New York",
+      addressRegion: "NY",
+      postalCode: "10016",
+      addressCountry: "US",
+    },
     contactPoint: [
       {
         "@type": "ContactPoint",

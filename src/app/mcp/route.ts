@@ -165,6 +165,7 @@ const handler = createMcpHandler(
         title: "Get ParadeDB product info",
         description:
           "Get a structured overview of ParadeDB: what it is, how to install it, and key links (docs, GitHub, blog). Useful for grounding before answering questions.",
+        inputSchema: z.object({}),
         outputSchema: productInfoSchema,
         annotations: { title: "Get ParadeDB product info", ...READ_ONLY },
       },

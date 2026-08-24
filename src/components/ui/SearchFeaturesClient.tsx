@@ -104,9 +104,9 @@ export default function SearchFeaturesClient({
                               {bullet.icon}
                             </div>
                             <div className="flex flex-col gap-1">
-                              <h4 className="font-semibold text-base sm:text-lg text-indigo-950 dark:text-white tracking-tight">
+                              <h3 className="font-semibold text-base sm:text-lg text-indigo-950 dark:text-white tracking-tight">
                                 {bullet.title}
-                              </h4>
+                              </h3>
                               <p className="text-sm sm:text-base text-gray-600 dark:text-slate-400 leading-relaxed">
                                 {bullet.description}
                               </p>
