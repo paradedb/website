@@ -159,7 +159,8 @@ const CloudPlatforms = [
   {
     name: "Railway",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://railway.com/deploy/paradedb?referralCode=l5qxN4&utm_medium=integration&utm_source=button&utm_campaign=paradedb",
+    deployUrl:
+      "https://railway.com/deploy/paradedb?referralCode=l5qxN4&utm_medium=integration&utm_source=button&utm_campaign=paradedb",
     icon: (
       <svg
         viewBox="0 0 1024 1024"
@@ -182,7 +183,8 @@ const CloudPlatforms = [
   {
     name: "Render",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://dashboard.render.com/login?next=%2Fblueprint%2Fnew%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2Fparadedb%2Frender-blueprint",
+    deployUrl:
+      "https://dashboard.render.com/login?next=%2Fblueprint%2Fnew%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2Fparadedb%2Frender-blueprint",
     icon: (
       <svg
         width="24"
@@ -197,9 +199,24 @@ const CloudPlatforms = [
     ),
   },
   {
+    name: "Fly.io",
+    className: "text-[#24175b] dark:text-[#9b8bdb]",
+    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/fly",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        className="size-[1.6rem]"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M11.987 0c-2.45-.01-5.002.925-6.541 2.897-1.17 1.502-1.664 3.474-1.49 5.356.29 2.112 1.476 3.96 2.676 5.672a41.5 41.5 0 0 0 4.216 4.831c-1.063.832-1.943 2.286-1.357 3.644.821 2.32 4.665 2.05 5.122-.372.39-1.288-.694-2.533-1.428-3.309 2.388-2.431 4.706-5.036 6.17-8.145.595-1.32.902-2.802.614-4.24-.28-2.341-1.823-4.473-3.967-5.46C14.76.266 13.364.016 11.987 0m-.236 1.577v15.534C9.881 13.483 7.724 9.266 8.73 5.069c.35-1.539 1.253-3.309 3.02-3.492m1.996.04c1.534.357 3.031 1.096 3.906 2.48 1.3 1.93 1.318 4.55.1 6.521-1.268 2.395-3.06 4.463-4.916 6.415 1.472-2.974 3.074-6.106 3.182-9.5-.043-2.08-.438-4.612-2.272-5.916M11.97 20.103c.848.342 1.597 1.983.153 2.173-.664.15-1.367-.599-.995-1.222.213-.355.488-.73.842-.95" />
+      </svg>
+    ),
+  },
+  {
     name: "DigitalOcean",
     className: "text-[#0080ff]",
-    docsUrl: "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean",
+    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -210,6 +227,22 @@ const CloudPlatforms = [
       >
         <path d="M81.202 205.5v-6.2c6.568 0 11.666-6.5 9.144-13.418a9.27 9.27 0 0 0-5.533-5.531c-6.912-2.502-13.425 2.575-13.425 9.14H65.2c0-10.463 10.124-18.622 21.1-15.195 4.8 1.505 8.618 5.313 10.105 10.1 3.43 10.99-4.717 21.107-15.203 21.107z" />
         <path d="M75.05 199.317v-6.165h6.168v6.165zm-4.753 4.75v-4.75h4.753v4.75h-4.753zm0-4.75h-3.973v-3.97h3.973v3.97z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Dokku",
+    className: "text-[#07cbcf]",
+    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/dokku",
+    icon: (
+      <svg
+        viewBox="0 0 89 62"
+        className="size-[1.8rem]"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M78.405 17.191c6.333 3.97 7.814 3.551 9.274 2.805a1.707 1.707 0 0 0 .745-2.298C86.462 13.818 78.212.119 59.536.119c-15.677 0-25.098 13.225-27.968 17.958-.561.926-.123 2.139.908 2.477 1.66.546 3.475.662 7.357-1.692 12.698-7.058 38.572-1.671 38.572-1.671Z" />
+        <path d="M67.274 14.809H56.42c-11.797 0-18.001 3.468-22.582 9.391l-4.384 5.667-1.75 2.314a7.082 7.082 0 0 1-5.652 2.807c-3.366 0-6.233-2.32-6.99-5.508l-.037-.212c-.115-.78.495-1.478 1.285-1.478h2.17c3.725 0 6.745-3.012 6.745-6.729v-.528c0-.686-.558-1.243-1.246-1.243H17.6c-2.551 0-4.333 1.321-4.933 2.771-.6-1.45-2.382-2.771-4.933-2.771H1.355c-.688 0-1.245.557-1.245 1.243v.528c0 3.717 3.019 6.729 6.745 6.729h2.2c.697 0 1.29.509 1.393 1.196l.243 1.618c2.645 17.618 17.815 30.654 35.673 30.654h13.044c12.337 0 22.865-8.896 24.894-21.035l1.538-9.197c1.419-8.489-4.55-16.217-18.566-16.217Z" />
       </svg>
     ),
   },
@@ -343,7 +376,7 @@ export default function AgentReady() {
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
-                          <div className="relative flex items-center justify-center w-[10.5rem] h-[3rem] mx-auto">
+                          <div className="relative flex h-[3rem] w-[17rem] max-w-full items-center justify-center mx-auto">
                             <GridBackground
                               cols={7}
                               cellWidth="3.5rem"
@@ -385,17 +418,11 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Run ParadeDB on your preferred cloud platform.
-                            Supports Railway, Render, and DigitalOcean, with
-                            more coming soon.
+                            Supports Railway, Render, Fly.io, DigitalOcean, and
+                            Dokku, with more coming soon.
                           </p>
                           <Link
-                            href={
-                              CloudPlatforms[selectedCloud].name ===
-                              "DigitalOcean"
-                                ? "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean"
-                                : CloudPlatforms[selectedCloud].url ||
-                                  "https://docs.paradedb.com/deploy/cloud-platforms"
-                            }
+                            href={CloudPlatforms[selectedCloud].deployUrl}
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
