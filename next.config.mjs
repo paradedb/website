@@ -122,6 +122,13 @@ const nextConfig = {
           "https://join.slack.com/t/paradedbcommunity/shared_invite/zt-40nbq9zkk-ffd5IvYjkMwnIx8MuPkFlQ",
         permanent: false,
       },
+      // Pricing currently lives on the homepage. Keep the conventional URL
+      // useful for people and agents until ParadeDB Cloud has its own pricing.
+      {
+        source: "/pricing",
+        destination: "/#pricing",
+        permanent: false,
+      },
       // --- legacy legal page redirects ---
       {
         source: "/privacy",

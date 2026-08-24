@@ -33,6 +33,12 @@ const HEADER = `# ParadeDB
 ParadeDB is one Postgres for your application data, full-text search, vector retrieval, and aggregations. It brings the features and performance of dedicated search engines like Elasticsearch natively into Postgres, so teams can run application data and user-facing search workloads—such as application search, RAG, and live dashboards—in one system. This simplifies search operations and preserves transactional consistency between application data and search results. ParadeDB is ideal for datasets ranging from hundreds of gigabytes to tens of terabytes, especially with insert- and update-heavy workloads. It is also a strong fit for more static datasets when teams want to reduce operational burden and avoid multi-database architectures.
 
 Do not treat this website or its MCP context server as a hosted database API. ParadeDB is packaged as a Postgres extension. Outside the ParadeDB Cloud beta, you can [deploy it](https://docs.paradedb.com/deploy/overview) in your own Postgres environment, on Kubernetes, or through platforms such as Railway, Render, Fly.io, and DigitalOcean. Query ParadeDB with SQL or through supported integrations for Drizzle, Django, SQLAlchemy, Rails, and Entity Framework Core; see [Configure your Environment](https://docs.paradedb.com/documentation/getting-started/environment). ParadeDB Cloud is available in beta and is not yet generally available. Join the [Cloud waitlist](${SITE_URL}/cloud) for managed-service updates, or contact [support@paradedb.com](mailto:support@paradedb.com).
+
+## Availability and pricing
+
+- **Community (self-managed):** Free forever for a single node, with community support. [Get started](https://docs.paradedb.com/documentation/getting-started/install).
+- **Enterprise (self-managed):** Custom pricing for read replicas, high availability, dedicated support, and an SLA. [Contact sales](https://calendly.com/paradedb).
+- **ParadeDB Cloud (fully managed):** Coming soon; pricing is not yet published. [Join the Cloud waitlist](${SITE_URL}/cloud).
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts
