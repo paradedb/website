@@ -23,6 +23,16 @@ const nextConfig = {
 
   async rewrites() {
     return [
+      // Mintlify is configured to serve this project from the /docs base path.
+      // Rewrites keep the public URL on paradedb.com while proxying the docs.
+      {
+        source: "/docs",
+        destination: "https://paradedb.mintlify.dev/docs",
+      },
+      {
+        source: "/docs/:path*",
+        destination: "https://paradedb.mintlify.dev/docs/:path*",
+      },
       {
         source: "/install.sh",
         destination: "/api/install",
@@ -96,6 +106,18 @@ const nextConfig = {
         source: "/:path*",
         has: [{ type: "host", value: "customers.paradedb.com" }],
         destination: "https://www.paradedb.com/customers/:path*",
+        permanent: true,
+      },
+      {
+        source: "/",
+        has: [{ type: "host", value: "docs.paradedb.com" }],
+        destination: "https://www.paradedb.com/docs",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "docs.paradedb.com" }],
+        destination: "https://www.paradedb.com/docs/:path*",
         permanent: true,
       },
       {
