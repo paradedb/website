@@ -107,7 +107,7 @@ module.exports = {
     "*/twitter-image.png",
   ],
   robotsTxtOptions: {
-    additionalSitemaps: ["https://paradedb.com/docs/sitemap.xml"],
+    additionalSitemaps: ["https://www.paradedb.com/docs/sitemap.xml"],
     // Explicitly welcome reputable AI/agent crawlers. The wildcard policy
     // already allows everyone; naming these is a discoverability signal that
     // the site is intentionally open to agents.

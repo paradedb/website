@@ -216,7 +216,7 @@ print_connect_cmd
 echo ""
 printf "  To connect from another tool, use port %s5432%s (you'll need the password above).\n" "$BOLD" "$RESET"
 echo ""
-printf "  Get started with the docs: %shttps://paradedb.com/docs%s\n" "$CYAN" "$RESET"
+printf "  Get started with the docs: %shttps://www.paradedb.com/docs%s\n" "$CYAN" "$RESET"
 echo ""
 printf "  %sLaunching psql...%s\n" "$BOLD" "$RESET"
 echo ""

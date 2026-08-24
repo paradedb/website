@@ -16,10 +16,10 @@
 
 <h3 align="center">
   <a href="https://paradedb.com">Website</a> &bull;
-  <a href="https://paradedb.com/docs">Docs</a> &bull;
+  <a href="https://www.paradedb.com/docs">Docs</a> &bull;
   <a href="https://paradedb.com/slack">Community</a> &bull;
   <a href="https://paradedb.com/blog/">Blog</a> &bull;
-  <a href="https://paradedb.com/docs/changelog/">Changelog</a>
+  <a href="https://www.paradedb.com/docs/changelog/">Changelog</a>
 </h3>
 
 <p align="center">

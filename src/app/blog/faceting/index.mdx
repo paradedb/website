@@ -85,7 +85,7 @@ When we set out to design the syntax for faceting, we had three goals:
 
 We experimented with a few approaches: full JSONB result sets, LATERAL subqueries, and a behind-the-scenes UNION. The one we kept coming back to was using PostgreSQL's window functions to express faceting instructions, passing a JSON DSL that mirrors the Elasticsearch aggregation API.
 
-That led us to a [new window function, `pdb.agg()`](https://paradedb.com/docs/documentation/aggregates/overview) (also usable in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregations. Most notably for faceting it supports [terms](https://paradedb.com/docs/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://paradedb.com/docs/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://paradedb.com/docs/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
+That led us to a [new window function, `pdb.agg()`](https://www.paradedb.com/docs/documentation/aggregates/overview) (also usable in aggregate position, blog coming soon), which accepts JSONB that enables a range of aggregations. Most notably for faceting it supports [terms](https://www.paradedb.com/docs/documentation/aggregates/bucket/terms) (counting unique values), [histograms](https://www.paradedb.com/docs/documentation/aggregates/bucket/histogram) (bucketing unique values), and [date_histogram](https://www.paradedb.com/docs/documentation/aggregates/bucket/datehistogram) (bucketing timestamps).
 
 Instead of complex CTEs and multiple queries, you get both search results and facet counts in a single, clean query:
 
@@ -285,10 +285,10 @@ Faceting is one of those features that looks simple on the surface, but is surpr
 
 The result is a simple SQL interface that gives you the best of both worlds: PostgreSQL's ACID guarantees and transactional semantics, combined with the performance and developer experience of modern search engines.
 
-Ready to try faceted search in your PostgreSQL database? [Get started with ParadeDB](https://paradedb.com/docs/documentation/getting-started/install) to see how faceting can transform your search experience, and please don’t hesitate to [give us a star](https://github.com/paradedb/paradedb).
+Ready to try faceted search in your PostgreSQL database? [Get started with ParadeDB](https://www.paradedb.com/docs/documentation/getting-started/install) to see how faceting can transform your search experience, and please don’t hesitate to [give us a star](https://github.com/paradedb/paradedb).
 
 ---
 
-[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found under our [CREATE INDEX documentation](https://paradedb.com/docs/documentation/indexing/create-index).
+[^1]: To create a ParadeDB search index, you would run: `CREATE INDEX ON hn_items USING BM25 (id, by, text, title, (url::pdb.literal), (type::pdb.literal), time, score) WITH (key_field=id);`. All non-text and `literal` tokenized text fields are available to use in faceting. Full documentation on index creation can be found under our [CREATE INDEX documentation](https://www.paradedb.com/docs/documentation/indexing/create-index).
 
 [^2]: [MVCC (Multi-Version Concurrency Control)](https://www.postgresql.org/docs/current/mvcc.html) is PostgreSQL's mechanism for handling concurrent transactions by maintaining multiple versions of data when rows are modified. The built in [VACUUM](https://www.postgresql.org/docs/current/routine-vacuuming.html) asynchronously cleans up these old versions. Accessing rows includes visibility checks in both tables and indexes to ensure each transaction sees the correct version of data.
