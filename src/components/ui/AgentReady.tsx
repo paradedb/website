@@ -458,7 +458,7 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Run ParadeDB on your preferred cloud platform.
-                            Supports Railway, Render, Fly.io, DigitalOcean, and
+                            Supports Railway, Render, DigitalOcean, Fly.io, and
                             Dokku, with more coming soon.
                           </p>
                           <Link
