@@ -3,16 +3,16 @@ export const company = {
 };
 
 export const documentation = {
-  BASE: "https://docs.paradedb.com/welcome/introduction",
+  BASE: "https://paradedb.com/docs/welcome/introduction",
   GETTING_STARTED:
-    "https://docs.paradedb.com/documentation/getting-started/install",
-  SEARCH: "https://docs.paradedb.com/documentation/full-text/overview",
-  ANALYTICS: "https://docs.paradedb.com/documentation/aggregates/overview",
+    "https://paradedb.com/docs/documentation/getting-started/install",
+  SEARCH: "https://paradedb.com/docs/documentation/full-text/overview",
+  ANALYTICS: "https://paradedb.com/docs/documentation/aggregates/overview",
   REPLICATION:
-    "https://docs.paradedb.com/deploy/logical-replication/getting-started",
-  INGEST: "https://docs.paradedb.com/deploy/third-party-extensions",
-  DEPLOY_EXTENSION: "https://docs.paradedb.com/deploy/self-hosted/extension",
-  CHANGELOG: "https://docs.paradedb.com/changelog",
+    "https://paradedb.com/docs/deploy/logical-replication/getting-started",
+  INGEST: "https://paradedb.com/docs/deploy/third-party-extensions",
+  DEPLOY_EXTENSION: "https://paradedb.com/docs/deploy/self-hosted/extension",
+  CHANGELOG: "https://paradedb.com/docs/changelog",
 };
 
 export const legal = {
