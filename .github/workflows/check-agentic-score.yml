@@ -59,7 +59,7 @@ jobs:
           result=$(sed -n 's/^data: //p' scan-events.sse | \
             jq -sc 'map(select(.type == "scan_complete")) | last.result')
 
-          if ! score=$(jq -er '.score | numbers' <<< "$result") ||
+          if ! streamed_score=$(jq -er '.score | numbers' <<< "$result") ||
              ! scanned_at=$(jq -er '.scannedAt | strings' <<< "$result") ||
              ! grade=$(jq -er '.grade // "Unlabelled" | strings' <<< "$result"); then
             {
@@ -69,6 +69,53 @@ jobs:
             {
               echo "## Is Agentic score check"
               echo "The fresh scan did not return a valid score or scan timestamp."
+            } >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          # The streaming API can return a score before the report has finished
+          # persisting its final calculation. Wait for the report for this exact
+          # scan, then use its rating as the source of truth.
+          score=""
+          for attempt in {1..12}; do
+            if report_html=$(curl --fail --silent --show-error \
+              --max-time 20 \
+              --header "Cache-Control: no-cache" \
+              "$REPORT_URL?scan=$scanned_at&attempt=$attempt"); then
+              score=$(REPORT_SCANNED_AT="$scanned_at" node -e '
+                let html = "";
+                process.stdin.setEncoding("utf8");
+                process.stdin.on("data", chunk => html += chunk);
+                process.stdin.on("end", () => {
+                  for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+                    let data;
+                    try { data = JSON.parse(match[1]); } catch { continue; }
+                    const graph = Array.isArray(data["@graph"]) ? data["@graph"] : [data];
+                    const page = graph.find(item => item["@type"] === "WebPage");
+                    const review = graph.find(item => item["@type"] === "Review");
+                    if (page?.dateModified === process.env.REPORT_SCANNED_AT &&
+                        Number.isFinite(review?.reviewRating?.ratingValue)) {
+                      process.stdout.write(String(review.reviewRating.ratingValue));
+                      return;
+                    }
+                  }
+                });
+              ' <<< "$report_html")
+            fi
+
+            [[ -n "$score" ]] && break
+            sleep 5
+          done
+
+          if [[ -z "$score" ]]; then
+            {
+              echo "status=error"
+              echo "reason=The persisted Is Agentic report did not update for scan $scanned_at."
+              echo "scanned_at=$scanned_at"
+            } >> "$GITHUB_OUTPUT"
+            {
+              echo "## Is Agentic score check"
+              echo "The streamed scan completed with score $streamed_score/100, but the persisted report did not update for scan $scanned_at."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
@@ -85,6 +132,10 @@ jobs:
             echo "| [$score/100]($REPORT_URL) | $SCORE_THRESHOLD/100 | $scanned_at |"
             echo ""
             echo "Grade: $grade"
+            if [[ "$score" != "$streamed_score" ]]; then
+              echo ""
+              echo "Note: the streaming API returned $streamed_score/100; the persisted report returned $score/100."
+            fi
           } >> "$GITHUB_STEP_SUMMARY"
 
           if (( score < SCORE_THRESHOLD )); then
