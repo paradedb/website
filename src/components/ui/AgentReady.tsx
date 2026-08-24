@@ -114,22 +114,33 @@ const Integrations = [
     ),
   },
   {
-    name: "Windsurf",
-    className: "text-[#0B100F] dark:text-slate-100",
+    name: "Devin",
+    className: "",
     icon: (
-      <svg
-        viewBox="0 0 1024 1024"
-        className="size-[1.1rem]"
-        fill="none"
-        aria-hidden="true"
-      >
+      <svg viewBox="0 0 24 24" className="size-[1.1rem]" aria-hidden="true">
         <path
-          fill="currentColor"
-          d="M897.246 286.869H889.819C850.735 286.808 819.017 318.46 819.017 357.539V515.589C819.017 547.15 792.93 572.716 761.882 572.716C743.436 572.716 725.02 563.433 714.093 547.85L552.673 317.304C539.28 298.16 517.486 286.747 493.895 286.747C457.094 286.747 423.976 318.034 423.976 356.657V515.619C423.976 547.181 398.103 572.746 366.842 572.746C348.335 572.746 329.949 563.463 319.021 547.881L138.395 289.882C134.316 284.038 125.154 286.93 125.154 294.052V431.892C125.154 438.862 127.285 445.619 131.272 451.34L309.037 705.2C319.539 720.204 335.033 731.344 352.9 735.392C397.616 745.557 438.77 711.135 438.77 667.278V508.406C438.77 476.845 464.339 451.279 495.904 451.279H495.995C515.02 451.279 532.857 460.562 543.785 476.145L705.235 706.661C718.659 725.835 739.327 737.218 763.983 737.218C801.606 737.218 833.841 705.9 833.841 667.308V508.376C833.841 476.815 859.41 451.249 890.975 451.249H897.276C901.233 451.249 904.43 448.053 904.43 444.097V294.021C904.43 290.065 901.233 286.869 897.276 286.869H897.246Z"
+          fill="#3969CA"
+          d="M2.033 9.867l2.554 1.483a.589.589 0 0 0 .592 0l2.554-1.483a.596.596 0 0 0 .297-.516V7.868c0-.572.307-1.105.8-1.392a1.595 1.595 0 0 1 1.598 0l1.277.742a.587.587 0 0 0 .588 0l2.554-1.484a.596.596 0 0 0 .297-.516V2.253a.595.595 0 0 0-.297-.516L12.293.257a.587.587 0 0 0-.591 0L9.148 1.737a.596.596 0 0 0-.296.516v1.483c0 .572-.307 1.105-.8 1.393a1.597 1.597 0 0 1-1.599 0l-1.276-.742a.587.587 0 0 0-.59 0L2.033 5.872a.596.596 0 0 0-.297.515v2.966c0 .213.113.41.297.515Z"
+        />
+        <path
+          fill="#21C19A"
+          d="M15.943 10.607a1.596 1.596 0 0 1 1.599 0l1.276.74a.587.587 0 0 0 .592 0l2.554-1.482a.597.597 0 0 0 .297-.516V6.383a.596.596 0 0 0-.297-.515l-2.552-1.483a.587.587 0 0 0-.592 0l-2.553 1.482a.596.596 0 0 0-.297.516v1.483c0 .572-.307 1.105-.8 1.393a1.597 1.597 0 0 1-1.599 0l-1.276-.742a.587.587 0 0 0-.591 0L9.15 10a.596.596 0 0 0-.296.516v2.966c0 .212.112.409.296.515l2.554 1.483a.587.587 0 0 0 .591 0l1.277-.741a1.597 1.597 0 0 1 2.398 1.392v1.482c0 .213.113.41.297.516l2.554 1.483a.59.59 0 0 0 .593 0l2.554-1.483a.597.597 0 0 0 .296-.516V14.65a.595.595 0 0 0-.296-.516l-2.554-1.483a.59.59 0 0 0-.593 0l-1.276.742a1.595 1.595 0 0 1-1.598 0 1.615 1.615 0 0 1-.004-2.786Z"
+        />
+        <path
+          fill="#0294DE"
+          d="m14.848 18.265-2.554-1.482a.587.587 0 0 0-.592 0l-1.276.742a1.594 1.594 0 0 1-1.598 0c-.493-.286-.8-.82-.8-1.393V14.65a.596.596 0 0 0-.295-.516L5.178 12.65a.587.587 0 0 0-.591 0l-2.554 1.483a.596.596 0 0 0-.297.516v2.965c0 .213.113.41.297.516l2.554 1.483a.587.587 0 0 0 .591 0l1.277-.742a1.597 1.597 0 0 1 2.398 1.393v1.482c0 .213.112.41.296.516l2.554 1.483a.587.587 0 0 0 .593 0l2.554-1.483a.596.596 0 0 0 .296-.515v-2.966a.596.596 0 0 0-.298-.516Z"
         />
       </svg>
     ),
   },
+] as const;
+
+const CodingAgentIntegrations = [
+  Integrations[0], // Claude Code
+  Integrations[1], // Codex
+  Integrations[3], // Cursor
+  Integrations[4], // Devin
+  Integrations[2], // Gemini
 ] as const;
 
 const Frameworks = [
@@ -159,7 +170,8 @@ const CloudPlatforms = [
   {
     name: "Railway",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://railway.com/deploy/paradedb?referralCode=l5qxN4&utm_medium=integration&utm_source=button&utm_campaign=paradedb",
+    deployUrl:
+      "https://railway.com/deploy/paradedb?referralCode=l5qxN4&utm_medium=integration&utm_source=button&utm_campaign=paradedb",
     icon: (
       <svg
         viewBox="0 0 1024 1024"
@@ -182,7 +194,8 @@ const CloudPlatforms = [
   {
     name: "Render",
     className: "text-slate-900 dark:text-slate-100",
-    url: "https://dashboard.render.com/login?next=%2Fblueprint%2Fnew%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2Fparadedb%2Frender-blueprint",
+    deployUrl:
+      "https://dashboard.render.com/login?next=%2Fblueprint%2Fnew%3Frepo%3Dhttps%3A%2F%2Fgithub.com%2Fparadedb%2Frender-blueprint",
     icon: (
       <svg
         width="24"
@@ -199,7 +212,7 @@ const CloudPlatforms = [
   {
     name: "DigitalOcean",
     className: "text-[#0080ff]",
-    docsUrl: "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean",
+    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -210,6 +223,66 @@ const CloudPlatforms = [
       >
         <path d="M81.202 205.5v-6.2c6.568 0 11.666-6.5 9.144-13.418a9.27 9.27 0 0 0-5.533-5.531c-6.912-2.502-13.425 2.575-13.425 9.14H65.2c0-10.463 10.124-18.622 21.1-15.195 4.8 1.505 8.618 5.313 10.105 10.1 3.43 10.99-4.717 21.107-15.203 21.107z" />
         <path d="M75.05 199.317v-6.165h6.168v6.165zm-4.753 4.75v-4.75h4.753v4.75h-4.753zm0-4.75h-3.973v-3.97h3.973v3.97z" />
+      </svg>
+    ),
+  },
+  {
+    name: "Fly.io",
+    className: "text-[#24175b] dark:text-[#9b8bdb]",
+    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/fly",
+    icon: (
+      <svg
+        viewBox="0 0 24 24"
+        className="size-[1.6rem]"
+        fill="currentColor"
+        aria-hidden="true"
+      >
+        <path d="M11.987 0c-2.45-.01-5.002.925-6.541 2.897-1.17 1.502-1.664 3.474-1.49 5.356.29 2.112 1.476 3.96 2.676 5.672a41.5 41.5 0 0 0 4.216 4.831c-1.063.832-1.943 2.286-1.357 3.644.821 2.32 4.665 2.05 5.122-.372.39-1.288-.694-2.533-1.428-3.309 2.388-2.431 4.706-5.036 6.17-8.145.595-1.32.902-2.802.614-4.24-.28-2.341-1.823-4.473-3.967-5.46C14.76.266 13.364.016 11.987 0m-.236 1.577v15.534C9.881 13.483 7.724 9.266 8.73 5.069c.35-1.539 1.253-3.309 3.02-3.492m1.996.04c1.534.357 3.031 1.096 3.906 2.48 1.3 1.93 1.318 4.55.1 6.521-1.268 2.395-3.06 4.463-4.916 6.415 1.472-2.974 3.074-6.106 3.182-9.5-.043-2.08-.438-4.612-2.272-5.916M11.97 20.103c.848.342 1.597 1.983.153 2.173-.664.15-1.367-.599-.995-1.222.213-.355.488-.73.842-.95" />
+      </svg>
+    ),
+  },
+  {
+    name: "Dokku",
+    className: "",
+    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/dokku",
+    icon: (
+      <svg
+        viewBox="0 0 89 62"
+        className="h-[1.8rem] w-[2.6rem]"
+        aria-hidden="true"
+      >
+        <defs>
+          <clipPath id="dokku-shell-clip">
+            <path d="M78.405 17.191c6.333 3.97 7.814 3.551 9.274 2.805a1.707 1.707 0 0 0 .745-2.298C86.462 13.818 78.212.119 59.536.119c-15.677 0-25.098 13.225-27.968 17.958-.561.926-.123 2.139.908 2.477 1.66.546 3.475.662 7.357-1.692 12.698-7.058 38.572-1.671 38.572-1.671Z" />
+          </clipPath>
+        </defs>
+        <path
+          fill="#F15B55"
+          d="M78.405 17.191c6.333 3.97 7.814 3.551 9.274 2.805a1.707 1.707 0 0 0 .745-2.298C86.462 13.818 78.212.119 59.536.119c-15.677 0-25.098 13.225-27.968 17.958-.561.926-.123 2.139.908 2.477 1.66.546 3.475.662 7.357-1.692 12.698-7.058 38.572-1.671 38.572-1.671Z"
+        />
+        <g clipPath="url(#dokku-shell-clip)">
+          <path
+            fill="none"
+            stroke="#FF9580"
+            strokeWidth="1.5"
+            d="M43.79 2.624c5.705 7.376-10.195 11.23 2.015 19.73M56.798-1.625c6.086 7.663-9.966 10.547-2.968 21.323M72.317-.868c4.412 7.893-13.769 9.6-7.76 19.2M84.26 7.025c0 8.12-12.552 3.488-11.943 12.673"
+          />
+        </g>
+        <path
+          fill="#07CBCF"
+          d="M67.274 14.809H56.42c-11.797 0-18.001 3.468-22.582 9.391l-4.384 5.667-1.75 2.314a7.082 7.082 0 0 1-5.652 2.807c-3.366 0-6.233-2.32-6.99-5.508l-.037-.212c-.115-.78.495-1.478 1.285-1.478h2.17c3.725 0 6.745-3.012 6.745-6.729v-.528c0-.686-.558-1.243-1.246-1.243H17.6c-2.551 0-4.333 1.321-4.933 2.771-.6-1.45-2.382-2.771-4.933-2.771H1.355c-.688 0-1.245.557-1.245 1.243v.528c0 3.717 3.019 6.729 6.745 6.729h2.2c.697 0 1.29.509 1.393 1.196l.243 1.618c2.645 17.618 17.815 30.654 35.673 30.654h13.044c12.337 0 22.865-8.896 24.894-21.035l1.538-9.197c1.419-8.489-4.55-16.217-18.566-16.217Z"
+        />
+        <path
+          fill="#05B7BF"
+          d="M81.47 48.312c-2.13.074-3.871.758-6.246 3.127-3.024 3.016-8.045 6.431-15.804 6.431H45.042c-5.82 0-9.926-4.327-9.926-4.327s-3.368.172-10.69-3.983C12.425 41.99 11.95 29.298 11.779 27.704c-.171-1.593-1.027-2.447-2.739-2.447H6.701c-4.358 0-5.54-2.139-5.807-5.878a1.244 1.244 0 0 0-.784 1.154v.528c0 3.717 3.02 6.729 6.745 6.729h2.2c.697 0 1.29.509 1.393 1.196l.243 1.618c2.645 17.618 17.815 30.653 35.673 30.653h13.044c9.38 0 17.714-5.144 22.062-12.945Z"
+        />
+        <path
+          fill="none"
+          stroke="#00576C"
+          strokeLinecap="round"
+          strokeWidth="1.46"
+          d="M48.257 43.038c1.936 5.544 7.186 9.88 13.445 9.88 10.555 0 9.597-7.213 21.03-7.213h1.62M50.12 43.015h-3.139M65.353 42.73a2.963 2.963 0 0 0-2.967-2.959 2.963 2.963 0 0 0-2.967 2.96"
+        />
       </svg>
     ),
   },
@@ -343,7 +416,7 @@ export default function AgentReady() {
                     <div className="flex flex-col flex-1 bg-transparent px-5 sm:px-8 py-10 sm:py-12 z-10 w-full items-center">
                       <div className="w-full max-w-[460px] flex flex-col h-full">
                         <div className="flex flex-col justify-center sm:h-[102px] mb-8 relative">
-                          <div className="relative flex items-center justify-center w-[10.5rem] h-[3rem] mx-auto">
+                          <div className="relative flex h-[3rem] w-[17rem] max-w-full items-center justify-center mx-auto">
                             <GridBackground
                               cols={7}
                               cellWidth="3.5rem"
@@ -385,17 +458,11 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Run ParadeDB on your preferred cloud platform.
-                            Supports Railway, Render, and DigitalOcean, with
-                            more coming soon.
+                            Supports Railway, Render, Fly.io, DigitalOcean, and
+                            Dokku, with more coming soon.
                           </p>
                           <Link
-                            href={
-                              CloudPlatforms[selectedCloud].name ===
-                              "DigitalOcean"
-                                ? "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean"
-                                : CloudPlatforms[selectedCloud].url ||
-                                  "https://docs.paradedb.com/deploy/cloud-platforms"
-                            }
+                            href={CloudPlatforms[selectedCloud].deployUrl}
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
@@ -442,7 +509,7 @@ export default function AgentReady() {
                           </div>
 
                           <div className="flex flex-wrap items-center justify-center gap-4 h-[2rem] sm:mt-1">
-                            {Integrations.map((integration) => (
+                            {CodingAgentIntegrations.map((integration) => (
                               <div
                                 key={integration.name}
                                 className={`flex size-[1.5rem] items-center justify-center grayscale opacity-60 transition-all hover:grayscale-0 hover:opacity-100 bg-transparent ${integration.className}`}
@@ -460,8 +527,8 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Teach your agents to use ParadeDB with a single
-                            command. Works with Claude Code, Codex, Gemini,
-                            Cursor, Windsurf, and more.
+                            command. Works with Claude Code, Codex, Cursor,
+                            Devin, Gemini, and more.
                           </p>
                           <Link
                             href="https://docs.paradedb.com/documentation/getting-started/ai-agents"
