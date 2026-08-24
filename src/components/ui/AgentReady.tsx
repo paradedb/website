@@ -135,6 +135,14 @@ const Integrations = [
   },
 ] as const;
 
+const CodingAgentIntegrations = [
+  Integrations[0], // Claude Code
+  Integrations[1], // Codex
+  Integrations[3], // Cursor
+  Integrations[4], // Devin
+  Integrations[2], // Gemini
+] as const;
+
 const Frameworks = [
   {
     name: "JavaScript",
@@ -501,7 +509,7 @@ export default function AgentReady() {
                           </div>
 
                           <div className="flex flex-wrap items-center justify-center gap-4 h-[2rem] sm:mt-1">
-                            {Integrations.map((integration) => (
+                            {CodingAgentIntegrations.map((integration) => (
                               <div
                                 key={integration.name}
                                 className={`flex size-[1.5rem] items-center justify-center grayscale opacity-60 transition-all hover:grayscale-0 hover:opacity-100 bg-transparent ${integration.className}`}
@@ -519,8 +527,8 @@ export default function AgentReady() {
                           </h3>
                           <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
                             Teach your agents to use ParadeDB with a single
-                            command. Works with Claude Code, Codex, Gemini,
-                            Cursor, Devin, and more.
+                            command. Works with Claude Code, Codex, Cursor,
+                            Devin, Gemini, and more.
                           </p>
                           <Link
                             href="https://docs.paradedb.com/documentation/getting-started/ai-agents"
