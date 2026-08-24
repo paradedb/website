@@ -34,6 +34,7 @@ jobs:
         id: report
         shell: bash
         run: |
+          scan_started_at=$(date -u +%s)
           set +e
           curl --fail-with-body --silent --show-error --no-buffer \
             --max-time 840 \
@@ -73,16 +74,16 @@ jobs:
             exit 1
           fi
 
-          # The streaming API can return a score before the report has finished
-          # persisting its final calculation. Wait for the report for this exact
-          # scan, then use its rating as the source of truth.
+          # The streaming API and persisted report can assign different timestamps
+          # to the same scan. Wait for a report created after this workflow started
+          # the scan, then use its rating as the source of truth.
           score=""
           for attempt in {1..12}; do
             if report_html=$(curl --fail --silent --show-error \
               --max-time 20 \
               --header "Cache-Control: no-cache" \
-              "$REPORT_URL?scan=$scanned_at&attempt=$attempt"); then
-              score=$(REPORT_SCANNED_AT="$scanned_at" node -e '
+              "$REPORT_URL?attempt=$attempt"); then
+              score=$(SCAN_STARTED_AT="$scan_started_at" node -e '
                 let html = "";
                 process.stdin.setEncoding("utf8");
                 process.stdin.on("data", chunk => html += chunk);
@@ -93,7 +94,9 @@ jobs:
                     const graph = Array.isArray(data["@graph"]) ? data["@graph"] : [data];
                     const page = graph.find(item => item["@type"] === "WebPage");
                     const review = graph.find(item => item["@type"] === "Review");
-                    if (page?.dateModified === process.env.REPORT_SCANNED_AT &&
+                    const reportTime = Date.parse(page?.dateModified);
+                    const scanStartTime = Number(process.env.SCAN_STARTED_AT) * 1000;
+                    if (Number.isFinite(reportTime) && reportTime >= scanStartTime &&
                         Number.isFinite(review?.reviewRating?.ratingValue)) {
                       process.stdout.write(String(review.reviewRating.ratingValue));
                       return;
@@ -110,12 +113,12 @@ jobs:
           if [[ -z "$score" ]]; then
             {
               echo "status=error"
-              echo "reason=The persisted Is Agentic report did not update for scan $scanned_at."
+              echo "reason=The persisted Is Agentic report did not update after the fresh scan started."
               echo "scanned_at=$scanned_at"
             } >> "$GITHUB_OUTPUT"
             {
               echo "## Is Agentic score check"
-              echo "The streamed scan completed with score $streamed_score/100, but the persisted report did not update for scan $scanned_at."
+              echo "The streamed scan completed with score $streamed_score/100, but the persisted report did not update after the fresh scan started."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
