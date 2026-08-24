@@ -212,7 +212,8 @@ const CloudPlatforms = [
   {
     name: "DigitalOcean",
     className: "text-[#0080ff]",
-    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/digitalocean",
+    deployUrl:
+      "https://www.paradedb.com/docs/deploy/cloud-platforms/digitalocean",
     icon: (
       <svg
         xmlns="http://www.w3.org/2000/svg"
@@ -229,7 +230,7 @@ const CloudPlatforms = [
   {
     name: "Fly.io",
     className: "text-[#24175b] dark:text-[#9b8bdb]",
-    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/fly",
+    deployUrl: "https://www.paradedb.com/docs/deploy/cloud-platforms/fly",
     icon: (
       <svg
         viewBox="0 0 24 24"
@@ -244,7 +245,7 @@ const CloudPlatforms = [
   {
     name: "Dokku",
     className: "",
-    deployUrl: "https://docs.paradedb.com/deploy/cloud-platforms/dokku",
+    deployUrl: "https://www.paradedb.com/docs/deploy/cloud-platforms/dokku",
     icon: (
       <svg
         viewBox="0 0 89 62"
@@ -531,7 +532,7 @@ export default function AgentReady() {
                             Devin, Gemini, and more.
                           </p>
                           <Link
-                            href="https://docs.paradedb.com/documentation/getting-started/ai-agents"
+                            href="https://www.paradedb.com/docs/documentation/getting-started/ai-agents"
                             target="_blank"
                             className="mt-auto flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                           >
@@ -594,7 +595,7 @@ export default function AgentReady() {
                           </p>
                           <div className="mt-auto flex flex-col gap-2">
                             <Link
-                              href="https://docs.paradedb.com/documentation/getting-started/environment"
+                              href="https://www.paradedb.com/docs/documentation/getting-started/environment"
                               target="_blank"
                               className="flex w-fit items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                             >

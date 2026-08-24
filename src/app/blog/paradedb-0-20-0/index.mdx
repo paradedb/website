@@ -23,7 +23,7 @@ Modern applications often require more than just search: they need [facets](/lea
 
 We have had fast aggregations on top of search queries for a while now, but it's not something we have talked about a lot. With `0.20.0` we have overhauled this feature, making [search faceting](/learn/search-concepts/faceting) (calculating counts for groups of records) a first-class citizen.
 
-Our search analytics are powered by a new [`pdb.agg()`](https://docs.paradedb.com/documentation/aggregates/overview) function can be used in two ways:
+Our search analytics are powered by a new [`pdb.agg()`](https://www.paradedb.com/docs/documentation/aggregates/overview) function can be used in two ways:
 
 - as an aggregate function, running a search query and providing aggregate results
 - as a window function, running a search query and providing aggregate results **alongside** the Top K search result
@@ -54,7 +54,7 @@ Our aggregations excel for large search result sets (millions of records), with 
   alt="Bar chart comparing faceting query time: ParadeDB Faceting takes 1013 milliseconds while Manual Faceting takes 11849 milliseconds, showing ParadeDB is over 11 times faster for search aggregations on 42 million results"
 />
 
-`pdb.agg()` can also be used with a [JSON argument](https://docs.paradedb.com/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
+`pdb.agg()` can also be used with a [JSON argument](https://www.paradedb.com/docs/documentation/aggregates/overview) that closely mirrors the [Elasticsearch aggregations API](https://www.elastic.co/docs/explore-analyze/query-filter/aggregations), and in many cases is mapped to plain SQL constructs (like `COUNT(*)`).
 
 Let's have a look at some examples.
 
@@ -113,7 +113,7 @@ Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/b
 
 ## v2 API: Less Magic, More Clarity
 
-None of these aggregation capabilities would matter if they were difficult to use, so alongside our performance work, we've also promoted our [V2 API](https://docs.paradedb.com/documentation/indexing/create-index) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
+None of these aggregation capabilities would matter if they were difficult to use, so alongside our performance work, we've also promoted our [V2 API](https://www.paradedb.com/docs/documentation/indexing/create-index) to the default experience, and the difference is immediately apparent with a much more intuitive SQL UX.
 
 One of the most significant advantages of the v2 API is that it eliminates the schema duplication that is present in most other search systems. With Elasticsearch, you must define your data structure twice: once in your application database and again in your Elasticsearch mapping:
 
@@ -163,7 +163,7 @@ LIMIT 5;
 (5 rows)
 ```
 
-Keep an eye out for another post showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://docs.paradedb.com/documentation/full-text/overview).
+Keep an eye out for another post showing off all the new v2 API features. For now, you can explore the full API reference in our [documentation](https://www.paradedb.com/docs/documentation/full-text/overview).
 
 ## Write Performance: Updates That Scale With You
 
@@ -213,4 +213,4 @@ Again, you can expect a follow up post with all the gory data-structure details.
 
 Version `0.20.0` strengthens ParadeDB as an alternative to Elasticsearch by adding fast search aggregations, a streamlined v2 API, and significantly improved write performance directly into PostgreSQL. For teams that value transactional consistency and operational simplicity, we provide a path to modern search capabilities without the complexity of managing separate systems.
 
-Ready to see search aggregations and the new API in action? [Try ParadeDB 0.20.0](https://docs.paradedb.com/documentation/getting-started/install) and experience what it's like when search, analytics, and transactions work together seamlessly.
+Ready to see search aggregations and the new API in action? [Try ParadeDB 0.20.0](https://www.paradedb.com/docs/documentation/getting-started/install) and experience what it's like when search, analytics, and transactions work together seamlessly.

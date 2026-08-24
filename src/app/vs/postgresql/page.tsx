@@ -29,7 +29,7 @@ function A({ href, children }: { href: string; children: ReactNode }) {
 }
 
 const PG = "https://www.postgresql.org/docs/current";
-const DOCS = "https://docs.paradedb.com";
+const DOCS = "https://www.paradedb.com/docs";
 
 export const metadata: Metadata = {
   title: "Comparing ParadeDB and Postgres Full-Text Search",
