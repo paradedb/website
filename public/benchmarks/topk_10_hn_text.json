@@ -21,7 +21,7 @@
         "paradedb": {
           "paradedb.global_mutable_segment_rows": "-1"
         },
-        "post_script": "-- ParadeDB post-load: Create BM25 index\nCREATE INDEX hn_items_idx ON hn_items\nUSING bm25 (id, title, text, (by::pdb.literal), (type::pdb.literal), (url::pdb.literal), score, time)\nWITH (key_field='id');\n\nVACUUM ANALYZE hn_items;\n",
+        "post_script": "-- ParadeDB post-load: Create ParadeDB index\nCREATE INDEX hn_items_idx ON hn_items\nUSING paradedb (id, title, text, (by::pdb.literal), (type::pdb.literal), (url::pdb.literal), score, time)\nWITH (key_field='id');\n\nVACUUM ANALYZE hn_items;\n",
         "postgresql": {
           "effective_cache_size": "5242888kB",
           "jit": "off",

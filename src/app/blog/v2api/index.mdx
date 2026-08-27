@@ -48,11 +48,11 @@ Table "public.mock_items"
  weight_range          | int4range
 ```
 
-With the v2 API, creating a [BM25 search index](https://www.paradedb.com/docs/documentation/indexing/create-index) is straightforward:
+With the v2 API, creating a [ParadeDB index](https://www.paradedb.com/docs/documentation/indexing/create-index) is straightforward:
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (id, description, category, rating, in_stock,
+USING paradedb (id, description, category, rating, in_stock,
             created_at, metadata, weight_range)
 WITH (key_field='id');
 ```
@@ -133,7 +133,7 @@ One feature we really like is the ability to tokenize the same column multiple w
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (
+USING paradedb (
     id,
     description,                                        -- Standard word tokenization
     (description::pdb.ngram(3,3, 'alias=desc_ngram'))   -- Partial matching
@@ -146,7 +146,7 @@ This example shows how you can apply different tokenization strategies to the sa
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (
+USING paradedb (
     id,
     (description::pdb.simple(
         'stemmer=english',              -- "running" matches "runs"
@@ -166,7 +166,7 @@ Modern applications increasingly rely on semi-structured data stored in JSON (or
 ```sql
 -- All JSON fields are automatically indexed
 CREATE INDEX search_idx ON mock_items
-USING bm25 (id, metadata) WITH (key_field='id');
+USING paradedb (id, metadata) WITH (key_field='id');
 
 -- Query nested properties directly
 SELECT description FROM mock_items
@@ -179,7 +179,7 @@ You can also index only specific parts of a JSON schema:
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (
+USING paradedb (
     id,
     description,
     ((metadata->'color')::pdb.literal('alias=json_color'))
@@ -391,7 +391,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-Both queries use window functions (`OVER` clauses) to return only the top 2 results while computing analytics over all matching documents. This eliminates the need for separate queries and makes it possible to build rich search interfaces with a single efficient operation using ParadeDB's BM25 indexes.
+Both queries use window functions (`OVER` clauses) to return only the top 2 results while computing analytics over all matching documents. This eliminates the need for separate queries and makes it possible to build rich search interfaces with a single efficient operation using ParadeDB indexes.
 
 We'll have a full post coming up on how we built this search aggregations system and its performance characteristics.
 

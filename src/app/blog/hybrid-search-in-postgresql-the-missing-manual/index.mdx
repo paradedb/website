@@ -47,7 +47,7 @@ ParadeDB brings production-ready BM25 directly into PostgreSQL as a native index
 
 ### BM25 With ParadeDB
 
-Getting started with ParadeDB is straightforward. Once you have the extension installed, you can create BM25 indexes just like any other PostgreSQL index type, then query them with a simple operator syntax.
+Getting started with ParadeDB is straightforward. Once you have the extension installed, you can create ParadeDB indexes just like any other PostgreSQL index type, then query them with a simple operator syntax.
 
 <Note>
   To add `pg_search` to your PostgreSQL instance (or to spin up a new instance
@@ -64,9 +64,9 @@ CREATE TABLE documents (
     content TEXT
 );
 
--- Create BM25 index using the english tokenizer with stemming enabled
+-- Create ParadeDB index using the english tokenizer with stemming enabled
 CREATE INDEX idx_documents_bm25 ON documents
-USING bm25 (
+USING paradedb (
   id,
   title::pdb.simple('stemmer=english'),
   content::pdb.simple('stemmer=english')
@@ -84,7 +84,7 @@ WHERE
 ORDER BY bm25_score DESC;
 ```
 
-The `|||` operator above is for match disjunction, but many other options are available. Conjunction, phrase matching, highlighting, more like this, regex queries and word proximity are all supported. ParadeDB is also smart about query optimization. It can push down `WHERE` clauses and faceting aggregations into the BM25 index where possible, making complex filtered searches much faster than traditional approaches.
+The `|||` operator above is for match disjunction, but many other options are available. Conjunction, phrase matching, highlighting, more like this, regex queries and word proximity are all supported. ParadeDB is also smart about query optimization. It can push down `WHERE` clauses and faceting aggregations into the ParadeDB index where possible, making complex filtered searches much faster than traditional approaches.
 
 This kind of lexical search excels at exact or similar matches: it's perfect when users search for specific terms, product codes, or technical concepts they know by name (or at close, see our blog on [tokenization and stemming](/blog/when-tokenization-becomes-token) for a deep dive on how this works).
 

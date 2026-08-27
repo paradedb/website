@@ -93,11 +93,11 @@ CREATE TABLE users (
 );
 ```
 
-Movies get a ParadeDB BM25 index.
+Movies get a ParadeDB index.
 
 ```sql
 CREATE INDEX movies_search_idx ON movies
-  USING bm25 (movie_id, title, year, imdb_id, tmdb_id, genres)
+  USING paradedb (movie_id, title, year, imdb_id, tmdb_id, genres)
   WITH (key_field='movie_id');
 ```
 
@@ -238,8 +238,8 @@ The in-database approach hits a sweet spot for 95% of use cases. You get hybrid 
 
 The main consideration? **Resource Management**. Because search runs on your database, it shares CPU and RAM with your transactional workload. For most applications, this is a non-issue given Postgres's efficiency. For high-scale deployments, you can run search on a **dedicated read replica** to isolate inference load from your primary writes. ParadeDB supports two approaches:
 
-- **Physical replication**: The BM25 index exists on the primary. Small write cost, but read queries can be routed to specific full replicas.
-- **Logical replication**: The BM25 index is isolated to a replica subset only. No transactionality guarantees, but proper workload isolation.
+- **Physical replication**: The ParadeDB index exists on the primary. Small write cost, but read queries can be routed to specific full replicas.
+- **Logical replication**: The ParadeDB index is isolated to a replica subset only. No transactionality guarantees, but proper workload isolation.
 
 The best approach depends on your infrastructure and requirements.
 
