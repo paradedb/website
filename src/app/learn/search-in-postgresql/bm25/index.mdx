@@ -65,21 +65,21 @@ RETURNS VOID
 
 Unfortunately this approach is still very slow, and the tables (and their indexes) need to be updated after every source data change which leads to write amplification.
 
-### Extending Postgres to Support BM25 Indexes
+### Extending Postgres with ParadeDB Indexes
 
-A more scalable approach is using Postgres's index access method (IAM) to create a native BM25 index that is created on the source table.
+A more scalable approach is using Postgres's index access method (IAM) to create a native ParadeDB index on the source table.
 
-[ParadeDB](https://www.paradedb.com) uses this method to implement BM25 indexes in Rust, adding them to PostgreSQL though the open-source `pg_search` extension.
+[ParadeDB](https://www.paradedb.com) implements ParadeDB indexes in Rust, adding BM25 ranking and search capabilities to PostgreSQL through the open-source `pg_search` extension.
 
 When an index is added to a table it can cover multiple columns, providing advanced full-text search DX, as well as fast columnar lookups and aggregations for non-text fields.
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (id, description, category, rating)
+USING paradedb (id, description, category, rating)
 WITH (key_field='id');
 ```
 
-The BM25 index is laid out on disk as an [**LSM tree**](https://www.paradedb.com/docs/welcome/architecture#lsm-tree), where each segment in the tree consists of both an inverted index and columnar index. The inverted and columnar indexes optimize for fast reads, while the LSM tree optimizes for high-frequency writes.
+The ParadeDB index is laid out on disk as an [**LSM tree**](https://www.paradedb.com/docs/welcome/architecture#lsm-tree), where each segment in the tree consists of both an inverted index and columnar index. The inverted and columnar indexes optimize for fast reads, while the LSM tree optimizes for high-frequency writes.
 
 ParadeDB users can access full-text search and BM25 relevancy ranking by using custom operators and functions. For example, a search using match disjunction (find all documents which match one or more terms), ordering by BM25 scores, and then returning the top 5 would look like this:
 
@@ -99,7 +99,7 @@ Bringing BM25 directly into Postgres has two major effects: it improves ranking 
 
 Postgres’s built-in full-text search—based on tsvector, tsquery, and ts_rank is capable but rudimentary. Its scoring function uses a linear weighting of term frequency and field importance, but it ignores inverse document frequency (IDF) and applies no document-length normalization.
 
-Running BM25 inside Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the BM25 index, keeping search results transactionally consistent with the source of truth.
+Running BM25 inside Postgres also eliminates the need for a separate search engine and the ETL processes that keep it synchronized. There’s no risk of stale indexes, no duplicate infrastructure, and no latency gap between writes and searchable data. Each change to a table immediately updates the ParadeDB index, keeping search results transactionally consistent with the source of truth.
 
 Finally, because BM25 operates as a native index access method, it participates in Postgres’s planner and transaction model. Queries benefit from caching, parallelism, and predictable performance characteristics: something external search engines can’t easily guarantee.
 

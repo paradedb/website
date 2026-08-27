@@ -109,7 +109,7 @@ LIMIT 2;
 (2 rows)
 ```
 
-Behind the scenes, these queries use our [BM25 indexes](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-second facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data.
+Behind the scenes, these queries use ParadeDB indexes with [BM25 ranking](/learn/search-concepts/bm25) for both [full-text search](/learn/search-concepts/full-text-search) and columnar analytics. You get sub-second facet calculations across millions of documents, all while maintaining perfect consistency with your transactional data.
 
 ## v2 API: Less Magic, More Clarity
 
@@ -136,7 +136,7 @@ We've had many users see unexpected behaviors in their first few queries due to 
 
 ```sql
 CREATE INDEX search_idx ON mock_items
-USING bm25 (id,
+USING paradedb (id,
            title,
            (description::pdb.simple('stemmer=english',
                                     'stopwords_language=english')),
@@ -181,7 +181,7 @@ Our solution is based on two key optimizations from `0.19.0`, now enabled by def
 Since we first introduced these features in `0.19.0` we've increased single row update performance by more than **two orders of magnitude**; the kind of improvement that can change how you think about transactional search.
 
 <BarChartCard
-  title="Updates Per Second on a Wide Table with a BM25 index"
+  title="Updates Per Second on a Wide Table with a ParadeDB index"
   data={[
     {
       name: "v0.20.0",

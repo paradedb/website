@@ -43,7 +43,7 @@ Both backends run in their own Docker containers, each with four cores and eight
 
 The data is a cut-down slice[^2] of the Hacker News archive: one million rows in a single `hn_items` table, keeping only the `id` and `text` of each post.
 
-The comparison is [ParadeDB](https://github.com/paradedb/paradedb)'s BM25 index against Postgres' built-in tsvector datatype and a GIN index (often referred to as [Postgres full-text search](https://www.postgresql.org/docs/current/textsearch.html)). These are different ranking models over different index implementations, but both are ways developers can run TopK relevance search inside Postgres.
+The comparison is a [ParadeDB](https://github.com/paradedb/paradedb) index using BM25 ranking against Postgres' built-in tsvector datatype and a GIN index (often referred to as [Postgres full-text search](https://www.postgresql.org/docs/current/textsearch.html)). These are different ranking models over different index implementations, but both are ways developers can run TopK relevance search inside Postgres.
 
 ParadeDB indexes `text` directly with [BM25](https://www.paradedb.com/learn/search-concepts/bm25). Postgres pre-tokenizes `text` into a stored generated `tsv` column and indexes that value with GIN[^3]. Both are configured for English text processing, and both answer the same query shape using their native syntax:
 

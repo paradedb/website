@@ -863,7 +863,7 @@ const PDB_SCHEMA = [
   ");",
   "",
   "CREATE INDEX hn_items_idx ON hn_items",
-  "USING bm25 (",
+  "USING paradedb (",
   "  id, title, text, score, time,",
   "  (by::pdb.literal),",
   "  (type::pdb.literal),",

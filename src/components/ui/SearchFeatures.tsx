@@ -15,7 +15,7 @@ import {
 } from "@remixicon/react";
 
 const indexingCode = `CREATE INDEX ON posts
-USING bm25 (
+USING paradedb (
     id,
     title,
     (body::pdb.unicode_words('stemmer=english')),

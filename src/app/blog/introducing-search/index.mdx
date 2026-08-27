@@ -61,10 +61,10 @@ is like the table of contents of a book — without it, you might have to examin
 a specific chapter.
 
 Rather than creating this inverted index externally, `pg_search` stores the
-index inside Postgres as a new, Postgres-native index type, which we call the BM25 index. This is made possible
+index inside Postgres as a new, Postgres-native index type, which we now call the ParadeDB index. This is made possible
 through Postgres' [index access method](https://www.postgresql.org/docs/current/indexam.html) API.
 
-When a BM25 index is created, Postgres automatically updates it as new data arrives
+When a ParadeDB index is created, Postgres automatically updates it as new data arrives
 or is deleted in the underlying SQL table. In this way, `pg_search` enables real-time search without any
 additional reindexing logic.
 
@@ -73,7 +73,7 @@ additional reindexing logic.
 Following index creation, the next step was to expose an intuitive SQL interface for users to write search queries.
 This was accomplished through the Postgres [operator API](https://www.postgresql.org/docs/current/sql-createoperator.html),
 which enables the creation of custom Postgres operators. We chose the `@@@` operator to signify the beginning
-of a query to the BM25 index in homage to the `@@` operator used by Postgres' native full text search.
+of a query to the ParadeDB index in homage to the `@@` operator used by Postgres' native full text search.
 
 The end result is the ability to search any table with a single SQL query.
 
