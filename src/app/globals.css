@@ -732,6 +732,15 @@ a {
   );
 }
 
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 .bg-diagonal-hatch-white {
   background-image: repeating-linear-gradient(
     -45deg,

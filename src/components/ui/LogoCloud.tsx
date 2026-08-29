@@ -75,16 +75,19 @@ export default function LogoCloud({
   variant = "indigo",
   className,
 }: {
-  variant?: "indigo" | "white";
+  variant?: "indigo" | "white" | "light";
   className?: string;
 }) {
   const isIndigo = variant === "indigo";
   const isWhite = variant === "white";
+  const isLight = variant === "light";
 
   const logoClass = cx(
-    isIndigo || isWhite
-      ? "brightness-0 invert opacity-70"
-      : "brightness-0 dark:brightness-0 dark:invert opacity-80",
+    isLight
+      ? "brightness-0 dark:invert opacity-80"
+      : isIndigo || isWhite
+        ? "brightness-0 invert opacity-70"
+        : "brightness-0 dark:brightness-0 dark:invert opacity-80",
   );
 
   return (
@@ -93,9 +96,10 @@ export default function LogoCloud({
         "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-between w-full py-10 md:py-12 px-6 sm:px-8 md:px-16 gap-y-10 sm:gap-y-8 gap-x-4",
         isIndigo
           ? "bg-[#4f46e5]"
-          : isWhite
+          : isWhite || isLight
             ? "bg-transparent"
             : "bg-white dark:bg-slate-950",
+        isLight && "[&_img]:scale-[0.9]",
         className,
       )}
     >

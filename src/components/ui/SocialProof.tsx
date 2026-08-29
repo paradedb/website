@@ -1,7 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { RiArrowRightLine } from "@remixicon/react";
-import { Badge } from "./Badge";
+import { SectionHeader } from "./SectionHeader";
 
 const CaseStudyCard = ({
   logo,
@@ -52,73 +52,63 @@ export default function SocialProof() {
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        {/* Additional Vertical Lines */}
-        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-
-        <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-          {/* Background color layer */}
-          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100/60 dark:bg-slate-900/40 z-0" />
-
-          {/* Inner Vertical Borders for boxed look */}
-          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-
+        <div className="px-4 md:px-12 w-full flex flex-col relative">
           {/* Section 1: Case Studies */}
-          <div className="relative z-10 flex flex-col items-center justify-center sm:py-16 py-10 text-center bg-transparent">
+          <div className="relative flex flex-col items-center justify-center sm:py-16 py-10 text-center bg-transparent">
             {/* Fades for Case Studies Section */}
             <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
 
-            <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 mt-px ml-px">Case Studies</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                <span className="text-highlight-blink">Trusted</span> by
-                enterprises.
-              </h2>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
-                The most innovative companies are simplifying their stack with
-                ParadeDB.
-              </p>
+            <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 relative">
+              <SectionHeader
+                eyebrow="Case Studies"
+                title="Trusted by enterprises."
+                description="The most innovative companies are simplifying their stack with ParadeDB."
+                className="mb-12"
+              />
             </div>
 
             <div className="relative w-full z-20">
-              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900">
-                <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
-                  <CaseStudyCard
-                    href="/customers/case-study-bilt"
-                    logo={
-                      <Image
-                        src="/brand/customers/bilt-rewards.svg"
-                        alt="Bilt Rewards"
-                        width={179}
-                        height={30}
-                        className="h-4 w-auto opacity-80 dark:brightness-0 dark:invert"
-                      />
-                    }
-                    quote="“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”"
-                    initials="JK"
-                    author="John King"
-                    role="Backend Engineer, Bilt"
-                  />
-                </div>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+                <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+                <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900">
+                  <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
+                    <CaseStudyCard
+                      href="/customers/case-study-bilt"
+                      logo={
+                        <Image
+                          src="/brand/customers/bilt-rewards.svg"
+                          alt="Bilt Rewards"
+                          width={179}
+                          height={30}
+                          className="h-4 w-auto opacity-80 dark:brightness-0 dark:invert"
+                        />
+                      }
+                      quote="“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”"
+                      initials="JK"
+                      author="John King"
+                      role="Backend Engineer, Bilt"
+                    />
+                  </div>
 
-                <div>
-                  <CaseStudyCard
-                    href="/customers/case-study-alibaba"
-                    logo={
-                      <Image
-                        src="/brand/customers/alibaba.svg"
-                        alt="Alibaba"
-                        width={127}
-                        height={30}
-                        className="h-8 w-auto opacity-80 dark:brightness-0 dark:invert"
-                      />
-                    }
-                    quote="“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”"
-                    initials="PB"
-                    author="Pang Bo"
-                    role="Product Manager, Alibaba"
-                  />
+                  <div>
+                    <CaseStudyCard
+                      href="/customers/case-study-alibaba"
+                      logo={
+                        <Image
+                          src="/brand/customers/alibaba.svg"
+                          alt="Alibaba"
+                          width={127}
+                          height={30}
+                          className="h-8 w-auto opacity-80 dark:brightness-0 dark:invert"
+                        />
+                      }
+                      quote="“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”"
+                      initials="PB"
+                      author="Pang Bo"
+                      role="Product Manager, Alibaba"
+                    />
+                  </div>
                 </div>
               </div>
 

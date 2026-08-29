@@ -3,8 +3,15 @@
 import { RiCheckLine, RiFileCopyLine } from "@remixicon/react";
 import copy from "copy-to-clipboard";
 import { useState } from "react";
+import { cx } from "@/lib/utils";
 
-export default function CopyToClipboard({ code }: { code: string }) {
+export default function CopyToClipboard({
+  code,
+  className,
+}: {
+  code: string;
+  className?: string;
+}) {
   const [copied, setCopied] = useState(false);
   const copyToClipboard = () => {
     copy(code);
@@ -16,7 +23,10 @@ export default function CopyToClipboard({ code }: { code: string }) {
     <button
       onClick={copyToClipboard}
       aria-label={copied ? "Copied" : "Copy code"}
-      className="select-none cursor-pointer rounded-md border border-white/20 bg-transparent p-1.5 transition-colors hover:text-white/90 shadow-sm"
+      className={cx(
+        "select-none cursor-pointer rounded-md border border-white/20 bg-transparent p-1.5 transition-colors hover:text-white/90 shadow-sm",
+        className,
+      )}
     >
       {!copied ? (
         <RiFileCopyLine aria-hidden="true" className="size-4 text-white" />

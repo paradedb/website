@@ -294,7 +294,7 @@ export function Navigation() {
                     "aspect-square p-2 transition-colors border-0 hover:bg-transparent",
                     isHomePage && !open
                       ? "text-white hover:text-white/80"
-                      : "text-slate-900 dark:text-slate-100 hover:text-indigo-600 dark:hover:text-indigo-400",
+                      : "text-slate-900 dark:text-slate-100 hover:text-slate-600 dark:hover:text-slate-300",
                   )}
                 >
                   {open ? (

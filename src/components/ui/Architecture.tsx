@@ -1,39 +1,34 @@
 "use client";
 
-import { useState, type ReactNode } from "react";
+import { type ReactNode } from "react";
 import {
   RiBubbleChartLine,
   RiDatabase2Line,
-  RiSparklingLine,
   RiFlashlightLine,
   RiLayoutVerticalLine,
-  RiRefreshLine,
   RiSearchLine,
-  RiStackLine,
 } from "@remixicon/react";
-import { Badge } from "./Badge";
+import { SectionHeader } from "./SectionHeader";
 import PixelShadow from "./PixelShadow";
 import { cx } from "@/lib/utils";
 
 const SHADOW_INDIGO = "#4f46e5";
 const SHADOW_SLATE = "#64748b";
 
-type Tab = "search" | "oltp";
-
-const TABS: { id: Tab; number: string; label: string }[] = [
-  { id: "oltp", number: "01", label: "More than an OLTP database" },
-  { id: "search", number: "02", label: "More than a search engine" },
+const CARDS: { number: string; title: string; body: ReactNode }[] = [
+  {
+    number: "01",
+    title: "More than OLTP",
+    body: "OLTP databases are built for reliable transactions, but not for search. The ParadeDB index brings search-optimized data structures and query execution paths to Postgres.",
+  },
+  {
+    number: "02",
+    title: "More than search",
+    body: "Search engines operate on a denormalized copy of your data. ParadeDB keeps your application data in one place without any schema changes.",
+  },
 ];
 
-const SUBHEAD: Record<Tab, ReactNode> = {
-  search:
-    "Search engines are built for relevant search, but they operate on a denormalized copy of your data. ParadeDB is both a search index and a Postgres database, keeping the data your application needs in one place.",
-  oltp: "OLTP databases are built for reliable transactions, but not for search or analytics. ParadeDB adds full-text, vector, and aggregates, all in one custom Postgres index.",
-};
-
 export default function Architecture() {
-  const [activeTab, setActiveTab] = useState<Tab>("oltp");
-
   const tableBox = (
     <Box emphasis="slate">
       <div className="flex flex-col items-center gap-2.5">
@@ -97,33 +92,6 @@ export default function Architecture() {
     </Box>
   );
 
-  const benefits: { icon: ReactNode; title: string; body: string }[] =
-    activeTab === "search"
-      ? [
-          {
-            icon: <RiStackLine className="size-5 shrink-0" />,
-            title: "One database to run",
-            body: "No separate search system to deploy or keep in sync.",
-          },
-          {
-            icon: <RiRefreshLine className="size-5 shrink-0" />,
-            title: "Always in sync",
-            body: "Search results reflect every write the moment it lands.",
-          },
-        ]
-      : [
-          {
-            icon: <RiStackLine className="size-5 shrink-0" />,
-            title: "One search index",
-            body: "A single index covering all parts of search unlocks pre-filtering and query optimization.",
-          },
-          {
-            icon: <RiSparklingLine className="size-5 shrink-0" />,
-            title: "A full search engine in your database",
-            body: "BM25 relevance, vector search, faceting, and hybrid ranking, all in standard SQL.",
-          },
-        ];
-
   const arrowColor = "text-slate-400 dark:text-slate-600";
 
   const syncArrowHorizontal = (
@@ -180,148 +148,84 @@ export default function Architecture() {
         {/* Top hatched border */}
         <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
 
-        <section className="relative py-10 md:py-14 border-r border-l border-slate-200 dark:border-slate-900 bg-slate-100/60 dark:bg-slate-900/40">
-          {/* Inner grid lines */}
-          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-
+        <section className="relative z-40 py-10 md:py-14 border-r border-l border-slate-200 dark:border-slate-900">
           {/* Header */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
-            <Badge className="mb-6">Architecture</Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl max-w-4xl">
-              <span className="text-highlight-blink">One database</span>, two
-              workloads.
-            </h2>
+          <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 mb-10 md:mb-12">
+            <SectionHeader
+              eyebrow="Benefits"
+              title="Zero ETL means zero headache."
+              description="The ParadeDB index always stays in sync with your application data."
+            />
           </div>
 
-          {/* Tab control: aligned to the diagram width, styled like the Workloads tabs */}
-          <div className="px-4 mb-10 md:mb-12">
-            <div className="mx-auto w-full max-w-[1128px] overflow-x-auto pb-px no-scrollbar border-t-1 border-b-1 border-slate-200 dark:border-slate-900">
-              <div
-                role="tablist"
-                aria-label="Architecture comparison"
-                className="flex w-full min-w-max items-end"
-              >
-                {TABS.map((tab) => {
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <button
-                      key={tab.id}
-                      role="tab"
-                      aria-selected={isActive}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={cx(
-                        "group relative flex-shrink-0 sm:flex-1 flex items-center justify-center gap-3 px-6 py-3 text-sm font-medium transition-all outline-none border-b-2 whitespace-nowrap",
-                        isActive
-                          ? "border-indigo-600 text-indigo-900 dark:text-white"
-                          : "border-transparent text-slate-500 hover:text-slate-700 dark:hover:text-slate-300",
-                      )}
-                    >
-                      <span
-                        className={cx(
-                          "text-xs font-mono font-semibold",
-                          isActive
-                            ? "text-indigo-600 dark:text-indigo-400 opacity-100"
-                            : "opacity-50",
-                        )}
-                      >
-                        {tab.number}
-                      </span>
-                      <span className="text-sm sm:text-base font-semibold tracking-tight">
-                        {tab.label}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
+          <div className="relative">
+            {/* Inner grid lines, below the header */}
+            <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+            <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
 
-          {/* Subhead */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
-            <div className="relative grid w-full max-w-4xl items-center">
-              {TABS.map((tab) => {
-                const isActive = activeTab === tab.id;
-                return (
-                  <p
-                    key={tab.id}
-                    aria-hidden={!isActive}
-                    className={cx(
-                      "col-start-1 row-start-1 text-base sm:text-lg text-gray-800 dark:text-slate-300 leading-relaxed transition-opacity duration-300",
-                      isActive
-                        ? "opacity-100"
-                        : "opacity-0 pointer-events-none",
-                    )}
-                  >
-                    {SUBHEAD[tab.id]}
-                  </p>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Architecture diagram */}
-          <div className="px-4">
-            <div className="w-full max-w-[1128px] mx-auto">
-              <div
-                role="img"
-                aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index with full-text, vector, and aggregate workloads."
-                className="font-mono"
-              >
-                {/* PostgreSQL frame: label inside, border around the whole diagram */}
-                <div className="relative border xl:border-x-0 border-slate-200 dark:border-slate-900 p-4 sm:p-5 md:p-6">
-                  {/* Inner frame: PostgreSQL label straddling its top border */}
-                  <div className="relative border border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 px-5 pt-12 pb-10 sm:px-8 sm:pt-14 sm:pb-12 md:px-10 md:pt-[4.5rem] md:pb-16">
-                    <div className="absolute inset-x-0 top-0 -translate-y-1/2 flex items-center gap-3 font-mono text-sm font-bold text-slate-900 dark:text-white">
-                      <span
-                        aria-hidden
-                        className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
-                      />
-                      PostgreSQL
-                      <span
-                        aria-hidden
-                        className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
-                      />
-                    </div>
-                    <div className="max-w-[900px] mx-auto">
-                      {/* Mobile/tablet layout (< xl): vertical stack */}
-                      <div className="xl:hidden flex flex-col items-stretch gap-3">
-                        {tableBox}
-                        <div className="flex justify-center mt-3">
-                          {syncArrowVertical}
+            {/* Architecture diagram */}
+            <div className="px-4">
+              <div className="w-full max-w-[1128px] mx-auto">
+                <div
+                  role="img"
+                  aria-label="ParadeDB architecture: a table heap in Postgres and a ParadeDB index with full-text, vector, and aggregate workloads."
+                  className="font-mono"
+                >
+                  {/* PostgreSQL frame: label inside, border around the whole diagram */}
+                  <div className="relative border xl:border-x-0 border-slate-200 dark:border-slate-900 p-4 sm:p-5 md:p-6">
+                    {/* Inner frame: PostgreSQL label straddling its top border */}
+                    <div className="relative border border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 px-5 pt-12 pb-10 sm:px-8 sm:pt-14 sm:pb-12 md:px-10 md:pt-[4.5rem] md:pb-16">
+                      <div className="absolute inset-x-0 top-0 -translate-y-1/2 flex items-center gap-3 font-mono text-sm font-bold text-slate-900 dark:text-white">
+                        <span
+                          aria-hidden
+                          className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
+                        />
+                        PostgreSQL
+                        <span
+                          aria-hidden
+                          className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
+                        />
+                      </div>
+                      <div className="max-w-[900px] mx-auto">
+                        {/* Mobile/tablet layout (< xl): vertical stack */}
+                        <div className="xl:hidden flex flex-col items-stretch gap-3">
+                          {tableBox}
+                          <div className="flex justify-center mt-3">
+                            {syncArrowVertical}
+                          </div>
+                          {indexBox}
                         </div>
-                        {indexBox}
-                      </div>
 
-                      {/* Desktop layout (xl+): horizontal grid */}
-                      <div className="hidden xl:grid gap-x-6 items-center grid-cols-[1fr_auto_1fr]">
-                        {tableBox}
-                        {syncArrowHorizontal}
-                        {indexBox}
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Benefits band: attached to the white diagram box, sharing its border */}
-                  <div className="border border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 grid grid-cols-1 divide-y divide-slate-200 dark:divide-slate-900 sm:grid-cols-2 sm:divide-y-0 sm:divide-x">
-                    {benefits.map((benefit) => (
-                      <div
-                        key={benefit.title}
-                        className="flex items-start gap-3 px-5 py-4 sm:px-6 sm:py-5"
-                      >
-                        <span className="mt-0.5 text-indigo-600 dark:text-indigo-400">
-                          {benefit.icon}
-                        </span>
-                        <div>
-                          <div className="font-sans text-base font-semibold text-indigo-950 dark:text-white tracking-tight">
-                            {benefit.title}
-                          </div>
-                          <div className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400 min-h-[2lh]">
-                            {benefit.body}
-                          </div>
+                        {/* Desktop layout (xl+): horizontal grid */}
+                        <div className="hidden xl:grid gap-x-6 items-center grid-cols-[1fr_auto_1fr]">
+                          {tableBox}
+                          {syncArrowHorizontal}
+                          {indexBox}
                         </div>
                       </div>
-                    ))}
+                    </div>
+
+                    {/* Content cards: attached to the white diagram box, sharing its border */}
+                    <div className="border border-t-0 border-slate-200 dark:border-slate-900 bg-slate-200 dark:bg-slate-900 grid grid-cols-1 sm:grid-cols-2 gap-px">
+                      {CARDS.map((card) => (
+                        <div
+                          key={card.title}
+                          className="px-5 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
+                        >
+                          <div className="flex items-center gap-3 mb-3">
+                            <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                              {card.number}
+                            </span>
+                            <h3 className="font-sans font-semibold text-base tracking-tight text-indigo-950 dark:text-white">
+                              {card.title}
+                            </h3>
+                          </div>
+                          <p className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                            {card.body}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>
