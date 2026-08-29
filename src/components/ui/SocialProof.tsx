@@ -62,7 +62,7 @@ export default function SocialProof() {
               <SectionHeader
                 eyebrow="Case Studies"
                 title="Trusted by enterprises."
-                description="The most innovative companies are simplifying their stack with ParadeDB."
+                description="The most innovative companies build better search experiences on ParadeDB."
                 className="mb-12"
               />
             </div>

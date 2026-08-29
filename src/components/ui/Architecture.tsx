@@ -154,7 +154,7 @@ export default function Architecture() {
             <SectionHeader
               eyebrow="Benefits"
               title="Zero ETL means zero headache."
-              description="The ParadeDB index always stays in sync with your application data."
+              description="Ship features, not infra complexity. ParadeDB is a single index that always stays in sync with your application data."
             />
           </div>
 
