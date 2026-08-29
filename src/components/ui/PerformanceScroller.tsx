@@ -112,7 +112,7 @@ const BENCHMARKS: {
   },
   {
     key: "aggregates",
-    label: "Aggregates",
+    label: "Facets",
     paradedbMs: 88.4,
     postgresMs: 3000,
     speedup: 34,
@@ -321,7 +321,7 @@ export default function PerformanceScroller({
                   aria-hidden="true"
                   className="hidden sm:block absolute -left-16 lg:-left-24 translate-x-[calc(-50%+0.5px)] top-[0.15em] h-[0.9em] w-[3px] bg-indigo-600 z-40"
                 />
-                  Ordinary SQL at extraordinary speeds.
+                Ordinary SQL at extraordinary speeds.
               </h2>
             </div>
 

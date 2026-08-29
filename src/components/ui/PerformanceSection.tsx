@@ -68,27 +68,27 @@ export default function PerformanceSection() {
       queries === null
         ? null
         : {
-        paradedb: (
-          <Code
-            code={queries.paradedb}
-            lang="sql"
-            themeLight={paradedbSqlLight}
-            themeDark={paradedbSqlDark}
-            className="[&_pre]:!bg-transparent [&>div]:text-xs sm:[&>div]:text-sm [&_pre]:!p-0 [&_pre]:overflow-x-auto"
-            copy={false}
-          />
-        ),
-        postgres: (
-          <Code
-            code={queries.postgres}
-            lang="sql"
-            themeLight={paradedbSqlLight}
-            themeDark={paradedbSqlDark}
-            className="[&_pre]:!bg-transparent [&>div]:text-xs sm:[&>div]:text-sm [&_pre]:!p-0 [&_pre]:overflow-x-auto"
-            copy={false}
-          />
-        ),
-      },
+            paradedb: (
+              <Code
+                code={queries.paradedb}
+                lang="sql"
+                themeLight={paradedbSqlLight}
+                themeDark={paradedbSqlDark}
+                className="[&_pre]:!bg-transparent [&>div]:text-xs sm:[&>div]:text-sm [&_pre]:!p-0 [&_pre]:overflow-x-auto"
+                copy={false}
+              />
+            ),
+            postgres: (
+              <Code
+                code={queries.postgres}
+                lang="sql"
+                themeLight={paradedbSqlLight}
+                themeDark={paradedbSqlDark}
+                className="[&_pre]:!bg-transparent [&>div]:text-xs sm:[&>div]:text-sm [&_pre]:!p-0 [&_pre]:overflow-x-auto"
+                copy={false}
+              />
+            ),
+          },
     ]),
   );
 

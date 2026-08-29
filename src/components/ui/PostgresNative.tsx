@@ -23,7 +23,8 @@ const KEEPS = [
     title: "Shipped as an extension",
     body: (
       <>
-        Pure Postgres extension, not a fork. Drops into any self-managed Postgres. Or{" "}
+        Pure Postgres extension, not a fork. Drops into any self-managed
+        Postgres. Or{" "}
         <Link
           href={social.CALENDLY}
           target="_blank"
@@ -65,7 +66,8 @@ const KEEPS = [
     title: "Replicates like Postgres",
     body: (
       <>
-        High availability from physical replicas, horizontal scaling from read replicas. An{" "}
+        High availability from physical replicas, horizontal scaling from read
+        replicas. An{" "}
         <Link
           href="#pricing"
           className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300"
@@ -191,11 +193,7 @@ export default function PostgresNative() {
             <SectionHeader
               cursor="gutter"
               eyebrow="Architecture"
-              title={
-                <>
-                  No bespoke search engine. Just use Postgres.
-                </>
-              }
+              title={<>No bespoke search engine. Just use Postgres.</>}
               description={
                 <>
                   The world's{" "}

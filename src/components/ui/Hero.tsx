@@ -53,7 +53,9 @@ export default async function Hero() {
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-start w-full max-w-4xl opacity-0 animate-hero-content">
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-indigo-100 mt-6 mb-8">
-              One Postgres platform for your hardest search queries. Text and vector search, filters, facets, and joins where your OLTP database falls short.
+                One Postgres platform for your hardest search queries. Text and
+                vector search, filters, facets, and joins where your OLTP
+                database falls short.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-start mb-6 sm:mb-8 sm:px-0">
                 <Button
@@ -86,7 +88,6 @@ export default async function Hero() {
                 <CopyableCommand code={installCommand} />
               </div>
             </div>
-
           </div>
         </div>
 

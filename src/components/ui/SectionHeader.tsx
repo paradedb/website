@@ -21,7 +21,10 @@ export function SectionHeader({
 }) {
   return (
     <div
-      className={cx("flex flex-col items-start text-left relative z-40", className)}
+      className={cx(
+        "flex flex-col items-start text-left relative z-40",
+        className,
+      )}
     >
       <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
         {eyebrow}
