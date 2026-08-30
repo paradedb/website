@@ -8,15 +8,15 @@ import {
   RiFilter3Line,
   RiFilterLine,
   RiGitBranchLine,
+  RiGithubFill,
   RiGitMergeLine,
-  RiMapPinLine,
   RiCpuLine,
   RiLayoutVerticalLine,
   RiPieChartLine,
   RiRefreshLine,
   RiSearchEyeLine,
   RiStackLine,
-  RiTranslate2,
+  RiFlashlightLine,
 } from "@remixicon/react";
 import { cx } from "@/lib/utils";
 
@@ -45,6 +45,11 @@ const BENCHMARKS: {
     speedup: 538,
     bullets: [
       {
+        lead: "Powered by Tantivy,",
+        text: "the Rust port of Lucene, for state-of-the-art full-text search performance.",
+        icon: <RiFlashlightLine className="size-5" />,
+      },
+      {
         lead: "Tunable BM25 scoring,",
         text: "the same lexical ranking used by dedicated search engines.",
         icon: <RiSearchEyeLine className="size-5" />,
@@ -53,11 +58,6 @@ const BENCHMARKS: {
         lead: "Elastic-style search:",
         text: "typo tolerance, highlighting, phrase, fuzzy, proximity, and regex queries.",
         icon: <RiBracesLine className="size-5" />,
-      },
-      {
-        lead: "Advanced text analysis",
-        text: "with support for 20+ languages and 12+ tokenizers.",
-        icon: <RiTranslate2 className="size-5" />,
       },
     ],
   },
@@ -94,6 +94,11 @@ const BENCHMARKS: {
     speedup: 38,
     bullets: [
       {
+        lead: "Indexed alongside search:",
+        text: "filter fields live in the same index as your search data, so filters are pushed down into the index itself.",
+        icon: <RiFilterLine className="size-5" />,
+      },
+      {
         lead: "Filter any query,",
         text: "text, vector, aggregate, or join. Filtering is native to the index, so performance doesn't degrade.",
         icon: <RiFilter3Line className="size-5" />,
@@ -102,11 +107,6 @@ const BENCHMARKS: {
         lead: "Filters compose:",
         text: "booleans, ranges, and nested predicates stack without a performance cliff.",
         icon: <RiStackLine className="size-5" />,
-      },
-      {
-        lead: "Specialized filters",
-        text: "like ltree and PostGIS intersect efficiently in the same query plan.",
-        icon: <RiMapPinLine className="size-5" />,
       },
     ],
   },
@@ -323,6 +323,19 @@ export default function PerformanceScroller({
                 />
                 Ordinary SQL at extraordinary speeds.
               </h2>
+              <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-3xl">
+                Measured against the 28M row Hacker News dataset. Reproducible with{" "}
+                <a
+                  href="https://github.com/paradedb/benchmarker"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 align-bottom text-slate-600 dark:text-slate-300 font-medium decoration-slate-300 dark:decoration-slate-600 hover:text-slate-900 dark:hover:text-white"
+                >
+                  <RiGithubFill aria-hidden="true" className="size-5" />
+                  paradedb/benchmarker
+                </a>
+                .
+              </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-10 lg:gap-20">

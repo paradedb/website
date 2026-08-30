@@ -33,10 +33,17 @@ export default async function Hero() {
             <div className="flex flex-col items-start w-full max-w-4xl relative z-40">
               <Link
                 href={siteConfig.baseLinks.cloud}
-                className="group inline-flex items-center gap-2 rounded-none border border-white/30 bg-white/10 px-3 py-1 mb-6 text-xs sm:text-sm font-medium text-indigo-100 transition-colors hover:border-white/60 hover:text-white opacity-0 animate-hero-title"
+                className="group inline-flex items-center mb-6 font-mono text-[11px] sm:text-xs uppercase tracking-[0.18em] text-indigo-200 transition-colors hover:text-white opacity-0 animate-hero-title"
               >
-                <span className="size-1.5 rounded-full bg-white" />
+                <span className="relative mr-3.5 flex size-2 items-center justify-center">
+                  <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75 motion-reduce:hidden" />
+                  <span className="relative size-2 rounded-full bg-white" />
+                </span>
                 ParadeDB Cloud is coming
+                <ArrowAnimated
+                  className="stroke-indigo-200 group-hover:stroke-white scale-75 group-hover:scale-100 origin-left transition-transform ml-2"
+                  aria-hidden="true"
+                />
               </Link>
               <h1
                 id="hero-title"

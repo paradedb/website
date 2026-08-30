@@ -20,7 +20,7 @@ const CaseStudyCard = ({
 }) => (
   <Link
     href={href}
-    className="group relative flex flex-col items-start p-8 md:p-12 text-left overflow-hidden h-full transition-colors duration-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/30"
+    className="group relative flex flex-col items-start p-8 md:p-12 text-left overflow-hidden h-full transition-colors duration-200 hover:bg-slate-50 dark:hover:bg-slate-900/60"
   >
     {/* Content */}
     <div className="w-full flex flex-col items-start">

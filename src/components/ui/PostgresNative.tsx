@@ -193,7 +193,13 @@ export default function PostgresNative() {
             <SectionHeader
               cursor="gutter"
               eyebrow="Architecture"
-              title={<>No bespoke search engine. Just use Postgres.</>}
+              title={
+                <>
+                  No bespoke search engine or vector database.
+                  <br />
+                  Just Postgres.
+                </>
+              }
               description={
                 <>
                   The world's{" "}
