@@ -70,7 +70,7 @@ export default async function Hero() {
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
                 >
                   <Link href={documentation.GETTING_STARTED} target="_blank">
-                    Get Started
+                    Read Docs
                   </Link>
                 </Button>
                 <Button
