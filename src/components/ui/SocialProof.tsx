@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -11,32 +10,7 @@ import {
 } from "@remixicon/react";
 import { cx } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
-
-const Dithering = dynamic(
-  () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
-  { ssr: false },
-);
-
-function CardWave({ color }: { color: string }) {
-  return (
-    <div
-      aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-16 md:h-20 [mask-image:linear-gradient(to_top,black,transparent)]"
-    >
-      <Dithering
-        width="100%"
-        height="100%"
-        colorBack="#00000000"
-        colorFront={color}
-        shape="wave"
-        type="8x8"
-        size={5}
-        speed={0.2}
-        scale={1.2}
-      />
-    </div>
-  );
-}
+import { CardWave } from "./CardWave";
 
 const STUDIES = [
   {
@@ -113,12 +87,7 @@ const STUDIES = [
 
 export default function SocialProof() {
   const [active, setActive] = useState(0);
-  const [mounted, setMounted] = useState(false);
   const study = STUDIES[active];
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <div className="w-full relative bg-white dark:bg-slate-950">
@@ -186,9 +155,7 @@ export default function SocialProof() {
                     )}
                   >
                     <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 pb-20 md:pb-28 text-white">
-                      {mounted && (
-                        <CardWave color={study.waveColor ?? "#ffffff2e"} />
-                      )}
+                      <CardWave color={study.waveColor ?? "#ffffff2e"} />
                       <p className="font-mono text-xs uppercase tracking-widest text-white/60 mb-4">
                         Impact
                       </p>
@@ -219,9 +186,7 @@ export default function SocialProof() {
                     </aside>
 
                     <div className="relative flex flex-col items-start p-8 md:p-12 pb-20 md:pb-28">
-                      {mounted && (
-                        <CardWave color={study.waveColor ?? "#ffffff2e"} />
-                      )}
+                      <CardWave color={study.waveColor ?? "#ffffff2e"} />
                       <div className="mb-8 flex h-8 items-center">
                         <Image
                           src={study.logo.src}

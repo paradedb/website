@@ -1,5 +1,7 @@
 import { Badge } from "./Badge";
 import { SectionHeader } from "./SectionHeader";
+import { CardWave } from "./CardWave";
+import { cx } from "@/lib/utils";
 import { Button } from "../Button";
 import Link from "next/link";
 import { RiCheckLine } from "@remixicon/react";
@@ -13,6 +15,7 @@ const PricingCard = ({
   buttonLink,
   buttonVariant = "primary",
   badgeText,
+  featured = false,
 }: {
   planName: string;
   description: string;
@@ -21,30 +24,67 @@ const PricingCard = ({
   buttonLink: string;
   buttonVariant?: "primary" | "secondary" | "light";
   badgeText: string;
+  featured?: boolean;
 }) => (
   <div className="relative h-full">
-    <div className="relative flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-slate-900 text-left items-start">
-      <div className="mb-6 sm:mb-8 w-full">
+    <div
+      className={cx(
+        "relative flex flex-col p-6 sm:p-8 md:p-12 h-full text-left items-start",
+        featured ? "bg-indigo-600 text-white" : "bg-slate-50 dark:bg-slate-900",
+      )}
+    >
+      {featured && <CardWave color="#ffffff2e" />}
+      <div className="relative mb-6 sm:mb-8 w-full">
         <div className="flex justify-start mb-2">
-          <Badge className="py-0.5 px-2 text-[10px]">{badgeText}</Badge>
+          <Badge
+            className={cx(
+              "py-0.5 px-2 text-[10px]",
+              featured &&
+                "bg-white/15 border-white/40 text-white dark:bg-white/15 dark:border-white/40 dark:text-white",
+            )}
+          >
+            {badgeText}
+          </Badge>
         </div>
         <div className="flex items-baseline justify-start gap-1 mb-4">
-          <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">
+          <span
+            className={cx(
+              "text-2xl sm:text-3xl font-bold",
+              featured ? "text-white" : "text-indigo-950 dark:text-white",
+            )}
+          >
             {planName}
           </span>
         </div>
-        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        <p
+          className={cx(
+            "text-sm leading-relaxed",
+            featured ? "text-indigo-100" : "text-slate-600 dark:text-slate-400",
+          )}
+        >
           {description}
         </p>
       </div>
 
-      <ul className="space-y-4 mb-10 w-full text-left">
+      <ul className="relative space-y-4 mb-10 w-full text-left">
         {features.map((feature, i) => (
           <li
             key={i}
-            className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
+            className={cx(
+              "flex items-start gap-3 text-sm",
+              featured
+                ? "text-indigo-50"
+                : "text-slate-700 dark:text-slate-300",
+            )}
           >
-            <RiCheckLine className="size-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <RiCheckLine
+              className={cx(
+                "size-5 shrink-0",
+                featured
+                  ? "text-indigo-200"
+                  : "text-indigo-600 dark:text-indigo-400",
+              )}
+            />
             <span className="leading-tight">{feature}</span>
           </li>
         ))}
@@ -52,7 +92,11 @@ const PricingCard = ({
 
       <Button
         asChild
-        className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
+        className={cx(
+          "w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto",
+          featured &&
+            "bg-white text-indigo-600 hover:bg-indigo-50 border-0 dark:bg-white dark:text-indigo-600 dark:hover:bg-indigo-50",
+        )}
         variant={buttonVariant as any}
       >
         <Link
@@ -105,7 +149,20 @@ export default function Pricing() {
                   ]}
                   buttonText="Get Started"
                   buttonLink={documentation.GETTING_STARTED}
+                />
+                <PricingCard
+                  planName="Cloud"
+                  badgeText="Coming Soon"
+                  description="Use ParadeDB without managing any infrastructure."
+                  features={[
+                    "Everything in Enterprise",
+                    "Fully managed",
+                    "One-click deployments",
+                  ]}
+                  buttonText="Early Access"
+                  buttonLink="/cloud"
                   buttonVariant="light"
+                  featured
                 />
                 <PricingCard
                   planName="Enterprise"
@@ -119,20 +176,6 @@ export default function Pricing() {
                   ]}
                   buttonText="Custom Pricing"
                   buttonLink={social.CALENDLY}
-                />
-                <PricingCard
-                  planName="Cloud"
-                  badgeText="Fully Managed"
-                  description="Use ParadeDB without managing any infrastructure."
-                  features={[
-                    "Everything in Enterprise",
-                    "Fully managed",
-                    "One-click deployments",
-                    "Coming soon",
-                  ]}
-                  buttonText="Early Access"
-                  buttonLink="/cloud"
-                  buttonVariant="light"
                 />
               </div>
             </div>
