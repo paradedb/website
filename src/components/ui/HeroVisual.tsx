@@ -43,7 +43,7 @@ export function HeroVisual() {
               width="100%"
               height="100%"
               colorBack="#4f46e500"
-              colorFront="#5e56ec"
+              colorFront="#6366f1"
               shape="wave"
               type="8x8"
               size={8}

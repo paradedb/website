@@ -26,9 +26,7 @@ FROM cohere_wiki
 WHERE text ||| 'battle'
 ORDER BY emb <=> '[0.12, -0.31, ...]'::vector(1024)
 LIMIT 10`,
-    postgres: `SET hnsw.iterative_scan = relaxed_order;
-
-SELECT _id, title
+    postgres: `SELECT _id, title
 FROM cohere_wiki
 WHERE to_tsvector('english', text) @@
       websearch_to_tsquery('english', 'battle')
