@@ -157,7 +157,11 @@ export default function SocialProof() {
                           i !== active && "invisible",
                         )}
                       >
-                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 md:pb-28 text-white">
+                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 border-white/15 p-8 md:p-12 md:pb-28 text-white">
+                          <span
+                            aria-hidden="true"
+                            className="hidden md:block absolute right-0 top-12 bottom-20 w-px bg-white/15"
+                          />
                           {i === active && (
                             <CardWave
                               color={s.waveColor ?? "#ffffff2e"}
