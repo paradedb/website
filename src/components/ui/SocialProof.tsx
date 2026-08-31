@@ -87,7 +87,6 @@ const STUDIES = [
 
 export default function SocialProof() {
   const [active, setActive] = useState(0);
-  const study = STUDIES[active];
 
   return (
     <div className="w-full relative bg-white dark:bg-slate-950">
@@ -147,75 +146,85 @@ export default function SocialProof() {
                     </div>
                   </div>
 
-                  <div
-                    key={study.key}
-                    className={cx(
-                      "animate-[slide-up-fade_500ms_cubic-bezier(0.16,1,0.3,1)] grid md:grid-cols-[360px_1fr] text-left border border-slate-200 dark:border-slate-900",
-                      study.panelBg,
-                    )}
-                  >
-                    <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 pb-20 md:pb-28 text-white">
-                      <CardWave color={study.waveColor ?? "#ffffff2e"} />
-                      <p className="font-mono text-xs uppercase tracking-widest text-white/60 mb-4">
-                        Impact
-                      </p>
-                      <div className="mb-4 flex items-end gap-1.5 text-5xl md:text-6xl font-semibold tracking-tight">
-                        {study.stat}
-                        {study.direction === "up" ? (
-                          <RiArrowUpLine
-                            aria-hidden="true"
-                            className="size-5 md:size-7 shrink-0 mb-1 md:mb-1.5"
-                          />
-                        ) : (
-                          <RiArrowDownLine
-                            aria-hidden="true"
-                            className="size-5 md:size-7 shrink-0 mb-1 md:mb-1.5"
-                          />
+                  <div className="grid">
+                    {STUDIES.map((s, i) => (
+                      <div
+                        key={s.key}
+                        aria-hidden={i !== active}
+                        className={cx(
+                          "[grid-area:1/1] grid md:grid-cols-[360px_1fr] text-left border border-slate-200 dark:border-slate-900",
+                          s.panelBg,
+                          i !== active && "invisible",
                         )}
-                      </div>
-                      <p className="text-sm md:text-base leading-relaxed text-white/90">
-                        {study.impact}
-                      </p>
-                      <Link
-                        href={study.href}
-                        className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white"
                       >
-                        Read the case study
-                        <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
-                      </Link>
-                    </aside>
-
-                    <div className="relative flex flex-col items-start p-8 md:p-12 pb-20 md:pb-28">
-                      <CardWave color={study.waveColor ?? "#ffffff2e"} />
-                      <div className="mb-8 flex h-8 items-center">
-                        <Image
-                          src={study.logo.src}
-                          alt={study.name}
-                          width={study.logo.width}
-                          height={study.logo.height}
-                          className={cx(
-                            study.logo.className,
-                            "brightness-0 invert opacity-90",
+                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 pb-20 md:pb-28 text-white">
+                          {i === active && (
+                            <CardWave color={s.waveColor ?? "#ffffff2e"} />
                           )}
-                        />
-                      </div>
-                      <blockquote className="text-base md:text-lg text-white/90 leading-relaxed mb-8">
-                        {study.quote}
-                      </blockquote>
-                      <div className="mt-auto flex items-center gap-3">
-                        <div className="size-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 font-bold text-xs uppercase tracking-wide border border-white/20">
-                          {study.initials}
-                        </div>
-                        <div>
-                          <div className="font-semibold text-white text-sm">
-                            {study.author}
+                          <p className="font-mono text-xs uppercase tracking-widest text-white/60 mb-4">
+                            Impact
+                          </p>
+                          <div className="mb-4 flex items-end gap-1.5 text-5xl md:text-6xl font-semibold tracking-tight">
+                            {s.stat}
+                            {s.direction === "up" ? (
+                              <RiArrowUpLine
+                                aria-hidden="true"
+                                className="size-5 md:size-7 shrink-0 mb-1 md:mb-1.5"
+                              />
+                            ) : (
+                              <RiArrowDownLine
+                                aria-hidden="true"
+                                className="size-5 md:size-7 shrink-0 mb-1 md:mb-1.5"
+                              />
+                            )}
                           </div>
-                          <div className="text-white/60 text-sm">
-                            {study.role}
+                          <p className="text-sm md:text-base leading-relaxed text-white/90">
+                            {s.impact}
+                          </p>
+                          <Link
+                            href={s.href}
+                            className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white"
+                          >
+                            Read the case study
+                            <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                          </Link>
+                        </aside>
+
+                        <div className="relative flex flex-col items-start p-8 md:p-12 pb-20 md:pb-28">
+                          {i === active && (
+                            <CardWave color={s.waveColor ?? "#ffffff2e"} />
+                          )}
+                          <div className="mb-8 flex h-8 items-center">
+                            <Image
+                              src={s.logo.src}
+                              alt={s.name}
+                              width={s.logo.width}
+                              height={s.logo.height}
+                              className={cx(
+                                s.logo.className,
+                                "brightness-0 invert opacity-90",
+                              )}
+                            />
+                          </div>
+                          <blockquote className="text-base md:text-lg text-white/90 leading-relaxed mb-8">
+                            {s.quote}
+                          </blockquote>
+                          <div className="mt-auto flex items-center gap-3">
+                            <div className="size-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 font-bold text-xs uppercase tracking-wide border border-white/20">
+                              {s.initials}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-white text-sm">
+                                {s.author}
+                              </div>
+                              <div className="text-white/60 text-sm">
+                                {s.role}
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
               </div>
