@@ -130,7 +130,7 @@ export default function Pricing() {
                     "One-click deployments",
                     "Coming soon",
                   ]}
-                  buttonText="Join the Waitlist"
+                  buttonText="Early Access"
                   buttonLink="/cloud"
                   buttonVariant="light"
                 />

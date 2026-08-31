@@ -339,7 +339,7 @@ export default function PerformanceScroller({
               </p>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_200px] gap-10 lg:gap-20">
+            <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 lg:gap-20">
               <div
                 key={tab.key}
                 className="animate-[slide-up-fade_600ms_cubic-bezier(0.16,1,0.3,1)]"
@@ -431,7 +431,7 @@ export default function PerformanceScroller({
               <nav
                 ref={navRef}
                 aria-label="Benchmark categories"
-                className="order-first lg:order-none flex lg:flex-col gap-1 overflow-x-auto no-scrollbar"
+                className="order-first flex lg:flex-col gap-1 overflow-x-auto no-scrollbar"
               >
                 {BENCHMARKS.map((benchmark, index) => (
                   <button

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import dynamic from "next/dynamic";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -10,6 +11,32 @@ import {
 } from "@remixicon/react";
 import { cx } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
+
+const Dithering = dynamic(
+  () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
+  { ssr: false },
+);
+
+function CardWave({ color }: { color: string }) {
+  return (
+    <div
+      aria-hidden="true"
+      className="pointer-events-none absolute inset-x-0 bottom-0 h-16 md:h-20 [mask-image:linear-gradient(to_top,black,transparent)]"
+    >
+      <Dithering
+        width="100%"
+        height="100%"
+        colorBack="#00000000"
+        colorFront={color}
+        shape="wave"
+        type="8x8"
+        size={5}
+        speed={0.2}
+        scale={1.2}
+      />
+    </div>
+  );
+}
 
 const STUDIES = [
   {
@@ -52,11 +79,12 @@ const STUDIES = [
     author: "Pang Bo",
     role: "Product Manager, Alibaba",
     stat: "5x",
-    direction: "up" as const,
+    direction: "down" as const,
     impact:
-      "Faster query latency than Lucene at high concurrency in AnalyticDB benchmarks.",
+      "Lower query latency than Lucene at high concurrency in AnalyticDB benchmarks.",
     panelBg: "bg-[#FF6600]",
     accentBg: "bg-[#FF6600]",
+    waveColor: "#ffffff4d",
   },
   {
     key: "modern-treasury",
@@ -85,7 +113,12 @@ const STUDIES = [
 
 export default function SocialProof() {
   const [active, setActive] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const study = STUDIES[active];
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <div className="w-full relative bg-white dark:bg-slate-950">
@@ -147,14 +180,15 @@ export default function SocialProof() {
 
                   <div
                     key={study.key}
-                    className="animate-[slide-up-fade_500ms_cubic-bezier(0.16,1,0.3,1)] grid md:grid-cols-[360px_1fr] text-left border border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-900/50"
+                    className={cx(
+                      "animate-[slide-up-fade_500ms_cubic-bezier(0.16,1,0.3,1)] grid md:grid-cols-[360px_1fr] text-left border border-slate-200 dark:border-slate-900",
+                      study.panelBg,
+                    )}
                   >
-                    <aside
-                      className={cx(
-                        "flex flex-col justify-center p-8 md:p-12 text-white",
-                        study.panelBg,
+                    <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 pb-20 md:pb-28 text-white">
+                      {mounted && (
+                        <CardWave color={study.waveColor ?? "#ffffff2e"} />
                       )}
-                    >
                       <p className="font-mono text-xs uppercase tracking-widest text-white/60 mb-4">
                         Impact
                       </p>
@@ -184,7 +218,10 @@ export default function SocialProof() {
                       </Link>
                     </aside>
 
-                    <div className="flex flex-col items-start p-8 md:p-12">
+                    <div className="relative flex flex-col items-start p-8 md:p-12 pb-20 md:pb-28">
+                      {mounted && (
+                        <CardWave color={study.waveColor ?? "#ffffff2e"} />
+                      )}
                       <div className="mb-8 flex h-8 items-center">
                         <Image
                           src={study.logo.src}
@@ -193,22 +230,22 @@ export default function SocialProof() {
                           height={study.logo.height}
                           className={cx(
                             study.logo.className,
-                            "opacity-80 dark:brightness-0 dark:invert",
+                            "brightness-0 invert opacity-90",
                           )}
                         />
                       </div>
-                      <blockquote className="text-base md:text-lg text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
+                      <blockquote className="text-base md:text-lg text-white/90 leading-relaxed mb-8">
                         {study.quote}
                       </blockquote>
                       <div className="mt-auto flex items-center gap-3">
-                        <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-wide border border-slate-200 dark:border-slate-700">
+                        <div className="size-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 font-bold text-xs uppercase tracking-wide border border-white/20">
                           {study.initials}
                         </div>
                         <div>
-                          <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
+                          <div className="font-semibold text-white text-sm">
                             {study.author}
                           </div>
-                          <div className="text-slate-500 dark:text-slate-400 text-sm">
+                          <div className="text-white/60 text-sm">
                             {study.role}
                           </div>
                         </div>
