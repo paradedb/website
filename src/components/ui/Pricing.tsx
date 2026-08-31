@@ -30,17 +30,19 @@ const PricingCard = ({
     <div
       className={cx(
         "relative flex flex-col p-6 sm:p-8 md:p-12 h-full text-left items-start",
-        featured ? "bg-indigo-600 text-white" : "bg-slate-50 dark:bg-slate-900",
+        featured
+          ? "bg-slate-50 dark:bg-slate-900 md:bg-indigo-600 md:dark:bg-indigo-600 md:text-white"
+          : "bg-slate-50 dark:bg-slate-900",
       )}
     >
-      {featured && <CardWave color="#ffffff2e" />}
+      {featured && <CardWave color="#ffffff2e" className="hidden md:block" />}
       <div className="relative mb-6 sm:mb-8 w-full">
         <div className="flex justify-start mb-2">
           <Badge
             className={cx(
               "py-0.5 px-2 text-[10px]",
               featured &&
-                "bg-white/15 border-white/40 text-white dark:bg-white/15 dark:border-white/40 dark:text-white",
+                "md:bg-white/15 md:border-white/40 md:text-white md:dark:bg-white/15 md:dark:border-white/40 md:dark:text-white",
             )}
           >
             {badgeText}
@@ -50,7 +52,9 @@ const PricingCard = ({
           <span
             className={cx(
               "text-2xl sm:text-3xl font-bold",
-              featured ? "text-white" : "text-indigo-950 dark:text-white",
+              featured
+                ? "text-indigo-950 dark:text-white md:text-white"
+                : "text-indigo-950 dark:text-white",
             )}
           >
             {planName}
@@ -59,7 +63,9 @@ const PricingCard = ({
         <p
           className={cx(
             "text-sm leading-relaxed",
-            featured ? "text-indigo-100" : "text-slate-600 dark:text-slate-400",
+            featured
+              ? "text-slate-600 dark:text-slate-400 md:text-indigo-100 md:dark:text-indigo-100"
+              : "text-slate-600 dark:text-slate-400",
           )}
         >
           {description}
@@ -73,7 +79,7 @@ const PricingCard = ({
             className={cx(
               "flex items-start gap-3 text-sm",
               featured
-                ? "text-indigo-50"
+                ? "text-slate-700 dark:text-slate-300 md:text-indigo-50 md:dark:text-indigo-50"
                 : "text-slate-700 dark:text-slate-300",
             )}
           >
@@ -81,7 +87,7 @@ const PricingCard = ({
               className={cx(
                 "size-5 shrink-0",
                 featured
-                  ? "text-indigo-200"
+                  ? "text-indigo-600 dark:text-indigo-400 md:text-indigo-200 md:dark:text-indigo-200"
                   : "text-indigo-600 dark:text-indigo-400",
               )}
             />
@@ -95,7 +101,7 @@ const PricingCard = ({
         className={cx(
           "w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto",
           featured &&
-            "bg-white text-indigo-600 hover:bg-indigo-50 border-0 dark:bg-white dark:text-indigo-600 dark:hover:bg-indigo-50",
+            "border-0 bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-600 dark:text-white dark:hover:bg-indigo-700 md:bg-white md:text-indigo-600 md:hover:bg-indigo-50 md:dark:bg-white md:dark:text-indigo-600 md:dark:hover:bg-indigo-50",
         )}
         variant={buttonVariant as any}
       >

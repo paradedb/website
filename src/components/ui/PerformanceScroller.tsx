@@ -314,7 +314,7 @@ export default function PerformanceScroller({
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch opacity-60" />
         </div>
         <div ref={trackRef} className="relative h-[500vh]">
-          <div className="sticky top-0 z-40 flex h-[96vh] flex-col justify-center px-6 sm:px-16 lg:px-24 py-10 md:py-16">
+          <div className="sticky top-0 z-40 flex min-h-[96vh] flex-col justify-center px-6 sm:px-16 lg:px-24 py-10 md:py-16">
             <div className="mb-6 sm:mb-10 md:mb-14 relative z-40">
               <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
                 Performance
