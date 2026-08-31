@@ -34,6 +34,7 @@ export type EngineKey = (typeof ENGINES)[number]["key"];
 const BENCHMARKS: {
   key: string;
   label: string;
+  tag?: string;
   paradedbMs: number | null;
   postgresMs: number | null;
   speedup: number | null;
@@ -66,6 +67,7 @@ const BENCHMARKS: {
   {
     key: "vector",
     label: "Vector",
+    tag: "Beta",
     paradedbMs: 30.1,
     postgresMs: 1122,
     speedup: 37,
@@ -454,6 +456,18 @@ export default function PerformanceScroller({
                     )}
                   >
                     {benchmark.label}
+                    {benchmark.tag && (
+                      <span
+                        className={cx(
+                          "ml-2 border px-1.5 py-0.5 align-middle font-mono text-[10px] uppercase tracking-widest",
+                          index === active
+                            ? "border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400"
+                            : "border-slate-200 dark:border-slate-800 text-slate-400",
+                        )}
+                      >
+                        {benchmark.tag}
+                      </span>
+                    )}
                   </button>
                 ))}
               </nav>
