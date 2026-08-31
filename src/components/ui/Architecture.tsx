@@ -103,16 +103,33 @@ export default function Architecture() {
       aria-hidden="true"
       className={cx(arrowColor, "mx-1")}
     >
-      <polygon points="0,7 10,2 10,12" fill="currentColor" />
       <line
-        x1="8"
+        x1="0"
         y1="7"
-        x2="48"
+        x2="46"
         y2="7"
         stroke="currentColor"
         strokeWidth="2"
+        strokeOpacity="0.4"
       />
-      <polygon points="56,7 46,2 46,12" fill="currentColor" />
+      <line
+        x1="0"
+        y1="7"
+        x2="46"
+        y2="7"
+        pathLength={100}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray="18 182"
+        className="text-indigo-500 dark:text-indigo-400 animate-[flow-pulse_1.5s_linear_infinite] motion-reduce:hidden"
+      />
+      <polygon points="56,7 46,2 46,12" fill="currentColor" fillOpacity="0.4" />
+      <polygon
+        points="56,7 46,2 46,12"
+        fill="currentColor"
+        className="text-indigo-500 dark:text-indigo-400 opacity-0 animate-[arrow-flash_1.5s_linear_infinite] motion-reduce:hidden"
+      />
     </svg>
   );
 
@@ -125,16 +142,33 @@ export default function Architecture() {
       aria-hidden="true"
       className={cx("h-9 lg:h-10 w-auto", arrowColor)}
     >
-      <polygon points="7,0 2,10 12,10" fill="currentColor" />
       <line
         x1="7"
-        y1="8"
+        y1="0"
         x2="7"
-        y2="32"
+        y2="30"
         stroke="currentColor"
         strokeWidth="2"
+        strokeOpacity="0.4"
       />
-      <polygon points="7,40 2,30 12,30" fill="currentColor" />
+      <line
+        x1="7"
+        y1="0"
+        x2="7"
+        y2="30"
+        pathLength={100}
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeDasharray="18 182"
+        className="text-indigo-500 dark:text-indigo-400 animate-[flow-pulse_1.5s_linear_infinite] motion-reduce:hidden"
+      />
+      <polygon points="7,40 2,30 12,30" fill="currentColor" fillOpacity="0.4" />
+      <polygon
+        points="7,40 2,30 12,30"
+        fill="currentColor"
+        className="text-indigo-500 dark:text-indigo-400 opacity-0 animate-[arrow-flash_1.5s_linear_infinite] motion-reduce:hidden"
+      />
     </svg>
   );
 

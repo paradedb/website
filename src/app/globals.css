@@ -172,6 +172,29 @@
   }
 }
 
+@keyframes flow-pulse {
+  from {
+    stroke-dashoffset: 18;
+  }
+  to {
+    stroke-dashoffset: -182;
+  }
+}
+
+@keyframes arrow-flash {
+  0%,
+  42% {
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  72%,
+  100% {
+    opacity: 0;
+  }
+}
+
 @keyframes slide-down-fade {
   from {
     opacity: 0;
