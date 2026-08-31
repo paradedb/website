@@ -154,7 +154,7 @@ export default function Architecture() {
             <SectionHeader
               eyebrow="Benefits"
               title="More than OLTP. More than search."
-              description="ParadeDB pairs Postgres' transactional storage with a single wide index built for search, all over your live application data."
+              description="ParadeDB pairs Postgres' transactional storage with a search index combining inverted, vector, and columnar data structures."
             />
           </div>
 
