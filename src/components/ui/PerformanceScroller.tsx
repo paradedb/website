@@ -28,7 +28,9 @@ export const ENGINES = [
 export type EngineKey = (typeof ENGINES)[number]["key"];
 
 // Timings (P95) from https://www.paradedb.com/vs/postgresql — Hacker News
-// benchmark, 28.7M rows. Speedups quoted from the published page.
+// benchmark, 28.7M rows. Speedups quoted from the published page. Vector:
+// Cohere 10M, 1%-filtered top-10 at 95% recall, pg_search vs pgvector HNSW,
+// from https://paradedb.github.io/paradedb/benchmarks/vectors.html.
 const BENCHMARKS: {
   key: string;
   label: string;
@@ -64,9 +66,9 @@ const BENCHMARKS: {
   {
     key: "vector",
     label: "Vector",
-    paradedbMs: null,
-    postgresMs: null,
-    speedup: null,
+    paradedbMs: 30.1,
+    postgresMs: 1122,
+    speedup: 37,
     bullets: [
       {
         lead: "State-of-the-art vector index:",
@@ -74,15 +76,15 @@ const BENCHMARKS: {
         icon: <RiBubbleChartLine className="size-5" />,
       },
       {
-        lead: "Incremental maintenance (SPFresh)",
-        text: "keeps recall high as your data changes.",
-        icon: <RiRefreshLine className="size-5" />,
-        badge: "Coming soon",
-      },
-      {
         lead: "Native filtering support:",
         text: "combine vector similarity with SQL predicates in one index scan.",
         icon: <RiFilterLine className="size-5" />,
+      },
+      {
+        lead: "Incremental maintenance (SPFresh)",
+        text: "keeps recall high as your data changes, without reindexing or retraining.",
+        icon: <RiRefreshLine className="size-5" />,
+        badge: "Coming soon",
       },
     ],
   },
@@ -170,10 +172,12 @@ function BarChart({
   paradedbMs,
   postgresMs,
   speedup,
+  postgresLabel = "Vanilla Postgres",
 }: {
   paradedbMs: number;
   postgresMs: number;
   speedup: number;
+  postgresLabel?: string;
 }) {
   const rows = [
     {
@@ -183,7 +187,7 @@ function BarChart({
       badge: `${speedup}x faster`,
     },
     {
-      name: "Vanilla Postgres",
+      name: postgresLabel,
       ms: postgresMs,
       barClass: "bg-slate-300 dark:bg-slate-700",
     },
@@ -324,8 +328,10 @@ export default function PerformanceScroller({
                 Ordinary SQL at extraordinary speeds.
               </h2>
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-3xl">
-                Measured against the 28M row Hacker News dataset. Reproducible
-                with{" "}
+                {tab.key === "vector"
+                  ? "Measured against the Cohere 10M dataset at 95% recall."
+                  : "Measured against the 28M row Hacker News dataset."}{" "}
+                Reproducible with{" "}
                 <a
                   href="https://github.com/paradedb/benchmarker"
                   target="_blank"
@@ -382,6 +388,9 @@ export default function PerformanceScroller({
                     paradedbMs={tab.paradedbMs}
                     postgresMs={tab.postgresMs}
                     speedup={tab.speedup}
+                    postgresLabel={
+                      tab.key === "vector" ? "pgvector HNSW" : undefined
+                    }
                   />
                 ) : (
                   <PlaceholderChart />
