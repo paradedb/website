@@ -153,8 +153,8 @@ export default function Architecture() {
           <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 mb-10 md:mb-12">
             <SectionHeader
               eyebrow="Benefits"
-              title="Zero ETL means zero headache."
-              description="ParadeDB is a single index that stays in sync with your application data — so you can ship features and not infra complexity."
+              title="More than OLTP. More than search."
+              description="ParadeDB pairs Postgres' transactional storage with a converged index built for search, all over your live application data."
             />
           </div>
 
