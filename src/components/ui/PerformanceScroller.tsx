@@ -330,7 +330,7 @@ export default function PerformanceScroller({
                 Ordinary SQL at extraordinary speeds.
               </h2>
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl">
-                Give ParadeDB your P99 queries.{" "}
+                Give ParadeDB the queries where your OLTP database fell short.{" "}
                 {tab.key === "vector"
                   ? "Measured against the Cohere 10M dataset at 95% recall"
                   : "Measured against the 28M row Hacker News dataset"}
