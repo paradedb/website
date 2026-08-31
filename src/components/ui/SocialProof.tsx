@@ -14,6 +14,29 @@ import { CardWave } from "./CardWave";
 
 const STUDIES = [
   {
+    key: "modern-treasury",
+    name: "Modern Treasury",
+    href: "/customers/case-study-modern-treasury",
+    logo: {
+      src: "/brand/customers/modern-treasury.svg",
+      width: 344,
+      height: 30,
+      className: "h-4 w-auto",
+    },
+    tabLogoClassName: "h-3",
+    quote:
+      "“Built on the solid foundation of Postgres, ParadeDB provides the good parts of Elasticsearch we actually need, without the infrastructure and hassle of data synchronization.”",
+    initials: "MH",
+    author: "Matt Higgins",
+    role: "Head of Engineering, Modern Treasury",
+    stat: "3x",
+    direction: "up" as const,
+    impact:
+      "Faster writes after replacing up to 26 B-tree and GIN indexes over one table with a single ParadeDB index.",
+    panelBg: "bg-[#00835A]",
+    accentBg: "bg-[#00835A] dark:bg-[#00B37A]",
+  },
+  {
     key: "bilt",
     name: "Bilt Rewards",
     href: "/customers/case-study-bilt",
@@ -59,29 +82,6 @@ const STUDIES = [
     panelBg: "bg-[#FF6600]",
     accentBg: "bg-[#FF6600]",
     waveColor: "#ffffff4d",
-  },
-  {
-    key: "modern-treasury",
-    name: "Modern Treasury",
-    href: "/customers/case-study-modern-treasury",
-    logo: {
-      src: "/brand/customers/modern-treasury.svg",
-      width: 344,
-      height: 30,
-      className: "h-4 w-auto",
-    },
-    tabLogoClassName: "h-3",
-    quote:
-      "“Built on the solid foundation of Postgres, ParadeDB provides the good parts of Elasticsearch we actually need, without the infrastructure and hassle of data synchronization.”",
-    initials: "MH",
-    author: "Matt Higgins",
-    role: "Head of Engineering, Modern Treasury",
-    stat: "3x",
-    direction: "up" as const,
-    impact:
-      "Faster writes after replacing up to 26 B-tree and GIN indexes over one table with a single ParadeDB index.",
-    panelBg: "bg-[#00835A]",
-    accentBg: "bg-[#00835A] dark:bg-[#00B37A]",
   },
 ];
 
