@@ -10,8 +10,6 @@ import { social } from "@/lib/links";
 import {
   RiTerminalBoxLine,
   RiShieldKeyholeLine,
-  RiHardDrive2Line,
-  RiLifebuoyLine,
   RiListCheck2,
   RiPlugLine,
   RiPuzzleLine,
@@ -57,12 +55,6 @@ const KEEPS = [
     code: "BEGIN; … COMMIT;",
   },
   {
-    title: "Durable by default",
-    body: "Writes go through the Postgres write-ahead log, so the index gets the same crash recovery guarantees as your tables.",
-    icon: <RiHardDrive2Line className="size-[18px]" />,
-    code: "CHECKPOINT;",
-  },
-  {
     title: "Replicates like Postgres",
     body: (
       <>
@@ -81,14 +73,8 @@ const KEEPS = [
     code: "pg_basebackup -R …",
   },
   {
-    title: "Your usual ops surface",
-    body: "pg_dump, logical replication, high availability, pgBackRest, the dashboards and alerting your team already trusts.",
-    icon: <RiLifebuoyLine className="size-[18px]" />,
-    code: "pg_dump -Fc db | …",
-  },
-  {
     title: "The Postgres ecosystem",
-    body: "pg_partman, pg_cron, PostGIS, and the rest of the extension catalog work side by side.",
+    body: "pg_dump, logical replication, pgBackRest, and the tooling your team already trusts — plus pg_partman, pg_cron, PostGIS, and the rest of the extension catalog.",
     icon: <RiPuzzleLine className="size-[18px]" />,
     code: "CREATE EXTENSION pg_cron;",
   },
@@ -193,13 +179,7 @@ export default function PostgresNative() {
             <SectionHeader
               cursor="gutter"
               eyebrow="Architecture"
-              title={
-                <>
-                  No bespoke search engine or vector database.
-                  <br />
-                  Just Postgres.
-                </>
-              }
+              title={<>Fully Postgres native.</>}
               description={
                 <>
                   The world's{" "}
@@ -224,7 +204,7 @@ export default function PostgresNative() {
               </span>
               <span className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
               <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 dark:text-slate-600">
-                08 / 08
+                06 / 06
               </span>
             </div>
 
@@ -234,7 +214,7 @@ export default function PostgresNative() {
                   key={item.title}
                   item={item}
                   index={i}
-                  isWide={i === KEEPS.length - 1}
+                  isWide={false}
                   visible={visible}
                 />
               ))}

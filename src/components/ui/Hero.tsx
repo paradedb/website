@@ -53,16 +53,16 @@ export default async function Hero() {
                   aria-hidden="true"
                   className="hidden sm:block absolute -left-16 lg:-left-24 translate-x-[calc(-50%+0.5px)] top-[0.15em] h-[0.9em] w-[3px] bg-white z-40"
                 />
-                Make slow search queries fly in Postgres.
+                Just use Postgres.
               </h1>
             </div>
 
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-start w-full max-w-4xl opacity-0 animate-hero-content">
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-indigo-100 mt-6 mb-8">
-                One Postgres platform for your hardest search queries. Text and
-                vector search, filters, facets, and joins where your OLTP
-                database falls short.
+                ParadeDB makes your hardest queries fast. One Postgres platform
+                for text and vector search, filters, facets, and joins, so you
+                don't need to move your data to another system.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-start mb-6 sm:mb-8 sm:px-0">
                 <Button
@@ -99,7 +99,7 @@ export default async function Hero() {
         </div>
 
         {/* Dithered wave */}
-        <div className="relative z-10 -mt-2 md:-mt-3">
+        <div className="relative z-10 mt-6 md:mt-10">
           <HeroVisual />
         </div>
 

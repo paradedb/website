@@ -5,7 +5,6 @@ import PostgresNative from "@/components/ui/PostgresNative";
 import SocialProof from "@/components/ui/SocialProof";
 import CommunityProof from "@/components/ui/CommunityProof";
 import Pricing from "@/components/ui/Pricing";
-import AgentReady from "@/components/ui/AgentReady";
 import PreFooterCta from "@/components/ui/PreFooterCta";
 
 export default function DefaultLanding() {
@@ -26,9 +25,6 @@ export default function DefaultLanding() {
       </div>
       <div id="community">
         <CommunityProof />
-      </div>
-      <div id="agents">
-        <AgentReady />
       </div>
       <div id="pricing">
         <Pricing />
