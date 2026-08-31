@@ -112,7 +112,7 @@ export default function SocialProof() {
                     <div
                       role="tablist"
                       aria-label="Case studies"
-                      className="inline-flex border border-b-0 border-slate-200 dark:border-slate-900 divide-x divide-slate-200 dark:divide-slate-900 bg-white dark:bg-slate-900/50"
+                      className="inline-flex bg-white dark:bg-slate-900/50"
                     >
                       {STUDIES.map((s, i) => (
                         <button
@@ -125,7 +125,7 @@ export default function SocialProof() {
                             "group cursor-pointer flex items-center justify-center px-5 py-2.5 transition-colors",
                             i === active
                               ? s.accentBg
-                              : "hover:bg-slate-50 dark:hover:bg-slate-900",
+                              : "bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800",
                           )}
                         >
                           <Image
@@ -152,7 +152,7 @@ export default function SocialProof() {
                         key={s.key}
                         aria-hidden={i !== active}
                         className={cx(
-                          "[grid-area:1/1] grid md:grid-cols-[360px_1fr] text-left border border-slate-200 dark:border-slate-900",
+                          "[grid-area:1/1] grid md:grid-cols-[360px_1fr] text-left",
                           s.panelBg,
                           i !== active && "invisible",
                         )}
