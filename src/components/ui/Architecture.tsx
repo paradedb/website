@@ -148,7 +148,7 @@ export default function Architecture() {
         {/* Top hatched border */}
         <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
 
-        <section className="relative z-40 py-10 md:py-14 border-r border-l border-slate-200 dark:border-slate-900">
+        <section className="relative z-40 py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900">
           {/* Header */}
           <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 mb-10 md:mb-12">
             <SectionHeader
@@ -172,9 +172,9 @@ export default function Architecture() {
                   className="font-mono"
                 >
                   {/* PostgreSQL frame: label inside, border around the whole diagram */}
-                  <div className="relative border xl:border-x-0 border-slate-200 dark:border-slate-900 p-4 sm:p-5 md:p-6">
+                  <div className="relative sm:border xl:border-x-0 border-slate-200 dark:border-slate-900 p-0 sm:p-5 md:p-6">
                     {/* Inner frame: PostgreSQL label straddling its top border */}
-                    <div className="relative border border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 px-5 pt-12 pb-10 sm:px-8 sm:pt-14 sm:pb-12 md:px-10 md:pt-[4.5rem] md:pb-16">
+                    <div className="relative sm:border sm:border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 px-0 pt-12 pb-10 sm:px-8 sm:pt-14 sm:pb-12 md:px-10 md:pt-[4.5rem] md:pb-16">
                       <div className="absolute inset-x-0 top-0 -translate-y-1/2 flex items-center gap-3 font-mono text-sm font-bold text-slate-900 dark:text-white">
                         <span
                           aria-hidden
@@ -206,11 +206,11 @@ export default function Architecture() {
                     </div>
 
                     {/* Content cards: attached to the white diagram box, sharing its border */}
-                    <div className="border border-t-0 border-slate-200 dark:border-slate-900 bg-slate-200 dark:bg-slate-900 grid grid-cols-1 sm:grid-cols-2 gap-px">
+                    <div className="sm:border sm:border-t-0 border-slate-200 dark:border-slate-900 bg-slate-200 dark:bg-slate-900 grid grid-cols-1 sm:grid-cols-2 gap-px">
                       {CARDS.map((card) => (
                         <div
                           key={card.title}
-                          className="px-5 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
+                          className="px-0 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
                         >
                           <div className="flex items-center gap-3 mb-3">
                             <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">

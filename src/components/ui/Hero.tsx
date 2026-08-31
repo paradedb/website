@@ -47,7 +47,7 @@ export default async function Hero() {
               </Link>
               <h1
                 id="hero-title"
-                className="relative inline-block text-2xl sm:text-5xl font-bold tracking-tighter leading-[1.15] text-white opacity-0 animate-hero-title"
+                className="relative inline-block text-4xl sm:text-5xl font-bold tracking-tighter leading-[1.15] text-white opacity-0 animate-hero-title"
               >
                 <span
                   aria-hidden="true"

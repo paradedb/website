@@ -46,7 +46,7 @@ const STUDIES = [
       height: 30,
       className: "h-4 w-auto",
     },
-    tabLogoClassName: "h-3",
+    tabLogoClassName: "h-2.5",
     quote:
       "“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”",
     initials: "JK",
@@ -157,9 +157,12 @@ export default function SocialProof() {
                           i !== active && "invisible",
                         )}
                       >
-                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 pb-20 md:pb-28 text-white">
+                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/15 p-8 md:p-12 md:pb-28 text-white">
                           {i === active && (
-                            <CardWave color={s.waveColor ?? "#ffffff2e"} />
+                            <CardWave
+                              color={s.waveColor ?? "#ffffff2e"}
+                              className="hidden md:block"
+                            />
                           )}
                           <p className="font-mono text-xs uppercase tracking-widest text-white/60 mb-4">
                             Impact
@@ -194,7 +197,7 @@ export default function SocialProof() {
                           {i === active && (
                             <CardWave color={s.waveColor ?? "#ffffff2e"} />
                           )}
-                          <div className="mb-8 flex h-8 items-center">
+                          <div className="mb-8 hidden md:flex h-8 items-center">
                             <Image
                               src={s.logo.src}
                               alt={s.name}

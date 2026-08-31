@@ -2,13 +2,20 @@
 
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
+import { cx } from "@/lib/utils";
 
 const Dithering = dynamic(
   () => import("@paper-design/shaders-react").then((mod) => mod.Dithering),
   { ssr: false },
 );
 
-export function CardWave({ color }: { color: string }) {
+export function CardWave({
+  color,
+  className,
+}: {
+  color: string;
+  className?: string;
+}) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -20,7 +27,10 @@ export function CardWave({ color }: { color: string }) {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none absolute inset-x-0 bottom-0 h-16 md:h-20 [mask-image:linear-gradient(to_top,black,transparent)]"
+      className={cx(
+        "pointer-events-none absolute inset-x-0 bottom-0 h-16 md:h-20 [mask-image:linear-gradient(to_top,black,transparent)]",
+        className,
+      )}
     >
       <Dithering
         width="100%"
