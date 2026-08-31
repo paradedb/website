@@ -186,7 +186,7 @@ export default function Architecture() {
           {/* Header */}
           <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 mb-10 md:mb-12">
             <SectionHeader
-              eyebrow="Benefits"
+              eyebrow="How It Works"
               title="More than OLTP. More than search."
               description="ParadeDB pairs Postgres' transactional storage with a unified index combining inverted, vector, and columnar data structures."
             />
@@ -208,16 +208,16 @@ export default function Architecture() {
                   {/* PostgreSQL frame: label inside, border around the whole diagram */}
                   <div className="relative sm:border xl:border-x-0 border-slate-200 dark:border-slate-900 p-0 sm:p-5 md:p-6">
                     {/* Inner frame: PostgreSQL label straddling its top border */}
-                    <div className="relative sm:border sm:border-t-0 border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950 px-0 pt-12 pb-10 sm:px-8 sm:pt-14 sm:pb-12 md:px-10 md:pt-[4.5rem] md:pb-16">
+                    <div className="relative sm:border sm:border-t-0 border-slate-400 dark:border-slate-600 bg-slate-50 dark:bg-slate-900/60 px-0 pt-12 pb-0 sm:px-8 sm:pt-14 md:px-10 md:pt-[4.5rem]">
                       <div className="absolute inset-x-0 top-0 -translate-y-1/2 flex items-center gap-3 font-mono text-sm font-bold text-slate-900 dark:text-white">
                         <span
                           aria-hidden
-                          className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
+                          className="h-px flex-1 bg-slate-400 dark:bg-slate-600"
                         />
                         PostgreSQL
                         <span
                           aria-hidden
-                          className="h-px flex-1 bg-slate-200 dark:bg-slate-900"
+                          className="h-px flex-1 bg-slate-400 dark:bg-slate-600"
                         />
                       </div>
                       <div className="max-w-[900px] mx-auto">
@@ -237,28 +237,28 @@ export default function Architecture() {
                           {indexBox}
                         </div>
                       </div>
-                    </div>
 
-                    {/* Content cards: attached to the white diagram box, sharing its border */}
-                    <div className="sm:border sm:border-t-0 border-slate-200 dark:border-slate-900 bg-slate-200 dark:bg-slate-900 grid grid-cols-1 sm:grid-cols-2 gap-px">
-                      {CARDS.map((card) => (
-                        <div
-                          key={card.title}
-                          className="px-0 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
-                        >
-                          <div className="flex items-center gap-3 mb-3">
-                            <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">
-                              {card.number}
-                            </span>
-                            <h3 className="font-sans font-semibold text-base tracking-tight text-indigo-950 dark:text-white">
-                              {card.title}
-                            </h3>
+                      {/* Content cards: inside the PostgreSQL frame, light inner lines */}
+                      <div className="mt-10 sm:mt-12 md:mt-14 sm:-mx-8 md:-mx-10 sm:border-t border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-px">
+                        {CARDS.map((card) => (
+                          <div
+                            key={card.title}
+                            className="px-0 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
+                          >
+                            <div className="flex items-center gap-3 mb-3">
+                              <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">
+                                {card.number}
+                              </span>
+                              <h3 className="font-sans font-semibold text-base tracking-tight text-indigo-950 dark:text-white">
+                                {card.title}
+                              </h3>
+                            </div>
+                            <p className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+                              {card.body}
+                            </p>
                           </div>
-                          <p className="font-sans text-sm leading-relaxed text-slate-600 dark:text-slate-400">
-                            {card.body}
-                          </p>
-                        </div>
-                      ))}
+                        ))}
+                      </div>
                     </div>
                   </div>
                 </div>
