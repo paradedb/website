@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { RiArrowRightLine, RiGithubFill, RiGroupLine } from "@remixicon/react";
+import { RiArrowRightLine, RiGithubFill } from "@remixicon/react";
 import DockerLogo from "./DockerLogo";
+import ContributionHeatmap from "./ContributionHeatmap";
 import { documentation, github } from "@/lib/links";
 
 export default function CommunityProof() {
@@ -86,8 +87,8 @@ export default function CommunityProof() {
 
                 {/* Contributors Card */}
                 <div className="p-8 md:p-12 md:py-24 flex flex-col items-start text-left">
-                  <div className="mb-8 flex items-center justify-center size-8 text-slate-900 dark:text-slate-100">
-                    <RiGroupLine className="w-full h-full" />
+                  <div className="mb-8 flex items-center justify-center size-8">
+                    <ContributionHeatmap className="size-7" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
                     140+
