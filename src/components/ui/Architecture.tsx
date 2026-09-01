@@ -24,7 +24,7 @@ const CARDS: { number: string; title: string; body: ReactNode }[] = [
   {
     number: "02",
     title: "More than search",
-    body: "Search engines operate on a denormalized copy of your data. ParadeDB keeps your application data in one place without any schema changes.",
+    body: "Search engines and vector stores like Elasticsearch index a separate copy of your data for search. ParadeDB keeps your application data in one place without any schema changes",
   },
 ];
 
