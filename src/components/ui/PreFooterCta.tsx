@@ -44,7 +44,9 @@ export default function PreFooterCta() {
           <div className="relative flex flex-col items-center justify-center pt-16 md:pt-20 pb-4 md:pb-6 text-center">
             <div className="relative z-20 flex flex-col items-center px-6 sm:px-0">
               <h2 className="text-3xl sm:text-6xl font-bold tracking-tight leading-[1.15] text-white">
-                Just use Postgres.
+                <span className="bg-[linear-gradient(to_bottom,#ffffff_25%,#a5b4fc_100%)] bg-clip-text text-transparent">
+                  Just use Postgres.
+                </span>
               </h2>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
                 <Button

@@ -168,11 +168,6 @@ export default function PostgresNative() {
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        {/* Shaded hatch divider */}
-        <div className="border-y border-slate-200 dark:border-slate-900">
-          <div className="h-8 md:h-12 w-full bg-diagonal-hatch opacity-60" />
-        </div>
-
         <section className="relative z-40 py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
           {/* Header */}
           <div className="flex flex-col items-start text-left px-6 sm:px-16 lg:px-24 mb-10 md:mb-12">
