@@ -1,9 +1,5 @@
 import Link from "next/link";
-import {
-  RiArrowRightLine,
-  RiGithubFill,
-  RiGroupLine,
-} from "@remixicon/react";
+import { RiArrowRightLine, RiGithubFill, RiGroupLine } from "@remixicon/react";
 import DockerLogo from "./DockerLogo";
 import { documentation, github } from "@/lib/links";
 
