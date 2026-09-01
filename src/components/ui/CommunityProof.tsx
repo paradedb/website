@@ -39,7 +39,7 @@ export default function CommunityProof() {
                 {/* Docker Card */}
                 <div className="p-6 sm:p-8 md:p-12 md:py-24 flex flex-col items-start text-left">
                   <div className="mb-8 flex items-center justify-center size-8">
-                    <DockerLogo className="w-full h-full dark:brightness-0 dark:invert" />
+                    <DockerLogo className="w-full h-full" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
                     2.5M+
