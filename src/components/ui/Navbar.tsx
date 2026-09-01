@@ -33,7 +33,7 @@ export function Navigation() {
   const isHomePage = isLandingRoute(pathname);
 
   React.useEffect(() => {
-    const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 768px)");
+    const mediaQuery: MediaQueryList = window.matchMedia("(min-width: 900px)");
     const handleMediaQueryChange = () => {
       setOpen(false);
     };
@@ -125,11 +125,11 @@ export function Navigation() {
                 )}
               />
             </Link>
-            <nav className="hidden md:absolute md:left-1/2 md:top-1/2 md:block md:-translate-x-1/2 md:-translate-y-1/2 md:transform">
-              <div className="flex items-center gap-6 text-sm font-medium">
+            <nav className="hidden min-[900px]:absolute min-[900px]:left-1/2 min-[900px]:top-1/2 min-[900px]:block min-[900px]:-translate-x-1/2 min-[900px]:-translate-y-1/2 min-[900px]:transform">
+              <div className="flex items-center gap-4 min-[1400px]:gap-6 text-sm font-medium">
                 <Link
                   className={cx(
-                    "px-2 py-1 transition-colors",
+                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
                     pathname.startsWith(siteConfig.baseLinks.blog)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -144,7 +144,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   className={cx(
-                    "px-2 py-1 transition-colors",
+                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
                     pathname.startsWith(siteConfig.baseLinks.customers)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -159,7 +159,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   className={cx(
-                    "px-2 py-1 transition-colors",
+                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
                     pathname.startsWith(siteConfig.baseLinks.resources)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -175,7 +175,7 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   className={cx(
-                    "px-2 py-1 transition-colors inline-flex items-center gap-1",
+                    "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
@@ -207,7 +207,7 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   className={cx(
-                    "px-2 py-1 transition-colors inline-flex items-center gap-1",
+                    "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
@@ -239,7 +239,7 @@ export function Navigation() {
               </div>
             </nav>
             <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
-              <div className="hidden md:flex">
+              <div className="hidden min-[1400px]:flex">
                 <ThemeToggle
                   variant={isHomePage && !open ? "white" : "default"}
                 />
@@ -249,8 +249,8 @@ export function Navigation() {
                 target="_blank"
                 aria-label="GitHub repository"
                 className={cx(
-                  "items-center justify-center space-x-2 transition-all duration-300",
-                  open ? "hidden opacity-0" : "flex opacity-100",
+                  "hidden items-center justify-center space-x-2 transition-all duration-300 min-[1400px]:flex",
+                  open ? "opacity-0" : "opacity-100",
                 )}
               >
                 <RiGithubFill
@@ -278,7 +278,7 @@ export function Navigation() {
               <Button
                 asChild
                 className={cx(
-                  "hidden px-4 md:flex rounded-none transition-all",
+                  "hidden px-4 min-[900px]:flex rounded-none transition-all",
                   isHomePage && !open
                     ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
                     : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
@@ -286,7 +286,7 @@ export function Navigation() {
               >
                 <a href="mailto:hello@paradedb.com">Contact Us</a>
               </Button>
-              <div className="md:hidden">
+              <div className="min-[900px]:hidden">
                 <Button
                   onClick={() => setOpen(!open)}
                   variant="ghost"
@@ -307,7 +307,10 @@ export function Navigation() {
             </div>
           </div>
           <nav
-            className={cx("flex flex-col md:hidden", open ? "pb-8" : "hidden")}
+            className={cx(
+              "flex flex-col min-[900px]:hidden",
+              open ? "pb-8" : "hidden",
+            )}
           >
             <ul className="flex flex-col font-semibold w-full">
               <li onClick={() => setOpen(false)} className="w-full px-6">
