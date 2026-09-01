@@ -58,13 +58,13 @@ const KEEPS = [
     title: "Replicates like Postgres",
     body: (
       <>
-        High availability from physical replicas, horizontal scaling from read
-        replicas. An{" "}
+        High availability through physical replication, plus horizontal read
+        scaling with read replicas, available on the{" "}
         <Link
           href="#pricing"
           className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300"
         >
-          enterprise feature
+          Enterprise plan
         </Link>
         .
       </>
@@ -182,7 +182,7 @@ export default function PostgresNative() {
               title={<>Fully Postgres native.</>}
               description={
                 <>
-                  Built on the world's{" "}
+                  Built on the world&apos;s{" "}
                   <Link
                     href="https://survey.stackoverflow.co/2025/technology#2-databases"
                     target="_blank"

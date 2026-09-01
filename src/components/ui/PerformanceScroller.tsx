@@ -313,7 +313,7 @@ export default function PerformanceScroller({
         <div className="border-y border-slate-200 dark:border-slate-900">
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch opacity-60" />
         </div>
-        <div ref={trackRef} className="relative h-[500vh]">
+        <div ref={trackRef} className="relative h-[440vh]">
           <div className="sticky top-0 z-40 flex min-h-[96vh] flex-col justify-center px-6 sm:px-16 lg:px-24 py-10 md:py-16">
             <div className="mb-6 sm:mb-10 md:mb-14 relative z-40">
               <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
@@ -330,7 +330,7 @@ export default function PerformanceScroller({
                 Ordinary SQL at extraordinary speeds.
               </h2>
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl">
-                Give ParadeDB the queries where your OLTP database fell short.{" "}
+                See how ParadeDB performs where Postgres falls short.{" "}
                 {tab.key === "vector"
                   ? "Measured against the Cohere 10M dataset at 95% recall"
                   : "Measured against the 28M row Hacker News dataset"}
