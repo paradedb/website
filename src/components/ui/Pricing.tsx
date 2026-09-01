@@ -130,7 +130,7 @@ export default function Pricing() {
         <div className="px-4 md:px-12 w-full flex flex-col relative">
           <div className="relative flex flex-col items-center justify-center py-10 sm:py-16 text-center bg-transparent">
             {/* Header section */}
-            <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 relative">
+            <div className="mx-auto w-full max-w-[1128px] px-6 sm:px-12 xl:px-0 relative">
               <SectionHeader
                 eyebrow="Pricing"
                 title="Ready, set, deploy."

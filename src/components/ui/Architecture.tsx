@@ -184,7 +184,7 @@ export default function Architecture() {
 
         <section className="relative z-40 py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900">
           {/* Header */}
-          <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 mb-10 md:mb-12">
+          <div className="mx-auto w-full max-w-[1128px] px-6 sm:px-12 xl:px-0 mb-10 md:mb-12">
             <SectionHeader
               eyebrow="Architecture"
               title="No bespoke search engine. Zero ETL."
@@ -222,7 +222,7 @@ export default function Architecture() {
                       </div>
                       <div className="max-w-[900px] mx-auto">
                         {/* Mobile/tablet layout (< xl): vertical stack */}
-                        <div className="xl:hidden flex flex-col items-stretch gap-3">
+                        <div className="xl:hidden flex flex-col items-stretch gap-3 pr-3">
                           {tableBox}
                           <div className="flex justify-center mt-3">
                             {syncArrowVertical}
@@ -243,7 +243,7 @@ export default function Architecture() {
                         {CARDS.map((card) => (
                           <div
                             key={card.title}
-                            className="px-0 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
+                            className="px-2 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
                           >
                             <div className="flex items-center gap-3 mb-3">
                               <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">
