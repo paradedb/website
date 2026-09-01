@@ -102,7 +102,7 @@ export default function SocialProof() {
 
         <div className="px-4 md:px-12 w-full flex flex-col relative">
           <div className="relative flex flex-col items-center justify-center sm:py-16 py-10 bg-transparent">
-            <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 relative">
+            <div className="mx-auto w-full max-w-[1128px] px-6 sm:px-12 xl:px-0 relative">
               <SectionHeader
                 eyebrow="Case Studies"
                 title="Trusted by enterprises."
