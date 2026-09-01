@@ -23,6 +23,7 @@ import { cx } from "@/lib/utils";
 export const ENGINES = [
   { key: "paradedb", label: "ParadeDB" },
   { key: "postgres", label: "Vanilla Postgres" },
+  { key: "elasticsearch", label: "Elasticsearch" },
 ] as const;
 
 export type EngineKey = (typeof ENGINES)[number]["key"];
@@ -168,7 +169,10 @@ function formatMs(ms: number) {
   return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`;
 }
 
-export type QueryPanels = Record<string, Record<EngineKey, ReactNode> | null>;
+export type QueryPanels = Record<
+  string,
+  Partial<Record<EngineKey, ReactNode>> | null
+>;
 
 function BarChart({
   paradedbMs,
@@ -277,6 +281,8 @@ export default function PerformanceScroller({
     const onScroll = () => {
       const track = trackRef.current;
       if (!track) return;
+      // Below md the section is a static block and tabs switch by tap.
+      if (!window.matchMedia("(min-width: 768px)").matches) return;
       const total = track.offsetHeight - window.innerHeight;
       const progress = Math.min(
         Math.max(-track.getBoundingClientRect().top / total, 0),
@@ -292,6 +298,10 @@ export default function PerformanceScroller({
   const scrollToTab = (index: number) => {
     const track = trackRef.current;
     if (!track) return;
+    if (!window.matchMedia("(min-width: 768px)").matches) {
+      setActive(index);
+      return;
+    }
     const total = track.offsetHeight - window.innerHeight;
     const top = window.scrollY + track.getBoundingClientRect().top;
     window.scrollTo({
@@ -313,8 +323,8 @@ export default function PerformanceScroller({
         <div className="border-y border-slate-200 dark:border-slate-900">
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch opacity-60" />
         </div>
-        <div ref={trackRef} className="relative h-[440vh]">
-          <div className="sticky top-0 z-40 flex min-h-[96vh] flex-col justify-center px-6 sm:px-16 lg:px-24 py-10 md:py-16">
+        <div ref={trackRef} className="relative md:h-[440vh]">
+          <div className="md:sticky top-0 z-40 flex md:min-h-[96vh] flex-col justify-center px-6 sm:px-16 lg:px-24 py-10 md:py-16">
             <div className="mb-6 sm:mb-10 md:mb-14 relative z-40">
               <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
                 Performance
@@ -346,9 +356,6 @@ export default function PerformanceScroller({
                 </a>
                 .
               </p>
-              <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-2 max-w-4xl">
-                Watch this space for Elasticsearch benchmarks.
-              </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 lg:gap-20">
@@ -357,11 +364,8 @@ export default function PerformanceScroller({
                 className="animate-[slide-up-fade_600ms_cubic-bezier(0.16,1,0.3,1)]"
               >
                 <div className="sm:min-h-[220px] border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-3 sm:p-5 mb-6 sm:mb-8">
-                  <div className="flex items-center justify-between mb-4">
-                    <p className="font-mono text-xs uppercase tracking-widest text-slate-400">
-                      {tab.label}
-                    </p>
-                    {queryPanels[tab.key] && (
+                  {queryPanels[tab.key] && (
+                    <div className="flex items-center justify-end mb-4">
                       <div className="flex border border-slate-200 dark:border-slate-800">
                         {ENGINES.map((option) => (
                           <button
@@ -378,8 +382,8 @@ export default function PerformanceScroller({
                           </button>
                         ))}
                       </div>
-                    )}
-                  </div>
+                    </div>
+                  )}
                   {queryPanels[tab.key]?.[engine] ?? (
                     <p className="font-mono text-sm text-slate-400">
                       Benchmarks coming soon.
@@ -402,12 +406,9 @@ export default function PerformanceScroller({
                   <PlaceholderChart />
                 )}
 
-                <ul className="mt-8 sm:mt-10 flex overflow-x-auto no-scrollbar sm:grid min-h-[104px] gap-5 sm:gap-6 sm:grid-cols-3">
+                <ul className="mt-8 sm:mt-10 flex flex-col sm:grid min-h-[104px] gap-5 sm:gap-6 sm:grid-cols-3">
                   {tab.bullets.map((bullet) => (
-                    <li
-                      key={bullet.text}
-                      className="w-[78%] shrink-0 sm:w-auto sm:shrink"
-                    >
+                    <li key={bullet.text}>
                       <span className="mb-3 flex items-center gap-2">
                         {bullet.icon ? (
                           <span
