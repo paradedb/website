@@ -64,7 +64,7 @@ export default async function Hero() {
                 for transactions, text and vector search, filters, facets, and
                 joins, so you don’t need to move your data to another system.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm sm:max-w-none sm:w-auto justify-start mb-6 sm:mb-8 sm:px-0">
+              <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm self-center sm:max-w-none sm:w-auto sm:self-auto justify-start mb-6 sm:mb-8 sm:px-0">
                 <Button
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
