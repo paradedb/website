@@ -163,7 +163,7 @@ export default function SocialProof() {
                           i !== active && "invisible",
                         )}
                       >
-                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 border-white/15 p-8 md:p-12 md:pb-28 text-white">
+                        <aside className="relative flex flex-col border-b md:border-b-0 border-white/15 p-8 md:p-12 md:pb-28 text-white">
                           <span
                             aria-hidden="true"
                             className="hidden md:block absolute right-0 top-12 bottom-20 w-px bg-white/15"
@@ -196,7 +196,7 @@ export default function SocialProof() {
                           </p>
                           <Link
                             href={s.href}
-                            className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white"
+                            className="group mt-auto inline-flex items-center gap-2 pt-8 text-sm font-semibold text-white"
                           >
                             Read the case study
                             <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />

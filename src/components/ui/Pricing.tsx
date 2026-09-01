@@ -134,7 +134,7 @@ export default function Pricing() {
               <SectionHeader
                 eyebrow="Pricing"
                 title="Ready, set, deploy."
-                description="Scale search on Postgres with confidence."
+                description="From self-hosted to fully managed, deploy ParadeDB your way."
                 className="mb-12"
               />
             </div>
