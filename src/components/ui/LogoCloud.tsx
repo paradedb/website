@@ -93,7 +93,7 @@ export default function LogoCloud({
   return (
     <div
       className={cx(
-        "grid grid-cols-3 sm:flex sm:flex-wrap items-center sm:justify-between w-full py-10 md:py-12 px-6 sm:px-8 md:px-16 gap-y-10 sm:gap-y-8 gap-x-4",
+        "grid grid-cols-3 sm:grid-cols-4 min-[1400px]:flex min-[1400px]:flex-nowrap items-center justify-items-center min-[1400px]:justify-between w-full py-10 sm:py-8 min-[1400px]:py-12 px-6 sm:px-8 md:px-16 gap-y-10 sm:gap-y-6 min-[1400px]:gap-y-8 gap-x-4",
         isIndigo
           ? "bg-[#4f46e5]"
           : isWhite || isLight

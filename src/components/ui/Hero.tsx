@@ -90,9 +90,9 @@ export default async function Hero() {
                   </Link>
                 </Button>
               </div>
-              <div className="hidden sm:flex items-center gap-2 mt-3 mb-2 sm:mb-4 font-mono text-sm text-white">
-                <span>Or run locally with</span>
-                <CopyableCommand code={installCommand} />
+              <div className="hidden min-[900px]:flex items-center gap-2 mt-3 mb-2 sm:mb-4 font-mono text-sm text-white whitespace-nowrap">
+                <span className="shrink-0">Or run locally with</span>
+                <CopyableCommand code={installCommand} className="shrink-0" />
               </div>
             </div>
           </div>
