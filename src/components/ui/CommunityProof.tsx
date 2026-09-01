@@ -60,31 +60,6 @@ export default function CommunityProof() {
                   </Link>
                 </div>
 
-                {/* Contributors Card */}
-                <div className="p-8 md:p-12 md:py-24 flex flex-col items-start text-left">
-                  <div className="mb-8 flex items-center justify-center size-8 text-slate-900 dark:text-slate-100">
-                    <RiGroupLine className="w-full h-full" />
-                  </div>
-                  <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    130+
-                  </div>
-                  <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    Open-source contributors
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                    ParadeDB is built in the open by a growing community of
-                    developers.
-                  </p>
-                  <Link
-                    href={`${github.REPO}/graphs/contributors`}
-                    target="_blank"
-                    className="mt-auto flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-                  >
-                    Meet our contributors
-                    <RiArrowRightLine className="size-4" />
-                  </Link>
-                </div>
-
                 {/* GitHub Card */}
                 <div className="p-8 md:p-12 md:py-24 flex flex-col items-start text-left">
                   <div className="mb-8 flex items-center justify-center size-8">
@@ -106,6 +81,31 @@ export default function CommunityProof() {
                     className="mt-auto flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >
                     Star ParadeDB
+                    <RiArrowRightLine className="size-4" />
+                  </Link>
+                </div>
+
+                {/* Contributors Card */}
+                <div className="p-8 md:p-12 md:py-24 flex flex-col items-start text-left">
+                  <div className="mb-8 flex items-center justify-center size-8 text-slate-900 dark:text-slate-100">
+                    <RiGroupLine className="w-full h-full" />
+                  </div>
+                  <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
+                    140+
+                  </div>
+                  <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
+                    Open-source contributors
+                  </div>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
+                    ParadeDB is built in the open by a growing community of
+                    developers.
+                  </p>
+                  <Link
+                    href={`${github.REPO}/graphs/contributors`}
+                    target="_blank"
+                    className="mt-auto flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                  >
+                    Meet our contributors
                     <RiArrowRightLine className="size-4" />
                   </Link>
                 </div>
