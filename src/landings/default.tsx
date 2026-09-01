@@ -14,11 +14,11 @@ export default function DefaultLanding() {
       <div id="performance">
         <PerformanceSection />
       </div>
-      <div id="postgres">
-        <PostgresNative />
-      </div>
       <div id="architecture">
         <Architecture />
+      </div>
+      <div id="foundation">
+        <PostgresNative />
       </div>
       <div id="customers">
         <SocialProof />

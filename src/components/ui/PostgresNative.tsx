@@ -178,11 +178,11 @@ export default function PostgresNative() {
           <div className="flex flex-col items-start text-left px-6 sm:px-16 lg:px-24 mb-10 md:mb-12">
             <SectionHeader
               cursor="gutter"
-              eyebrow="Architecture"
+              eyebrow="Foundation"
               title={<>Fully Postgres native.</>}
               description={
                 <>
-                  The world's{" "}
+                  Built on the world's{" "}
                   <Link
                     href="https://survey.stackoverflow.co/2025/technology#2-databases"
                     target="_blank"

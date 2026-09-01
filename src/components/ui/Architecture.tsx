@@ -186,8 +186,8 @@ export default function Architecture() {
           {/* Header */}
           <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 mb-10 md:mb-12">
             <SectionHeader
-              eyebrow="How It Works"
-              title="More than OLTP. More than search."
+              eyebrow="Architecture"
+              title="No bespoke search engine. Zero ETL."
               description="ParadeDB pairs Postgres' transactional storage with a unified index combining inverted, vector, and columnar data structures."
             />
           </div>
