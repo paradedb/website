@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { RiArrowRightLine, RiGithubFill } from "@remixicon/react";
+import {
+  RiArrowRightLine,
+  RiGithubFill,
+  RiGroupLine,
+} from "@remixicon/react";
 import DockerLogo from "./DockerLogo";
-import PostgresLogo from "./PostgresLogo";
 import { documentation, github } from "@/lib/links";
 
 export default function CommunityProof() {
@@ -32,8 +35,7 @@ export default function CommunityProof() {
                     Loved by developers.
                   </h2>
                   <p className="text-md text-slate-600 dark:text-slate-300 leading-relaxed">
-                    We are committed to building the best open source search
-                    experience for Postgres.
+                    Open-source first and always self-hostable.
                   </p>
                 </div>
 
@@ -62,27 +64,27 @@ export default function CommunityProof() {
                   </Link>
                 </div>
 
-                {/* extension Card */}
+                {/* Contributors Card */}
                 <div className="p-8 md:p-12 md:py-24 flex flex-col items-start text-left">
                   <div className="mb-8 flex items-center justify-center size-8 text-slate-900 dark:text-slate-100">
-                    <PostgresLogo className="w-full h-full" />
+                    <RiGroupLine className="w-full h-full" />
                   </div>
                   <div className="text-2xl font-bold text-indigo-950 dark:text-white mb-2">
-                    250K+
+                    130+
                   </div>
                   <div className="font-semibold text-slate-900 dark:text-slate-100 mb-2">
-                    Postgres extension installs
+                    Open-source contributors
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                    All our features are shipped as a Postgres extension, which
-                    means that ParadeDB can drop into any self-managed Postgres.
+                    ParadeDB is built in the open by a growing community of
+                    developers.
                   </p>
                   <Link
-                    href={documentation.DEPLOY_EXTENSION}
+                    href={`${github.REPO}/graphs/contributors`}
                     target="_blank"
                     className="mt-auto flex items-center gap-1 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
                   >
-                    Install extension
+                    Meet our contributors
                     <RiArrowRightLine className="size-4" />
                   </Link>
                 </div>
