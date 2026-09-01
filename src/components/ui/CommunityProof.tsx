@@ -31,7 +31,7 @@ export default function CommunityProof() {
                     Loved by developers.
                   </h2>
                   <p className="text-md text-slate-600 dark:text-slate-300 leading-relaxed">
-                    Open source since day one—and always will be.
+                    Open source since day one. Always.
                   </p>
                 </div>
 
