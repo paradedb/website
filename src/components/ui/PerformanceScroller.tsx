@@ -346,6 +346,9 @@ export default function PerformanceScroller({
                 </a>
                 .
               </p>
+              <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-2 max-w-4xl">
+                Watch this space for Elasticsearch benchmarks.
+              </p>
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 lg:gap-20">
