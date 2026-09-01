@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { RiArrowRightLine, RiGithubFill } from "@remixicon/react";
-import { Badge } from "./Badge";
 import DockerLogo from "./DockerLogo";
 import PostgresLogo from "./PostgresLogo";
 import { documentation, github } from "@/lib/links";
@@ -18,16 +17,21 @@ export default function CommunityProof() {
 
           {/* Section: Loved by Developers (White Background) */}
           <div className="relative flex flex-col items-center justify-center bg-white dark:bg-slate-950">
-            <div className="relative w-full z-20">
+            <div className="relative w-full">
               <div className="grid grid-cols-1 md:grid-cols-4 bg-white dark:bg-slate-950 divide-y md:divide-y-0 divide-slate-200 dark:divide-slate-900">
                 {/* Heading Column */}
                 <div className="p-8 md:p-12 md:py-24 text-left flex flex-col items-start md:border-r border-slate-200 dark:border-slate-900">
-                  <Badge className="mb-6">Open Source</Badge>
-                  <h2 className="text-3xl font-bold tracking-tighter text-indigo-950 dark:text-white mb-4">
-                    <span className="text-highlight-blink">Loved</span> by
-                    developers.
+                  <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
+                    Open Source
+                  </p>
+                  <h2 className="relative text-2xl sm:text-3xl font-semibold tracking-tight leading-[1.15] text-slate-900 dark:text-white mb-4">
+                    <span
+                      aria-hidden="true"
+                      className="hidden sm:block absolute -left-8 md:-left-12 translate-x-[calc(-50%+0.5px)] top-[0.15em] h-[0.9em] w-[3px] bg-indigo-600 z-40"
+                    />
+                    Loved by developers.
                   </h2>
-                  <p className="text-md text-gray-800 dark:text-slate-300 leading-relaxed">
+                  <p className="text-md text-slate-600 dark:text-slate-300 leading-relaxed">
                     We are committed to building the best open source search
                     experience for Postgres.
                   </p>

@@ -3,26 +3,26 @@
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { cx } from "@/lib/utils";
-import { Badge } from "./Badge";
+import { SectionHeader } from "./SectionHeader";
 import PixelShadow from "./PixelShadow";
-import { Button } from "../Button";
 import Link from "next/link";
-import { documentation, social } from "@/lib/links";
+import { social } from "@/lib/links";
 import {
   RiTerminalBoxLine,
   RiShieldKeyholeLine,
-  RiLifebuoyLine,
+  RiListCheck2,
   RiPlugLine,
   RiPuzzleLine,
+  RiServerLine,
 } from "@remixicon/react";
 
 const KEEPS = [
   {
-    title: "Built as an extension",
+    title: "Shipped as an extension",
     body: (
       <>
-        Pure Postgres extension. Drops into any self-managed Postgres with no
-        fork and no separate server. Or{" "}
+        Pure Postgres extension, not a fork. Drops into any self-managed
+        Postgres. Or{" "}
         <Link
           href={social.CALENDLY}
           target="_blank"
@@ -37,6 +37,12 @@ const KEEPS = [
     code: "CREATE EXTENSION pg_search;",
   },
   {
+    title: "Built as an index",
+    body: "No sidecar process, no external cluster — just a native index on your tables.",
+    icon: <RiListCheck2 className="size-[18px]" />,
+    code: "CREATE INDEX … USING paradedb;",
+  },
+  {
     title: "Standard SQL",
     body: "Joins, CTEs, window functions, JSONB, PL/pgSQL, row level security (RLS), materialized views. Search is a WHERE clause.",
     icon: <RiTerminalBoxLine className="size-[18px]" />,
@@ -49,16 +55,28 @@ const KEEPS = [
     code: "BEGIN; … COMMIT;",
   },
   {
-    title: "Your usual ops surface",
-    body: "pg_dump, logical replication, high availability, pgBackRest, the dashboards and alerting your team already trusts.",
-    icon: <RiLifebuoyLine className="size-[18px]" />,
-    code: "pg_dump -Fc db | …",
+    title: "Replicates like Postgres",
+    body: (
+      <>
+        High availability through physical replication, plus horizontal read
+        scaling with read replicas, available on the{" "}
+        <Link
+          href="#pricing"
+          className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300"
+        >
+          Enterprise plan
+        </Link>
+        .
+      </>
+    ),
+    icon: <RiServerLine className="size-[18px]" />,
+    code: "pg_basebackup -R …",
   },
   {
     title: "The Postgres ecosystem",
-    body: "pgvector, pg_partman, pg_cron, PostGIS, and the rest of the extension catalog work side by side.",
+    body: "pg_dump, logical replication, pgBackRest, and the tooling your team already trusts — plus pg_partman, pg_cron, PostGIS, and the rest of the extension catalog.",
     icon: <RiPuzzleLine className="size-[18px]" />,
-    code: "CREATE EXTENSION vector;",
+    code: "CREATE EXTENSION pg_cron;",
   },
 ];
 
@@ -143,41 +161,34 @@ export default function PostgresNative() {
   return (
     <div
       ref={sectionRef}
-      className="w-full relative bg-white dark:bg-slate-950 border-t border-slate-200 dark:border-slate-900"
+      className="w-full relative bg-white dark:bg-slate-950"
     >
       <div className="max-w-[1440px] mx-auto px-4 md:px-12 relative w-full">
         {/* Vertical guide lines */}
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        <section className="relative py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
+        <section className="relative z-40 py-10 md:py-16 border-r border-l border-slate-200 dark:border-slate-900 bg-white dark:bg-slate-950">
           {/* Header */}
-          <div className="flex flex-col items-center text-center px-6 sm:px-12 mb-10 md:mb-12">
-            <Badge className="mb-6">OLTP</Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-6 max-w-4xl">
-              Built on <span className="text-highlight-blink">Postgres</span>.
-            </h2>
-            <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-4xl leading-relaxed">
-              The world's{" "}
-              <Link
-                href="https://survey.stackoverflow.co/2025/technology#2-databases"
-                target="_blank"
-                className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
-              >
-                most-admired
-              </Link>{" "}
-              open-source database, proven in production at every scale.
-            </p>
-            <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:items-center">
-              <Button
-                asChild
-                className="text-md px-6 py-2 bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 rounded-none hover:bg-indigo-700 transition-all"
-              >
-                <Link href={documentation.GETTING_STARTED} target="_blank">
-                  Install ParadeDB
-                </Link>
-              </Button>
-            </div>
+          <div className="flex flex-col items-start text-left px-6 sm:px-16 lg:px-24 mb-10 md:mb-12">
+            <SectionHeader
+              cursor="gutter"
+              eyebrow="Foundation"
+              title={<>Fully Postgres native.</>}
+              description={
+                <>
+                  Built on the world&apos;s{" "}
+                  <Link
+                    href="https://survey.stackoverflow.co/2025/technology#2-databases"
+                    target="_blank"
+                    className="text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                  >
+                    most-admired
+                  </Link>{" "}
+                  open-source database, proven in production at every scale.
+                </>
+              }
+            />
           </div>
 
           {/* Keeps bento */}
@@ -188,7 +199,7 @@ export default function PostgresNative() {
               </span>
               <span className="flex-1 h-px bg-slate-200 dark:bg-slate-800" />
               <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 dark:text-slate-600">
-                05 / 05
+                06 / 06
               </span>
             </div>
 
@@ -198,7 +209,7 @@ export default function PostgresNative() {
                   key={item.title}
                   item={item}
                   index={i}
-                  isWide={i === KEEPS.length - 1}
+                  isWide={false}
                   visible={visible}
                 />
               ))}

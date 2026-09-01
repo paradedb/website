@@ -10,7 +10,7 @@ import {
   RiFileCopyLine,
   RiOpenaiFill,
 } from "@remixicon/react";
-import { Badge } from "./Badge";
+import { SectionHeader } from "./SectionHeader";
 import { JavaScriptIcon } from "./icons/JavaScriptIcon";
 import { PythonIcon } from "./icons/PythonIcon";
 import { RubyIcon } from "./icons/RubyIcon";
@@ -388,29 +388,21 @@ export default function AgentReady() {
           <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
           <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-          <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-            <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100/60 dark:bg-slate-900/40 -z-10" />
-            <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-            <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-
-            <div className="relative flex flex-col items-center justify-center py-10 sm:py-16 bg-transparent z-20">
+          <div className="px-4 md:px-12 w-full flex flex-col relative">
+            <div className="relative flex flex-col items-center justify-center py-10 sm:py-16 bg-transparent">
               {/* Header section */}
-              <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0 text-center mb-12">
-                <Badge className="mb-6">Integrations</Badge>
-                <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                  Use with your{" "}
-                  <span className="text-indigo-600 dark:text-indigo-400">
-                    favorite
-                  </span>{" "}
-                  tools.
-                </h2>
-                <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
-                  ParadeDB works seamlessly with your existing stack.
-                </p>
+              <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 relative mb-12">
+                <SectionHeader
+                  eyebrow="Integrations"
+                  title="Use with your favorite tools."
+                  description="ParadeDB works seamlessly with your existing stack."
+                />
               </div>
 
               {/* Nested Cards Container */}
               <div className="relative w-full z-20">
+                <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+                <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
                 <div className="max-w-[1128px] mx-auto grid grid-cols-1 lg:grid-cols-3 divide-y lg:divide-y-0 lg:divide-x divide-slate-200 dark:divide-slate-800 border-y border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/50">
                   {/* Card 2: Cloud Platforms */}
                   <div className="flex flex-col h-full relative overflow-hidden bg-white dark:bg-slate-900/40">

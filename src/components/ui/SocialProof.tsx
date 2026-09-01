@@ -1,124 +1,244 @@
+"use client";
+
+import { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { RiArrowRightLine } from "@remixicon/react";
-import { Badge } from "./Badge";
+import {
+  RiArrowDownLine,
+  RiArrowRightLine,
+  RiArrowUpLine,
+} from "@remixicon/react";
+import { cx } from "@/lib/utils";
+import { SectionHeader } from "./SectionHeader";
+import { CardWave } from "./CardWave";
 
-const CaseStudyCard = ({
-  logo,
-  quote,
-  author,
-  role,
-  initials,
-  href,
-}: {
-  logo: React.ReactNode;
-  quote: string;
-  author: string;
-  role: string;
-  initials: string;
-  href: string;
-}) => (
-  <Link
-    href={href}
-    className="group relative flex flex-col items-start p-8 md:p-12 text-left overflow-hidden h-full transition-colors duration-200 hover:bg-indigo-100 dark:hover:bg-indigo-900/30"
-  >
-    {/* Content */}
-    <div className="w-full flex flex-col items-start">
-      <div className="mb-8 h-8 sm:h-10 flex items-center">{logo}</div>
-      <blockquote className="text-sm md:text-lg text-slate-800 dark:text-slate-300 leading-relaxed mb-8">
-        {quote}
-      </blockquote>
-      <div className="mt-auto flex items-center gap-3">
-        <div className="size-10 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-400 font-bold text-xs uppercase tracking-wide border border-slate-200 dark:border-slate-700">
-          {initials}
-        </div>
-        <div className="text-left">
-          <div className="font-semibold text-slate-900 dark:text-slate-100 text-sm">
-            {author}
-          </div>
-          <div className="text-slate-500 dark:text-slate-400 text-sm">
-            {role}
-          </div>
-        </div>
-      </div>
-    </div>
-  </Link>
-);
+const STUDIES = [
+  {
+    key: "modern-treasury",
+    name: "Modern Treasury",
+    href: "/customers/case-study-modern-treasury",
+    logo: {
+      src: "/brand/customers/modern-treasury.svg",
+      width: 344,
+      height: 30,
+      className: "h-4 w-auto",
+    },
+    tabLogoClassName: "h-3",
+    quote:
+      "“Built on the solid foundation of Postgres, ParadeDB provides the good parts of Elasticsearch we actually need, without the infrastructure and hassle of data synchronization.”",
+    initials: "MH",
+    author: "Matt Higgins",
+    role: "Head of Engineering, Modern Treasury",
+    stat: "3x",
+    direction: "up" as const,
+    impact:
+      "Faster writes after replacing up to 26 B-tree and GIN indexes over one table with a single ParadeDB index.",
+    panelBg: "bg-[#00835A]",
+    accentBg: "bg-[#00835A] dark:bg-[#00B37A]",
+  },
+  {
+    key: "bilt",
+    name: "Bilt Rewards",
+    href: "/customers/case-study-bilt",
+    logo: {
+      src: "/brand/customers/bilt-rewards.svg",
+      width: 179,
+      height: 30,
+      className: "h-4 w-auto",
+    },
+    tabLogoClassName: "h-2.5",
+    quote:
+      "“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”",
+    initials: "JK",
+    author: "John King",
+    role: "Backend Engineer, Bilt",
+    stat: "95%",
+    direction: "down" as const,
+    impact:
+      "Reduction in query timeouts across Bilt's resident search, with P95 query latency down 50%.",
+    panelBg: "bg-slate-900 dark:bg-slate-800",
+    accentBg: "bg-slate-900 dark:bg-slate-700",
+  },
+  {
+    key: "alibaba",
+    name: "Alibaba",
+    href: "/customers/case-study-alibaba",
+    logo: {
+      src: "/brand/customers/alibaba.svg",
+      width: 127,
+      height: 30,
+      className: "h-8 w-auto",
+    },
+    tabLogoClassName: "h-5",
+    quote:
+      "“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”",
+    initials: "PB",
+    author: "Pang Bo",
+    role: "Product Manager, Alibaba",
+    stat: "5x",
+    direction: "down" as const,
+    impact:
+      "Lower query latency than Lucene at high concurrency in AnalyticDB benchmarks.",
+    panelBg: "bg-[#FF6600]",
+    accentBg: "bg-[#FF6600]",
+    waveColor: "#ffffff4d",
+  },
+];
 
 export default function SocialProof() {
+  const [active, setActive] = useState(0);
+
   return (
     <div className="w-full relative bg-white dark:bg-slate-950">
       <section className="overflow-hidden flex flex-col relative max-w-[1440px] mx-auto">
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        {/* Additional Vertical Lines */}
-        <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-        <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+        <div className="px-4 md:px-12 w-full">
+          <div className="border-y border-slate-200 dark:border-slate-900">
+            <div className="h-8 md:h-12 w-full bg-diagonal-hatch opacity-60" />
+          </div>
+        </div>
 
-        <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-          {/* Background color layer */}
-          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100/60 dark:bg-slate-900/40 z-0" />
-
-          {/* Inner Vertical Borders for boxed look */}
-          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-
-          {/* Section 1: Case Studies */}
-          <div className="relative z-10 flex flex-col items-center justify-center sm:py-16 py-10 text-center bg-transparent">
-            {/* Fades for Case Studies Section */}
-            <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white dark:from-slate-950 to-transparent z-0 pointer-events-none" />
-
-            <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6 mt-px ml-px">Case Studies</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                <span className="text-highlight-blink">Trusted</span> by
-                enterprises.
-              </h2>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12 px-2">
-                The most innovative companies are simplifying their stack with
-                ParadeDB.
-              </p>
+        <div className="px-4 md:px-12 w-full flex flex-col relative">
+          <div className="relative flex flex-col items-center justify-center sm:py-16 py-10 bg-transparent">
+            <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 relative">
+              <SectionHeader
+                eyebrow="Case Studies"
+                title="Trusted by enterprises."
+                description="The most innovative companies use ParadeDB to do more with Postgres."
+                className="mb-12"
+              />
             </div>
 
             <div className="relative w-full z-20">
-              <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-2 bg-white dark:bg-slate-900/50 border-y border-slate-200 dark:border-slate-900">
-                <div className="border-b md:border-b-0 md:border-r border-slate-200 dark:border-slate-900">
-                  <CaseStudyCard
-                    href="/customers/case-study-bilt"
-                    logo={
-                      <Image
-                        src="/brand/customers/bilt-rewards.svg"
-                        alt="Bilt Rewards"
-                        width={179}
-                        height={30}
-                        className="h-4 w-auto opacity-80 dark:brightness-0 dark:invert"
-                      />
-                    }
-                    quote="“Using ParadeDB has unlocked the ability to rapidly launch new search capabilities across our products — something that previously would have taken weeks of effort.”"
-                    initials="JK"
-                    author="John King"
-                    role="Backend Engineer, Bilt"
-                  />
-                </div>
+              <div className="relative">
+                <div className="max-w-[1128px] mx-auto">
+                  <div className="max-w-full overflow-x-auto no-scrollbar">
+                    <div
+                      role="tablist"
+                      aria-label="Case studies"
+                      className="inline-flex bg-white dark:bg-slate-900/50"
+                    >
+                      {STUDIES.map((s, i) => (
+                        <button
+                          key={s.key}
+                          role="tab"
+                          aria-selected={i === active}
+                          aria-label={s.name}
+                          onClick={() => setActive(i)}
+                          className={cx(
+                            "group cursor-pointer flex items-center justify-center px-5 py-2.5 transition-colors",
+                            i === active
+                              ? s.accentBg
+                              : "bg-slate-50 dark:bg-slate-900 hover:bg-slate-100 dark:hover:bg-slate-800",
+                          )}
+                        >
+                          <Image
+                            src={s.logo.src}
+                            alt=""
+                            width={s.logo.width}
+                            height={s.logo.height}
+                            className={cx(
+                              s.tabLogoClassName,
+                              "w-auto transition-opacity",
+                              i === active
+                                ? "brightness-0 invert"
+                                : "brightness-0 opacity-40 group-hover:opacity-60 dark:invert",
+                            )}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-                <div>
-                  <CaseStudyCard
-                    href="/customers/case-study-alibaba"
-                    logo={
-                      <Image
-                        src="/brand/customers/alibaba.svg"
-                        alt="Alibaba"
-                        width={127}
-                        height={30}
-                        className="h-8 w-auto opacity-80 dark:brightness-0 dark:invert"
-                      />
-                    }
-                    quote="“ParadeDB has excellent performance and throughput in search, helping our clients achieve structured analysis and full-text retrieval using a pure Postgres engine.”"
-                    initials="PB"
-                    author="Pang Bo"
-                    role="Product Manager, Alibaba"
-                  />
+                  <div className="grid">
+                    {STUDIES.map((s, i) => (
+                      <div
+                        key={s.key}
+                        aria-hidden={i !== active}
+                        className={cx(
+                          "[grid-area:1/1] grid md:grid-cols-[360px_1fr] text-left",
+                          s.panelBg,
+                          i !== active && "invisible",
+                        )}
+                      >
+                        <aside className="relative flex flex-col justify-center border-b md:border-b-0 border-white/15 p-8 md:p-12 md:pb-28 text-white">
+                          <span
+                            aria-hidden="true"
+                            className="hidden md:block absolute right-0 top-12 bottom-20 w-px bg-white/15"
+                          />
+                          {i === active && (
+                            <CardWave
+                              color={s.waveColor ?? "#ffffff2e"}
+                              className="hidden md:block"
+                            />
+                          )}
+                          <p className="font-mono text-xs uppercase tracking-widest text-white/60 mb-4">
+                            Impact
+                          </p>
+                          <div className="mb-4 flex items-end gap-1.5 text-5xl md:text-6xl font-semibold tracking-tight">
+                            {s.stat}
+                            {s.direction === "up" ? (
+                              <RiArrowUpLine
+                                aria-hidden="true"
+                                className="size-5 md:size-7 shrink-0 mb-1 md:mb-1.5"
+                              />
+                            ) : (
+                              <RiArrowDownLine
+                                aria-hidden="true"
+                                className="size-5 md:size-7 shrink-0 mb-1 md:mb-1.5"
+                              />
+                            )}
+                          </div>
+                          <p className="text-sm md:text-base leading-relaxed text-white/90">
+                            {s.impact}
+                          </p>
+                          <Link
+                            href={s.href}
+                            className="group mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white"
+                          >
+                            Read the case study
+                            <RiArrowRightLine className="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                          </Link>
+                        </aside>
+
+                        <div className="relative flex flex-col items-start p-8 md:p-12 pb-20 md:pb-28">
+                          {i === active && (
+                            <CardWave color={s.waveColor ?? "#ffffff2e"} />
+                          )}
+                          <div className="mb-8 hidden md:flex h-8 items-center">
+                            <Image
+                              src={s.logo.src}
+                              alt={s.name}
+                              width={s.logo.width}
+                              height={s.logo.height}
+                              className={cx(
+                                s.logo.className,
+                                "brightness-0 invert opacity-90",
+                              )}
+                            />
+                          </div>
+                          <blockquote className="text-base md:text-lg text-white/90 leading-relaxed mb-8">
+                            {s.quote}
+                          </blockquote>
+                          <div className="mt-auto flex items-center gap-3">
+                            <div className="size-10 rounded-full bg-white/10 flex items-center justify-center text-white/80 font-bold text-xs uppercase tracking-wide border border-white/20">
+                              {s.initials}
+                            </div>
+                            <div>
+                              <div className="font-semibold text-white text-sm">
+                                {s.author}
+                              </div>
+                              <div className="text-white/60 text-sm">
+                                {s.role}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
 

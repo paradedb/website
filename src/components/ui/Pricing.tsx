@@ -1,4 +1,7 @@
 import { Badge } from "./Badge";
+import { SectionHeader } from "./SectionHeader";
+import { CardWave } from "./CardWave";
+import { cx } from "@/lib/utils";
 import { Button } from "../Button";
 import Link from "next/link";
 import { RiCheckLine } from "@remixicon/react";
@@ -12,6 +15,7 @@ const PricingCard = ({
   buttonLink,
   buttonVariant = "primary",
   badgeText,
+  featured = false,
 }: {
   planName: string;
   description: string;
@@ -20,30 +24,73 @@ const PricingCard = ({
   buttonLink: string;
   buttonVariant?: "primary" | "secondary" | "light";
   badgeText: string;
+  featured?: boolean;
 }) => (
   <div className="relative h-full">
-    <div className="relative flex flex-col p-6 sm:p-8 md:p-12 h-full bg-white dark:bg-slate-900 text-left items-start">
-      <div className="mb-6 sm:mb-8 w-full">
+    <div
+      className={cx(
+        "relative flex flex-col p-6 sm:p-8 md:p-12 h-full text-left items-start",
+        featured
+          ? "bg-slate-50 dark:bg-slate-900 md:bg-indigo-600 md:dark:bg-indigo-600 md:text-white"
+          : "bg-slate-50 dark:bg-slate-900",
+      )}
+    >
+      {featured && <CardWave color="#ffffff2e" className="hidden md:block" />}
+      <div className="relative mb-6 sm:mb-8 w-full">
         <div className="flex justify-start mb-2">
-          <Badge className="py-0.5 px-2 text-[10px]">{badgeText}</Badge>
+          <Badge
+            className={cx(
+              "py-0.5 px-2 text-[10px]",
+              featured &&
+                "md:bg-white/15 md:border-white/40 md:text-white md:dark:bg-white/15 md:dark:border-white/40 md:dark:text-white",
+            )}
+          >
+            {badgeText}
+          </Badge>
         </div>
         <div className="flex items-baseline justify-start gap-1 mb-4">
-          <span className="text-2xl sm:text-3xl font-bold text-indigo-950 dark:text-white">
+          <span
+            className={cx(
+              "text-2xl sm:text-3xl font-bold",
+              featured
+                ? "text-indigo-950 dark:text-white md:text-white"
+                : "text-indigo-950 dark:text-white",
+            )}
+          >
             {planName}
           </span>
         </div>
-        <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+        <p
+          className={cx(
+            "text-sm leading-relaxed",
+            featured
+              ? "text-slate-600 dark:text-slate-400 md:text-indigo-100 md:dark:text-indigo-100"
+              : "text-slate-600 dark:text-slate-400",
+          )}
+        >
           {description}
         </p>
       </div>
 
-      <ul className="space-y-4 mb-10 w-full text-left">
+      <ul className="relative space-y-4 mb-10 w-full text-left">
         {features.map((feature, i) => (
           <li
             key={i}
-            className="flex items-start gap-3 text-sm text-slate-700 dark:text-slate-300"
+            className={cx(
+              "flex items-start gap-3 text-sm",
+              featured
+                ? "text-slate-700 dark:text-slate-300 md:text-indigo-50 md:dark:text-indigo-50"
+                : "text-slate-700 dark:text-slate-300",
+            )}
           >
-            <RiCheckLine className="size-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
+            <RiCheckLine
+              className={cx(
+                "size-5 shrink-0",
+                featured
+                  ? "text-indigo-600 dark:text-indigo-400 md:text-indigo-200 md:dark:text-indigo-200"
+                  : "text-indigo-600 dark:text-indigo-400",
+              )}
+            />
             <span className="leading-tight">{feature}</span>
           </li>
         ))}
@@ -51,7 +98,11 @@ const PricingCard = ({
 
       <Button
         asChild
-        className="w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto"
+        className={cx(
+          "w-full h-12 rounded-none text-md font-semibold shadow-none mt-auto",
+          featured &&
+            "border-0 bg-indigo-600 text-white hover:bg-indigo-700 dark:bg-indigo-600 dark:text-white dark:hover:bg-indigo-700 md:bg-white md:text-indigo-600 md:hover:bg-indigo-50 md:dark:bg-white md:dark:text-indigo-600 md:dark:hover:bg-indigo-50",
+        )}
         variant={buttonVariant as any}
       >
         <Link
@@ -76,29 +127,22 @@ export default function Pricing() {
         <div className="absolute inset-y-0 left-4 md:left-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none" />
 
-        <div className="px-4 md:px-12 w-full flex flex-col relative isolate">
-          {/* Background color layer */}
-          <div className="absolute inset-y-0 left-4 md:left-12 right-4 md:right-12 bg-slate-100/60 dark:bg-slate-900/40 z-0" />
-
-          {/* Inner Vertical Borders for boxed look */}
-          <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-          <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
-
-          <div className="relative z-10 flex flex-col items-center justify-center py-10 sm:py-16 text-center bg-transparent">
+        <div className="px-4 md:px-12 w-full flex flex-col relative">
+          <div className="relative flex flex-col items-center justify-center py-10 sm:py-16 text-center bg-transparent">
             {/* Header section */}
-            <div className="flex flex-col items-center w-full relative z-20 px-6 sm:px-0">
-              <Badge className="mb-6">Pricing</Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold tracking-tighter text-indigo-950 dark:text-white sm:text-6xl mb-4">
-                Ready, set, <span className="text-highlight-blink">deploy</span>
-                .
-              </h2>
-              <p className="text-base sm:text-lg text-gray-800 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed mb-12">
-                Scale search on Postgres with confidence.
-              </p>
+            <div className="mx-auto w-full max-w-[1128px] px-4 sm:px-12 xl:px-0 relative">
+              <SectionHeader
+                eyebrow="Pricing"
+                title="Ready, set, deploy."
+                description="Scale search on Postgres with confidence."
+                className="mb-12"
+              />
             </div>
 
             {/* Nested Cards Container */}
             <div className="relative w-full z-20">
+              <div className="absolute inset-y-0 left-1/2 -ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
+              <div className="absolute inset-y-0 left-1/2 ml-[564px] w-px bg-slate-200 dark:bg-slate-900 z-30 pointer-events-none hidden xl:block" />
               <div className="max-w-[1128px] mx-auto grid grid-cols-1 md:grid-cols-3 border-y border-slate-200 dark:border-slate-800 divide-y md:divide-y-0 md:divide-x divide-slate-200 dark:divide-slate-800">
                 <PricingCard
                   planName="Community"
@@ -111,7 +155,20 @@ export default function Pricing() {
                   ]}
                   buttonText="Get Started"
                   buttonLink={documentation.GETTING_STARTED}
+                />
+                <PricingCard
+                  planName="Cloud"
+                  badgeText="Coming Soon"
+                  description="Use ParadeDB without managing any infrastructure."
+                  features={[
+                    "Everything in Enterprise",
+                    "Fully managed",
+                    "One-click deployments",
+                  ]}
+                  buttonText="Early Access"
+                  buttonLink="/cloud"
                   buttonVariant="light"
+                  featured
                 />
                 <PricingCard
                   planName="Enterprise"
@@ -125,20 +182,6 @@ export default function Pricing() {
                   ]}
                   buttonText="Custom Pricing"
                   buttonLink={social.CALENDLY}
-                />
-                <PricingCard
-                  planName="Cloud"
-                  badgeText="Fully Managed"
-                  description="Use ParadeDB without managing any infrastructure."
-                  features={[
-                    "Everything in Enterprise",
-                    "Fully managed",
-                    "One-click deployments",
-                    "Coming soon",
-                  ]}
-                  buttonText="Join the Waitlist"
-                  buttonLink="/cloud"
-                  buttonVariant="light"
                 />
               </div>
             </div>
