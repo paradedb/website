@@ -72,8 +72,7 @@ export default function CommunityProof() {
                     Stargazers on GitHub
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400 mb-6 leading-relaxed">
-                    ParadeDB is one of the fastest-growing open source database
-                    projects.
+                    ParadeDB is one of the fastest-growing database projects.
                   </p>
                   <Link
                     href={github.REPO}
