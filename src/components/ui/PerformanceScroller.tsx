@@ -365,8 +365,13 @@ export default function PerformanceScroller({
               >
                 <div className="sm:min-h-[220px] border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-3 sm:p-5 mb-6 sm:mb-8">
                   {queryPanels[tab.key] && (
-                    <div className="flex items-center justify-end mb-4">
-                      <div className="flex border border-slate-200 dark:border-slate-800">
+                    <div className="flex items-center gap-4 mb-4">
+                      {!queryPanels[tab.key]?.[engine] && (
+                        <p className="font-mono text-sm text-slate-400">
+                          Benchmarks coming soon.
+                        </p>
+                      )}
+                      <div className="ml-auto flex border border-slate-200 dark:border-slate-800">
                         {ENGINES.map((option) => (
                           <button
                             key={option.key}
@@ -384,7 +389,9 @@ export default function PerformanceScroller({
                       </div>
                     </div>
                   )}
-                  {queryPanels[tab.key]?.[engine] ?? (
+                  {queryPanels[tab.key] ? (
+                    queryPanels[tab.key]?.[engine]
+                  ) : (
                     <p className="font-mono text-sm text-slate-400">
                       Benchmarks coming soon.
                     </p>
