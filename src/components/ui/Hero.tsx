@@ -60,9 +60,10 @@ export default async function Hero() {
             {/* Bottom Content - In front of everything */}
             <div className="relative z-20 mt-auto flex flex-col items-start w-full max-w-4xl opacity-0 animate-hero-content">
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-indigo-100 mt-6 mb-8">
-                ParadeDB makes your hardest queries fast. One Postgres platform
-                for transactions, text and vector search, filters, facets, and
-                joins, so you don’t need to move your data to Elasticsearch.
+                Search belongs with your application data. When queries get too
+                slow, developers usually reach for systems like Elasticsearch.
+                ParadeDB makes text and vector search, filters, facets, and
+                joins fast in Postgres.
               </p>
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm self-center sm:max-w-none sm:w-auto sm:self-auto justify-start mb-6 sm:mb-8 sm:px-0">
                 <Button
