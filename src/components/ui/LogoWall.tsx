@@ -3,6 +3,7 @@ import Link from "next/link";
 import { ArrowAnimated } from "./ArrowAnimated";
 import { cx } from "@/lib/utils";
 import { DarkModeOverlay } from "./DarkModeOverlay";
+import { HeroVisual } from "./HeroVisual";
 
 const logos = [
   {
@@ -91,11 +92,8 @@ export default function LogoWall() {
         <div className="absolute inset-y-0 right-4 md:right-12 w-px bg-white/20 z-30 pointer-events-none" />
 
         <div className="px-4 md:px-12 w-full">
-          <div className="border-y border-white/20">
-            <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white bg-indigo-700/20 opacity-60" />
-          </div>
-          <div className="border-b border-white/20 px-6 sm:px-16 lg:px-24 grid lg:grid-cols-[minmax(0,3fr)_minmax(0,11fr)]">
-            <div className="flex flex-col justify-between gap-5 lg:gap-8 pt-6 sm:pt-16 lg:py-20 lg:pr-10">
+          <div className="border-t border-white/20 px-6 sm:px-16 lg:px-24 grid lg:grid-cols-[minmax(0,3fr)_minmax(0,11fr)]">
+            <div className="flex flex-col justify-between gap-5 lg:gap-8 pt-6 sm:pt-16 lg:pt-20 lg:pb-8 lg:pr-10">
               <p className="text-xl sm:text-2xl font-semibold tracking-tight leading-[1.25] text-indigo-200 max-w-md">
                 Trusted by the world&apos;s most{" "}
                 <span className="text-white">ambitious</span> companies.
@@ -112,7 +110,7 @@ export default function LogoWall() {
               </Link>
             </div>
 
-            <ul className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 pt-5 sm:pt-8 lg:pt-20 pb-6 sm:pb-16 lg:pb-20 lg:pl-6">
+            <ul className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 pt-5 sm:pt-8 lg:pt-20 pb-4 sm:pb-8 lg:pb-8 lg:pl-6">
               {logos.map((logo) => (
                 <li
                   key={logo.name}
@@ -135,6 +133,10 @@ export default function LogoWall() {
               ))}
             </ul>
           </div>
+        </div>
+
+        <div className="relative z-10">
+          <HeroVisual />
         </div>
       </section>
     </div>

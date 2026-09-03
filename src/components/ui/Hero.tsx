@@ -4,7 +4,6 @@ import { siteConfig } from "@/app/siteConfig";
 import Link from "next/link";
 import { Button } from "../Button";
 import { DarkModeOverlay } from "./DarkModeOverlay";
-import { HeroVisual } from "./HeroVisual";
 import CopyableCommand from "@/components/CopyableCommand";
 
 const installCommand = `curl -fsSL https://paradedb.com/install.sh | sh`;
@@ -27,7 +26,7 @@ export default async function Hero() {
         {/* Horizontal line below top shaded region - constrained to vertical lines */}
         <div className="absolute top-[96px] md:top-[128px] left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />
 
-        <div className="px-4 md:px-12 w-full h-full flex flex-col flex-grow relative">
+        <div className="px-4 md:px-12 w-full h-full flex flex-col flex-grow relative pb-14 md:pb-20">
           <div className="relative flex flex-col items-start justify-center sm:pt-56 pt-40 text-left px-6 sm:px-16 lg:px-24">
             <div className="flex flex-col items-start w-full max-w-4xl relative z-40">
               <Link
@@ -98,11 +97,6 @@ export default async function Hero() {
               </div>
             </div>
           </div>
-        </div>
-
-        {/* Dithered wave */}
-        <div className="relative z-10 mt-6 md:mt-10">
-          <HeroVisual />
         </div>
 
         {/* Global Vertical Lines - Rendered last to ensure they are on top */}
