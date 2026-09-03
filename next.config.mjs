@@ -27,11 +27,11 @@ const nextConfig = {
       // Rewrites keep the public URL on paradedb.com while proxying the docs.
       {
         source: "/docs",
-        destination: "https://paradedb.mintlify.site/docs",
+        destination: "https://paradedb.mintlify.dev/docs",
       },
       {
         source: "/docs/:path*",
-        destination: "https://paradedb.mintlify.site/docs/:path*",
+        destination: "https://paradedb.mintlify.dev/docs/:path*",
       },
       {
         source: "/install.sh",
