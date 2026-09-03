@@ -55,7 +55,7 @@ const KEEPS = [
     code: "BEGIN; … COMMIT;",
   },
   {
-    title: "Replicates like Postgres",
+    title: "Postgres Replication",
     body: (
       <>
         High availability through physical replication, plus horizontal read
