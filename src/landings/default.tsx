@@ -1,4 +1,5 @@
 import Hero from "@/components/ui/Hero";
+import LogoWall from "@/components/ui/LogoWall";
 import PerformanceSection from "@/components/ui/PerformanceSection";
 import Architecture from "@/components/ui/Architecture";
 import PostgresNative from "@/components/ui/PostgresNative";
@@ -11,6 +12,7 @@ export default function DefaultLanding() {
   return (
     <main className="flex flex-col overflow-x-clip px-0">
       <Hero />
+      <LogoWall />
       <div id="performance">
         <PerformanceSection />
       </div>

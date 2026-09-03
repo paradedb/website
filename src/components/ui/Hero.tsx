@@ -3,7 +3,6 @@ import { documentation } from "@/lib/links";
 import { siteConfig } from "@/app/siteConfig";
 import Link from "next/link";
 import { Button } from "../Button";
-import LogoCloud from "./LogoCloud";
 import { DarkModeOverlay } from "./DarkModeOverlay";
 import { HeroVisual } from "./HeroVisual";
 import CopyableCommand from "@/components/CopyableCommand";
@@ -102,18 +101,6 @@ export default async function Hero() {
         {/* Dithered wave */}
         <div className="relative z-10 mt-6 md:mt-10">
           <HeroVisual />
-        </div>
-
-        <div className="mt-0 relative z-20 w-full">
-          <div className="px-4 md:px-12 w-full mx-auto relative">
-            <div className="absolute top-0 left-4 md:left-12 right-4 md:right-12 h-px bg-white/20 z-30" />
-            <div className="w-full px-6 sm:px-16 lg:px-24">
-              <LogoCloud
-                variant="white"
-                className="bg-transparent px-0 sm:px-0 md:px-0"
-              />
-            </div>
-          </div>
         </div>
 
         {/* Global Vertical Lines - Rendered last to ensure they are on top */}
