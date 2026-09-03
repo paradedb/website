@@ -76,7 +76,7 @@ export default function CommunityProof() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
               {STATS.map((s) => (
                 <div key={s.key} className="flex flex-col">
-                  <div className={cx("p-2", s.matClassName)}>
+                  <div className={cx("group p-2", s.matClassName)}>
                     <div
                       className={cx(
                         "relative aspect-[4/3] overflow-hidden",

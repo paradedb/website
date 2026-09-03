@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { cx } from "@/lib/utils";
 
 const COLS = 32;
@@ -21,7 +22,17 @@ function hash(x: number, y: number, seed: number) {
   return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
 }
 
-type Square = { x: number; y: number; opacity: number };
+type Square = {
+  x: number;
+  y: number;
+  opacity: number;
+  fill?: number;
+  dim?: number;
+  gens?: number[];
+  group?: number;
+};
+
+const GENS = 4;
 
 function centered(squares: Square[], cols: number, rows: number) {
   const ox = (COLS - cols) / 2;
@@ -38,7 +49,7 @@ function steps() {
     if (target < level && (x === CHART_COLS - 1 || hash(x, 1, 9) > 0.35)) {
       level = target;
     }
-    squares.push({ x, y: level, opacity: x === CHART_COLS - 1 ? 0.95 : 0.85 });
+    squares.push({ x, y: level, opacity: 1, fill: x / CHART_COLS, dim: 0.45 });
     if (level + 1 < CHART_ROWS) squares.push({ x, y: level + 1, opacity: 0.3 });
     if (level + 2 < CHART_ROWS)
       squares.push({ x, y: level + 2, opacity: 0.14 });
@@ -56,8 +67,16 @@ function identicons() {
     for (let r = 0; r < size; r++) {
       for (let c = 0; c < size; c++) {
         const mirrored = c < size / 2 ? c : size - 1 - c;
-        const filled = hash(mirrored, r, 30 + i) > 0.5;
-        squares.push({ x: x0 + c, y: r, opacity: filled ? 0.92 : 0.14 });
+        const gens = Array.from({ length: GENS }, (_, g) =>
+          hash(mirrored, r, 30 + i + g * 7) > 0.5 ? 1 : 0,
+        );
+        squares.push({
+          x: x0 + c,
+          y: r,
+          opacity: gens[0] ? 0.92 : 0.14,
+          gens,
+          group: i,
+        });
       }
     }
   }
@@ -72,7 +91,12 @@ function grid() {
     for (let x = 0; x < CHART_COLS; x++) {
       const v = 0.55 * hash(x, y, 3) + 0.55 * (x / CHART_COLS);
       const level = Math.min(3, Math.floor(v * 3.4));
-      squares.push({ x, y, opacity: GRID_OPACITY[level] });
+      squares.push({
+        x,
+        y,
+        opacity: GRID_OPACITY[level],
+        fill: (x * 140 + Math.floor(hash(x, y, 8) * 260)) / 3600,
+      });
     }
   }
   return centered(squares, CHART_COLS, CHART_ROWS);
@@ -116,6 +140,51 @@ const GRAINS = Object.fromEntries(
   Object.entries(CHARTS).map(([k, v]) => [k, grain(v)]),
 ) as Record<keyof typeof CHARTS, string>;
 
+const CLOCKED_OPACITY = `min(${[
+  "clamp(var(--dim), calc((var(--pixel-clock) - var(--t)) * 100 + var(--dim)), var(--target))",
+  "clamp(var(--dim), calc((1.02 + var(--t) - var(--pixel-clock)) * 100 + var(--dim)), var(--target))",
+].join(", ")})`;
+
+const GEN_OPACITY = `calc(0.14 + 0.78 * (${Array.from(
+  { length: GENS },
+  (_, g) =>
+    `clamp(0, calc(1 - (var(--pixel-gen) - ${g}) * (var(--pixel-gen) - ${g}) * 100), 1) * var(--g${g})`,
+).join(" + ")}))`;
+
+function clockedStyle(s: Square): CSSProperties | undefined {
+  if (s.gens) {
+    return {
+      ...Object.fromEntries(s.gens.map((v, g) => [`--g${g}`, v])),
+      fillOpacity: GEN_OPACITY,
+    } as CSSProperties;
+  }
+  if (s.fill === undefined) return undefined;
+  return {
+    "--t": s.fill,
+    "--dim": s.dim ?? 0.1,
+    "--target": s.opacity,
+    fillOpacity: CLOCKED_OPACITY,
+  } as CSSProperties;
+}
+
+function Pixel({ s }: { s: Square }) {
+  return (
+    <rect
+      x={s.x * CELL + INSET}
+      y={s.y * CELL + INSET}
+      width={DOT}
+      height={DOT}
+      fill="#ffffff"
+      fillOpacity={s.fill === undefined && !s.gens ? s.opacity : undefined}
+      className={cx(
+        "transition-[fill-opacity] ease-in-out",
+        s.gens ? "duration-700" : "duration-150",
+      )}
+      style={clockedStyle(s)}
+    />
+  );
+}
+
 export function PixelChart({
   kind,
   className,
@@ -128,20 +197,29 @@ export function PixelChart({
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
-      className={cx("absolute inset-0 size-full", className)}
+      className={cx(
+        "absolute inset-0 size-full",
+        kind === "grid" && "pixel-clock",
+        kind === "steps" && "pixel-clock-fast",
+        className,
+      )}
     >
       <path d={GRAINS[kind]} fill="#ffffff" fillOpacity={0.16} />
-      {CHARTS[kind].map((s) => (
-        <rect
-          key={`${s.x}-${s.y}`}
-          x={s.x * CELL + INSET}
-          y={s.y * CELL + INSET}
-          width={DOT}
-          height={DOT}
-          fill="#ffffff"
-          fillOpacity={s.opacity}
-        />
-      ))}
+      {kind === "identicons"
+        ? [0, 1, 2].map((group) => (
+            <g
+              key={group}
+              className="pixel-gen"
+              style={{ animationDelay: `${group * 1500}ms` }}
+            >
+              {CHARTS[kind]
+                .filter((s) => s.group === group)
+                .map((s) => (
+                  <Pixel key={`${s.x}-${s.y}`} s={s} />
+                ))}
+            </g>
+          ))
+        : CHARTS[kind].map((s) => <Pixel key={`${s.x}-${s.y}`} s={s} />)}
     </svg>
   );
 }

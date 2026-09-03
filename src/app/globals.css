@@ -875,6 +875,18 @@ html.focus-mode article {
   padding-right: 1.5rem !important;
 }
 
+@property --pixel-clock {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 1;
+}
+
+@property --pixel-gen {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
 @layer utilities {
   .animate-hero-wrapper {
     animation: fade-in 500ms ease-out both;
@@ -913,6 +925,63 @@ html.focus-mode article {
 
   .animate-fade-in {
     animation: fade-in 1000ms ease-out both;
+  }
+
+  @keyframes pixel-clock {
+    0% {
+      --pixel-clock: 1;
+    }
+    25%,
+    31% {
+      --pixel-clock: 2;
+    }
+    31.01% {
+      --pixel-clock: 0;
+    }
+    65%,
+    100% {
+      --pixel-clock: 1;
+    }
+  }
+
+  @keyframes pixel-gen {
+    0% {
+      --pixel-gen: 0;
+    }
+    0.6% {
+      --pixel-gen: 1;
+    }
+    26.7% {
+      --pixel-gen: 2;
+    }
+    51.7% {
+      --pixel-gen: 3;
+    }
+    76.7% {
+      --pixel-gen: 0;
+    }
+  }
+
+  .pixel-clock {
+    animation: pixel-clock 8000ms linear infinite paused;
+  }
+
+  .pixel-clock-fast {
+    animation: pixel-clock 6000ms linear infinite paused;
+  }
+
+  .pixel-gen {
+    animation: pixel-gen 18000ms step-end infinite paused;
+  }
+
+  .group:hover :is(.pixel-clock, .pixel-clock-fast, .pixel-gen) {
+    animation-play-state: running;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .group:hover :is(.pixel-clock, .pixel-clock-fast, .pixel-gen) {
+      animation-play-state: paused;
+    }
   }
 
   .fill-mode-both {
