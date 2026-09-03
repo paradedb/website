@@ -971,7 +971,7 @@ html.focus-mode article {
   }
 
   .pixel-gen {
-    animation: pixel-gen 18000ms step-end infinite paused;
+    animation: pixel-gen 12000ms step-end infinite paused;
   }
 
   .group:hover :is(.pixel-clock, .pixel-clock-fast, .pixel-gen) {

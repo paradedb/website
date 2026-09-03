@@ -38,7 +38,7 @@ const STATS: Array<{
     href: github.REPO,
     tileClassName: "bg-indigo-600",
     matClassName: "bg-indigo-600/20",
-    art: <PixelChart kind="identicons" />,
+    art: <PixelChart kind="identicon" />,
   },
   {
     key: "contributors",

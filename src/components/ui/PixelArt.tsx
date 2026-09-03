@@ -29,7 +29,6 @@ type Square = {
   fill?: number;
   dim?: number;
   gens?: number[];
-  group?: number;
 };
 
 const GENS = 4;
@@ -57,30 +56,21 @@ function steps() {
   return centered(squares, CHART_COLS, CHART_ROWS);
 }
 
-function identicons() {
+function identicon() {
   const squares: Square[] = [];
-  const size = 6;
-  const gap = 2;
-  const count = 3;
-  for (let i = 0; i < count; i++) {
-    const x0 = i * (size + gap);
-    for (let r = 0; r < size; r++) {
-      for (let c = 0; c < size; c++) {
-        const mirrored = c < size / 2 ? c : size - 1 - c;
-        const gens = Array.from({ length: GENS }, (_, g) =>
-          hash(mirrored, r, 30 + i + g * 7) > 0.5 ? 1 : 0,
-        );
-        squares.push({
-          x: x0 + c,
-          y: r,
-          opacity: gens[0] ? 0.92 : 0.14,
-          gens,
-          group: i,
-        });
-      }
+  const size = 8;
+  const mid = (size - 1) / 2;
+  for (let r = 0; r < size; r++) {
+    for (let c = 0; c < size; c++) {
+      if (Math.hypot(c - mid, r - mid) > mid + 0.5) continue;
+      const mirrored = c < size / 2 ? c : size - 1 - c;
+      const gens = Array.from({ length: GENS }, (_, g) =>
+        hash(mirrored, r, 30 + g * 7) > 0.5 ? 1 : 0,
+      );
+      squares.push({ x: c, y: r, opacity: gens[0] ? 0.92 : 0.14, gens });
     }
   }
-  return centered(squares, count * size + (count - 1) * gap, size);
+  return centered(squares, size, size);
 }
 
 const GRID_OPACITY = [0.14, 0.32, 0.55, 0.85];
@@ -102,7 +92,7 @@ function grid() {
   return centered(squares, CHART_COLS, CHART_ROWS);
 }
 
-const CHARTS = { steps: steps(), identicons: identicons(), grid: grid() };
+const CHARTS = { steps: steps(), identicon: identicon(), grid: grid() };
 
 const GRAIN_STEP = CELL / 2;
 const GRAIN_DOT = 2;
@@ -205,21 +195,15 @@ export function PixelChart({
       )}
     >
       <path d={GRAINS[kind]} fill="#ffffff" fillOpacity={0.16} />
-      {kind === "identicons"
-        ? [0, 1, 2].map((group) => (
-            <g
-              key={group}
-              className="pixel-gen"
-              style={{ animationDelay: `${group * 1500}ms` }}
-            >
-              {CHARTS[kind]
-                .filter((s) => s.group === group)
-                .map((s) => (
-                  <Pixel key={`${s.x}-${s.y}`} s={s} />
-                ))}
-            </g>
-          ))
-        : CHARTS[kind].map((s) => <Pixel key={`${s.x}-${s.y}`} s={s} />)}
+      {kind === "identicon" ? (
+        <g className="pixel-gen">
+          {CHARTS[kind].map((s) => (
+            <Pixel key={`${s.x}-${s.y}`} s={s} />
+          ))}
+        </g>
+      ) : (
+        CHARTS[kind].map((s) => <Pixel key={`${s.x}-${s.y}`} s={s} />)
+      )}
     </svg>
   );
 }
