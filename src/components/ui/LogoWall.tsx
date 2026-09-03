@@ -10,7 +10,7 @@ const logos = [
     src: "/brand/customers/modern-treasury.svg",
     width: 344,
     height: 30,
-    className: "h-[11px]",
+    className: "h-[10px]",
   },
   {
     name: "Bilt Rewards",
@@ -94,7 +94,7 @@ export default function LogoWall() {
           <div className="border-y border-white/20">
             <div className="h-8 md:h-12 w-full bg-diagonal-hatch-white bg-indigo-700/20 opacity-60" />
           </div>
-          <div className="border-b border-white/20 px-6 sm:px-16 lg:px-24 grid lg:grid-cols-[minmax(0,4fr)_minmax(0,10fr)]">
+          <div className="border-b border-white/20 px-6 sm:px-16 lg:px-24 grid lg:grid-cols-[minmax(0,3fr)_minmax(0,11fr)]">
             <div className="flex flex-col justify-between gap-5 lg:gap-8 pt-6 sm:pt-16 lg:py-20 lg:pr-10">
               <p className="text-xl sm:text-2xl font-semibold tracking-tight leading-[1.25] text-indigo-200 max-w-md">
                 Trusted by the world&apos;s most{" "}
@@ -112,13 +112,13 @@ export default function LogoWall() {
               </Link>
             </div>
 
-            <ul className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 pt-5 sm:pt-8 lg:pt-20 pb-6 sm:pb-16 lg:pb-20 lg:pl-10">
+            <ul className="grid grid-cols-2 lg:grid-cols-5 gap-2.5 pt-5 sm:pt-8 lg:pt-20 pb-6 sm:pb-16 lg:pb-20 lg:pl-6">
               {logos.map((logo) => (
                 <li
                   key={logo.name}
                   className={cx(
                     logo.wrapperClassName,
-                    "h-20 sm:h-24 lg:h-28 flex items-center justify-center px-3 py-4 bg-white/5 border border-white/20 rounded-sm",
+                    "h-20 sm:h-24 lg:h-32 flex items-center justify-center px-3 py-4 bg-white/5 border border-white/20 rounded-sm",
                   )}
                 >
                   <Image
@@ -128,7 +128,7 @@ export default function LogoWall() {
                     height={logo.height}
                     className={cx(
                       logo.className,
-                      "w-auto max-w-full object-contain brightness-0 invert opacity-90",
+                      "w-auto max-w-full object-contain lg:scale-[1.15] brightness-0 invert opacity-90",
                     )}
                   />
                 </li>
