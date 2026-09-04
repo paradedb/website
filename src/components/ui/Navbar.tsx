@@ -238,54 +238,56 @@ export function Navigation() {
                 </Link>
               </div>
             </nav>
-            <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
-              <div className="hidden min-[1400px]:flex">
-                <ThemeToggle
-                  variant={isHomePage && !open ? "white" : "default"}
-                />
-              </div>
-              <Link
-                href={github.REPO}
-                target="_blank"
-                aria-label="GitHub repository"
-                className={cx(
-                  "hidden items-center justify-center space-x-2 transition-all duration-300 min-[1400px]:flex",
-                  open ? "opacity-0" : "opacity-100",
-                )}
-              >
-                <RiGithubFill
-                  aria-hidden="true"
-                  className={cx(
-                    "size-6 shrink-0 transition-colors",
-                    isHomePage && !open
-                      ? "text-white"
-                      : "text-slate-900 dark:text-slate-100",
-                  )}
-                />
-                <div
-                  className={cx(
-                    "text-sm font-medium transition-opacity duration-300",
-                    isHomePage && !open
-                      ? "text-white"
-                      : "text-slate-900 dark:text-slate-100",
-                    stars ? "opacity-100" : "opacity-0",
-                  )}
-                  aria-hidden={stars ? undefined : true}
-                >
-                  {formatStarCount(stars ?? 0)}
+            <div className="flex items-center md:mr-1">
+              <div className="hidden min-[900px]:flex min-[900px]:flex-col min-[900px]:items-end min-[900px]:justify-center min-[900px]:gap-1 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:gap-6">
+                <div className="flex items-center gap-3 sm:gap-6">
+                  <ThemeToggle
+                    variant={isHomePage && !open ? "white" : "default"}
+                  />
+                  <Link
+                    href={github.REPO}
+                    target="_blank"
+                    aria-label="GitHub repository"
+                    className={cx(
+                      "flex items-center justify-center space-x-2 transition-all duration-300",
+                      open ? "opacity-0" : "opacity-100",
+                    )}
+                  >
+                    <RiGithubFill
+                      aria-hidden="true"
+                      className={cx(
+                        "size-6 shrink-0 transition-colors",
+                        isHomePage && !open
+                          ? "text-white"
+                          : "text-slate-900 dark:text-slate-100",
+                      )}
+                    />
+                    <div
+                      className={cx(
+                        "text-sm font-medium transition-opacity duration-300",
+                        isHomePage && !open
+                          ? "text-white"
+                          : "text-slate-900 dark:text-slate-100",
+                        stars ? "opacity-100" : "opacity-0",
+                      )}
+                      aria-hidden={stars ? undefined : true}
+                    >
+                      {formatStarCount(stars ?? 0)}
+                    </div>
+                  </Link>
                 </div>
-              </Link>
-              <Button
-                asChild
-                className={cx(
-                  "hidden px-4 min-[900px]:flex rounded-none transition-all",
-                  isHomePage && !open
-                    ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
-                    : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
-                )}
-              >
-                <a href="mailto:hello@paradedb.com">Contact Us</a>
-              </Button>
+                <Button
+                  asChild
+                  className={cx(
+                    "px-4 rounded-none transition-all",
+                    isHomePage && !open
+                      ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
+                      : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
+                  )}
+                >
+                  <a href="mailto:hello@paradedb.com">Contact Us</a>
+                </Button>
+              </div>
               <div className="min-[900px]:hidden">
                 <Button
                   onClick={() => setOpen(!open)}
@@ -369,7 +371,7 @@ export function Navigation() {
                   target="_blank"
                   href={social.SLACK}
                   className={cx(
-                    "w-full py-5 text-lg tracking-tight inline-flex items-center gap-1",
+                    "w-full py-5 border-b border-slate-100 dark:border-slate-900 text-lg tracking-tight inline-flex items-center gap-1",
                     "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
                   )}
                 >
@@ -380,6 +382,19 @@ export function Navigation() {
                       className="size-full shrink-0 -translate-y-px text-gray-900 dark:text-slate-100"
                     />
                   </div>
+                </Link>
+              </li>
+              <li onClick={() => setOpen(false)} className="w-full px-6">
+                <Link
+                  target="_blank"
+                  href={github.REPO}
+                  className={cx(
+                    "w-full py-5 text-lg tracking-tight inline-flex items-center gap-2",
+                    "text-slate-900 dark:text-slate-100 hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors",
+                  )}
+                >
+                  <RiGithubFill aria-hidden="true" className="size-5" />
+                  GitHub
                 </Link>
               </li>
               <li className="pt-6 px-6">
