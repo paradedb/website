@@ -110,7 +110,7 @@ export function Navigation() {
         <div className="w-full flex flex-col justify-start">
           <div
             className={cx(
-              "relative flex items-center justify-between h-16 md:h-20 shrink-0",
+              "relative grid grid-cols-[auto_1fr_auto] items-center gap-4 h-16 md:h-20 shrink-0 min-[1200px]:gap-6",
               open ? "px-6" : "px-0",
             )}
           >
@@ -125,11 +125,11 @@ export function Navigation() {
                 )}
               />
             </Link>
-            <nav className="hidden min-[900px]:absolute min-[900px]:left-1/2 min-[900px]:top-1/2 min-[900px]:block min-[900px]:-translate-x-1/2 min-[900px]:-translate-y-1/2 min-[900px]:transform">
-              <div className="flex items-center gap-4 min-[1400px]:gap-6 text-sm font-medium">
+            <nav className="hidden min-w-0 justify-self-center min-[900px]:block">
+              <div className="flex min-w-0 items-center gap-2 text-sm font-medium whitespace-nowrap min-[1200px]:gap-4 min-[1400px]:gap-6">
                 <Link
                   className={cx(
-                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
+                    "px-1 py-1 transition-colors min-[1200px]:px-1.5 min-[1400px]:px-2",
                     pathname.startsWith(siteConfig.baseLinks.blog)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -144,7 +144,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   className={cx(
-                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
+                    "px-1 py-1 transition-colors min-[1200px]:px-1.5 min-[1400px]:px-2",
                     pathname.startsWith(siteConfig.baseLinks.customers)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -159,7 +159,7 @@ export function Navigation() {
                 </Link>
                 <Link
                   className={cx(
-                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
+                    "px-1 py-1 transition-colors min-[1200px]:px-1.5 min-[1400px]:px-2",
                     pathname.startsWith(siteConfig.baseLinks.resources)
                       ? "text-indigo-600 dark:text-white"
                       : isHomePage && !open
@@ -175,7 +175,7 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   className={cx(
-                    "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
+                    "px-1 py-1 transition-colors inline-flex items-center gap-1 min-[1200px]:px-1.5 min-[1400px]:px-2",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
@@ -207,7 +207,7 @@ export function Navigation() {
                 <Link
                   target="_blank"
                   className={cx(
-                    "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
+                    "px-1 py-1 transition-colors inline-flex items-center gap-1 min-[1200px]:px-1.5 min-[1400px]:px-2",
                     isHomePage && !open
                       ? "text-white/90 hover:text-white"
                       : isHomePage && open
@@ -238,9 +238,9 @@ export function Navigation() {
                 </Link>
               </div>
             </nav>
-            <div className="flex items-center md:mr-1">
-              <div className="hidden min-[900px]:flex min-[900px]:flex-col min-[900px]:items-end min-[900px]:justify-center min-[900px]:gap-1 min-[1400px]:flex-row min-[1400px]:items-center min-[1400px]:gap-6">
-                <div className="flex items-center gap-3 sm:gap-6">
+            <div className="flex items-center justify-end md:mr-1">
+              <div className="hidden min-[900px]:flex min-[900px]:items-center min-[900px]:justify-end min-[900px]:gap-2 min-[1200px]:gap-3 min-[1400px]:gap-6">
+                <div className="flex items-center gap-2 min-[1200px]:gap-3 min-[1400px]:gap-6">
                   <ThemeToggle
                     variant={isHomePage && !open ? "white" : "default"}
                   />
@@ -264,7 +264,7 @@ export function Navigation() {
                     />
                     <div
                       className={cx(
-                        "text-sm font-medium transition-opacity duration-300",
+                        "hidden text-sm font-medium transition-opacity duration-300 min-[1200px]:block",
                         isHomePage && !open
                           ? "text-white"
                           : "text-slate-900 dark:text-slate-100",
@@ -279,7 +279,7 @@ export function Navigation() {
                 <Button
                   asChild
                   className={cx(
-                    "px-4 rounded-none transition-all",
+                    "px-3 rounded-none transition-all min-[1200px]:px-4",
                     isHomePage && !open
                       ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
                       : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
