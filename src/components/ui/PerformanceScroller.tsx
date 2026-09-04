@@ -264,6 +264,10 @@ export default function PerformanceScroller({
 }) {
   const trackRef = useRef<HTMLDivElement>(null);
   const navRef = useRef<HTMLElement>(null);
+  // Tab index a click is smooth-scrolling toward; while set, scroll events
+  // don't change the active tab so intermediate tabs don't flick past.
+  const pendingRef = useRef<number | null>(null);
+  const settleRef = useRef<number | undefined>(undefined);
   const [active, setActive] = useState(0);
   const [engine, setEngine] = useState<EngineKey>("paradedb");
 
@@ -288,11 +292,28 @@ export default function PerformanceScroller({
         Math.max(-track.getBoundingClientRect().top / total, 0),
         0.999,
       );
-      setActive(Math.floor(progress * BENCHMARKS.length));
+      const next = Math.floor(progress * BENCHMARKS.length);
+      if (pendingRef.current !== null) {
+        if (next === pendingRef.current) {
+          pendingRef.current = null;
+        } else {
+          // If the smooth scroll is interrupted (e.g. by a manual scroll)
+          // before reaching the target, release the hold once events settle.
+          window.clearTimeout(settleRef.current);
+          settleRef.current = window.setTimeout(() => {
+            pendingRef.current = null;
+          }, 150);
+        }
+        return;
+      }
+      setActive(next);
     };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.clearTimeout(settleRef.current);
+    };
   }, []);
 
   const scrollToTab = (index: number) => {
@@ -302,6 +323,8 @@ export default function PerformanceScroller({
       setActive(index);
       return;
     }
+    pendingRef.current = index;
+    setActive(index);
     const total = track.offsetHeight - window.innerHeight;
     const top = window.scrollY + track.getBoundingClientRect().top;
     window.scrollTo({
