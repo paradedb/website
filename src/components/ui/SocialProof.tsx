@@ -163,7 +163,7 @@ export default function SocialProof() {
                           i !== active && "invisible",
                         )}
                       >
-                        <aside className="relative flex flex-col border-b md:border-b-0 border-white/15 p-8 md:p-12 md:pb-28 text-white">
+                        <aside className="relative flex h-[360px] flex-col border-b border-white/15 p-8 text-white md:h-auto md:border-b-0 md:p-12 md:pb-28">
                           <span
                             aria-hidden="true"
                             className="hidden md:block absolute right-0 top-12 bottom-20 w-px bg-white/15"
