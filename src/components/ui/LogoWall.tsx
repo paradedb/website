@@ -118,7 +118,7 @@ export default function LogoWall() {
                   key={logo.name}
                   className={cx(
                     logo.wrapperClassName,
-                    "h-20 sm:h-24 lg:h-32 flex items-center justify-center px-3 py-4 bg-white/5 border border-white/20 rounded-sm",
+                    "h-20 sm:h-24 lg:h-32 flex items-center justify-center px-3 py-4 bg-white/5 border border-white/20",
                   )}
                 >
                   <Image
