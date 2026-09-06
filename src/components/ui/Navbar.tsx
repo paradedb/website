@@ -114,130 +114,141 @@ export function Navigation() {
               open ? "px-6" : "px-0",
             )}
           >
-            <Link href={siteConfig.baseLinks.home} aria-label="Home">
-              <span className="sr-only">Company logo</span>
-              <DatabaseLogo
+            <div className="flex items-center gap-5 min-[1400px]:gap-6">
+              <Link href={siteConfig.baseLinks.home} aria-label="Home">
+                <span className="sr-only">Company logo</span>
+                <DatabaseLogo
+                  className={cx(
+                    "w-28 sm:w-32 transition-colors",
+                    isHomePage && !open
+                      ? "brightness-0 invert"
+                      : "dark:brightness-0 dark:invert",
+                  )}
+                />
+              </Link>
+              <div
+                aria-hidden="true"
                 className={cx(
-                  "w-28 sm:w-32 transition-colors",
+                  "hidden h-5 w-px min-[900px]:block",
                   isHomePage && !open
-                    ? "brightness-0 invert"
-                    : "dark:brightness-0 dark:invert",
+                    ? "bg-white/25"
+                    : "bg-slate-200 dark:bg-slate-800",
                 )}
               />
-            </Link>
-            <nav className="hidden min-[900px]:absolute min-[900px]:left-1/2 min-[900px]:top-1/2 min-[900px]:block min-[900px]:-translate-x-1/2 min-[900px]:-translate-y-1/2 min-[900px]:transform">
-              <div className="flex items-center gap-4 min-[1400px]:gap-6 text-sm font-medium">
-                <Link
-                  className={cx(
-                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
-                    pathname.startsWith(siteConfig.baseLinks.blog)
-                      ? "text-indigo-600 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white/90 hover:text-white"
-                        : isHomePage && open
-                          ? "text-slate-900 dark:text-white"
-                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
-                  )}
-                  href={siteConfig.baseLinks.blog}
-                >
-                  Blog
-                </Link>
-                <Link
-                  className={cx(
-                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
-                    pathname.startsWith(siteConfig.baseLinks.customers)
-                      ? "text-indigo-600 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white/90 hover:text-white"
-                        : isHomePage && open
-                          ? "text-slate-900 dark:text-white"
-                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
-                  )}
-                  href={siteConfig.baseLinks.customers}
-                >
-                  Customers
-                </Link>
-                <Link
-                  className={cx(
-                    "px-1.5 py-1 transition-colors min-[1400px]:px-2",
-                    pathname.startsWith(siteConfig.baseLinks.resources)
-                      ? "text-indigo-600 dark:text-white"
-                      : isHomePage && !open
-                        ? "text-white/90 hover:text-white"
-                        : isHomePage && open
-                          ? "text-slate-900 dark:text-white"
-                          : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
-                  )}
-                  href={siteConfig.baseLinks.resources}
-                >
-                  Learn
-                </Link>
-                <Link
-                  target="_blank"
-                  className={cx(
-                    "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
-                    isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : isHomePage && open
-                        ? "text-slate-900 dark:text-white"
-                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
-                  )}
-                  href={documentation.BASE}
-                >
-                  Documentation
-                  <div
+              <nav className="hidden min-[900px]:block">
+                <div className="flex items-center gap-3 min-[1400px]:gap-5 text-sm font-medium">
+                  <Link
                     className={cx(
-                      "ml-1 aspect-square size-3 rounded-full p-px",
-                      isHomePage
-                        ? "bg-white/10"
-                        : "bg-gray-100 dark:bg-slate-800",
+                      "px-1.5 py-1 transition-colors min-[1400px]:px-2",
+                      pathname.startsWith(siteConfig.baseLinks.blog)
+                        ? "text-indigo-600 dark:text-white"
+                        : isHomePage && !open
+                          ? "text-white/90 hover:text-white"
+                          : isHomePage && open
+                            ? "text-slate-900 dark:text-white"
+                            : "text-indigo-950 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                     )}
+                    href={siteConfig.baseLinks.blog}
                   >
-                    <RiArrowRightUpLine
-                      aria-hidden="true"
-                      className={cx(
-                        "size-full shrink-0 -translate-y-px",
-                        isHomePage
-                          ? "text-white"
-                          : "text-gray-900 dark:text-slate-100",
-                      )}
-                    />
-                  </div>
-                </Link>
-                <Link
-                  target="_blank"
-                  className={cx(
-                    "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
-                    isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : isHomePage && open
-                        ? "text-slate-900 dark:text-white"
-                        : "text-indigo-900 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
-                  )}
-                  href={social.SLACK}
-                >
-                  Community
-                  <div
+                    Blog
+                  </Link>
+                  <Link
                     className={cx(
-                      "ml-1 aspect-square size-3 rounded-full p-px",
-                      isHomePage
-                        ? "bg-white/10"
-                        : "bg-gray-100 dark:bg-slate-800",
+                      "px-1.5 py-1 transition-colors min-[1400px]:px-2",
+                      pathname.startsWith(siteConfig.baseLinks.customers)
+                        ? "text-indigo-600 dark:text-white"
+                        : isHomePage && !open
+                          ? "text-white/90 hover:text-white"
+                          : isHomePage && open
+                            ? "text-slate-900 dark:text-white"
+                            : "text-indigo-950 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
                     )}
+                    href={siteConfig.baseLinks.customers}
                   >
-                    <RiArrowRightUpLine
-                      aria-hidden="true"
+                    Customers
+                  </Link>
+                  <Link
+                    className={cx(
+                      "px-1.5 py-1 transition-colors min-[1400px]:px-2",
+                      pathname.startsWith(siteConfig.baseLinks.resources)
+                        ? "text-indigo-600 dark:text-white"
+                        : isHomePage && !open
+                          ? "text-white/90 hover:text-white"
+                          : isHomePage && open
+                            ? "text-slate-900 dark:text-white"
+                            : "text-indigo-950 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                    )}
+                    href={siteConfig.baseLinks.resources}
+                  >
+                    Learn
+                  </Link>
+                  <Link
+                    target="_blank"
+                    className={cx(
+                      "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
+                      isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-950 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                    )}
+                    href={documentation.BASE}
+                  >
+                    Documentation
+                    <div
                       className={cx(
-                        "size-full shrink-0 -translate-y-px",
+                        "ml-1 aspect-square size-3 rounded-full p-px",
                         isHomePage
-                          ? "text-white"
-                          : "text-gray-900 dark:text-slate-100",
+                          ? "bg-white/10"
+                          : "bg-gray-100 dark:bg-slate-800",
                       )}
-                    />
-                  </div>
-                </Link>
-              </div>
-            </nav>
+                    >
+                      <RiArrowRightUpLine
+                        aria-hidden="true"
+                        className={cx(
+                          "size-full shrink-0 -translate-y-px",
+                          isHomePage
+                            ? "text-white"
+                            : "text-gray-900 dark:text-slate-100",
+                        )}
+                      />
+                    </div>
+                  </Link>
+                  <Link
+                    target="_blank"
+                    className={cx(
+                      "px-1.5 py-1 transition-colors inline-flex items-center gap-1 min-[1400px]:px-2",
+                      isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : isHomePage && open
+                          ? "text-slate-900 dark:text-white"
+                          : "text-indigo-950 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-white",
+                    )}
+                    href={social.SLACK}
+                  >
+                    Community
+                    <div
+                      className={cx(
+                        "ml-1 aspect-square size-3 rounded-full p-px",
+                        isHomePage
+                          ? "bg-white/10"
+                          : "bg-gray-100 dark:bg-slate-800",
+                      )}
+                    >
+                      <RiArrowRightUpLine
+                        aria-hidden="true"
+                        className={cx(
+                          "size-full shrink-0 -translate-y-px",
+                          isHomePage
+                            ? "text-white"
+                            : "text-gray-900 dark:text-slate-100",
+                        )}
+                      />
+                    </div>
+                  </Link>
+                </div>
+              </nav>
+            </div>
             <div className="flex items-center gap-3 sm:gap-6 md:mr-1">
               <div className="hidden min-[1400px]:flex">
                 <ThemeToggle
