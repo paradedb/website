@@ -152,18 +152,19 @@ export default function SocialProof() {
                     </div>
                   </div>
 
-                  <div className="grid">
+                  {/* Shared mobile rows keep CTAs aligned without a fixed height. */}
+                  <div className="grid grid-rows-[auto_auto] md:grid-rows-1">
                     {STUDIES.map((s, i) => (
                       <div
                         key={s.key}
                         aria-hidden={i !== active}
                         className={cx(
-                          "[grid-area:1/1] grid md:grid-cols-[360px_1fr] text-left",
+                          "[grid-area:1/1/3/2] grid grid-rows-subgrid md:[grid-area:1/1] md:grid-rows-1 md:grid-cols-[360px_1fr] text-left",
                           s.panelBg,
                           i !== active && "invisible",
                         )}
                       >
-                        <aside className="relative flex h-[360px] flex-col border-b border-white/15 p-8 text-white md:h-auto md:border-b-0 md:p-12 md:pb-28">
+                        <aside className="relative flex flex-col border-b border-white/15 p-8 text-white md:border-b-0 md:p-12 md:pb-28">
                           <span
                             aria-hidden="true"
                             className="hidden md:block absolute right-0 top-12 bottom-20 w-px bg-white/15"

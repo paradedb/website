@@ -208,7 +208,7 @@ export default function Architecture() {
                   {/* PostgreSQL frame: label inside, border around the whole diagram */}
                   <div className="relative sm:border xl:border-x-0 border-slate-200 dark:border-slate-900 p-0 sm:p-5 md:p-6">
                     {/* Inner frame: PostgreSQL label straddling its top border */}
-                    <div className="relative sm:border sm:border-t-0 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-0 pt-12 pb-0 sm:px-8 sm:pt-14 md:px-10 md:pt-[4.5rem]">
+                    <div className="relative border border-t-0 border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/60 px-4 pt-12 pb-0 sm:px-8 sm:pt-14 md:px-10 md:pt-[4.5rem]">
                       <div className="absolute inset-x-0 top-0 -translate-y-1/2 flex items-center gap-3 font-mono text-sm font-bold text-slate-900 dark:text-white">
                         <span
                           aria-hidden
@@ -239,7 +239,7 @@ export default function Architecture() {
                       </div>
 
                       {/* Content cards: inside the PostgreSQL frame, light inner lines */}
-                      <div className="mt-10 sm:mt-12 md:mt-14 sm:-mx-8 md:-mx-10 sm:border-t border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-px">
+                      <div className="mt-10 sm:mt-12 md:mt-14 -mx-4 sm:-mx-8 md:-mx-10 border-t border-slate-200 dark:border-slate-800 bg-slate-200 dark:bg-slate-800 grid grid-cols-1 sm:grid-cols-2 gap-px">
                         {CARDS.map((card) => (
                           <div
                             key={card.title}
