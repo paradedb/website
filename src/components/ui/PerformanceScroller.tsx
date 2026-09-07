@@ -469,7 +469,7 @@ export default function PerformanceScroller({
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 lg:gap-20">
-              <div className="min-w-0">
+              <div className="flex min-w-0 flex-col">
                 <div
                   role="group"
                   aria-label="Compare ParadeDB against"
@@ -576,7 +576,7 @@ export default function PerformanceScroller({
                   />
                 )}
 
-                <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-800">
+                <div className="order-last mt-6 border-t border-slate-200 pt-3 dark:border-slate-800 md:order-none md:mt-4">
                   <p
                     key={`${tab.key}-${comparison}`}
                     className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 motion-safe:animate-[fade-in_180ms_ease-out]"
