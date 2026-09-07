@@ -53,11 +53,6 @@ const COMPARISONS = [
 // same mvcc-off run as the ParadeDB number; Text/Filters ES numbers come
 // from the ES matchup run. No ES bar for Joins (no single-query equivalent
 // over normalized tables) or Vector (not benchmarked).
-// Version tag rendered in grey brackets after an engine name.
-const V = (v: string) => (
-  <span className="font-normal text-slate-400 dark:text-slate-500">({v})</span>
-);
-
 const BENCHMARKS: {
   key: string;
   label: string;
@@ -66,7 +61,6 @@ const BENCHMARKS: {
   postgresMs: number | null;
   speedup: number | null;
   esMs?: number;
-  paradedbLabel?: ReactNode;
   dataset?: string;
   note?: string;
   bullets: { lead?: string; text: string; icon?: ReactNode; badge?: string }[];
@@ -78,7 +72,6 @@ const BENCHMARKS: {
     postgresMs: 2707,
     speedup: 796,
     esMs: 1.9,
-    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
     bullets: [
       {
         lead: "Powered by Tantivy,",
@@ -130,7 +123,6 @@ const BENCHMARKS: {
     postgresMs: 820,
     speedup: 43,
     esMs: 26.1,
-    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
     bullets: [
       {
         lead: "Indexed alongside search:",
@@ -156,7 +148,6 @@ const BENCHMARKS: {
     postgresMs: 2963,
     speedup: 70,
     esMs: 41,
-    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
     note: "The 42.5ms timing was measured with the same consistency guarantees as Elasticsearch: results aren't guaranteed to reflect one consistent snapshot of the database while data is changing. With extra checks to provide that guarantee, ParadeDB takes 90.6ms. Elasticsearch does not offer this stronger guarantee.",
     bullets: [
       {
@@ -182,7 +173,6 @@ const BENCHMARKS: {
     paradedbMs: 130,
     postgresMs: 486,
     speedup: 3.7,
-    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
     dataset: "Measured against the 1M post normalized Stack Overflow dataset",
     bullets: [
       {
@@ -260,7 +250,6 @@ function BarChart({
   competitorMs,
   comparison,
   speedup,
-  paradedbLabel = "ParadeDB",
   competitorLabel,
   note,
   unavailableNote,
@@ -269,14 +258,13 @@ function BarChart({
   competitorMs: number | null;
   comparison: ComparisonKey;
   speedup: number | null;
-  paradedbLabel?: ReactNode;
   competitorLabel: ReactNode;
   note?: string;
   unavailableNote?: string;
 }) {
   const rows = [
     {
-      name: paradedbLabel,
+      name: "ParadeDB",
       ms: paradedbMs,
       barClass: "bg-indigo-600",
     },
@@ -474,27 +462,9 @@ export default function PerformanceScroller({
                 />
                 Ordinary SQL at extraordinary speeds.
               </h2>
-              <p
-                key={`${tab.key}-${comparison}`}
-                className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl motion-safe:animate-[fade-in_180ms_ease-out]"
-              >
+              <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl">
                 When vanilla Postgres falls short, ParadeDB delivers speeds that
-                go toe to toe with Elasticsearch.{" "}
-                {tab.dataset ??
-                  (tab.key === "vector"
-                    ? "Measured against the Cohere 10M dataset at 95% recall"
-                    : "Measured against the 28M row Hacker News dataset")}
-                , reproducible with{" "}
-                <a
-                  href="https://github.com/paradedb/benchmarker"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 align-bottom text-slate-600 dark:text-slate-300 font-medium decoration-slate-300 dark:decoration-slate-600 hover:text-slate-900 dark:hover:text-white"
-                >
-                  <RiGithubFill aria-hidden="true" className="size-5" />
-                  paradedb/benchmarker
-                </a>
-                .
+                go toe to toe with Elasticsearch.
               </p>
             </div>
 
@@ -588,15 +558,12 @@ export default function PerformanceScroller({
                         ? "Elasticsearch has no equivalent query over normalized tables. Joining posts and comments requires denormalizing them at ingest."
                         : undefined
                     }
-                    paradedbLabel={tab.paradedbLabel}
                     competitorLabel={
-                      comparison === "elasticsearch" ? (
-                        <>Elasticsearch {V("8.17")}</>
-                      ) : tab.key === "vector" ? (
-                        "pgvector HNSW"
-                      ) : (
-                        <>Postgres {V("18")}</>
-                      )
+                      comparison === "elasticsearch"
+                        ? "Elasticsearch"
+                        : tab.key === "vector"
+                          ? "pgvector HNSW"
+                          : "Postgres"
                     }
                   />
                 ) : (
@@ -605,9 +572,41 @@ export default function PerformanceScroller({
                     competitorMs={null}
                     comparison={comparison}
                     speedup={null}
-                    competitorLabel={<>Elasticsearch {V("8.17")}</>}
+                    competitorLabel="Elasticsearch"
                   />
                 )}
+
+                <div className="mt-4 border-t border-slate-200 pt-3 dark:border-slate-800">
+                  <p
+                    key={`${tab.key}-${comparison}`}
+                    className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 motion-safe:animate-[fade-in_180ms_ease-out]"
+                  >
+                    {tab.key !== "vector" && (
+                      <>
+                        ParadeDB 0.25.6 &middot;{" "}
+                        {comparison === "postgres"
+                          ? "Postgres 18"
+                          : "Elasticsearch 8.17"}
+                        .{" "}
+                      </>
+                    )}
+                    {tab.dataset ??
+                      (tab.key === "vector"
+                        ? "Measured against the Cohere 10M dataset at 95% recall"
+                        : "Measured against the 28M row Hacker News dataset")}{" "}
+                    with{" "}
+                    <a
+                      href="https://github.com/paradedb/benchmarker"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 align-bottom font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
+                    >
+                      <RiGithubFill aria-hidden="true" className="size-4" />
+                      paradedb/benchmarker
+                    </a>
+                    .
+                  </p>
+                </div>
 
                 <ul className="mt-6 flex flex-col sm:grid min-h-[104px] gap-5 sm:gap-6 sm:grid-cols-3">
                   {tab.bullets.map((bullet) => (
