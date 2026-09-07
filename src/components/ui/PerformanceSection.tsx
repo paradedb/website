@@ -39,6 +39,7 @@ ORDER BY emb <=> '[0.12, -0.31, ...]'::vector(1024) LIMIT 10`,
 FROM cohere_wiki
 WHERE to_tsvector('english', text) @@ websearch_to_tsquery('english', 'battle')
 ORDER BY emb <=> '[0.12, -0.31, ...]'::vector(1024) LIMIT 10`,
+    elasticsearch: `// Elasticsearch vector benchmarks coming soon.`,
   },
   filters: {
     paradedb: `SELECT id, title, by, score
