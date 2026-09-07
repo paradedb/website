@@ -361,17 +361,17 @@ export default function PerformanceScroller({
             <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 lg:gap-20">
               <div
                 key={tab.key}
-                className="animate-[slide-up-fade_600ms_cubic-bezier(0.16,1,0.3,1)]"
+                className="min-w-0 animate-[slide-up-fade_600ms_cubic-bezier(0.16,1,0.3,1)]"
               >
                 <div className="sm:min-h-[220px] border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-3 sm:p-5 mb-6 sm:mb-8">
                   {queryPanels[tab.key] && (
-                    <div className="flex items-center gap-4 mb-4">
+                    <div className="flex flex-col items-start gap-4 mb-4 sm:flex-row sm:flex-wrap sm:items-center">
                       {!queryPanels[tab.key]?.[engine] && (
                         <p className="font-mono text-sm text-slate-400">
                           Benchmarks coming soon.
                         </p>
                       )}
-                      <div className="ml-auto flex border border-slate-200 dark:border-slate-800">
+                      <div className="flex max-w-full flex-wrap border border-slate-200 dark:border-slate-800 sm:ml-auto">
                         {ENGINES.map((option) => (
                           <button
                             key={option.key}
