@@ -37,7 +37,7 @@ const COMPETITORS = {
     outPublic: "public/benchmarks/pdb-vs-fts.json",
     them: "Postgres 18, tsvector stored generated columns, GIN + btree",
     note: [
-      "ParadeDB (pg_search 0.24.1 on Postgres 18) ran against stock Postgres 18 full-text search in its best case: stored generated tsvector columns, a GIN index on each, and btree indexes for the filters.",
+      "ParadeDB (pg_search 0.25.6 on Postgres 18) ran against stock Postgres 18 full-text search in its best case: stored generated tsvector columns, a GIN index on each, and btree indexes for the filters.",
       "Both engines ran on identical hardware, four pinned CPUs and 8 GB of memory each, over the full 28.7-million-row Hacker News dataset, queried through pgbouncer in transaction pooling mode.",
       "Every workload below ran for 30 seconds against a rotating pool of 40 query terms, after an identical 30-second warmup, and any query that took longer than 30 seconds was cancelled.",
     ],
@@ -48,7 +48,7 @@ const COMPETITORS = {
     outPublic: "public/benchmarks/pdb-vs-es.json",
     them: "Elasticsearch 8.17, one shard, force-merged to a single segment",
     note: [
-      "ParadeDB (pg_search 0.24.1 on Postgres 18) ran against Elasticsearch 8.17, force-merged to a single segment for its ideal read-only layout.",
+      "ParadeDB (pg_search 0.25.6 on Postgres 18) ran against Elasticsearch 8.17, force-merged to a single segment for its ideal read-only layout.",
       "Both engines ran on identical hardware, four pinned CPUs and 8 GB of memory each, over the full 28.7-million-row Hacker News dataset. ParadeDB was queried through pgbouncer in transaction pooling mode and Elasticsearch over its native HTTP client.",
       "Every workload below ran for 30 seconds against a rotating pool of 40 query terms, after an identical 30-second warmup, and any query that took longer than 30 seconds was cancelled.",
     ],
@@ -190,7 +190,7 @@ const out = {
   competitor: { key: competitorKey, name: competitor.name },
   percentiles: CDF_PCTS,
   environment: {
-    paradedb: "ParadeDB (pg_search 0.24.1, Postgres 18)",
+    paradedb: "ParadeDB (pg_search 0.25.6, Postgres 18)",
     them: competitor.them,
     note: competitor.note,
   },

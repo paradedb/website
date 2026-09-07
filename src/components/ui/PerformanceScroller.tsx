@@ -28,10 +28,27 @@ export const ENGINES = [
 
 export type EngineKey = (typeof ENGINES)[number]["key"];
 
-// Timings (P95) from https://www.paradedb.com/vs/postgresql — Hacker News
-// benchmark, 28.7M rows. Speedups quoted from the published page. Vector:
-// Cohere 10M, 1%-filtered top-10 at 95% recall, pg_search vs pgvector HNSW,
-// from https://paradedb.github.io/paradedb/benchmarks/vectors.html.
+// Timings are p95 at one connection, pg_search 0.25.6 on Postgres 18.
+// Text/Filters: Hacker News 28.7M rows, same runs as
+// https://www.paradedb.com/vs/postgresql. Facets: same dataset and Postgres
+// baseline, but the ParadeDB side is the score-histogram aggregate re-run
+// with MVCC resolution off (solve_mvcc = false) — see the tab note. Joins:
+// Stack Overflow 1M normalized (join_groupby: grouped aggregate over posts
+// JOIN comments) from the paradedb/benchmarker stackoverflow dataset.
+// Vector: Cohere 10M,
+// 1%-filtered top-10 at 95% recall, pg_search vs pgvector HNSW, from
+// https://paradedb.github.io/paradedb/benchmarks/vectors.html.
+// Elasticsearch bars (where present): ES 8.17, one shard, force-merged to a
+// single segment, same hardware and dataset, from the runs behind the
+// ParadeDB vs Elasticsearch comparison. The Facets ES number comes from the
+// same mvcc-off run as the ParadeDB number; Text/Filters ES numbers come
+// from the ES matchup run. No ES bar for Joins (no single-query equivalent
+// over normalized tables) or Vector (not benchmarked).
+// Version tag rendered in grey brackets after an engine name.
+const V = (v: string) => (
+  <span className="font-normal text-slate-400 dark:text-slate-500">({v})</span>
+);
+
 const BENCHMARKS: {
   key: string;
   label: string;
@@ -39,14 +56,21 @@ const BENCHMARKS: {
   paradedbMs: number | null;
   postgresMs: number | null;
   speedup: number | null;
+  esMs?: number;
+  paradedbLabel?: ReactNode;
+  extraBars?: { name: ReactNode; ms: number | null; barClass: string }[];
+  dataset?: string;
+  note?: string;
   bullets: { lead?: string; text: string; icon?: ReactNode; badge?: string }[];
 }[] = [
   {
     key: "text",
     label: "Text",
-    paradedbMs: 3.6,
-    postgresMs: 1900,
-    speedup: 538,
+    paradedbMs: 3.4,
+    postgresMs: 2707,
+    speedup: 796,
+    esMs: 1.9,
+    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
     bullets: [
       {
         lead: "Powered by Tantivy,",
@@ -94,9 +118,11 @@ const BENCHMARKS: {
   {
     key: "filters",
     label: "Filters",
-    paradedbMs: 22.4,
-    postgresMs: 846,
-    speedup: 38,
+    paradedbMs: 19,
+    postgresMs: 820,
+    speedup: 43,
+    esMs: 26.1,
+    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
     bullets: [
       {
         lead: "Indexed alongside search:",
@@ -118,9 +144,19 @@ const BENCHMARKS: {
   {
     key: "aggregates",
     label: "Facets",
-    paradedbMs: 88.4,
-    postgresMs: 3000,
-    speedup: 34,
+    paradedbMs: 42.5,
+    postgresMs: 2963,
+    speedup: 70,
+    esMs: 41,
+    paradedbLabel: <>ParadeDB {V("0.25.6")} MVCC off</>,
+    extraBars: [
+      {
+        name: <>ParadeDB {V("0.25.6")} MVCC on</>,
+        ms: 90.6,
+        barClass: "bg-indigo-400",
+      },
+    ],
+    note: "MVCC off disables per-row visibility resolution in the aggregate (pdb.agg's solve_mvcc = false), appropriate for read-only or append-mostly tables, or whenever point-in-time correctness isn't required. Elastic always serves results this way, from its last index refresh.",
     bullets: [
       {
         lead: "Columnar storage:",
@@ -142,9 +178,19 @@ const BENCHMARKS: {
   {
     key: "joins",
     label: "Joins",
-    paradedbMs: null,
-    postgresMs: null,
-    speedup: null,
+    paradedbMs: 130,
+    postgresMs: 486,
+    speedup: 3.7,
+    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
+    // ES has no JOIN: the workload requires denormalizing at ingest.
+    extraBars: [
+      {
+        name: <>Elasticsearch {V("8.17")}</>,
+        ms: null,
+        barClass: "bg-slate-200 dark:bg-slate-800",
+      },
+    ],
+    dataset: "Measured against the 1M post normalized Stack Overflow dataset",
     bullets: [
       {
         lead: "Efficient pushdown:",
@@ -166,7 +212,7 @@ const BENCHMARKS: {
 ];
 
 function formatMs(ms: number) {
-  return ms >= 1000 ? `${(ms / 1000).toFixed(1)}s` : `${ms}ms`;
+  return ms >= 1000 ? `${(ms / 1000).toFixed(2)}s` : `${ms.toFixed(1)}ms`;
 }
 
 export type QueryPanels = Record<
@@ -177,61 +223,82 @@ export type QueryPanels = Record<
 function BarChart({
   paradedbMs,
   postgresMs,
-  speedup,
-  postgresLabel = "Vanilla Postgres",
+  esMs,
+  paradedbLabel = "ParadeDB",
+  extraBars = [],
+  postgresLabel = <>Postgres {V("18")}</>,
 }: {
   paradedbMs: number;
   postgresMs: number;
-  speedup: number;
-  postgresLabel?: string;
+  esMs?: number;
+  paradedbLabel?: ReactNode;
+  extraBars?: { name: ReactNode; ms: number | null; barClass: string }[];
+  postgresLabel?: ReactNode;
 }) {
   const rows = [
     {
-      name: "ParadeDB",
+      name: paradedbLabel,
       ms: paradedbMs,
       barClass: "bg-indigo-600",
-      badge: `${speedup}x faster`,
     },
+    ...extraBars,
+    ...(esMs !== undefined
+      ? [
+          {
+            // Elastic brand green
+            name: <>Elasticsearch {V("8.17")}</>,
+            ms: esMs,
+            barClass: "bg-[#00bfb3]",
+          },
+        ]
+      : []),
     {
+      // Postgres brand blue
       name: postgresLabel,
       ms: postgresMs,
-      barClass: "bg-slate-300 dark:bg-slate-700",
+      barClass: "bg-[#336791]",
     },
-  ];
-  const max = Math.max(...rows.map((r) => r.ms));
+  ].sort((a, b) => (a.ms ?? Infinity) - (b.ms ?? Infinity));
+  const max = Math.max(...rows.map((r) => r.ms ?? 0));
 
   return (
-    <div className="flex flex-col gap-5">
-      <p className="font-mono text-xs uppercase tracking-widest text-slate-400">
+    <div className="flex flex-col gap-3">
+      <p className="mb-2 font-mono text-xs uppercase tracking-widest text-slate-400">
         P95 latency &middot; lower is better
       </p>
-      {rows.map((row) => (
-        <div key={row.name}>
-          <div className="flex items-baseline justify-between mb-1.5">
-            <span className="text-sm font-medium text-slate-900 dark:text-white">
-              {row.name}
-            </span>
-            <span className="font-mono text-sm text-slate-500 dark:text-slate-400">
-              {row.badge && (
-                <>
-                  <span className="font-sans font-semibold text-indigo-600 dark:text-indigo-400">
-                    {row.badge}
-                  </span>
-                  <span
-                    aria-hidden="true"
-                    className="mx-3 inline-block h-3 w-px translate-y-0.5 bg-slate-300 dark:bg-slate-700"
-                  />
-                </>
-              )}
-              {formatMs(row.ms)}
-            </span>
-          </div>
-          <div className="h-3 w-full bg-slate-100 dark:bg-slate-900">
+      {rows.map((row, i) => (
+        <div key={i} className="flex items-center gap-4">
+          <span
+            className={cx(
+              "w-28 sm:w-52 shrink-0 text-sm font-medium",
+              row.ms === null
+                ? "text-slate-400 dark:text-slate-600"
+                : "text-slate-900 dark:text-white",
+            )}
+          >
+            {row.name}
+          </span>
+          <div className="h-3 flex-1 bg-slate-100 dark:bg-slate-900">
             <div
               className={cx("h-full transition-all duration-500", row.barClass)}
-              style={{ width: `${Math.max((row.ms / max) * 100, 1.5)}%` }}
+              style={{
+                width:
+                  row.ms === null
+                    ? "100%"
+                    : `${Math.max((row.ms / max) * 100, 1.5)}%`,
+              }}
             />
           </div>
+          <span
+            className={cx(
+              "w-16 shrink-0 text-right font-mono text-sm",
+              row.ms === null
+                ? "text-slate-400 dark:text-slate-600"
+                : "text-slate-500 dark:text-slate-400",
+            )}
+          >
+            {row.ms === null ? "n/a" : formatMs(row.ms)}
+          </span>
         </div>
       ))}
     </div>
@@ -341,9 +408,10 @@ export default function PerformanceScroller({
               </h2>
               <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl">
                 See how ParadeDB performs where vanilla Postgres falls short.{" "}
-                {tab.key === "vector"
-                  ? "Measured against the Cohere 10M dataset at 95% recall"
-                  : "Measured against the 28M row Hacker News dataset"}
+                {tab.dataset ??
+                  (tab.key === "vector"
+                    ? "Measured against the Cohere 10M dataset at 95% recall"
+                    : "Measured against the 28M row Hacker News dataset")}
                 , reproducible with{" "}
                 <a
                   href="https://github.com/paradedb/benchmarker"
@@ -404,13 +472,21 @@ export default function PerformanceScroller({
                   <BarChart
                     paradedbMs={tab.paradedbMs}
                     postgresMs={tab.postgresMs}
-                    speedup={tab.speedup}
+                    esMs={tab.esMs}
+                    paradedbLabel={tab.paradedbLabel}
+                    extraBars={tab.extraBars}
                     postgresLabel={
                       tab.key === "vector" ? "pgvector HNSW" : undefined
                     }
                   />
                 ) : (
                   <PlaceholderChart />
+                )}
+
+                {tab.note && (
+                  <p className="mt-4 font-mono text-xs leading-relaxed text-slate-400 dark:text-slate-500">
+                    {tab.note}
+                  </p>
                 )}
 
                 <ul className="mt-8 sm:mt-10 flex flex-col sm:grid min-h-[104px] gap-5 sm:gap-6 sm:grid-cols-3">
