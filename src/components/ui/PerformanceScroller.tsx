@@ -148,15 +148,8 @@ const BENCHMARKS: {
     postgresMs: 2963,
     speedup: 70,
     esMs: 41,
-    paradedbLabel: <>ParadeDB {V("0.25.6")} MVCC off</>,
-    extraBars: [
-      {
-        name: <>ParadeDB {V("0.25.6")} MVCC on</>,
-        ms: 90.6,
-        barClass: "bg-indigo-400",
-      },
-    ],
-    note: "MVCC off disables per-row visibility resolution in the aggregate (pdb.agg's solve_mvcc = false), appropriate for read-only or append-mostly tables, or whenever point-in-time correctness isn't required. Elastic always serves results this way, from its last index refresh.",
+    paradedbLabel: <>ParadeDB {V("0.25.6")}</>,
+    note: "ParadeDB measured with MVCC visibility resolution off (pdb.agg's solve_mvcc = false), the same consistency Elastic always serves: results as of the last index refresh. With full point-in-time MVCC correctness, which Elastic cannot offer, ParadeDB answers in 90.6ms.",
     bullets: [
       {
         lead: "Columnar storage:",
