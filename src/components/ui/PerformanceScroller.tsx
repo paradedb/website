@@ -265,7 +265,7 @@ function BarChart({
   note,
   unavailableNote,
 }: {
-  paradedbMs: number;
+  paradedbMs: number | null;
   competitorMs: number | null;
   comparison: ComparisonKey;
   speedup: number | null;
@@ -297,11 +297,17 @@ function BarChart({
         <div>
           <div className="flex min-h-7 items-center gap-1.5">
             <p className="font-mono text-xs uppercase tracking-widest text-slate-400">
-              P95 latency
-              <span className="hidden sm:inline">
-                {" "}
-                &middot; lower is better
-              </span>
+              {paradedbMs === null ? (
+                "Benchmarks coming soon"
+              ) : (
+                <>
+                  P95 latency
+                  <span className="hidden sm:inline">
+                    {" "}
+                    &middot; lower is better
+                  </span>
+                </>
+              )}
             </p>
             {note && (
               <BenchmarkInfo label="Facets benchmark measurement details">
@@ -363,7 +369,11 @@ function BarChart({
               key={row.ms}
               className="motion-safe:animate-[fade-in_180ms_ease-out]"
             >
-              {row.ms === null ? "n/a" : formatMs(row.ms)}
+              {row.ms === null
+                ? paradedbMs === null
+                  ? "—"
+                  : "n/a"
+                : formatMs(row.ms)}
             </span>
             {row.ms === null && unavailableNote && (
               <BenchmarkInfo label="Why this benchmark is unavailable">
@@ -371,25 +381,6 @@ function BarChart({
               </BenchmarkInfo>
             )}
           </span>
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function PlaceholderChart() {
-  return (
-    <div className="flex flex-col gap-5">
-      <p className="font-mono text-xs uppercase tracking-widest text-slate-400">
-        Elasticsearch vector benchmarks coming soon
-      </p>
-      {[0, 1].map((row) => (
-        <div key={row} aria-hidden="true">
-          <div className="flex items-baseline justify-between mb-1.5">
-            <span className="h-[21px] w-28 bg-slate-100 dark:bg-slate-900" />
-            <span className="h-[21px] w-14 bg-slate-100 dark:bg-slate-900" />
-          </div>
-          <div className="h-3 w-full bg-slate-100 dark:bg-slate-900" />
         </div>
       ))}
     </div>
@@ -609,7 +600,13 @@ export default function PerformanceScroller({
                     }
                   />
                 ) : (
-                  <PlaceholderChart />
+                  <BarChart
+                    paradedbMs={null}
+                    competitorMs={null}
+                    comparison={comparison}
+                    speedup={null}
+                    competitorLabel={<>Elasticsearch {V("8.17")}</>}
+                  />
                 )}
 
                 <ul className="mt-6 flex flex-col sm:grid min-h-[104px] gap-5 sm:gap-6 sm:grid-cols-3">
