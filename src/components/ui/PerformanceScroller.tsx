@@ -213,7 +213,13 @@ export type QueryPanels = Record<
   Partial<Record<EngineKey, ReactNode>> | null
 >;
 
-function BenchmarkInfo({ label, children }: { label: string; children: ReactNode }) {
+function BenchmarkInfo({
+  label,
+  children,
+}: {
+  label: string;
+  children: ReactNode;
+}) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -292,7 +298,10 @@ function BarChart({
           <div className="flex min-h-7 items-center gap-1.5">
             <p className="font-mono text-xs uppercase tracking-widest text-slate-400">
               P95 latency
-              <span className="hidden sm:inline"> &middot; lower is better</span>
+              <span className="hidden sm:inline">
+                {" "}
+                &middot; lower is better
+              </span>
             </p>
             {note && (
               <BenchmarkInfo label="Facets benchmark measurement details">
@@ -311,7 +320,10 @@ function BarChart({
         )}
       </div>
       {rows.map((row, i) => (
-        <div key={i} className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 sm:flex sm:gap-4">
+        <div
+          key={i}
+          className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 sm:flex sm:gap-4"
+        >
           <span
             key={`${comparison}-${paradedbMs}`}
             className={cx(
@@ -327,7 +339,9 @@ function BarChart({
             <div
               className={cx(
                 "h-full transition-all duration-500",
-                row.ms === null ? "bg-slate-200 dark:bg-slate-800" : row.barClass,
+                row.ms === null
+                  ? "bg-slate-200 dark:bg-slate-800"
+                  : row.barClass,
               )}
               style={{
                 width:
@@ -473,8 +487,8 @@ export default function PerformanceScroller({
                 key={`${tab.key}-${comparison}`}
                 className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl motion-safe:animate-[fade-in_180ms_ease-out]"
               >
-                When vanilla Postgres falls short, ParadeDB delivers speeds
-                that go toe to toe with Elasticsearch.{" "}
+                When vanilla Postgres falls short, ParadeDB delivers speeds that
+                go toe to toe with Elasticsearch.{" "}
                 {tab.dataset ??
                   (tab.key === "vector"
                     ? "Measured against the Cohere 10M dataset at 95% recall"
@@ -552,11 +566,11 @@ export default function PerformanceScroller({
                   >
                     <div className="motion-safe:animate-[fade-in_180ms_ease-out]">
                       {queryPanels[tab.key] ? (
-                        queryPanels[tab.key]?.[selectedEngine] ?? (
+                        (queryPanels[tab.key]?.[selectedEngine] ?? (
                           <p className="font-mono text-sm text-slate-400">
                             Elasticsearch vector benchmarks coming soon.
                           </p>
-                        )
+                        ))
                       ) : (
                         <p className="font-mono text-sm text-slate-400">
                           Benchmarks coming soon.
@@ -573,7 +587,7 @@ export default function PerformanceScroller({
                     competitorMs={
                       comparison === "postgres"
                         ? tab.postgresMs
-                        : tab.esMs ?? null
+                        : (tab.esMs ?? null)
                     }
                     comparison={comparison}
                     speedup={tab.speedup}
