@@ -277,7 +277,7 @@ function BarChart({
     {
       name: competitorLabel,
       ms: competitorMs,
-      barClass: comparison === "postgres" ? "bg-sky-700" : "bg-[#00bfb3]",
+      barClass: comparison === "postgres" ? "bg-blue-600" : "bg-[#00bfb3]",
     },
   ];
   if (comparison === "postgres") {
