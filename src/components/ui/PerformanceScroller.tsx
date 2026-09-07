@@ -548,7 +548,7 @@ export default function PerformanceScroller({
                     role="region"
                     aria-label="Benchmark query"
                     tabIndex={0}
-                    className="min-h-0 min-w-0 flex-1 overflow-y-auto overscroll-contain pr-2 [scrollbar-color:auto] [scrollbar-width:auto] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-0 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700"
+                    className="min-h-0 min-w-0 flex-1 overflow-y-auto pr-2 [scrollbar-color:auto] [scrollbar-width:auto] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-0 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700"
                   >
                     <div className="motion-safe:animate-[fade-in_180ms_ease-out]">
                       {queryPanels[tab.key] ? (
