@@ -21,11 +21,12 @@ env:
   SCAN_API: https://is-agentic.com/api/scan/stream
   SCAN_TARGET: https://paradedb.com
   REPORT_URL: https://is-agentic.com/scan/paradedb.com
-  SCORE_THRESHOLD: "80"
+  # Revisit when ParadeDB Cloud exposes a public API and OpenAPI specification.
+  SCORE_THRESHOLD: "75"
 
 jobs:
   check-agentic-score:
-    name: Require Is Agentic score of at least 80
+    name: Require Is Agentic score of at least 75
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
@@ -59,6 +60,7 @@ jobs:
 
           result=$(sed -n 's/^data: //p' scan-events.sse | \
             jq -sc 'map(select(.type == "scan_complete")) | last.result')
+          jq . <<< "$result" > scan-result.json
 
           if ! streamed_score=$(jq -er '.score | numbers' <<< "$result") ||
              ! scanned_at=$(jq -er '.scannedAt | strings' <<< "$result") ||
@@ -83,6 +85,7 @@ jobs:
               --max-time 20 \
               --header "Cache-Control: no-cache" \
               "$REPORT_URL?attempt=$attempt"); then
+              printf '%s\n' "$report_html" > scan-report.html
               score=$(SCAN_STARTED_AT="$scan_started_at" node -e '
                 let html = "";
                 process.stdin.setEncoding("utf8");
@@ -155,6 +158,18 @@ jobs:
             echo "reason=Score is $score/100 (minimum: $SCORE_THRESHOLD/100)."
           } >> "$GITHUB_OUTPUT"
           echo "Is Agentic score is $score/100."
+
+      - name: Upload scan details
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: agentic-scan-details
+          path: |
+            scan-events.sse
+            scan-result.json
+            scan-report.html
+          if-no-files-found: ignore
+          retention-days: 30
 
       - name: Build Slack failure payload
         if: always() && (steps.report.outputs.status == 'regressed' || steps.report.outputs.status == 'error')
