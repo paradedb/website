@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
   // Homepage title & global template for all other pages
   title: {
-    default: "ParadeDB — Search without a second system",
+    default: "ParadeDB — Just use Postgres",
     template: "%s | ParadeDB",
   },
   description: siteConfig.description,
@@ -41,14 +41,14 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: siteConfig.url,
-    title: "ParadeDB — Search without a second system",
+    title: "ParadeDB — Just use Postgres",
     description: siteConfig.description,
     siteName: "ParadeDB",
     images: "/opengraph-image.png",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ParadeDB — Search without a second system",
+    title: "ParadeDB — Just use Postgres",
     description: siteConfig.description,
     images: "/twitter-image.png",
   },
