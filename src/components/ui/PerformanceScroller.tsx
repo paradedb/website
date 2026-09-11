@@ -2,9 +2,10 @@
 
 import { type ReactNode, useEffect, useRef, useState } from "react";
 import * as Tooltip from "@radix-ui/react-tooltip";
+import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import {
-  RiArrowDownSLine,
   RiBracesLine,
+  RiArrowDownSLine,
   RiBubbleChartLine,
   RiDatabase2Line,
   RiFilter3Line,
@@ -246,6 +247,7 @@ function BenchmarkInfo({
 }
 
 function BarChart({
+  category,
   paradedbMs,
   competitorMs,
   comparison,
@@ -254,6 +256,7 @@ function BarChart({
   note,
   unavailableNote,
 }: {
+  category: string;
   paradedbMs: number | null;
   competitorMs: number | null;
   comparison: ComparisonKey;
@@ -281,16 +284,17 @@ function BarChart({
 
   return (
     <div className="flex flex-col gap-5 sm:gap-3">
-      <div className="mb-1 flex items-start justify-between gap-3 sm:mb-2 sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2">
+      <div className="mb-1 flex items-start justify-between gap-3 sm:mb-2 sm:flex-wrap sm:items-center sm:gap-x-4 sm:gap-y-2 lg:mb-0">
         <div>
           <div className="flex min-h-7 items-center gap-1.5">
             <p className="font-mono text-xs uppercase tracking-widest text-slate-400">
+              {category} &middot;{" "}
               {paradedbMs === null ? (
                 "Benchmarks coming soon"
               ) : (
                 <>
                   P95 latency
-                  <span className="hidden sm:inline">
+                  <span className="hidden sm:inline lg:hidden">
                     {" "}
                     &middot; lower is better
                   </span>
@@ -316,12 +320,12 @@ function BarChart({
       {rows.map((row, i) => (
         <div
           key={i}
-          className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 sm:flex sm:gap-4"
+          className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 sm:flex sm:gap-4 lg:grid lg:gap-x-3 lg:gap-y-1.5"
         >
           <span
             key={`${comparison}-${paradedbMs}`}
             className={cx(
-              "min-w-0 sm:w-52 sm:shrink-0 text-sm font-medium motion-safe:animate-[fade-in_180ms_ease-out]",
+              "min-w-0 sm:w-36 sm:shrink-0 lg:w-auto text-sm font-medium motion-safe:animate-[fade-in_180ms_ease-out]",
               row.ms === null
                 ? "text-slate-400 dark:text-slate-600"
                 : "text-slate-900 dark:text-white",
@@ -329,7 +333,7 @@ function BarChart({
           >
             {row.name}
           </span>
-          <div className="order-last col-span-2 h-2 bg-slate-100 dark:bg-slate-900 sm:order-none sm:h-3 sm:flex-1">
+          <div className="order-last col-span-2 h-2 bg-slate-100 dark:bg-slate-900 sm:order-none sm:h-3 sm:flex-1 lg:order-last lg:h-2 lg:flex-none">
             <div
               className={cx(
                 "h-full transition-all duration-500",
@@ -347,7 +351,7 @@ function BarChart({
           </div>
           <span
             className={cx(
-              "flex shrink-0 items-center justify-end gap-1 text-right font-mono text-sm sm:w-16",
+              "flex shrink-0 items-center justify-end gap-1 text-right font-mono text-sm sm:w-16 lg:w-auto",
               row.ms === null
                 ? "text-slate-400 dark:text-slate-600"
                 : "text-slate-500 dark:text-slate-400",
@@ -384,7 +388,7 @@ export default function PerformanceScroller({
   const navRef = useRef<HTMLElement>(null);
   const [active, setActive] = useState(0);
   const [comparison, setComparison] = useState<ComparisonKey>("postgres");
-  const [engine, setEngine] = useState<EngineKey>("paradedb");
+  const [queryEngine, setQueryEngine] = useState<EngineKey>("paradedb");
 
   useEffect(() => {
     const nav = navRef.current;
@@ -400,8 +404,8 @@ export default function PerformanceScroller({
     const onScroll = () => {
       const track = trackRef.current;
       if (!track) return;
-      // Below md the section is a static block and tabs switch by tap.
-      if (!window.matchMedia("(min-width: 768px)").matches) return;
+      // Below lg the section is a static block and tabs switch by tap.
+      if (!window.matchMedia("(min-width: 1024px)").matches) return;
       const total = track.offsetHeight - window.innerHeight;
       const progress = Math.min(
         Math.max(-track.getBoundingClientRect().top / total, 0),
@@ -417,7 +421,7 @@ export default function PerformanceScroller({
   const scrollToTab = (index: number) => {
     const track = trackRef.current;
     if (!track) return;
-    if (!window.matchMedia("(min-width: 768px)").matches) {
+    if (!window.matchMedia("(min-width: 1024px)").matches) {
       setActive(index);
       return;
     }
@@ -430,10 +434,42 @@ export default function PerformanceScroller({
   };
 
   const tab = BENCHMARKS[active];
-  const visibleEngines = ENGINES.filter(
-    (option) => option.key === "paradedb" || option.key === comparison,
-  );
-  const selectedEngine = engine === "paradedb" ? "paradedb" : comparison;
+  const selectedEngine = queryEngine === "paradedb" ? "paradedb" : comparison;
+  const chart =
+    tab.paradedbMs !== null &&
+    !(comparison === "elasticsearch" && tab.key === "vector") ? (
+      <BarChart
+        category={tab.label}
+        paradedbMs={tab.paradedbMs}
+        competitorMs={
+          comparison === "postgres" ? tab.postgresMs : (tab.esMs ?? null)
+        }
+        comparison={comparison}
+        speedup={tab.speedup}
+        note={tab.note}
+        unavailableNote={
+          comparison === "elasticsearch" && tab.key === "joins"
+            ? "Elasticsearch has no equivalent query over normalized tables. Joining posts and comments requires denormalizing them at ingest."
+            : undefined
+        }
+        competitorLabel={
+          comparison === "elasticsearch"
+            ? "Elasticsearch"
+            : tab.key === "vector"
+              ? "pgvector HNSW"
+              : "Vanilla Postgres"
+        }
+      />
+    ) : (
+      <BarChart
+        category={tab.label}
+        paradedbMs={null}
+        competitorMs={null}
+        comparison={comparison}
+        speedup={null}
+        competitorLabel="Elasticsearch"
+      />
+    );
 
   return (
     <section
@@ -446,238 +482,245 @@ export default function PerformanceScroller({
         <div className="border-y border-slate-200 dark:border-slate-900">
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch opacity-60" />
         </div>
-        <div ref={trackRef} className="relative md:h-[406vh]">
-          <div className="md:sticky top-0 z-40 flex md:min-h-[96vh] flex-col justify-center px-6 sm:px-16 lg:px-24 py-10 md:py-8">
-            <div className="mb-6 sm:mb-8 md:mb-6 relative z-40">
-              <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
-                Performance
-              </p>
-              <h2
-                id="performance-title"
-                className="relative text-2xl sm:text-4xl font-semibold tracking-tight leading-[1.15] text-slate-900 dark:text-white"
-              >
-                <span
-                  aria-hidden="true"
-                  className="hidden sm:block absolute -left-16 lg:-left-24 translate-x-[calc(-50%+0.5px)] top-[0.15em] h-[0.9em] w-[3px] bg-indigo-600 z-40"
-                />
-                Ordinary SQL at extraordinary speeds.
-              </h2>
-              <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl">
-                When vanilla Postgres falls short, ParadeDB delivers speeds that
-                go toe to toe with Elasticsearch.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-[200px_1fr] gap-10 lg:gap-20">
-              <div className="flex min-w-0 flex-col">
-                <div
-                  role="group"
-                  aria-label="Compare ParadeDB against"
-                  className="grid grid-cols-2 border border-slate-200 dark:border-slate-800"
+        <div
+          ref={trackRef}
+          className="relative lg:h-[406vh] [overflow-anchor:none]"
+        >
+          <div className="lg:sticky top-0 z-40 flex lg:min-h-[96vh] lg:max-h-dvh flex-col lg:overflow-y-auto [scrollbar-width:thin] px-6 sm:px-16 lg:px-24 py-10 sm:py-16">
+            <div className="shrink-0">
+              <div className="mb-6 sm:mb-8 md:mb-6 relative z-40">
+                <p className="font-mono text-xs uppercase tracking-widest text-indigo-600 dark:text-indigo-400 mb-3">
+                  Performance
+                </p>
+                <h2
+                  id="performance-title"
+                  className="relative text-2xl sm:text-4xl font-semibold tracking-tight leading-[1.15] text-slate-900 dark:text-white"
                 >
-                  {COMPARISONS.map((option) => (
-                    <button
-                      key={option.key}
-                      type="button"
-                      aria-pressed={comparison === option.key}
-                      onClick={() => setComparison(option.key)}
-                      className={cx(
-                        "relative cursor-pointer border-b-2 px-3 py-3.5 text-sm font-semibold transition-colors focus-visible:z-10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 sm:text-base",
-                        comparison === option.key
-                          ? "border-indigo-500 bg-indigo-50/50 text-indigo-700 dark:border-indigo-400 dark:bg-indigo-500/5 dark:text-indigo-300"
-                          : "border-transparent bg-slate-50 text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:bg-slate-900/50 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white",
-                      )}
-                    >
-                      {option.label}
-                    </button>
-                  ))}
-                </div>
-                <div className="flex h-44 flex-col gap-3 md:gap-4 md:h-[clamp(11rem,calc(16dvh+5rem),14rem)] border-x border-b border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 p-3 sm:p-5 mb-6">
-                  {queryPanels[tab.key] && (
-                    <label className="relative order-last flex shrink-0 items-center gap-1 self-end">
-                      <span className="text-xs text-slate-400 dark:text-slate-500">
-                        Query:
-                      </span>
-                      <select
-                        aria-label="Query engine"
-                        value={selectedEngine}
-                        onChange={(event) =>
-                          setEngine(event.target.value as EngineKey)
-                        }
-                        className="cursor-pointer appearance-none rounded-none border-0 bg-transparent bg-none py-1 pl-1 pr-7 text-xs font-medium text-slate-600 transition-colors hover:text-slate-900 focus:border-transparent focus:outline-none focus:ring-0 focus-visible:underline focus-visible:underline-offset-4 dark:text-slate-300 dark:hover:text-white dark:[color-scheme:dark]"
-                      >
-                        {visibleEngines.map((option) => (
-                          <option key={option.key} value={option.key}>
-                            {option.label}
-                          </option>
-                        ))}
-                      </select>
-                      <RiArrowDownSLine
-                        aria-hidden="true"
-                        className="pointer-events-none absolute right-1 top-1/2 size-4 -translate-y-1/2 text-slate-400"
-                      />
-                    </label>
-                  )}
-                  <div
-                    key={`${tab.key}-${selectedEngine}`}
-                    role="region"
-                    aria-label="Benchmark query"
-                    tabIndex={0}
-                    className="min-h-0 min-w-0 flex-1 overflow-y-auto pr-2 [scrollbar-color:auto] [scrollbar-width:auto] [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-0 [&::-webkit-scrollbar-thumb]:bg-slate-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700"
+                  <span
+                    aria-hidden="true"
+                    className="hidden sm:block absolute -left-16 lg:-left-24 translate-x-[calc(-50%+0.5px)] top-[0.15em] h-[0.9em] w-[3px] bg-indigo-600 z-40"
+                  />
+                  Ordinary SQL at extraordinary speeds.
+                </h2>
+                <p className="text-lg sm:text-xl font-normal leading-[1.4] text-slate-600 dark:text-slate-300 mt-4 max-w-4xl">
+                  When vanilla Postgres falls short, ParadeDB delivers speeds
+                  that go toe to toe with Elasticsearch.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 lg:grid-cols-[128px_minmax(0,1fr)]">
+                <div className="flex min-w-0 flex-col">
+                  <TabGroup
+                    id="benchmark-view"
+                    selectedIndex={COMPARISONS.findIndex(
+                      (option) => option.key === comparison,
+                    )}
+                    onChange={(index) => setComparison(COMPARISONS[index].key)}
+                    className="-mx-6 border border-slate-200 bg-white sm:mx-0 dark:border-slate-800 dark:bg-slate-950"
                   >
-                    <div className="motion-safe:animate-[fade-in_180ms_ease-out]">
-                      {queryPanels[tab.key] ? (
-                        (queryPanels[tab.key]?.[selectedEngine] ?? (
-                          <p className="font-mono text-sm text-slate-400">
-                            Elasticsearch vector benchmarks coming soon.
-                          </p>
-                        ))
-                      ) : (
-                        <p className="font-mono text-sm text-slate-400">
-                          Benchmarks coming soon.
-                        </p>
-                      )}
+                    <TabList
+                      aria-label="Compare ParadeDB against"
+                      className="flex h-12 border-b border-slate-200 dark:border-slate-800"
+                    >
+                      {COMPARISONS.map((option) => (
+                        <Tab
+                          key={option.key}
+                          className="min-w-0 flex-1 cursor-pointer border-b-2 border-transparent px-1 text-xs font-medium text-slate-500 outline-none transition-colors hover:text-slate-900 focus:ring-0 data-selected:border-indigo-600 data-selected:text-indigo-600 sm:flex-none sm:px-5 sm:text-sm dark:text-slate-400 dark:hover:text-white dark:data-selected:border-indigo-400 dark:data-selected:text-indigo-400"
+                        >
+                          {option.label}
+                        </Tab>
+                      ))}
+                    </TabList>
+                    <TabPanels>
+                      {COMPARISONS.map((option) => (
+                        <TabPanel
+                          key={option.key}
+                          className="grid grid-cols-1 focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 lg:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]"
+                        >
+                          <div className="flex min-h-48 min-w-0 p-[23px] pb-0 sm:p-4 sm:pb-0 lg:h-60 lg:pb-4 lg:pr-0">
+                            <div
+                              role="region"
+                              aria-label="Benchmark results"
+                              className="flex min-w-0 flex-1 flex-col border border-slate-200 bg-slate-50 p-3 px-3.5 sm:p-4 dark:border-slate-800 dark:bg-slate-900/50"
+                            >
+                              {chart}
+                            </div>
+                          </div>
+                          <div className="flex min-w-0 p-[23px] pt-0 sm:p-4 sm:pt-0 lg:h-60 lg:pl-0 lg:pt-4">
+                            <div className="flex min-w-0 flex-1 flex-col border border-t-0 border-slate-200 bg-slate-50 p-3 px-3.5 sm:p-4 lg:border-l-0 lg:border-t dark:border-slate-800 dark:bg-slate-900/50">
+                              <div className="min-h-0 lg:flex-1">
+                                <div
+                                  key={`${tab.key}-${selectedEngine}`}
+                                  role="region"
+                                  aria-label="Benchmark query"
+                                  tabIndex={0}
+                                  className="max-h-[14lh] overflow-y-auto text-xs leading-snug [scrollbar-width:thin] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 sm:text-sm sm:leading-snug lg:max-h-[7lh]"
+                                >
+                                  {queryPanels[tab.key]?.[selectedEngine] ?? (
+                                    <p className="font-mono text-sm text-slate-400">
+                                      Benchmarks coming soon.
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                              <div className="mt-3 flex h-8 shrink-0 items-center pl-2 lg:mt-0">
+                                <label className="inline-flex items-center gap-2 text-xs leading-5">
+                                  <span className="text-slate-400 dark:text-slate-500">
+                                    Query:
+                                  </span>
+                                  <span className="relative inline-flex h-8 items-center gap-1.5 font-medium text-slate-600 transition-colors hover:text-indigo-600 focus-within:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 dark:focus-within:text-indigo-400">
+                                    <span aria-hidden="true">
+                                      {
+                                        ENGINES.find(
+                                          (engine) =>
+                                            engine.key === selectedEngine,
+                                        )?.label
+                                      }
+                                    </span>
+                                    <RiArrowDownSLine
+                                      aria-hidden="true"
+                                      className="size-3.5 opacity-70"
+                                    />
+                                    <select
+                                      aria-label="Query engine"
+                                      value={selectedEngine}
+                                      onChange={(event) =>
+                                        setQueryEngine(
+                                          event.target.value as EngineKey,
+                                        )
+                                      }
+                                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 dark:[color-scheme:dark]"
+                                    >
+                                      {ENGINES.filter(
+                                        (engine) =>
+                                          engine.key === "paradedb" ||
+                                          engine.key === comparison,
+                                      ).map((option) => (
+                                        <option
+                                          key={option.key}
+                                          value={option.key}
+                                        >
+                                          {option.label}
+                                        </option>
+                                      ))}
+                                    </select>
+                                  </span>
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </TabPanel>
+                      ))}
+                    </TabPanels>
+                    <div className="border-t border-slate-200 px-[23px] py-3 sm:px-4 dark:border-slate-800">
+                      <p
+                        key={`${tab.key}-${comparison}`}
+                        className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 motion-safe:animate-[fade-in_180ms_ease-out]"
+                      >
+                        {tab.key !== "vector" && (
+                          <>
+                            ParadeDB 0.25.6 &middot;{" "}
+                            {comparison === "postgres"
+                              ? "Postgres 18"
+                              : "Elasticsearch 8.17"}
+                            .{" "}
+                          </>
+                        )}
+                        {tab.dataset ??
+                          (tab.key === "vector"
+                            ? "Measured against the Cohere 10M dataset at 95% recall"
+                            : "Measured against the 28M row Hacker News dataset")}{" "}
+                        with{" "}
+                        <a
+                          href="https://github.com/paradedb/benchmarker"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 align-bottom font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
+                        >
+                          <RiGithubFill aria-hidden="true" className="size-4" />
+                          paradedb/benchmarker
+                        </a>
+                        .
+                      </p>
                     </div>
+                  </TabGroup>
+
+                  <div className="mt-6">
+                    <p className="mb-5 font-mono text-[11px] uppercase tracking-widest text-slate-400">
+                      What ParadeDB adds to Postgres
+                    </p>
+                    <ul className="grid grid-cols-1 gap-6 sm:grid-cols-3">
+                      {tab.bullets.map((bullet) => (
+                        <li key={bullet.text}>
+                          <span className="mb-3 flex items-center gap-2">
+                            {bullet.icon ? (
+                              <span
+                                aria-hidden="true"
+                                className="text-indigo-600 dark:text-indigo-400"
+                              >
+                                {bullet.icon}
+                              </span>
+                            ) : (
+                              <span
+                                aria-hidden="true"
+                                className="block h-[3px] w-6 bg-indigo-600"
+                              />
+                            )}
+                            {bullet.badge && (
+                              <span className="border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-400">
+                                {bullet.badge}
+                              </span>
+                            )}
+                          </span>
+                          <span className="block text-sm text-slate-600 dark:text-slate-300 motion-safe:animate-[fade-in_180ms_ease-out]">
+                            {bullet.lead && (
+                              <>
+                                <span className="font-semibold text-slate-900 dark:text-white">
+                                  {bullet.lead}
+                                </span>{" "}
+                              </>
+                            )}
+                            {bullet.text}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
 
-                {tab.paradedbMs !== null &&
-                !(comparison === "elasticsearch" && tab.key === "vector") ? (
-                  <BarChart
-                    paradedbMs={tab.paradedbMs}
-                    competitorMs={
-                      comparison === "postgres"
-                        ? tab.postgresMs
-                        : (tab.esMs ?? null)
-                    }
-                    comparison={comparison}
-                    speedup={tab.speedup}
-                    note={tab.note}
-                    unavailableNote={
-                      comparison === "elasticsearch" && tab.key === "joins"
-                        ? "Elasticsearch has no equivalent query over normalized tables. Joining posts and comments requires denormalizing them at ingest."
-                        : undefined
-                    }
-                    competitorLabel={
-                      comparison === "elasticsearch"
-                        ? "Elasticsearch"
-                        : tab.key === "vector"
-                          ? "pgvector HNSW"
-                          : "Postgres"
-                    }
-                  />
-                ) : (
-                  <BarChart
-                    paradedbMs={null}
-                    competitorMs={null}
-                    comparison={comparison}
-                    speedup={null}
-                    competitorLabel="Elasticsearch"
-                  />
-                )}
-
-                <div className="order-last mt-6 border-t border-slate-200 pt-3 dark:border-slate-800 md:order-none md:mt-4">
-                  <p
-                    key={`${tab.key}-${comparison}`}
-                    className="text-xs leading-relaxed text-slate-500 dark:text-slate-400 motion-safe:animate-[fade-in_180ms_ease-out]"
-                  >
-                    {tab.key !== "vector" && (
-                      <>
-                        ParadeDB 0.25.6 &middot;{" "}
-                        {comparison === "postgres"
-                          ? "Postgres 18"
-                          : "Elasticsearch 8.17"}
-                        .{" "}
-                      </>
-                    )}
-                    {tab.dataset ??
-                      (tab.key === "vector"
-                        ? "Measured against the Cohere 10M dataset at 95% recall"
-                        : "Measured against the 28M row Hacker News dataset")}{" "}
-                    with{" "}
-                    <a
-                      href="https://github.com/paradedb/benchmarker"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-1 align-bottom font-medium text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400"
+                <nav
+                  ref={navRef}
+                  aria-label="Benchmark categories"
+                  className="-mx-6 order-first flex gap-px overflow-x-auto no-scrollbar sm:mx-0 sm:gap-1 lg:flex-col"
+                >
+                  {BENCHMARKS.map((benchmark, index) => (
+                    <button
+                      key={benchmark.key}
+                      onClick={() => scrollToTab(index)}
+                      className={cx(
+                        "flex-1 cursor-pointer whitespace-nowrap border-b-2 px-2 py-2 text-center text-xs font-medium transition-colors sm:px-3 sm:text-sm lg:flex-none lg:border-b-0 lg:border-l-2 lg:text-left",
+                        index === active
+                          ? "border-indigo-600 text-slate-900 dark:text-white"
+                          : "border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
+                      )}
                     >
-                      <RiGithubFill aria-hidden="true" className="size-4" />
-                      paradedb/benchmarker
-                    </a>
-                    .
-                  </p>
-                </div>
-
-                <ul className="mt-6 flex flex-col sm:grid min-h-[104px] gap-5 sm:gap-6 sm:grid-cols-3">
-                  {tab.bullets.map((bullet) => (
-                    <li key={bullet.text}>
-                      <span className="mb-3 flex items-center gap-2">
-                        {bullet.icon ? (
-                          <span
-                            aria-hidden="true"
-                            className="text-indigo-600 dark:text-indigo-400"
-                          >
-                            {bullet.icon}
-                          </span>
-                        ) : (
-                          <span
-                            aria-hidden="true"
-                            className="block h-[3px] w-6 bg-indigo-600"
-                          />
-                        )}
-                        {bullet.badge && (
-                          <span className="border border-slate-200 dark:border-slate-700 px-1.5 py-0.5 font-mono text-[10px] uppercase tracking-widest text-slate-400">
-                            {bullet.badge}
-                          </span>
-                        )}
-                      </span>
-                      <span className="block text-sm text-slate-600 dark:text-slate-300 motion-safe:animate-[fade-in_180ms_ease-out]">
-                        {bullet.lead && (
-                          <>
-                            <span className="font-semibold text-slate-900 dark:text-white">
-                              {bullet.lead}
-                            </span>{" "}
-                          </>
-                        )}
-                        {bullet.text}
-                      </span>
-                    </li>
+                      {benchmark.label}
+                      {benchmark.tag && (
+                        <span
+                          className={cx(
+                            "ml-1 border px-1 py-0.5 align-middle font-mono text-[8px] uppercase tracking-widest sm:ml-2 sm:px-1.5 sm:text-[10px]",
+                            index === active
+                              ? "border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400"
+                              : "border-slate-200 dark:border-slate-800 text-slate-400",
+                          )}
+                        >
+                          {benchmark.tag}
+                        </span>
+                      )}
+                    </button>
                   ))}
-                </ul>
+                </nav>
               </div>
-
-              <nav
-                ref={navRef}
-                aria-label="Benchmark categories"
-                className="order-first flex lg:flex-col gap-1 overflow-x-auto no-scrollbar"
-              >
-                {BENCHMARKS.map((benchmark, index) => (
-                  <button
-                    key={benchmark.key}
-                    onClick={() => scrollToTab(index)}
-                    className={cx(
-                      "cursor-pointer whitespace-nowrap border-b-2 lg:border-b-0 lg:border-l-2 px-3 py-2 text-left text-sm font-medium transition-colors",
-                      index === active
-                        ? "border-indigo-600 text-slate-900 dark:text-white"
-                        : "border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300",
-                    )}
-                  >
-                    {benchmark.label}
-                    {benchmark.tag && (
-                      <span
-                        className={cx(
-                          "ml-2 border px-1.5 py-0.5 align-middle font-mono text-[10px] uppercase tracking-widest",
-                          index === active
-                            ? "border-indigo-200 dark:border-indigo-900 text-indigo-600 dark:text-indigo-400"
-                            : "border-slate-200 dark:border-slate-800 text-slate-400",
-                        )}
-                      >
-                        {benchmark.tag}
-                      </span>
-                    )}
-                  </button>
-                ))}
-              </nav>
             </div>
           </div>
         </div>

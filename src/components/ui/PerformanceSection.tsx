@@ -1,6 +1,9 @@
 import Code from "@/components/Code";
 import { paradedbSqlLight, paradedbSqlDark } from "./paradedbSqlTheme";
-import PerformanceScroller, { type QueryPanels } from "./PerformanceScroller";
+import PerformanceScroller, {
+  type EngineKey,
+  type QueryPanels,
+} from "./PerformanceScroller";
 
 // Text/filters/aggregates queries and timings from the runs behind
 // https://www.paradedb.com/vs/postgresql (Hacker News benchmark, 28.7M rows);
@@ -17,16 +20,32 @@ const QUERIES: Record<
     paradedb: `SELECT id, title, by, score
 FROM hn_items
 WHERE text ||| 'rust'
-ORDER BY pdb.score(id) DESC LIMIT 10`,
+ORDER BY pdb.score(id) DESC
+LIMIT 10`,
     postgres: `SELECT id, title, by, score
 FROM hn_items
-WHERE text_tsv @@ websearch_to_tsquery('english', 'rust')
-ORDER BY ts_rank_cd(text_tsv, websearch_to_tsquery('english', 'rust')) DESC
+WHERE text_tsv @@
+  websearch_to_tsquery(
+    'english', 'rust'
+  )
+ORDER BY ts_rank_cd(
+  text_tsv,
+  websearch_to_tsquery(
+    'english', 'rust'
+  )
+) DESC
 LIMIT 10`,
     elasticsearch: `POST /hn_items/_search
 {
-  "query": { "match": { "text": "rust" } },
-  "_source": ["id", "title", "by", "score"],
+  "query": {
+    "match": {
+      "text": "rust"
+    }
+  },
+  "_source": [
+    "id", "title",
+    "by", "score"
+  ],
   "size": 10
 }`,
   },
@@ -34,96 +53,313 @@ LIMIT 10`,
     paradedb: `SELECT _id, title
 FROM cohere_wiki
 WHERE text ||| 'battle'
-ORDER BY emb <=> '[0.12, -0.31, ...]'::vector(1024) LIMIT 10`,
+ORDER BY emb <=>
+  '[0.12, -0.31, ...]'
+    ::vector(1024)
+LIMIT 10`,
     postgres: `SELECT _id, title
 FROM cohere_wiki
-WHERE to_tsvector('english', text) @@ websearch_to_tsquery('english', 'battle')
-ORDER BY emb <=> '[0.12, -0.31, ...]'::vector(1024) LIMIT 10`,
-    elasticsearch: `// Elasticsearch vector benchmarks coming soon.`,
+WHERE to_tsvector(
+  'english', text
+) @@ websearch_to_tsquery(
+  'english', 'battle'
+)
+ORDER BY emb <=>
+  '[0.12, -0.31, ...]'
+    ::vector(1024)
+LIMIT 10`,
+    elasticsearch: `// Elasticsearch vector
+// benchmarks coming soon.`,
   },
   filters: {
     paradedb: `SELECT id, title, by, score
 FROM hn_items
-WHERE text ||| 'rust' AND type = 'story'
-ORDER BY pdb.score(id) DESC LIMIT 10`,
+WHERE text ||| 'rust'
+  AND type = 'story'
+ORDER BY pdb.score(id) DESC
+LIMIT 10`,
     postgres: `SELECT id, title, by, score
 FROM hn_items
-WHERE text_tsv @@ websearch_to_tsquery('english', 'rust')
+WHERE text_tsv @@
+  websearch_to_tsquery(
+    'english', 'rust'
+  )
   AND type = 'story'
-ORDER BY ts_rank_cd(text_tsv, websearch_to_tsquery('english', 'rust')) DESC
+ORDER BY ts_rank_cd(
+  text_tsv,
+  websearch_to_tsquery(
+    'english', 'rust'
+  )
+) DESC
 LIMIT 10`,
     elasticsearch: `POST /hn_items/_search
 {
-  "query": { "bool": {
-    "must": [{ "match": { "text": "rust" } }],
-    "filter": [{ "term": { "type": "story" } }]
-  } },
-  "_source": ["id", "title", "by", "score"],
+  "query": {
+    "bool": {
+      "must": [{
+        "match": {
+          "text": "rust"
+        }
+      }],
+      "filter": [{
+        "term": {
+          "type": "story"
+        }
+      }]
+    }
+  },
+  "_source": [
+    "id", "title",
+    "by", "score"
+  ],
   "size": 10
 }`,
   },
   aggregates: {
     paradedb: `SELECT id, pdb.agg(
-  '{"histogram": {"field": "score", "interval": 50}}', false
+  '{"histogram": {
+    "field": "score",
+    "interval": 50
+  }}', false
 ) OVER ()
 FROM hn_items
 WHERE text ||| 'rust'
-ORDER BY pdb.score(id) DESC LIMIT 10`,
+ORDER BY pdb.score(id) DESC
+LIMIT 10`,
     postgres: `WITH hits AS (
-  SELECT id, score, ts_rank_cd(text_tsv, q) r
-  FROM hn_items, websearch_to_tsquery('english', 'rust') q
+  SELECT id, score,
+    ts_rank_cd(text_tsv, q) r
+  FROM hn_items,
+    websearch_to_tsquery(
+      'english', 'rust'
+    ) q
+  WHERE text_tsv @@ q
+)
+SELECT
+  (SELECT jsonb_object_agg(
+     bucket, c
+   )
+   FROM (
+     SELECT
+       (score / 50) * 50 bucket,
+       count(*) c
+     FROM hits
+     GROUP BY 1
+   ) t),
+  (SELECT jsonb_agg(h)
+   FROM (
+     SELECT * FROM hits
+     ORDER BY r DESC
+     LIMIT 10
+   ) h)`,
+    elasticsearch: `POST /hn_items/_search
+{
+  "query": {
+    "match": {
+      "text": "rust"
+    }
+  },
+  "aggs": {
+    "scores": {
+      "histogram": {
+        "field": "score",
+        "interval": 50
+      }
+    }
+  },
+  "_source": [
+    "id", "title",
+    "by", "score"
+  ],
+  "size": 10
+}`,
+  },
+  joins: {
+    paradedb: `SELECT p.post_type_id,
+  COUNT(*), SUM(c.score)
+FROM stackoverflow_posts p
+JOIN comments c
+  ON p.id = c.post_id
+WHERE p.body ||| 'code'
+GROUP BY p.post_type_id
+ORDER BY SUM(c.score) DESC`,
+    postgres: `SELECT p.post_type_id,
+  COUNT(*), SUM(c.score)
+FROM stackoverflow_posts p
+JOIN comments c
+  ON p.id = c.post_id
+WHERE p.body_tsv @@
+  websearch_to_tsquery(
+    'english', 'code'
+  )
+GROUP BY p.post_type_id
+ORDER BY SUM(c.score) DESC`,
+    elasticsearch: `// No JOIN support.
+//
+// Searching across posts
+// and comments requires
+// denormalizing both tables
+// into one index and keeping
+// it in sync at ingest time.`,
+  },
+};
+
+const WIDE_QUERIES: Record<string, Partial<Record<EngineKey, string>>> = {
+  text: {
+    postgres: `SELECT id, title, by, score
+FROM hn_items
+WHERE text_tsv @@
+  websearch_to_tsquery(
+    'english', 'rust')
+ORDER BY ts_rank_cd(text_tsv,
+  websearch_to_tsquery(
+    'english', 'rust')) DESC
+LIMIT 10`,
+    elasticsearch: `POST /hn_items/_search
+{
+  "query": {
+    "match": { "text": "rust" }
+  },
+  "_source": [
+    "id", "title", "by", "score"
+  ],
+  "size": 10
+}`,
+  },
+  vector: {
+    paradedb: `SELECT _id, title
+FROM cohere_wiki
+WHERE text ||| 'battle'
+ORDER BY emb <=>
+  '[0.12, -0.31, ...]'::vector(1024)
+LIMIT 10`,
+    postgres: `SELECT _id, title
+FROM cohere_wiki
+WHERE to_tsvector('english', text)
+  @@ websearch_to_tsquery(
+    'english', 'battle')
+ORDER BY emb <=>
+  '[0.12, -0.31, ...]'::vector(1024)
+LIMIT 10`,
+  },
+  filters: {
+    postgres: `SELECT id, title, by, score
+FROM hn_items
+WHERE text_tsv @@
+  websearch_to_tsquery(
+    'english', 'rust')
+  AND type = 'story'
+ORDER BY ts_rank_cd(text_tsv,
+  websearch_to_tsquery(
+    'english', 'rust')) DESC
+LIMIT 10`,
+    elasticsearch: `POST /hn_items/_search
+{
+  "query": { "bool": {
+    "must": [{ "match": {
+      "text": "rust"
+    } }],
+    "filter": [{ "term": {
+      "type": "story"
+    } }]
+  } },
+  "_source": [
+    "id", "title", "by", "score"
+  ],
+  "size": 10
+}`,
+  },
+  aggregates: {
+    paradedb: `SELECT id, pdb.agg(
+  '{"histogram": {
+    "field": "score", "interval": 50
+  }}', false
+) OVER ()
+FROM hn_items
+WHERE text ||| 'rust'
+ORDER BY pdb.score(id) DESC
+LIMIT 10`,
+    postgres: `WITH hits AS (
+  SELECT id, score,
+    ts_rank_cd(text_tsv, q) r
+  FROM hn_items,
+    websearch_to_tsquery(
+      'english', 'rust') q
   WHERE text_tsv @@ q
 )
 SELECT
   (SELECT jsonb_object_agg(bucket, c)
    FROM (
-     SELECT (score / 50) * 50 bucket, count(*) c
+     SELECT (score / 50) * 50 bucket,
+       count(*) c
      FROM hits GROUP BY 1
    ) t),
   (SELECT jsonb_agg(h)
    FROM (
-     SELECT * FROM hits ORDER BY r DESC LIMIT 10
+     SELECT * FROM hits
+     ORDER BY r DESC LIMIT 10
    ) h)`,
     elasticsearch: `POST /hn_items/_search
 {
-  "query": { "match": { "text": "rust" } },
+  "query": {
+    "match": { "text": "rust" }
+  },
   "aggs": { "scores": {
-    "histogram": { "field": "score", "interval": 50 }
+    "histogram": {
+      "field": "score", "interval": 50
+    }
   } },
-  "_source": ["id", "title", "by", "score"],
+  "_source": [
+    "id", "title", "by", "score"
+  ],
   "size": 10
 }`,
   },
   joins: {
-    paradedb: `SELECT p.post_type_id, COUNT(*), SUM(c.score)
+    paradedb: `SELECT p.post_type_id,
+  COUNT(*), SUM(c.score)
 FROM stackoverflow_posts p
 JOIN comments c ON p.id = c.post_id
 WHERE p.body ||| 'code'
 GROUP BY p.post_type_id
 ORDER BY SUM(c.score) DESC`,
-    postgres: `SELECT p.post_type_id, COUNT(*), SUM(c.score)
+    postgres: `SELECT p.post_type_id,
+  COUNT(*), SUM(c.score)
 FROM stackoverflow_posts p
 JOIN comments c ON p.id = c.post_id
-WHERE p.body_tsv @@ websearch_to_tsquery('english', 'code')
+WHERE p.body_tsv @@
+  websearch_to_tsquery(
+    'english', 'code')
 GROUP BY p.post_type_id
 ORDER BY SUM(c.score) DESC`,
-    elasticsearch: `// No JOIN support.
-//
-// Searching across posts and comments requires denormalizing
-// both tables into one index and keeping it in sync at ingest time.`,
   },
 };
 
 export default function PerformanceSection() {
-  const panel = (code: string, lang: "sql" | "json") => (
-    <Code
-      code={code}
-      lang={lang}
-      themeLight={paradedbSqlLight}
-      themeDark={paradedbSqlDark}
-      className="[&_pre]:!bg-transparent [&>div]:text-xs sm:[&>div]:text-sm [&_pre]:!p-0 [&_code]:!w-full [&_code]:whitespace-normal [&_.line]:relative [&_.line]:block [&_.line]:whitespace-pre-wrap [&_.line]:[overflow-wrap:anywhere] [&_.line]:pl-[calc(2ch+1rem)] [&_.line::before]:absolute [&_.line::before]:left-0 [&_.line::before]:top-0 [&_.line::before]:mr-0 [&_.line::before]:w-[2ch] [&_.line::before]:whitespace-nowrap [&_.line::before]:[overflow-wrap:normal]"
-      copy={false}
-    />
+  const panel = (code: string, lang: "sql" | "json", wideCode?: string) => (
+    <div className="@container/query font-mono text-xs sm:text-sm">
+      {[code, ...(wideCode ? [wideCode] : [])].map((variant, index) => (
+        <div
+          key={index}
+          className={
+            wideCode
+              ? index === 0
+                ? "@min-[calc(40ch+1rem)]/query:hidden"
+                : "hidden @min-[calc(40ch+1rem)]/query:block"
+              : undefined
+          }
+        >
+          <Code
+            code={variant}
+            lang={lang}
+            themeLight={paradedbSqlLight}
+            themeDark={paradedbSqlDark}
+            className="[&_pre]:!bg-transparent [&>div]:text-xs sm:[&>div]:text-sm [&_pre]:!p-0 [&_code]:!w-full [&_code]:whitespace-normal [&_.line]:relative [&_.line]:block [&_.line]:whitespace-pre [&_.line]:[overflow-wrap:normal] [&_.line]:pl-[calc(2ch+1rem)] [&_.line::before]:absolute [&_.line::before]:left-0 [&_.line::before]:top-0 [&_.line::before]:mr-0 [&_.line::before]:w-[2ch] [&_.line::before]:whitespace-nowrap [&_.line::before]:[overflow-wrap:normal]"
+            copy={false}
+          />
+        </div>
+      ))}
+    </div>
   );
 
   const queryPanels: QueryPanels = Object.fromEntries(
@@ -132,10 +368,24 @@ export default function PerformanceSection() {
       queries === null
         ? null
         : {
-            paradedb: panel(queries.paradedb, "sql"),
-            postgres: panel(queries.postgres, "sql"),
+            paradedb: panel(
+              queries.paradedb,
+              "sql",
+              WIDE_QUERIES[key]?.paradedb,
+            ),
+            postgres: panel(
+              queries.postgres,
+              "sql",
+              WIDE_QUERIES[key]?.postgres,
+            ),
             ...(queries.elasticsearch
-              ? { elasticsearch: panel(queries.elasticsearch, "json") }
+              ? {
+                  elasticsearch: panel(
+                    queries.elasticsearch,
+                    "json",
+                    WIDE_QUERIES[key]?.elasticsearch,
+                  ),
+                }
               : {}),
           },
     ]),
