@@ -38,7 +38,8 @@ const COMPARISONS = [
 ] as const;
 
 // Timings are p95 at one connection, pg_search 0.25.6 on Postgres 18.
-// Text/Filters: Hacker News 28.7M rows, same runs as
+// Text: two-term title search. Filters: one-term text search.
+// Both use Hacker News 28.7M rows, same runs as
 // https://www.paradedb.com/vs/postgresql. Facets: same dataset and Postgres
 // baseline, but the ParadeDB side is the score-histogram aggregate re-run
 // with MVCC resolution off (solve_mvcc = false) — see the tab note. Joins:
@@ -68,10 +69,10 @@ const BENCHMARKS: {
   {
     key: "text",
     label: "Text",
-    paradedbMs: 3.4,
-    postgresMs: 2707,
-    speedup: 796,
-    esMs: 1.9,
+    paradedbMs: 5.4,
+    postgresMs: 642.2,
+    speedup: 119,
+    esMs: 5.6,
     bullets: [
       {
         lead: "Powered by Tantivy,",
