@@ -5,7 +5,6 @@ import * as Tooltip from "@radix-ui/react-tooltip";
 import { Tab, TabGroup, TabList, TabPanel, TabPanels } from "@headlessui/react";
 import {
   RiBracesLine,
-  RiArrowDownSLine,
   RiBubbleChartLine,
   RiDatabase2Line,
   RiFilter3Line,
@@ -436,6 +435,9 @@ export default function PerformanceScroller({
 
   const tab = BENCHMARKS[active];
   const selectedEngine = queryEngine === "paradedb" ? "paradedb" : comparison;
+  const queryEngineOptions = ENGINES.filter(
+    (engine) => engine.key === "paradedb" || engine.key === comparison,
+  );
   const chart =
     tab.paradedbMs !== null &&
     !(comparison === "elasticsearch" && tab.key === "vector") ? (
@@ -549,6 +551,38 @@ export default function PerformanceScroller({
                           </div>
                           <div className="flex min-w-0 p-[23px] pt-0 sm:p-4 sm:pt-0 lg:h-60 lg:pl-0 lg:pt-4">
                             <div className="flex min-w-0 flex-1 flex-col border border-t-0 border-slate-200 bg-slate-50 p-3 px-3.5 sm:p-4 lg:border-l-0 lg:border-t dark:border-slate-800 dark:bg-slate-900/50">
+                              <div
+                                role="group"
+                                aria-label="Switch benchmark query"
+                                className="-mx-3.5 -mt-3 mb-3 flex h-10 shrink-0 overflow-x-auto border-b border-slate-200 sm:-mx-4 sm:-mt-4 dark:border-slate-800"
+                              >
+                                <span className="flex h-full shrink-0 items-center border-b-2 border-r border-transparent border-r-slate-200 px-3.5 text-xs font-medium text-slate-600 sm:px-4 dark:border-r-slate-800 dark:text-slate-300">
+                                  Query:
+                                </span>
+                                {queryEngineOptions.map((option) => {
+                                  const isSelected =
+                                    option.key === selectedEngine;
+
+                                  return (
+                                    <button
+                                      key={option.key}
+                                      type="button"
+                                      aria-pressed={isSelected}
+                                      onClick={() => setQueryEngine(option.key)}
+                                      className={cx(
+                                        "min-w-0 shrink-0 cursor-pointer whitespace-nowrap border-b-2 border-transparent px-3 text-xs font-medium text-slate-500 outline-none transition-colors hover:text-slate-900 focus:ring-0 sm:px-4 dark:text-slate-400 dark:hover:text-white",
+                                        isSelected &&
+                                          "border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400",
+                                      )}
+                                    >
+                                      {option.label}{" "}
+                                      {option.key === "elasticsearch"
+                                        ? "JSON"
+                                        : "SQL"}
+                                    </button>
+                                  );
+                                })}
+                              </div>
                               <div className="min-h-0 lg:flex-1">
                                 <div
                                   key={`${tab.key}-${selectedEngine}`}
@@ -563,50 +597,6 @@ export default function PerformanceScroller({
                                     </p>
                                   )}
                                 </div>
-                              </div>
-                              <div className="mt-3 flex h-8 shrink-0 items-center pl-2 lg:mt-0">
-                                <label className="inline-flex items-center gap-2 text-xs leading-5">
-                                  <span className="text-slate-400 dark:text-slate-500">
-                                    Query:
-                                  </span>
-                                  <span className="relative inline-flex h-8 items-center gap-1.5 font-medium text-slate-600 transition-colors hover:text-indigo-600 focus-within:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 dark:focus-within:text-indigo-400">
-                                    <span aria-hidden="true">
-                                      {
-                                        ENGINES.find(
-                                          (engine) =>
-                                            engine.key === selectedEngine,
-                                        )?.label
-                                      }
-                                    </span>
-                                    <RiArrowDownSLine
-                                      aria-hidden="true"
-                                      className="size-3.5 opacity-70"
-                                    />
-                                    <select
-                                      aria-label="Query engine"
-                                      value={selectedEngine}
-                                      onChange={(event) =>
-                                        setQueryEngine(
-                                          event.target.value as EngineKey,
-                                        )
-                                      }
-                                      className="absolute inset-0 h-full w-full cursor-pointer opacity-0 dark:[color-scheme:dark]"
-                                    >
-                                      {ENGINES.filter(
-                                        (engine) =>
-                                          engine.key === "paradedb" ||
-                                          engine.key === comparison,
-                                      ).map((option) => (
-                                        <option
-                                          key={option.key}
-                                          value={option.key}
-                                        >
-                                          {option.label}
-                                        </option>
-                                      ))}
-                                    </select>
-                                  </span>
-                                </label>
                               </div>
                             </div>
                           </div>
