@@ -19,33 +19,17 @@ const QUERIES: Record<
   text: {
     paradedb: `SELECT id, title, by, score
 FROM hn_items
-WHERE text ||| 'rust'
-ORDER BY pdb.score(id) DESC
-LIMIT 10`,
+WHERE title ||| 'rust arc'
+ORDER BY pdb.score(id) DESC LIMIT 10`,
     postgres: `SELECT id, title, by, score
 FROM hn_items
-WHERE text_tsv @@
-  websearch_to_tsquery(
-    'english', 'rust'
-  )
-ORDER BY ts_rank_cd(
-  text_tsv,
-  websearch_to_tsquery(
-    'english', 'rust'
-  )
-) DESC
+WHERE title_tsv @@ websearch_to_tsquery('english', 'rust or arc')
+ORDER BY ts_rank_cd(title_tsv, websearch_to_tsquery('english', 'rust or arc')) DESC
 LIMIT 10`,
     elasticsearch: `POST /hn_items/_search
 {
-  "query": {
-    "match": {
-      "text": "rust"
-    }
-  },
-  "_source": [
-    "id", "title",
-    "by", "score"
-  ],
+  "query": { "match": { "title": "rust arc" } },
+  "_source": ["id", "title", "by", "score"],
   "size": 10
 }`,
   },
