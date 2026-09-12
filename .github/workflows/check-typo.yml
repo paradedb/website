@@ -28,7 +28,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Check Typo
-        uses: paradedb/actions/check-typo@b7703a0b117808acb8a659ca94be8ba274344289
+        uses: paradedb/actions/check-typo@v12
         with:
           ignore-words-file: .codespellignore
           skip: package-lock.json,pnpm-lock.yaml,*.svg,metadata.json
