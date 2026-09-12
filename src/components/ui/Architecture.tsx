@@ -243,7 +243,7 @@ export default function Architecture() {
                         {CARDS.map((card) => (
                           <div
                             key={card.title}
-                            className="px-2 py-5 sm:px-6 sm:py-6 bg-white dark:bg-slate-950"
+                            className="px-6 py-5 sm:py-6 bg-white dark:bg-slate-950"
                           >
                             <div className="flex items-center gap-3 mb-3">
                               <span className="font-mono text-xs font-semibold text-indigo-600 dark:text-indigo-400">

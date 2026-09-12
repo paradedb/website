@@ -575,10 +575,9 @@ export default function PerformanceScroller({
                                           "border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400",
                                       )}
                                     >
-                                      {option.label}{" "}
-                                      {option.key === "elasticsearch"
-                                        ? "JSON"
-                                        : "SQL"}
+                                      {option.label}
+                                      {option.key === "elasticsearch" &&
+                                        " JSON"}
                                     </button>
                                   );
                                 })}
@@ -589,7 +588,7 @@ export default function PerformanceScroller({
                                   role="region"
                                   aria-label="Benchmark query"
                                   tabIndex={0}
-                                  className="max-h-[14lh] overflow-y-auto text-xs leading-snug [scrollbar-width:thin] focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 sm:text-sm sm:leading-snug lg:max-h-[7lh]"
+                                  className="benchmark-query-scroll max-h-[14lh] overflow-auto text-xs leading-snug focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-indigo-600 sm:text-sm sm:leading-snug lg:max-h-[7lh]"
                                 >
                                   {queryPanels[tab.key]?.[selectedEngine] ?? (
                                     <p className="font-mono text-sm text-slate-400">
@@ -637,9 +636,15 @@ export default function PerformanceScroller({
                   </TabGroup>
 
                   <div className="mt-6">
-                    <p className="mb-5 font-mono text-[11px] uppercase tracking-widest text-slate-400">
-                      What ParadeDB adds to Postgres
-                    </p>
+                    <div className="flex items-baseline gap-1 mb-6 sm:gap-3">
+                      <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500">
+                        What ParadeDB adds to Postgres
+                      </span>
+                      <span className="flex-1 min-w-0 h-px bg-slate-200 sm:min-w-4 dark:bg-slate-800" />
+                      <span className="hidden shrink-0 text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 sm:block dark:text-slate-600">
+                        03 / 03
+                      </span>
+                    </div>
                     <ul className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                       {tab.bullets.map((bullet) => (
                         <li key={bullet.text}>

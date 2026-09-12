@@ -533,6 +533,7 @@ pre {
   -ms-overflow-style: none !important;
   scrollbar-width: none !important;
 }
+
 .mask {
   mask-image: radial-gradient(rgba(0, 0, 0, 1) 0%, transparent 60%);
 }
@@ -817,6 +818,34 @@ a {
   }
 }
 
+.benchmark-query-scroll pre {
+  overflow: visible !important;
+}
+
+.benchmark-query-scroll .line::before {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+.benchmark-query-scroll::-webkit-scrollbar-thumb {
+  border-radius: 0;
+}
+
+.benchmark-query-scroll::-webkit-scrollbar-corner {
+  background: #ffffff;
+}
+
+.dark .benchmark-query-scroll::-webkit-scrollbar-corner {
+  background: #020617;
+}
+
+@supports selector(::-webkit-scrollbar) {
+  .benchmark-query-scroll {
+    scrollbar-width: auto;
+    scrollbar-color: auto;
+  }
+}
+
 @keyframes fade-in {
   from {
     opacity: 0;
@@ -881,12 +910,6 @@ html.focus-mode article {
   initial-value: 1;
 }
 
-@property --pixel-gen {
-  syntax: "<number>";
-  inherits: true;
-  initial-value: 0;
-}
-
 @layer utilities {
   .animate-hero-wrapper {
     animation: fade-in 500ms ease-out both;
@@ -928,59 +951,54 @@ html.focus-mode article {
   }
 
   @keyframes pixel-clock {
-    0% {
-      --pixel-clock: 1;
-    }
-    25%,
-    31% {
-      --pixel-clock: 2;
-    }
-    31.01% {
+    0%,
+    20% {
       --pixel-clock: 0;
     }
-    65%,
+    75%,
     100% {
       --pixel-clock: 1;
     }
   }
 
-  @keyframes pixel-gen {
-    0% {
-      --pixel-gen: 0;
-    }
-    0.6% {
-      --pixel-gen: 1;
-    }
-    26.7% {
-      --pixel-gen: 2;
-    }
-    51.7% {
-      --pixel-gen: 3;
-    }
-    76.7% {
-      --pixel-gen: 0;
-    }
-  }
-
   .pixel-clock {
-    animation: pixel-clock 8000ms linear infinite paused;
+    animation: pixel-clock 4000ms linear 1 alternate both paused;
   }
 
   .pixel-clock-fast {
-    animation: pixel-clock 6000ms linear infinite paused;
+    animation: pixel-clock 3000ms linear 1 alternate both paused;
   }
 
-  .pixel-gen {
-    animation: pixel-gen 12000ms step-end infinite paused;
+  @keyframes pixel-identicon {
+    0%,
+    25% {
+      --pixel-clock: 0;
+    }
+    68.75%,
+    100% {
+      --pixel-clock: 1;
+    }
   }
 
-  .group:hover :is(.pixel-clock, .pixel-clock-fast, .pixel-gen) {
+  .pixel-identicon {
+    animation-name: pixel-identicon;
+    animation-duration: 3200ms;
+  }
+
+  .community-art[data-visible="true"] :is(.pixel-clock, .pixel-clock-fast) {
     animation-play-state: running;
   }
 
+  @media (width < 48rem), (hover: none) {
+    .community-art :is(.pixel-clock, .pixel-clock-fast) {
+      animation-iteration-count: infinite;
+      animation-play-state: running;
+    }
+  }
+
   @media (prefers-reduced-motion: reduce) {
-    .group:hover :is(.pixel-clock, .pixel-clock-fast, .pixel-gen) {
-      animation-play-state: paused;
+    .community-art :is(.pixel-clock, .pixel-clock-fast) {
+      animation: none;
     }
   }
 
