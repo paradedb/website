@@ -11,9 +11,10 @@ export function CommunityArtGrid({ children }: { children: ReactNode }) {
     if (!el) return;
 
     const mobile = window.matchMedia("(width < 48rem), (hover: none)");
-    const cleanups = Array.from(
+    const arts = Array.from(
       el.querySelectorAll<SVGSVGElement>(".pixel-clock, .pixel-clock-fast"),
-    ).map((art) => {
+    );
+    const cleanups = arts.map((art) => {
       const tile = art.closest(".group");
 
       const play = () => {
@@ -62,6 +63,7 @@ export function CommunityArtGrid({ children }: { children: ReactNode }) {
       };
 
       const finishIntro = (event: AnimationEvent) => {
+        art.removeAttribute("data-intro");
         if (mobile.matches || tile?.matches(":hover")) return;
         const animation = art.getAnimations()[0];
         if (!animation) return;
@@ -94,11 +96,25 @@ export function CommunityArtGrid({ children }: { children: ReactNode }) {
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
+          for (const art of arts) {
+            const animation = art.getAnimations()[0];
+            if (!animation || !(animation.effect instanceof KeyframeEffect)) {
+              continue;
+            }
+            const duration = Number(
+              animation.effect.getComputedTiming().duration,
+            );
+            const [, emptyHold] = animation.effect.getKeyframes();
+            const introStart = (emptyHold?.computedOffset ?? 0) * duration;
+            if (Number(animation.currentTime ?? 0) < introStart) {
+              animation.currentTime = introStart;
+            }
+          }
           setVisible(true);
           observer.disconnect();
         }
       },
-      { threshold: 0.2 },
+      { rootMargin: "0px 0px 80px 0px", threshold: 0 },
     );
     observer.observe(el);
     return () => {

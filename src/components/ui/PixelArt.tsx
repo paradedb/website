@@ -139,7 +139,7 @@ const GRAINS = Object.fromEntries(
 ) as Record<keyof typeof CHARTS, string>;
 
 const CLOCKED_OPACITY =
-  "clamp(var(--dim), calc((var(--pixel-clock) - var(--t)) * 100 + var(--dim)), var(--target))";
+  "max(calc(var(--target) * var(--pixel-preview, 0)), clamp(var(--dim), calc((var(--pixel-clock) - var(--t)) * 100 + var(--dim)), var(--target)))";
 
 function clockedStyle(s: Square): CSSProperties | undefined {
   if (s.fill === undefined) return undefined;
@@ -178,6 +178,7 @@ export function PixelChart({
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
+      data-intro="true"
       className={cx(
         "absolute inset-0 size-full",
         kind === "steps" ? "pixel-clock-fast" : "pixel-clock",

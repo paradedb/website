@@ -985,6 +985,10 @@ html.focus-mode article {
     animation-duration: 3200ms;
   }
 
+  .community-art [data-intro="true"] {
+    --pixel-preview: 0.4;
+  }
+
   .community-art[data-visible="true"] :is(.pixel-clock, .pixel-clock-fast) {
     animation-play-state: running;
   }
