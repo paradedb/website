@@ -636,11 +636,11 @@ export default function PerformanceScroller({
                   </TabGroup>
 
                   <div className="mt-6">
-                    <div className="flex items-baseline gap-1 mb-6 sm:gap-3">
+                    <div className="flex items-baseline gap-3 mb-6">
                       <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-slate-500">
                         What ParadeDB adds to Postgres
                       </span>
-                      <span className="flex-1 min-w-0 h-px bg-slate-200 sm:min-w-4 dark:bg-slate-800" />
+                      <span className="hidden flex-1 min-w-4 h-px bg-slate-200 sm:block dark:bg-slate-800" />
                       <span className="hidden shrink-0 text-[10px] font-mono uppercase tracking-[0.18em] text-slate-400 sm:block dark:text-slate-600">
                         03 / 03
                       </span>
