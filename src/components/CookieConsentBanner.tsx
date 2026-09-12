@@ -50,7 +50,7 @@ export default function CookieConsentBanner() {
       declineButtonClasses={cx(
         BUTTON_CLASSES,
         focusRing,
-        "border-slate-200 bg-transparent text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-900",
+        "border-slate-200 bg-transparent text-slate-600 hover:bg-slate-50 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-900",
       )}
       customContainerAttributes={{
         role: "region",
