@@ -28,10 +28,7 @@ type Square = {
   opacity: number;
   fill?: number;
   dim?: number;
-  gens?: number[];
 };
-
-const GENS = 4;
 
 function centered(squares: Square[], cols: number, rows: number) {
   const ox = (COLS - cols) / 2;
@@ -64,11 +61,22 @@ function identicon() {
     for (let c = 0; c < size; c++) {
       if (Math.hypot(c - mid, r - mid) > mid + 0.5) continue;
       const mirrored = c < size / 2 ? c : size - 1 - c;
-      const gens = Array.from({ length: GENS }, (_, g) =>
-        hash(mirrored, r, 30 + g * 7) > 0.5 ? 1 : 0,
-      );
-      squares.push({ x: c, y: r, opacity: gens[0] ? 0.92 : 0.14, gens });
+      squares.push({
+        x: c,
+        y: r,
+        opacity: hash(mirrored, r, 30) > 0.5 ? 0.92 : 0.14,
+        fill: hash(mirrored, r, 47),
+        dim: 0.14,
+      });
     }
+  }
+  const revealTimes = squares
+    .filter((s) => s.opacity > 0.14)
+    .map((s) => s.fill ?? 0);
+  const first = Math.min(...revealTimes);
+  const span = Math.max(...revealTimes) - first;
+  for (const s of squares) {
+    s.fill = (((s.fill ?? 0) - first) / span) * 0.99;
   }
   return centered(squares, size, size);
 }
@@ -130,24 +138,10 @@ const GRAINS = Object.fromEntries(
   Object.entries(CHARTS).map(([k, v]) => [k, grain(v)]),
 ) as Record<keyof typeof CHARTS, string>;
 
-const CLOCKED_OPACITY = `min(${[
-  "clamp(var(--dim), calc((var(--pixel-clock) - var(--t)) * 100 + var(--dim)), var(--target))",
-  "clamp(var(--dim), calc((1.02 + var(--t) - var(--pixel-clock)) * 100 + var(--dim)), var(--target))",
-].join(", ")})`;
-
-const GEN_OPACITY = `calc(0.14 + 0.78 * (${Array.from(
-  { length: GENS },
-  (_, g) =>
-    `clamp(0, calc(1 - (var(--pixel-gen) - ${g}) * (var(--pixel-gen) - ${g}) * 100), 1) * var(--g${g})`,
-).join(" + ")}))`;
+const CLOCKED_OPACITY =
+  "max(calc(var(--target) * var(--pixel-preview, 0)), clamp(var(--dim), calc((var(--pixel-clock) - var(--t)) * 100 + var(--dim)), var(--target)))";
 
 function clockedStyle(s: Square): CSSProperties | undefined {
-  if (s.gens) {
-    return {
-      ...Object.fromEntries(s.gens.map((v, g) => [`--g${g}`, v])),
-      fillOpacity: GEN_OPACITY,
-    } as CSSProperties;
-  }
   if (s.fill === undefined) return undefined;
   return {
     "--t": s.fill,
@@ -165,11 +159,8 @@ function Pixel({ s }: { s: Square }) {
       width={DOT}
       height={DOT}
       fill="#ffffff"
-      fillOpacity={s.fill === undefined && !s.gens ? s.opacity : undefined}
-      className={cx(
-        "transition-[fill-opacity] ease-in-out",
-        s.gens ? "duration-700" : "duration-150",
-      )}
+      fillOpacity={s.fill === undefined ? s.opacity : undefined}
+      className="transition-[fill-opacity] duration-150 ease-in-out"
       style={clockedStyle(s)}
     />
   );
@@ -187,23 +178,18 @@ export function PixelChart({
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
       aria-hidden="true"
+      data-intro="true"
       className={cx(
         "absolute inset-0 size-full",
-        kind === "grid" && "pixel-clock",
-        kind === "steps" && "pixel-clock-fast",
+        kind === "steps" ? "pixel-clock-fast" : "pixel-clock",
+        kind === "identicon" && "pixel-identicon [&_rect]:duration-300",
         className,
       )}
     >
       <path d={GRAINS[kind]} fill="#ffffff" fillOpacity={0.16} />
-      {kind === "identicon" ? (
-        <g className="pixel-gen">
-          {CHARTS[kind].map((s) => (
-            <Pixel key={`${s.x}-${s.y}`} s={s} />
-          ))}
-        </g>
-      ) : (
-        CHARTS[kind].map((s) => <Pixel key={`${s.x}-${s.y}`} s={s} />)
-      )}
+      {CHARTS[kind].map((s) => (
+        <Pixel key={`${s.x}-${s.y}`} s={s} />
+      ))}
     </svg>
   );
 }

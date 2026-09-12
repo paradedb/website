@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { RiArrowRightLine } from "@remixicon/react";
 import { cx } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
+import { CommunityArtGrid } from "./CommunityArtGrid";
 import { PixelChart } from "./PixelArt";
 import { documentation, github } from "@/lib/links";
 
@@ -73,10 +74,10 @@ export default function CommunityProof() {
               className="mb-10 md:mb-12"
             />
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
+            <CommunityArtGrid>
               {STATS.map((s) => (
                 <div key={s.key} className="flex flex-col">
-                  <div className={cx("group p-2", s.matClassName)}>
+                  <div className={cx("group p-1", s.matClassName)}>
                     <div
                       className={cx(
                         "relative aspect-[4/3] overflow-hidden",
@@ -108,7 +109,7 @@ export default function CommunityProof() {
                   </div>
                 </div>
               ))}
-            </div>
+            </CommunityArtGrid>
           </div>
 
           <div className="h-8 md:h-12 w-full bg-diagonal-hatch border-y border-slate-200 dark:border-slate-900 relative z-20 bg-slate-50/50 dark:bg-slate-900/50 opacity-60" />
