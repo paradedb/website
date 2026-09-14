@@ -34,5 +34,4 @@ jobs:
       - name: Lint Markdown
         uses: paradedb/actions/lint-markdown@v12
         with:
-          prettier-source: pnpm
           ignore-path: .prettierignore
