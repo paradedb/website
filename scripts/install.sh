@@ -29,7 +29,7 @@ set -eu
 SILENT=false
 for arg in "$@"; do
   case "$arg" in
-    -y|--yes) SILENT=true ;;
+    -y | --yes) SILENT=true ;;
   esac
 done
 
@@ -77,17 +77,17 @@ print_connect_cmd() {
 run_with_spinner() {
   MSG="$1"
   shift
-  "$@" > "$LOG" 2>&1 &
+  "$@" >"$LOG" 2>&1 &
   PID=$!
   i=0
   while kill -0 "$PID" 2>/dev/null; do
-    dots=$(( i % 3 + 1 ))
+    dots=$((i % 3 + 1))
     case $dots in
       1) printf "\r  %s.  " "$MSG" ;;
       2) printf "\r  %s.. " "$MSG" ;;
       3) printf "\r  %s..." "$MSG" ;;
     esac
-    i=$(( i + 1 ))
+    i=$((i + 1))
     sleep 0.4
   done
   if wait "$PID"; then
@@ -102,7 +102,7 @@ run_with_spinner() {
 }
 
 printf "%s%s" "$PURPLE" "$BOLD"
-cat << 'BANNER'
+cat <<'BANNER'
 
   |||||||| |||||||| |||||||| |||||
   |||||||| |||||||| |||||||| |||||||
@@ -150,17 +150,20 @@ if [ "$SILENT" = false ]; then
   printf "  Continue? [Y/n] "
   read -r REPLY </dev/tty
   case "$REPLY" in
-    [nN]*) echo "Aborted."; exit 0 ;;
+    [nN]*)
+      echo "Aborted."
+      exit 0
+      ;;
   esac
   echo
 fi
 
-if ! command -v docker > /dev/null 2>&1; then
+if ! command -v docker >/dev/null 2>&1; then
   printf "  %sError: Docker is not installed.%s To use ParadeDB, install it from https://docs.docker.com/get-docker/\n" "$RED" "$RESET" >&2
   exit 1
 fi
 
-if ! docker info > /dev/null 2>&1; then
+if ! docker info >/dev/null 2>&1; then
   printf "  %sError: Docker is not running.%s Please start Docker and try again.\n" "$RED" "$RESET" >&2
   exit 1
 fi
@@ -193,7 +196,7 @@ fi
 wait_for_postgres() {
   retries=0
   max_retries=10
-  until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" -d "$PG_DATABASE" > /dev/null 2>&1; do
+  until docker exec "$CONTAINER_NAME" pg_isready -U "$PG_USER" -d "$PG_DATABASE" >/dev/null 2>&1; do
     retries=$((retries + 1))
     if [ "$retries" -ge "$max_retries" ]; then
       echo "PostgreSQL did not become ready after ${max_retries} attempts."
