@@ -20,7 +20,7 @@ const STATS: Array<{
 }> = [
   {
     key: "docker",
-    stat: "2.5M+",
+    stat: "3M+",
     label: "Docker deployments",
     description:
       "Our Docker image is the easiest way to quickly spin up ParadeDB.",
