@@ -19,6 +19,7 @@ permissions:
 
 env:
   SCAN_API: https://is-agentic.com/api/scan/stream
+  REPORT_API: https://is-agentic.com/api/v1/report
   SCAN_TARGET: https://paradedb.com
   REPORT_URL: https://is-agentic.com/scan/paradedb.com
   # Revisit when ParadeDB Cloud exposes a public API and OpenAPI specification.
@@ -36,9 +37,10 @@ jobs:
         shell: bash
         run: |
           scan_started_at=$(date -u +%s)
+          # Reserve time within the job timeout for report polling and artifact upload.
           set +e
           curl --fail-with-body --silent --show-error --no-buffer \
-            --max-time 840 \
+            --max-time 600 \
             --get \
             --data-urlencode "target=$SCAN_TARGET" \
             --data-urlencode "force=1" \
@@ -58,77 +60,87 @@ jobs:
             exit 1
           fi
 
-          result=$(sed -n 's/^data: //p' scan-events.sse | \
-            jq -sc 'map(select(.type == "scan_complete")) | last.result')
-          jq . <<< "$result" > scan-result.json
-
-          if ! streamed_score=$(jq -er '.score | numbers' <<< "$result") ||
-             ! scanned_at=$(jq -er '.scannedAt | strings' <<< "$result") ||
-             ! grade=$(jq -er '.grade // "Unlabelled" | strings' <<< "$result"); then
+          # Completion alone is provisional; the archive event contains the final result.
+          if ! result=$(sed -n 's/^data: //p' scan-events.sse | \
+            jq -esc 'map(select(.type == "scan_archived")) | last.result'); then
             {
               echo "status=error"
-              echo "reason=The fresh Is Agentic scan returned an invalid response."
+              echo "reason=The fresh Is Agentic scan did not return a valid archived result."
             } >> "$GITHUB_OUTPUT"
-            {
-              echo "## Is Agentic score check"
-              echo "The fresh scan did not return a valid score or scan timestamp."
-            } >> "$GITHUB_STEP_SUMMARY"
             exit 1
           fi
+          jq . <<< "$result" > scan-result.json
 
-          # The streaming API and persisted report can assign different timestamps
-          # to the same scan. Wait for a report created after this workflow started
-          # the scan, then use its rating as the source of truth.
+          if ! scanned_at=$(jq -er '.scannedAt | strings | select(length > 0)' <<< "$result") ||
+             ! SCAN_STARTED_AT="$scan_started_at" SCANNED_AT="$scanned_at" node -e '
+               const time = Date.parse(process.env.SCANNED_AT);
+               process.exit(Number.isFinite(time) && time >= Number(process.env.SCAN_STARTED_AT) * 1000 ? 0 : 1);
+             ' ||
+             ! jq -e '.analysisStatus == "complete" and (.pendingChecks == [])' <<< "$result" > /dev/null; then
+            {
+              echo "status=error"
+              echo "reason=The archived Is Agentic scan is invalid, incomplete, or stale."
+            } >> "$GITHUB_OUTPUT"
+            exit 1
+          fi
+          echo "scanned_at=$scanned_at" >> "$GITHUB_OUTPUT"
+
+          # https://is-agentic.com/docs documents the report API and its scoring rubric.
+          # Neither result.score nor the site-type variant score is the public report rating.
+          # Require the same archived scan so an older healthy score cannot mask a regression.
           score=""
           for attempt in {1..12}; do
-            if report_html=$(curl --fail --silent --show-error \
-              --max-time 20 \
+            if curl --fail --silent --show-error --max-time 15 \
+              --get --data-urlencode "url=$SCAN_TARGET" \
               --header "Cache-Control: no-cache" \
-              "$REPORT_URL?attempt=$attempt"); then
-              printf '%s\n' "$report_html" > scan-report.html
-              score=$(SCAN_STARTED_AT="$scan_started_at" node -e '
-                let html = "";
-                process.stdin.setEncoding("utf8");
-                process.stdin.on("data", chunk => html += chunk);
-                process.stdin.on("end", () => {
-                  for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
-                    let data;
-                    try { data = JSON.parse(match[1]); } catch { continue; }
-                    const graph = Array.isArray(data["@graph"]) ? data["@graph"] : [data];
-                    const page = graph.find(item => item["@type"] === "WebPage");
-                    const review = graph.find(item => item["@type"] === "Review");
-                    const reportTime = Date.parse(page?.dateModified);
-                    const scanStartTime = Number(process.env.SCAN_STARTED_AT) * 1000;
-                    if (Number.isFinite(reportTime) && reportTime >= scanStartTime &&
-                        Number.isFinite(review?.reviewRating?.ratingValue)) {
-                      process.stdout.write(String(review.reviewRating.ratingValue));
-                      return;
-                    }
-                  }
-                });
-              ' <<< "$report_html")
+              "$REPORT_API" -o scan-report.json; then
+              if score=$(jq -er --arg scanned_at "$scanned_at" --arg target "$SCAN_TARGET" '
+                select(.scanned_at == $scanned_at and .target == $target)
+                | .score | numbers | select(. >= 0 and . <= 100 and . == floor)
+              ' scan-report.json); then
+                break
+              fi
             fi
-
-            [[ -n "$score" ]] && break
-            sleep 5
+            score=""
+            if (( attempt < 12 )); then sleep 5; fi
           done
 
           if [[ -z "$score" ]]; then
             {
               echo "status=error"
-              echo "reason=The persisted Is Agentic report did not update after the fresh scan started."
-              echo "scanned_at=$scanned_at"
+              echo "reason=The Is Agentic report API did not return a valid score for the archived scan."
             } >> "$GITHUB_OUTPUT"
-            {
-              echo "## Is Agentic score check"
-              echo "The streamed scan completed with score $streamed_score/100, but the persisted report did not update after the fresh scan started."
-            } >> "$GITHUB_STEP_SUMMARY"
             exit 1
+          fi
+
+          # Keep the public page for diagnostics only; it can lag behind the report API.
+          report_warning=""
+          if curl --fail --silent --show-error --max-time 20 \
+            --header "Cache-Control: no-cache" \
+            "$REPORT_URL" -o scan-report.html; then
+            if ! SCANNED_AT="$scanned_at" node -e '
+              const fs = require("node:fs");
+              const html = fs.readFileSync("scan-report.html", "utf8");
+              for (const match of html.matchAll(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/g)) {
+                let data;
+                try { data = JSON.parse(match[1]); } catch { continue; }
+                const graph = Array.isArray(data["@graph"]) ? data["@graph"] : [data];
+                if (graph.some(item => item["@type"] === "WebPage" &&
+                    Date.parse(item.dateModified) >= Date.parse(process.env.SCANNED_AT))) process.exit(0);
+              }
+              process.exit(1);
+            '; then
+              report_warning="The public report page is stale or has no valid timestamp; the score comes from the archived scan via the report API."
+            fi
+          else
+            report_warning="The public report page could not be fetched; the score comes from the archived scan via the report API."
+          fi
+          if [[ -n "$report_warning" ]]; then
+            echo "::warning::$report_warning"
           fi
 
           {
             echo "score=$score"
-            echo "scanned_at=$scanned_at"
           } >> "$GITHUB_OUTPUT"
           {
             echo "## Is Agentic score check"
@@ -137,10 +149,10 @@ jobs:
             echo "| ---: | ---: | --- |"
             echo "| [$score/100]($REPORT_URL) | $SCORE_THRESHOLD/100 | $scanned_at |"
             echo ""
-            echo "Grade: $grade"
-            if [[ "$score" != "$streamed_score" ]]; then
+            echo "Source: the report API, matched to the completed archived scan."
+            if [[ -n "$report_warning" ]]; then
               echo ""
-              echo "Note: the streaming API returned $streamed_score/100; the persisted report returned $score/100."
+              echo "Warning: $report_warning"
             fi
           } >> "$GITHUB_STEP_SUMMARY"
 
@@ -168,6 +180,7 @@ jobs:
             scan-events.sse
             scan-result.json
             scan-report.html
+            scan-report.json
           if-no-files-found: ignore
           retention-days: 30
 
