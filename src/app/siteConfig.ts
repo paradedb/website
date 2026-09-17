@@ -2,7 +2,7 @@ export const siteConfig = {
   name: "ParadeDB",
   url: "https://www.paradedb.com", // (canonical host)
   description:
-    "One Postgres for your application data, full-text search, vector retrieval, and aggregations. Home of the pg_search extension.",
+    "Just use Postgres. ParadeDB makes text and vector search, filters, facets, and joins fast in Postgres. Home of the pg_search extension.",
   gtmId: "GTM-KMGRG564",
   baseLinks: {
     home: "/",

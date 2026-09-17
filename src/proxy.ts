@@ -37,7 +37,7 @@ const MARKDOWN_NOT_FOUND = `# 404 Not Found
 No page exists at this URL.
 
 - [ParadeDB content index](https://www.paradedb.com/llms.txt)
-- [Documentation](https://www.paradedb.com/docs/welcome/introduction)
+- [Documentation](https://www.paradedb.com/docs/start/introduction)
 - [Sitemap](https://www.paradedb.com/sitemap.xml)
 `;
 

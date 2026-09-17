@@ -7,7 +7,7 @@ const SITE_URL = "https://www.paradedb.com";
 const PUBLIC_DIR = path.join(ROOT_DIR, "public");
 
 const INTRO =
-  "ParadeDB is a transactional alternative to Elasticsearch built on Postgres. It is a PostgreSQL-native search and analytics engine - a columnstore index for OLAP and a BM25 inverted index for full-text search, all inside Postgres as an extension.";
+  "Just use Postgres. ParadeDB makes text and vector search, filters, facets, and joins fast in Postgres. It accelerates these queries with a custom index that ships as pg_search, a standard Postgres extension. Search runs alongside your application data using SQL and Postgres transactions.";
 
 function readMetadata(dir) {
   try {
@@ -88,7 +88,7 @@ function main() {
     `> ${INTRO}`,
     "",
     "Full text of ParadeDB's blog, customer stories, and learn articles for LLM consumption. For a linked index, see " +
-      `${SITE_URL}/llms.txt.`,
+      `${SITE_URL}/llms.txt. For current technical documentation, see ${SITE_URL}/docs/llms.txt.`,
     "",
   ];
 
