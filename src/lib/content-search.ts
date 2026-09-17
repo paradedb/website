@@ -161,7 +161,7 @@ export function getProductInfo() {
     tagline: "Just use Postgres",
     description: siteConfig.description,
     summary:
-      "ParadeDB is a PostgreSQL-native search and analytics engine, packaged as a Postgres extension (pg_search). It provides a BM25 inverted index for full-text search and a columnar index for analytics, offering a transactional alternative to Elasticsearch without ETL or external systems.",
+      "Just use Postgres. ParadeDB makes text and vector search, filters, facets, and joins fast in Postgres. It accelerates these queries with a custom index that ships as pg_search, a standard Postgres extension. Search runs alongside your application data using SQL and Postgres transactions.",
     install:
       "docker run --name paradedb -e POSTGRES_PASSWORD=password paradedb/paradedb",
     links: {
@@ -170,6 +170,7 @@ export function getProductInfo() {
       github: github.REPO,
       blog: `${siteConfig.url}/blog`,
       llmsTxt: `${siteConfig.url}/llms.txt`,
+      docsLlmsTxt: `${siteConfig.url}/docs/llms.txt`,
     },
     contentCounts: {
       blog: entries.filter((e) => e.section === "blog").length,

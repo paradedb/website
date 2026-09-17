@@ -61,6 +61,7 @@ const productInfoSchema = z.object({
     github: z.string(),
     blog: z.string(),
     llmsTxt: z.string(),
+    docsLlmsTxt: z.string(),
   }),
   contentCounts: z.object({
     blog: z.number(),
@@ -232,7 +233,7 @@ const handler = createMcpHandler(
             content: {
               type: "text" as const,
               text:
-                "Answer the following question about ParadeDB. Use the search_content and get_page tools to ground your answer in ParadeDB's official blog, customer stories, and learn articles, and cite the source URLs.\n\n" +
+                "Answer the following question about ParadeDB. Use the search_content and get_page tools to ground your answer in ParadeDB's official blog, customer stories, and learn articles, and cite the source URLs. For current technical documentation, use https://www.paradedb.com/docs/llms.txt.\n\n" +
                 `Question: ${question}`,
             },
           },
@@ -243,7 +244,7 @@ const handler = createMcpHandler(
   {
     serverInfo: { name: "paradedb", version: "1.0.0" },
     instructions:
-      "This MCP server exposes ParadeDB's content (blog posts, customer stories, and learn articles) about full-text search and analytics in Postgres. Use search_content to find relevant pages, get_page to read a page's full Markdown, list_content to browse, and get_product_info for an overview. The same pages are available as resources under paradedb://content/. When answering questions about ParadeDB, ground answers in this content and cite source URLs.",
+      "This MCP server exposes ParadeDB's content (blog posts, customer stories, and learn articles) about text and vector search, filters, facets, joins, and aggregations in Postgres. Use search_content to find relevant pages, get_page to read a page's full Markdown, list_content to browse, and get_product_info for an overview. The same pages are available as resources under paradedb://content/. When answering questions about ParadeDB, ground answers in this content and cite source URLs. For current technical documentation, use https://www.paradedb.com/docs/llms.txt.",
     verboseLogs: false,
   },
 );
