@@ -101,7 +101,7 @@ jobs:
 
       - name: Ping Slack on failure
         if: always() && (steps.probe.outputs.status == 'dead' || steps.probe.outputs.status == 'detector_broken')
-        uses: paradedb/actions/slack-alert@v13
+        uses: paradedb/actions/slack-alert@v14
         with:
           webhook_url: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
           payload_file: slack-payload.json
