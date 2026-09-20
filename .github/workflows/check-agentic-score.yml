@@ -212,7 +212,7 @@ jobs:
 
       - name: Ping Slack on regression
         if: always() && (steps.report.outputs.status == 'regressed' || steps.report.outputs.status == 'error')
-        uses: paradedb/actions/slack-alert@v13
+        uses: paradedb/actions/slack-alert@v14
         with:
           webhook_url: ${{ secrets.SLACK_GITHUB_CHANNEL_WEBHOOK_URL }}
           payload_file: agentic-score-payload.json
