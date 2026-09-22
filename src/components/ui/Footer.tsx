@@ -44,6 +44,7 @@ const navigation = {
     { name: "Careers", href: company.CAREERS, external: true },
     { name: "Sales", href: social.CALENDLY, external: true },
     { name: "Support", href: email.SUPPORT, external: true },
+    { name: "System status", href: company.STATUS, external: true },
   ],
   legal: [
     { name: "Privacy", href: legal.PRIVACY, external: false },
@@ -375,19 +376,6 @@ export default function Footer() {
                 &copy; {new Date().getFullYear()} ParadeDB, Inc. All rights
                 reserved.
               </p>
-              <a
-                href={company.STATUS}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={cx(
-                  "text-sm leading-5 transition-colors",
-                  isHomePage
-                    ? "text-indigo-100 hover:text-white"
-                    : "text-gray-500 hover:text-gray-900 dark:text-slate-400 dark:hover:text-slate-100",
-                )}
-              >
-                System status <span aria-hidden="true">↗</span>
-              </a>
               <ThemeToggle variant={isHomePage ? "white" : "default"} />
             </div>
           </div>
