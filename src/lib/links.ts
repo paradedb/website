@@ -1,5 +1,6 @@
 export const company = {
   CAREERS: "https://paradedb.notion.site/",
+  STATUS: "https://status.paradedb.com/",
 };
 
 export const documentation = {

@@ -44,6 +44,7 @@ const navigation = {
     { name: "Careers", href: company.CAREERS, external: true },
     { name: "Sales", href: social.CALENDLY, external: true },
     { name: "Support", href: email.SUPPORT, external: true },
+    { name: "System status", href: company.STATUS, external: true },
   ],
   legal: [
     { name: "Privacy", href: legal.PRIVACY, external: false },
