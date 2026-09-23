@@ -1,3 +1,4 @@
+import { siteConfig } from "@/app/siteConfig";
 import { Badge } from "./Badge";
 import { SectionHeader } from "./SectionHeader";
 import { CardWave } from "./CardWave";
@@ -153,20 +154,20 @@ export default function Pricing() {
                     "Supports a single node (no read replicas)",
                     "Community support",
                   ]}
-                  buttonText="Get Started"
+                  buttonText="Run Locally"
                   buttonLink={documentation.GETTING_STARTED}
                 />
                 <PricingCard
                   planName="Cloud"
-                  badgeText="Coming Soon"
+                  badgeText="Private Preview"
                   description="Use ParadeDB without managing any infrastructure."
                   features={[
                     "Everything in Enterprise",
                     "Fully managed",
                     "One-click deployments",
                   ]}
-                  buttonText="Early Access"
-                  buttonLink="/cloud"
+                  buttonText="Sign Up"
+                  buttonLink={siteConfig.baseLinks.cloud}
                   buttonVariant="light"
                   featured
                 />

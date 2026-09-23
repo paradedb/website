@@ -7,7 +7,7 @@ export const siteConfig = {
   baseLinks: {
     home: "/",
     blog: "/blog",
-    cloud: "/cloud",
+    cloud: "https://app.paradedb.com",
     contact: "/contact",
     customers: "/customers",
     resources: "/learn",

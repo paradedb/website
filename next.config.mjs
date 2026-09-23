@@ -133,6 +133,11 @@ const nextConfig = {
         permanent: true,
       },
       // --- external service redirects ---
+      {
+        source: "/cloud",
+        destination: "https://app.paradedb.com",
+        permanent: false,
+      },
       // NOTE: Slack shared invite links auto-deactivate after ~400 joins,
       // regardless of the "never expire" setting. When this link dies, generate
       // a new invite in the Slack admin and swap the destination below — every

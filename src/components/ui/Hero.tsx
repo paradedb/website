@@ -1,5 +1,4 @@
 import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
-import { documentation } from "@/lib/links";
 import { siteConfig } from "@/app/siteConfig";
 import Link from "next/link";
 import { Button } from "../Button";
@@ -38,7 +37,7 @@ export default async function Hero() {
                   <span className="absolute inset-0 animate-ping rounded-full bg-white opacity-75 motion-reduce:hidden" />
                   <span className="relative size-2 rounded-full bg-white" />
                 </span>
-                ParadeDB Cloud is coming
+                ParadeDB Cloud is now available in private preview
                 <ArrowAnimated
                   className="stroke-indigo-200 group-hover:stroke-white scale-75 group-hover:scale-100 origin-left transition-transform ml-2"
                   aria-hidden="true"
@@ -69,25 +68,13 @@ export default async function Hero() {
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
                 >
-                  <Link href={documentation.GETTING_STARTED} target="_blank">
-                    Get Started
-                  </Link>
+                  <Link href={siteConfig.baseLinks.cloud}>Get Started</Link>
                 </Button>
                 <Button
                   asChild
-                  variant="ghost"
-                  className="text-md hover:group bg-transparent border-none h-10 px-4 hover:bg-transparent dark:hover:bg-transparent w-full sm:w-auto"
+                  className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
                 >
-                  <Link
-                    href={siteConfig.baseLinks.cloud}
-                    className="text-white flex items-center justify-center gap-2 w-full"
-                  >
-                    Cloud Early Access
-                    <ArrowAnimated
-                      className="stroke-white"
-                      aria-hidden="true"
-                    />
-                  </Link>
+                  <Link href="mailto:hello@paradedb.com">Contact Us</Link>
                 </Button>
               </div>
               <div className="hidden min-[900px]:flex items-center gap-2 mt-3 mb-2 sm:mb-4 font-mono text-sm text-white whitespace-nowrap">

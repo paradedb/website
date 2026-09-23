@@ -6,7 +6,7 @@ import { cx } from "@/lib/utils";
 import { SectionHeader } from "./SectionHeader";
 import PixelShadow from "./PixelShadow";
 import Link from "next/link";
-import { social } from "@/lib/links";
+import { siteConfig } from "@/app/siteConfig";
 import {
   RiTerminalBoxLine,
   RiShieldKeyholeLine,
@@ -24,8 +24,7 @@ const KEEPS = [
         Pure Postgres extension, not a fork. Drops into any self-managed
         Postgres. Or{" "}
         <Link
-          href={social.CALENDLY}
-          target="_blank"
+          href={siteConfig.baseLinks.cloud}
           className="text-indigo-600 dark:text-indigo-400 underline underline-offset-2 hover:text-indigo-700 dark:hover:text-indigo-300"
         >
           let us run it for you

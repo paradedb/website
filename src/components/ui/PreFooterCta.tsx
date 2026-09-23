@@ -1,9 +1,7 @@
 "use client";
 
 import { siteConfig } from "@/app/siteConfig";
-import Link from "next/link";
 import { Button } from "../Button";
-import { ArrowAnimated } from "@/components/ui/ArrowAnimated";
 import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 
@@ -53,23 +51,13 @@ export default function PreFooterCta() {
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 font-semibold shadow-none hover:bg-indigo-50 border-0"
                 >
-                  <a href="mailto:hello@paradedb.com">Contact Us</a>
+                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
                 </Button>
                 <Button
                   asChild
-                  variant="ghost"
-                  className="text-md hover:group bg-transparent border-0 h-10 px-4 hover:bg-transparent dark:hover:bg-transparent"
+                  className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 font-semibold shadow-none hover:bg-indigo-50 border-0"
                 >
-                  <Link
-                    href={siteConfig.baseLinks.cloud}
-                    className="text-white flex items-center gap-2"
-                  >
-                    Cloud Early Access
-                    <ArrowAnimated
-                      className="stroke-white"
-                      aria-hidden="true"
-                    />
-                  </Link>
+                  <a href="mailto:hello@paradedb.com">Contact Us</a>
                 </Button>
               </div>
             </div>
