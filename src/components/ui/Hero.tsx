@@ -76,10 +76,10 @@ export default async function Hero() {
                   className="text-md hover:group bg-transparent border-none h-10 px-4 hover:bg-transparent dark:hover:bg-transparent w-full sm:w-auto"
                 >
                   <Link
-                    href={siteConfig.baseLinks.cloud}
+                    href="mailto:hello@paradedb.com"
                     className="text-white flex items-center justify-center gap-2 w-full"
                   >
-                    Cloud Early Access
+                    Contact Us
                     <ArrowAnimated
                       className="stroke-white"
                       aria-hidden="true"
