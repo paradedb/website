@@ -296,7 +296,7 @@ export function Navigation() {
                       : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
                   )}
                 >
-                  <a href="mailto:hello@paradedb.com">Contact Us</a>
+                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
                 </Button>
               </div>
               <div className="min-[900px]:hidden">
@@ -413,7 +413,7 @@ export function Navigation() {
                   asChild
                   className="w-full h-12 !rounded-none bg-indigo-600 text-white font-bold border-0 shadow-none text-md"
                 >
-                  <a href="mailto:hello@paradedb.com">Contact Us</a>
+                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
                 </Button>
               </li>
               <li className="flex justify-center pt-6">

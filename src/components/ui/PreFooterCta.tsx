@@ -53,7 +53,7 @@ export default function PreFooterCta() {
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 font-semibold shadow-none hover:bg-indigo-50 border-0"
                 >
-                  <a href="mailto:hello@paradedb.com">Contact Us</a>
+                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
                 </Button>
                 <Button
                   asChild

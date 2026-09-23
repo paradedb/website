@@ -35,7 +35,7 @@ ParadeDB is for teams combining transactional application data with full-text, v
 
 ParadeDB is vanilla Postgres with the pg_search extension installed. For self-managed Postgres, [install the extension](https://www.paradedb.com/docs/operate/deploy/self-hosted/extension) in your existing database. For managed Postgres, run ParadeDB as a [logical replica](https://www.paradedb.com/docs/operate/deploy/logical-replication/getting-started). See the [deployment guide](https://www.paradedb.com/docs/operate/deploy/overview) for Kubernetes and cloud platform options, and [Connect Your App](https://www.paradedb.com/docs/start/connect-your-app) for SQL tools and application integrations.
 
-ParadeDB Cloud is coming soon: a fully managed platform for running ParadeDB. Join the [Cloud waitlist](${SITE_URL}/cloud) for early access, or contact [support@paradedb.com](mailto:support@paradedb.com).
+ParadeDB Cloud is now available in private preview: a fully managed platform for running ParadeDB. [Sign up](https://app.paradedb.com), or contact [support@paradedb.com](mailto:support@paradedb.com).
 
 This website and its MCP server provide product information, blog posts, customer stories, and learn articles, not a hosted database API. For current installation steps, SQL syntax, features, and deployment guidance, use the [documentation index](${SITE_URL}/docs/llms.txt).
 
@@ -43,7 +43,7 @@ This website and its MCP server provide product information, blog posts, custome
 
 - **Community (self-managed):** Free forever for a single node, with community support. [Get started](https://www.paradedb.com/docs/start/install).
 - **Enterprise (self-managed):** Custom pricing for read replicas, high availability, dedicated support, and an SLA. [Contact sales](https://calendly.com/paradedb).
-- **ParadeDB Cloud (fully managed):** Coming soon; pricing is not yet published. [Join the Cloud waitlist](${SITE_URL}/cloud).
+- **ParadeDB Cloud (fully managed):** Available in private preview; pricing is not yet published. [Sign up](https://app.paradedb.com).
 `;
 
 // Mirrors SECTION_DISPLAY_NAMES + formatSectionName in src/lib/resources.ts

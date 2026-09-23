@@ -9,7 +9,7 @@ import {
   legal,
   social,
 } from "@/lib/links";
-import { RiArrowRightUpLine, RiMailLine } from "@remixicon/react";
+import { RiArrowRightUpLine } from "@remixicon/react";
 import Link from "next/link";
 import { DatabaseLogo } from "./DatabaseLogo";
 import { Button } from "../Button";
@@ -129,9 +129,8 @@ export default function Footer() {
                         : "bg-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 border-indigo-400 dark:border-indigo-600 text-white",
                     )}
                   >
-                    <Link href={siteConfig.baseLinks.contact}>
-                      <RiMailLine className="mr-2 size-4" />
-                      Contact Us
+                    <Link href={siteConfig.baseLinks.cloud}>
+                      Sign Up
                     </Link>
                   </Button>
                 </div>
