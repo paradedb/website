@@ -19,6 +19,14 @@ import { cx } from "@/lib/utils";
 import { isLandingRoute } from "@/lib/landing";
 
 const navigation = {
+  product: [
+    { name: "Cloud", href: siteConfig.baseLinks.cloud, external: true },
+    { name: "Documentation", href: documentation.BASE, external: true },
+    { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
+    { name: "Changelog", href: documentation.CHANGELOG, external: true },
+    { name: "Support", href: email.SUPPORT, external: true },
+    { name: "System status", href: company.STATUS, external: true },
+  ],
   company: [
     {
       name: "Customers",
@@ -26,25 +34,16 @@ const navigation = {
       external: false,
     },
     { name: "Blog", href: siteConfig.baseLinks.blog, external: false },
-    { name: "Learn", href: siteConfig.baseLinks.resources, external: false },
-    { name: "Cloud", href: siteConfig.baseLinks.cloud, external: false },
+    { name: "Careers", href: company.CAREERS, external: true },
+    { name: "Contact", href: siteConfig.baseLinks.contact, external: false },
     { name: "Brand", href: siteConfig.baseLinks.brand, external: false },
-    { name: "Documentation", href: documentation.BASE, external: true },
-    { name: "Changelog", href: documentation.CHANGELOG, external: true },
   ],
-  connect: [
-    { name: "Slack Community", href: social.SLACK, external: true },
+  community: [
     { name: "GitHub", href: github.REPO, external: true },
+    { name: "Slack Community", href: social.SLACK, external: true },
     { name: "Twitter / X", href: social.TWITTER, external: true },
     { name: "LinkedIn", href: social.LINKEDIN, external: true },
     { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
-  ],
-  resources: [
-    { name: "Contact", href: siteConfig.baseLinks.contact, external: false },
-    { name: "Careers", href: company.CAREERS, external: true },
-    { name: "Sales", href: social.CALENDLY, external: true },
-    { name: "Support", href: email.SUPPORT, external: true },
-    { name: "System status", href: company.STATUS, external: true },
   ],
   legal: [
     { name: "Privacy", href: legal.PRIVACY, external: false },
@@ -144,10 +143,10 @@ export default function Footer() {
                           : "text-gray-900 dark:text-slate-100",
                       )}
                     >
-                      Company
+                      Product
                     </h3>
                     <ul role="list" className="mt-6 space-y-4">
-                      {navigation.company.map((item) => (
+                      {navigation.product.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
                             className={cx(
@@ -197,10 +196,10 @@ export default function Footer() {
                           : "text-gray-900 dark:text-slate-100",
                       )}
                     >
-                      Connect
+                      Company
                     </h3>
                     <ul role="list" className="mt-6 space-y-4">
-                      {navigation.connect.map((item) => (
+                      {navigation.company.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
                             className={cx(
@@ -252,10 +251,10 @@ export default function Footer() {
                           : "text-gray-900 dark:text-slate-100",
                       )}
                     >
-                      Resources
+                      Community
                     </h3>
                     <ul role="list" className="mt-6 space-y-4">
-                      {navigation.resources.map((item) => (
+                      {navigation.community.map((item) => (
                         <li key={item.name} className="w-fit">
                           <Link
                             className={cx(
