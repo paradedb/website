@@ -39,15 +39,15 @@ const navigation = {
     { name: "Brand", href: siteConfig.baseLinks.brand, external: false },
   ],
   community: [
-    { name: "GitHub", href: github.REPO, external: true },
     { name: "Slack Community", href: social.SLACK, external: true },
     { name: "Twitter / X", href: social.TWITTER, external: true },
     { name: "LinkedIn", href: social.LINKEDIN, external: true },
+    { name: "GitHub", href: github.REPO, external: true },
     { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
   ],
   legal: [
-    { name: "Privacy", href: legal.PRIVACY, external: false },
     { name: "Terms", href: legal.TERMS, external: false },
+    { name: "Privacy", href: legal.PRIVACY, external: false },
   ],
 };
 
