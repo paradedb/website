@@ -72,19 +72,9 @@ export default async function Hero() {
                 </Button>
                 <Button
                   asChild
-                  variant="ghost"
-                  className="text-md hover:group bg-transparent border-none h-10 px-4 hover:bg-transparent dark:hover:bg-transparent w-full sm:w-auto"
+                  className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
                 >
-                  <Link
-                    href="mailto:hello@paradedb.com"
-                    className="text-white flex items-center justify-center gap-2 w-full"
-                  >
-                    Contact Us
-                    <ArrowAnimated
-                      className="stroke-white"
-                      aria-hidden="true"
-                    />
-                  </Link>
+                  <Link href="mailto:hello@paradedb.com">Contact Us</Link>
                 </Button>
               </div>
               <div className="hidden min-[900px]:flex items-center gap-2 mt-3 mb-2 sm:mb-4 font-mono text-sm text-white whitespace-nowrap">
