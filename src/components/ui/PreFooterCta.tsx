@@ -46,16 +46,16 @@ export default function PreFooterCta() {
                   Just use Postgres.
                 </span>
               </h2>
-              <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-8">
+              <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto mt-8">
                 <Button
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 font-semibold shadow-none hover:bg-indigo-50 border-0"
                 >
-                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
+                  <a href={siteConfig.baseLinks.cloudSignup}>Sign Up</a>
                 </Button>
                 <Button
                   asChild
-                  className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 font-semibold shadow-none hover:bg-indigo-50 border-0"
+                  className="text-md px-3 bg-transparent rounded-none h-10 text-white font-semibold shadow-none hover:bg-transparent hover:text-white/80 border-0 outline-white"
                 >
                   <a href="mailto:hello@paradedb.com">Contact Us</a>
                 </Button>

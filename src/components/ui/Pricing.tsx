@@ -167,7 +167,7 @@ export default function Pricing() {
                     "One-click deployments",
                   ]}
                   buttonText="Sign Up"
-                  buttonLink={siteConfig.baseLinks.cloud}
+                  buttonLink={siteConfig.baseLinks.cloudSignup}
                   buttonVariant="light"
                   featured
                 />

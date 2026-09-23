@@ -8,6 +8,7 @@ export const siteConfig = {
     home: "/",
     blog: "/blog",
     cloud: "https://app.paradedb.com",
+    cloudSignup: "https://auth.paradedb.com/sign-up",
     contact: "/contact",
     customers: "/customers",
     resources: "/learn",

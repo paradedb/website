@@ -287,28 +287,30 @@ export function Navigation() {
                     </div>
                   </Link>
                 </div>
-                <a
-                  href={siteConfig.baseLinks.cloud}
-                  className={cx(
-                    "px-2 py-2 text-sm font-medium whitespace-nowrap transition-colors",
-                    isHomePage && !open
-                      ? "text-white/90 hover:text-white"
-                      : "text-slate-900 hover:text-indigo-600 dark:text-slate-100 dark:hover:text-white",
-                  )}
-                >
-                  Log in
-                </a>
-                <Button
-                  asChild
-                  className={cx(
-                    "px-3 rounded-none transition-all min-[1200px]:px-4",
-                    isHomePage && !open
-                      ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
-                      : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
-                  )}
-                >
-                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
-                </Button>
+                <div className="flex items-center gap-2">
+                  <a
+                    href={siteConfig.baseLinks.cloud}
+                    className={cx(
+                      "px-2 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+                      isHomePage && !open
+                        ? "text-white/90 hover:text-white"
+                        : "text-slate-900 hover:text-indigo-600 dark:text-slate-100 dark:hover:text-white",
+                    )}
+                  >
+                    Log in
+                  </a>
+                  <Button
+                    asChild
+                    className={cx(
+                      "px-3 rounded-none transition-all min-[1200px]:px-4",
+                      isHomePage && !open
+                        ? "bg-white text-indigo-600 hover:bg-indigo-50 border-0 shadow-none"
+                        : "border-indigo-200 dark:border-indigo-600 ring-2 ring-indigo-400 dark:ring-indigo-600/50 border-1 bg-indigo-600 dark:bg-indigo-600 text-white shadow-none",
+                    )}
+                  >
+                    <a href={siteConfig.baseLinks.cloudSignup}>Sign Up</a>
+                  </Button>
+                </div>
               </div>
               <div className="min-[900px]:hidden">
                 <Button
@@ -419,7 +421,7 @@ export function Navigation() {
                   GitHub
                 </Link>
               </li>
-              <li className="pt-6 px-6 flex items-center gap-4">
+              <li className="pt-6 px-6 flex items-center gap-2">
                 <a
                   href={siteConfig.baseLinks.cloud}
                   className="shrink-0 px-2 py-3 text-md font-medium text-slate-900 transition-colors hover:text-indigo-600 dark:text-slate-100 dark:hover:text-white"
@@ -430,7 +432,7 @@ export function Navigation() {
                   asChild
                   className="w-full h-12 !rounded-none bg-indigo-600 text-white font-bold border-0 shadow-none text-md"
                 >
-                  <a href={siteConfig.baseLinks.cloud}>Sign Up</a>
+                  <a href={siteConfig.baseLinks.cloudSignup}>Sign Up</a>
                 </Button>
               </li>
               <li className="flex justify-center pt-6">

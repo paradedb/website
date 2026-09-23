@@ -63,16 +63,18 @@ export default async function Hero() {
                 ParadeDB makes text and vector search, filters, facets, and
                 joins fast in Postgres.
               </p>
-              <div className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-sm self-center sm:max-w-none sm:w-auto sm:self-auto justify-start mb-6 sm:mb-8 sm:px-0">
+              <div className="flex flex-col sm:flex-row items-center gap-3 w-full max-w-sm self-center sm:max-w-none sm:w-auto sm:self-auto justify-start mb-6 sm:mb-8 sm:px-0">
                 <Button
                   asChild
                   className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
                 >
-                  <Link href={siteConfig.baseLinks.cloud}>Get Started</Link>
+                  <Link href={siteConfig.baseLinks.cloudSignup}>
+                    Get Started
+                  </Link>
                 </Button>
                 <Button
                   asChild
-                  className="text-md px-4 bg-white rounded-none h-10 text-indigo-600 hover:bg-indigo-50 w-full sm:w-auto border-0 shadow-none"
+                  className="text-md px-3 bg-transparent rounded-none h-10 text-white hover:bg-transparent hover:text-white/80 w-full sm:w-auto border-0 shadow-none outline-white"
                 >
                   <Link href="mailto:hello@paradedb.com">Contact Us</Link>
                 </Button>
