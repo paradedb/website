@@ -134,7 +134,7 @@ const nextConfig = {
       },
       // --- external service redirects ---
       {
-        source: "/cloud",
+        source: "/cloud/:path*",
         destination: "https://app.paradedb.com",
         permanent: false,
       },

@@ -15,8 +15,6 @@ const ARTICLE_DEPTH: Record<string, number> = {
 const HTML_PAGE_PATHS = new Set([
   "/brand",
   "/blog",
-  "/cloud",
-  "/cloud/confirmed",
   "/contact",
   "/customers",
   "/learn",
