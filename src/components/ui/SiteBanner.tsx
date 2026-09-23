@@ -9,8 +9,6 @@ import { isLandingRoute } from "@/lib/landing";
 export function SiteBanner() {
   const pathname = usePathname();
   if (!isLandingRoute(pathname)) return null;
-  // Skip the banner on the legacy cloud pages.
-  if (pathname === "/cloud" || pathname.startsWith("/cloud/")) return null;
   return (
     <div className="relative z-50 w-full bg-slate-950">
       <Link
