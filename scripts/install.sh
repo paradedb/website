@@ -114,19 +114,19 @@ cat <<'BANNER'
   |||||||| |||||||| |||||||| ||||||||
   |||||||| |||||||| |||||||| ||||||||
   |||||||| |||||||| |||||||| ||||||||
-  |||||||| |||||||| |||||||| |||||||||||||||
+  |||||||| |||||||| |||||||| |||||||||
   |||||||| |||||||| ||||||||  ||||||||||||||
   |||||||| |||||||| ||||||||   |||||||||||||
   |||||||| |||||||| ||||||||     |||||||||||
-  |||||||| |||||||| ||||||||           |||||
+  |||||||| |||||||| ||||||||        ||||||||
 
 BANNER
 printf "%s" "$RESET"
 printf "  %sWelcome to ParadeDB%s (%shttps://paradedb.com%s)!\n" "$BOLD" "$RESET" "$CYAN" "$RESET"
 echo ""
-echo "  We bring you simple, Elastic-quality search for Postgres."
-echo "  That includes everything you expect from a search engine: full-text, hybrid, and faceted search."
-echo "  All right inside Postgres with no extra infrastructure, and no ETL pipelines."
+echo "  Just use Postgres."
+echo "  One Postgres for your application data, full-text search,"
+echo "  vector retrieval, and aggregations."
 echo ""
 echo "  This script will:"
 echo "    1. Pull the latest ParadeDB Docker image"
@@ -139,11 +139,11 @@ echo "  To uninstall later: docker rm -f $CONTAINER_NAME && docker volume rm $VO
 echo ""
 echo "  Tip: Run with -y or --yes to skip this prompt next time."
 echo ""
-printf "  %sIf you find ParadeDB useful, a star on GitHub means the world to us:%s\n" "$BOLD" "$RESET"
+printf "  %sStar us on GitHub to support ParadeDB and follow our progress.%s\n" "$BOLD" "$RESET"
 printf "  %shttps://github.com/paradedb/paradedb%s\n" "$CYAN" "$RESET"
 echo ""
-printf "  %sWe're building a managed cloud. Request early access:%s\n" "$BOLD" "$RESET"
-printf "  %shttps://paradedb.com/cloud%s\n" "$CYAN" "$RESET"
+printf "  %sParadeDB Cloud is now available in private preview. Sign up:%s\n" "$BOLD" "$RESET"
+printf "  %shttps://app.paradedb.com%s\n" "$CYAN" "$RESET"
 echo ""
 
 if [ "$SILENT" = false ]; then
@@ -219,7 +219,7 @@ print_connect_cmd
 echo ""
 printf "  To connect from another tool, use port %s5432%s (you'll need the password above).\n" "$BOLD" "$RESET"
 echo ""
-printf "  Get started with the docs: %shttps://www.paradedb.com/docs%s\n" "$CYAN" "$RESET"
+printf "  Get started with the docs: %shttps://www.paradedb.com/docs/start/introduction%s\n" "$CYAN" "$RESET"
 echo ""
 printf "  %sLaunching psql...%s\n" "$BOLD" "$RESET"
 echo ""
