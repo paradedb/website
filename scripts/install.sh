@@ -142,7 +142,7 @@ echo ""
 printf "  %sStar us on GitHub to support ParadeDB and follow our progress.%s\n" "$BOLD" "$RESET"
 printf "  %shttps://github.com/paradedb/paradedb%s\n" "$CYAN" "$RESET"
 echo ""
-printf "  %sBuild on ParadeDB Cloud, now available in private preview:%s\n" "$BOLD" "$RESET"
+printf "  %sParadeDB Cloud is now available in private preview. Sign up:%s\n" "$BOLD" "$RESET"
 printf "  %shttps://app.paradedb.com%s\n" "$CYAN" "$RESET"
 echo ""
 
