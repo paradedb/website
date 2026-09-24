@@ -139,7 +139,7 @@ echo "  To uninstall later: docker rm -f $CONTAINER_NAME && docker volume rm $VO
 echo ""
 echo "  Tip: Run with -y or --yes to skip this prompt next time."
 echo ""
-printf "  %sIf you find ParadeDB useful, a star on GitHub means the world to us:%s\n" "$BOLD" "$RESET"
+printf "  %sStar and watch this repository to follow along.%s\n" "$BOLD" "$RESET"
 printf "  %shttps://github.com/paradedb/paradedb%s\n" "$CYAN" "$RESET"
 echo ""
 printf "  %sParadeDB Cloud is now available in private preview. Sign up:%s\n" "$BOLD" "$RESET"
