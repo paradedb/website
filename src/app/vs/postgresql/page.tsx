@@ -264,7 +264,7 @@ const config: VsConfig = {
         feature: "Where it runs",
         us: (
           <>
-            <A href="/cloud">ParadeDB Cloud</A>, BYOC, or{" "}
+            <A href="https://app.paradedb.com">ParadeDB Cloud</A>, BYOC, or{" "}
             <A href={`${DOCS}/documentation/getting-started/install`}>
               self-hosted extension
             </A>
