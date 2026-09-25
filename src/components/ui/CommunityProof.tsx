@@ -43,7 +43,7 @@ const STATS: Array<{
   },
   {
     key: "contributors",
-    stat: "140+",
+    stat: "150+",
     label: "Open-source contributors",
     description:
       "New faces are always welcome. Pick up an issue and ship it with us.",

@@ -46,6 +46,7 @@ const navigation = {
     { name: "RSS Feed", href: `${siteConfig.url}/feed.xml`, external: false },
   ],
   legal: [
+    { name: "Trust Center", href: company.TRUST, external: true },
     { name: "Terms", href: legal.TERMS, external: false },
     { name: "Privacy", href: legal.PRIVACY, external: false },
   ],
