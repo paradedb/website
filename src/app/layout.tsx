@@ -88,11 +88,8 @@ export default function RootLayout({
       <body
         className={`${inter.className} min-h-screen overflow-x-hidden antialiased bg-background text-foreground selection:bg-indigo-100 dark:selection:bg-indigo-900 selection:text-indigo-700 dark:selection:text-indigo-300`}
       >
-        <Script
-          id="gtag-consent-defaults"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
+        <Script id="gtag-consent-defaults" strategy="beforeInteractive">
+          {`
               window.dataLayer = window.dataLayer || [];
               window.gtag = function(){dataLayer.push(arguments);};
 
@@ -108,9 +105,8 @@ export default function RootLayout({
                 'wait_for_update': 500,
                 'region': ['AT','BE','BG','HR','CY','CZ','DK','EE','FI','FR','DE','GR','HU','IE','IT','LV','LT','LU','MT','NL','PL','PT','RO','SK','SI','ES','SE','GB','IS','LI','NO']
               });
-            `,
-          }}
-        />
+          `}
+        </Script>
         <GoogleTagManager gtmId={siteConfig.gtmId} />
         <ThemeProvider
           defaultTheme="system"
