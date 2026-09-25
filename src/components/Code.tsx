@@ -4,7 +4,9 @@ import type {
   BundledTheme,
   ThemeRegistrationAny,
 } from "shiki";
-import { codeToHtml } from "shiki";
+import { codeToHast } from "shiki";
+import { toJsxRuntime } from "hast-util-to-jsx-runtime";
+import { Fragment, jsx, jsxs } from "react/jsx-runtime";
 import CopyToClipboard from "./CopyToClipboard";
 
 type Theme = BundledTheme | ThemeRegistrationAny;
@@ -27,12 +29,12 @@ export default async function Code({
   className,
   copy = true,
 }: Props) {
-  const htmlLight = await codeToHtml(code, {
+  const treeLight = await codeToHast(code, {
     lang,
     theme: themeLight,
   });
 
-  const htmlDark = await codeToHtml(code, {
+  const treeDark = await codeToHast(code, {
     lang,
     theme: themeDark,
   });
@@ -46,14 +48,12 @@ export default async function Code({
           </div>
         </div>
       )}
-      <div
-        className="text-sm dark:hidden [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-2 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full"
-        dangerouslySetInnerHTML={{ __html: htmlLight }}
-      ></div>
-      <div
-        className="text-sm hidden dark:block [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-2 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full"
-        dangerouslySetInnerHTML={{ __html: htmlDark }}
-      ></div>
+      <div className="text-sm dark:hidden [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-2 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full">
+        {toJsxRuntime(treeLight, { Fragment, jsx, jsxs })}
+      </div>
+      <div className="text-sm hidden dark:block [&>pre]:overflow-x-auto [&>pre]:py-6 [&>pre]:pl-2 [&>pre]:pr-5 [&>pre]:leading-snug [&_code]:block [&_code]:w-fit [&_code]:min-w-full">
+        {toJsxRuntime(treeDark, { Fragment, jsx, jsxs })}
+      </div>
     </div>
   );
 }

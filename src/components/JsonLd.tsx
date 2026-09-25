@@ -1,7 +1,7 @@
 /**
  * Renders one or more schema.org objects as JSON-LD <script> tags.
  *
- * `<` is escaped to `<` to prevent the JSON payload from breaking out of
+ * `<` is escaped to `\u003c` to prevent the JSON payload from breaking out of
  * the surrounding <script> element.
  */
 export function JsonLd({ data }: { data: object | object[] }) {
@@ -10,13 +10,9 @@ export function JsonLd({ data }: { data: object | object[] }) {
   return (
     <>
       {items.map((item, index) => (
-        <script
-          key={index}
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify(item).replace(/</g, "\\u003c"),
-          }}
-        />
+        <script key={index} type="application/ld+json">
+          {JSON.stringify(item).replace(/</g, "\\u003c")}
+        </script>
       ))}
     </>
   );
