@@ -55,11 +55,11 @@ const logos = [
     className: "h-3.5",
   },
   {
-    name: "DemandScience",
-    src: "/brand/customers/demand-science.svg",
-    width: 290,
-    height: 30,
-    className: "h-[11px]",
+    name: "Candor Health",
+    src: "/brand/customers/candor-health.svg",
+    width: 159,
+    height: 19,
+    className: "h-[13px]",
   },
   {
     name: "Terrapin Finance",
