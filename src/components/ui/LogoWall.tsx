@@ -31,7 +31,7 @@ const logos = [
     src: "/brand/customers/mitti.svg",
     width: 203,
     height: 116,
-    className: "h-[40px]",
+    className: "h-[28px]",
   },
   {
     name: "RxVantage",
