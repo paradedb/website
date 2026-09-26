@@ -27,11 +27,11 @@ const logos = [
     className: "h-[17px]",
   },
   {
-    name: "SafetyCulture",
-    src: "/brand/customers/safety-culture.svg",
-    width: 202,
-    height: 38,
-    className: "h-[15px]",
+    name: "Mitti",
+    src: "/brand/customers/mitti.svg",
+    width: 203,
+    height: 116,
+    className: "h-[40px]",
   },
   {
     name: "RxVantage",
